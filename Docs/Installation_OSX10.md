@@ -48,5 +48,10 @@ One one machine running OSX 10.10.5 we got 1/1195 failures:
 `FAIL: test_coincidenceTriggerWithSimilarityChecking (obspy.signal.tests.test_trigger.TriggerTestCase)`
 
 
+## rpy2 and R ##
 
+To install both R and rpy2 using Anaconda, all we need to do is this:
+
+ 1. conda install -c https://conda.anaconda.org/r rpy2
+ 1. accept installation of new packages
 
