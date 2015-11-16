@@ -1,3 +1,5 @@
+# coding: utf8
+
 from obspy.core import read
 
 import sys
@@ -31,11 +33,26 @@ st.plot()
 
 # -----
 # Getting Data from IRIS web services
+#
+# NOTE:  Need to run with non-default /opt/local/bin/python2.7 which is where macports installed it.
+# NOTE:
+# NOTE:  The macports installation was helpful in getting R and rpy2 to run but I am getting the
+# NOTE:  following error message when trying to import obspy.core.UTCDateTime
+# NOTE:
+# NOTE:      LookupError: unknown encoding:
+
+# Default R installation is in /usr/bin/R
+
+# Anaconda R installation (where obspy works, but R doesn't yet) is /Users/jonathancallahan/miniconda2/bin/python2.7
+
+# Various installation issues to be worked out just for OSX
+# (Potential "Ugh" for other systems!)
+
+
 
 if False:
     
-    # Example from: http://docs.obspy.org/packages/obspy.fdsn.html#module-obspy.fdsn
-    
+
     from obspy.core import UTCDateTime
     from obspy.fdsn import Client
     client = Client("IRIS")
