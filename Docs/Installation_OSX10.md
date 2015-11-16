@@ -55,31 +55,27 @@ To install both R and rpy2 using Anaconda, all we need to do is this:
  1. conda install -c https://conda.anaconda.org/r rpy2
  1. accept installation of new packages
 
+
 Note that this will install the latest version of R in a local directory:
 
 `/Users/jonathancallahan/miniconda2/bin/R`
 
 All R packages must be reinstalled with this new version of R.
 
-**TODO:** Ultimately, we will want to have a required package sources and install them with something similar to:
+*NOTE:  Problems installing RCurl led to the following discovery:
+ examples from some docker files:
 
-`R CMD INSTALL --library=$(libPath) RJSONIO_1.2-0.2.tar.gz`
+https://hub.docker.com/r/tzaffi/edlab-jupyterhub/~/dockerfile/
 
-For now, just fire up R and type, for example:
+This worked:
 
-`install.packages('stringr',repos='http://cran.fhcrc.org')`
+`conda config --add channels r`
+`conda install --yes r-rcurl`
 
-**Problem** installing RCurl with the following reference:
+Then you can use R to install the rest with:
 
-https://groups.google.com/a/continuum.io/forum/#!topic/anaconda/SqaHYr8RAF8
-
-
-It sounds like using conda's completely separate environment for everything is going to be a pain!
-
+`install.packages("IRISSeismic", repos="http://cran.fhcrc.org")`
+`install.packages("IRISMustangMetrics", repos="http://cran.fhcrc.org")`
 
 ----
-
-Instead, try installing ObsPy with
-
-`sudo port install py27-obspy`
 
