@@ -31,25 +31,35 @@ try:
     import rpy2.robjects as robjects
     r = robjects.r
     
-    r('library(IRISSeismic)')
-    
-    iris = r('new("IrisClient")')
-    starttime = r("as.POSIXct('2002-04-20',tz='GMT')")
-    endtime = r("as.POSIXct('2002-04-21',tz='GMT')")
-    
-    # Get the function
-    getDataselect = r('IRISSeismic::getDataselect')
-    
-    # Invoke the function to get a traces
-    st = getDataselect(iris,"US","OXF","","BHZ",starttime,endtime)
-    tr = st.do_slot('traces')[0]
-    
-    tr.do_slot('id')[0]
-    
 except:
     
-    print('ERROR:  Could not run rpy2 or IRISSeismic.')
+    print('ERROR:  Could not run rpy2.')
     
 else:
     
-    print('Sucessfully ran rpy2 and IRISSeismic.')
+    print('Successfullyl imported rpy2')
+    
+    try:
+    
+        r('library(IRISSeismic)')
+        
+        iris = r('new("IrisClient")')
+        starttime = r("as.POSIXct('2002-04-20',tz='GMT')")
+        endtime = r("as.POSIXct('2002-04-21',tz='GMT')")
+        
+        # Get the function
+        getDataselect = r('IRISSeismic::getDataselect')
+        
+        # Invoke the function to get a traces
+        st = getDataselect(iris,"US","OXF","","BHZ",starttime,endtime)
+        tr = st.do_slot('traces')[0]
+        
+        tr.do_slot('id')[0]
+        
+    except:
+        
+        print('ERROR:  Could not run IRISSeismic.')
+    
+    else:
+        
+        print('Sucessfully ran rpy2 and IRISSeismic.')
