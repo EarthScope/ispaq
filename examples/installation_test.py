@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# .
+#
 
 # An installation test script to see whether ObsPy, the rpy2 module
 # along with R and the IRISSeismic packages can work in the same environment.

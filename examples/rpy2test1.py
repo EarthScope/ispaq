@@ -190,8 +190,8 @@ if False:
     my_empty_TraceHeader = r('new("TraceHeader")')
     
     # Luckily, the initialize method should recognizing the incoming first argument and dipatch to TraceHeader method
-    R_initialize = r('IRISSeismic::initialize')
     my_full_TraceHeader = R_initialize(my_empty_TraceHeader, my_R_headerList)
+    R_initialize = r('IRISSeismic::initialize')
     
     # Did it work?
     for slot in my_full_TraceHeader.slotnames():
