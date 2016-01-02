@@ -75,6 +75,7 @@ R_TraceHeader = R_initialize(R_TraceHeader, R_headerList)
 # From the seismic package R code
 ###setMethod("initialize", "Trace",
   ###function(.Object,
+  
            ###id="",
            ###stats=new("TraceHeader"),
            ###Sensor = "",
