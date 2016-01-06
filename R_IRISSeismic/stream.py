@@ -12,7 +12,6 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from future.builtins import *  # NOQA
 
-#import numpy as np
 
 # Connect to R through the rpy2 module
 import rpy2.robjects as robjects
@@ -66,8 +65,8 @@ def R_createTraceHeader(stats):
     """
     # NOTE:  ObsPy uses future.builtins which means that the stats.npts values is
     # NOTE:  of type 'future.types.newint.newint'. When passed to R, this is converted
-    # NOTE:  to an integer value of 1 rather than the actyual value. In the hack 
-    # NOTE:  below we obtain the string version of stats.npts and then use the R 
+    # NOTE:  to an integer value of 1 rather than the actual value. In the hack 
+    # NOTE:  below, we obtain the string version of stats.npts and then use the R 
     # NOTE:  as.integer() function to convert it to the required integer value.
     R_headerList = R_createHeaderList(stats.network,
                                       stats.station,
@@ -93,23 +92,26 @@ def R_createTrace(trace):
     :param trace: ObsPy Trace object.
     :return: IRISSeismic Trace object
     """
-    data = robjects.vectors.FloatVector(trace.data)
-    R_TraceHeader = R_createTraceHeader(trace.stats)
+    #data = robjects.vectors.FloatVector(trace.data)
+    #R_TraceHeader = R_createTraceHeader(trace.stats)
     R_Trace = r('new("Trace")')
     R_Trace = R_initialize(R_Trace,
-                           id="from_ObsPy",
-                           stats=R_TraceHeader,
-                           Sensor="Unknown Sensor",
+                           id=trace.id,
+                           stats=R_createTraceHeader(trace.stats),
+                           Sensor="",
                            InstrumentSensitivity=1.0,
                            InputUnits="",
-                           data=data)
+                           data=robjects.vectors.FloatVector(trace.data))
     return R_Trace
     
     
 ###   Stream     ---------------------------------------------------------------
 
 
-# TODO:  Support Sensor, etc. as arguments in R_createStream
+# TODO:  Support sensor, scale, scaleunits as arguments in R_createStream
+
+# TODO:  Should we automatically get channelInfo from R getChannels() as in
+# TODO:  IRISSeismic::getDataselect.IrisClient()?
 
 def R_createStream(stream):
     """
@@ -123,6 +125,7 @@ def R_createStream(stream):
     R_Stream = r('new("Stream")')
     R_Stream = R_initialize(R_Stream,
                             traces=R_listOfTraces)
+    return(R_Stream)
      
 
 

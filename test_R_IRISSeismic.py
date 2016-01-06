@@ -5,7 +5,8 @@
 from obspy.core import UTCDateTime
 from obspy.fdsn import Client
 
-from R_IRISSeismic import R_createTraceHeader, R_createTrace
+from R_IRISSeismic import R_createTraceHeader, R_createTrace, R_createStream
+from R_IRISMustangMetrics import R_basicStatsMetric, R_gapsMetric
 
 # Create a new IRIS client
 client = Client("IRIS")
@@ -15,18 +16,10 @@ t1 = UTCDateTime("2002-04-20")
 t2 = UTCDateTime("2002-04-21")
 stream = client.get_waveforms('US', 'OXF', '', 'BHZ', t1, t2)
 
-trace = stream.traces[2]
+R_Stream = R_createStream(stream)
 
-stats = trace.stats
+basicStats = R_basicStatsMetric(R_Stream)
+print(basicStats)
 
-R_TraceHeader = R_createTraceHeader(stats)
-
-print("Obspy version")
-print(stats)
-print("")
-
-print("IRISSeismic version")
-print(R_TraceHeader)
-print("")
-
-R_Trace = R_createTrace(trace)
+gaps = R_gapsMetric(R_Stream)
+print(gaps)
