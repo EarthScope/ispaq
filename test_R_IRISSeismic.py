@@ -5,7 +5,7 @@
 from obspy.core import UTCDateTime
 from obspy.fdsn import Client
 
-from R_IRISSeismic import R_createTraceHeader
+from R_IRISSeismic import R_createTraceHeader, R_createTrace
 
 # Create a new IRIS client
 client = Client("IRIS")
@@ -13,9 +13,11 @@ client = Client("IRIS")
 # Get the seismic signal
 t1 = UTCDateTime("2002-04-20")
 t2 = UTCDateTime("2002-04-21")
-st = client.get_waveforms('US', 'OXF', '', 'BHZ', t1, t2)
+stream = client.get_waveforms('US', 'OXF', '', 'BHZ', t1, t2)
 
-stats = st.traces[2].stats
+trace = stream.traces[2]
+
+stats = trace.stats
 
 R_TraceHeader = R_createTraceHeader(stats)
 
@@ -27,3 +29,4 @@ print("IRISSeismic version")
 print(R_TraceHeader)
 print("")
 
+R_Trace = R_createTrace(trace)
