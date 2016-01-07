@@ -165,18 +165,9 @@ def R_createStream(stream):
         #scaleUnits = ""
         
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    #stream <- new("Stream", url=url, requestedStarttime=requestedStarttime, requestedEndtime=requestedEndtime,
-                  #act_flags=act_flags, io_flags=io_flags, dq_flags=dq_flags, timing_qual=timing_qual,
-                  #traces=traces)
+#stream <- new("Stream", url=url, requestedStarttime=requestedStarttime, requestedEndtime=requestedEndtime,
+              #act_flags=act_flags, io_flags=io_flags, dq_flags=dq_flags, timing_qual=timing_qual,
+              #traces=traces)
     
     
 
