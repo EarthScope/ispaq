@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-R_IRISSeismic - Python Wrappers for the IRISSeismic R Package
+R_IRISSeismic - Python Wrappers for the IRISMustangMetrics R Package
 ===================================================
-Capabilities include creation of IRISSeismic Trace and Stream objects
-from ObsPy Trace and Stream objects.
+Capabilities include calculation of metrics.
 
 :copyright:
     Mazama Science
@@ -16,7 +15,7 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from future.builtins import *  # NOQA
 
-from .metrics import R_basicStatsMetric, R_gapsMetric
+from .metrics import * ###R_basicStatsMetric, R_gapsMetric
 
 if __name__ == '__main__':
     import doctest
