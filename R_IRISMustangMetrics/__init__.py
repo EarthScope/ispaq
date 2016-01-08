@@ -15,7 +15,7 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from future.builtins import *  # NOQA
 
-from .metrics import * ###R_basicStatsMetric, R_gapsMetric
+from .metrics import *
 
 if __name__ == '__main__':
     import doctest
