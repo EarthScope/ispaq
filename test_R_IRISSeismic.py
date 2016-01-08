@@ -6,7 +6,7 @@ from obspy.core import UTCDateTime
 from obspy.fdsn import Client
 
 from irisseismic import R_Stream
-from R_IRISMustangMetrics import R_basicStatsMetric, R_gapsMetric
+from irismustangmetrics import R_basicStatsMetric, R_gapsMetric
 
 # Create a new IRIS client
 client = Client("IRIS")

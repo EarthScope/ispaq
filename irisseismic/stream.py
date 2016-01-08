@@ -35,8 +35,8 @@ r('library(IRISSeismic)')
 ###   R functions called internally     ----------------------------------------
 
 
-# NOTE:  These functions behave exactly the same as the R versions.
-# NOTE:  For more pythonic versions, see below.
+# NOTE:  These functions behave exactly the same as the R versions and require
+# NOTE:  R-compatible objects as arguments.
 
 # from base
 _R_as_integer = r('base::as.integer')         # for conversion of python integers to R integer vectors
