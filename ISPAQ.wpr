@@ -19,4 +19,7 @@ proj.launch-config = {loc('irisseismic/stream.py'): ('project',
          '')),
                       loc('ispaq/test_ispaq_A.py'): ('project',
         (u'--start="2002-04-20" --end="2002-04-21" --sncl US.OXF..BHZ --metric-name basicStats',
+         '')),
+                      loc('test_ispaq_A.py'): ('project',
+        (u'--start="2002-04-20" --end="2002-04-21" --sncl US.OXF..BHZ --metric-name basicStats',
          ''))}

@@ -18,7 +18,7 @@ from future.builtins import *  # NOQA
 
 from obspy.core import UTCDateTime
 
-from irisseismic import R_getSNCL
+from ispaq.irisseismic import R_getSNCL
 
 # Connect to R through the rpy2 module
 from rpy2.robjects import r, pandas2ri
