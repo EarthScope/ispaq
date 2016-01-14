@@ -26,10 +26,7 @@ import rpy2.robjects as robjects
 r = robjects.r
 
 # R options
-r('options(digits.secs=6)')      # print out fractional seconds
-
-# Load the IRISSeismic package
-r('library(IRISSeismic)')
+r('options(digits.secs=6)')                   # have R functions print out fractional seconds
 
 
 ###   R functions called internally     ----------------------------------------
@@ -46,9 +43,10 @@ _R_list = r('base::list')                     # for creation of the headerList u
 
 # from IRISSeismic
 _R_initialize = r('IRISSeismic::initialize')  # initialization of various objects
+_R_getSNCL = r('IRISSeismic::getSNCL')        # to obtain an R_Stream object from IRIS DMC
 
 
-###   Pythonic conversion functions     ----------------------------------------
+###   Python --> R conversion functions    -------------------------------------
 
 
 def R_integer(x):
@@ -176,16 +174,13 @@ def R_list(n):
     return _R_vector("list",n)
 
 
-###   TraceHeader     ----------------------------------------------------------
-
-
 def R_TraceHeader(stats):
     """
     Create an IRISSeismic TraceHeader from and ObsPy Stats object
     :param stats: ObsPy Stats object.
     :return: IRISSeismic TraceHeader object
     """
-    R_headerList = _R_list(network=stats.network,
+    r_headerList = _R_list(network=stats.network,
                            station=stats.station,
                            location=stats.location,
                            channel=stats.channel,
@@ -193,12 +188,9 @@ def R_TraceHeader(stats):
                            starttime=R_POSIXct(stats.starttime),
                            npts=R_integer(stats.npts),
                            sampling_rate=R_float(stats.sampling_rate))
-    R_TraceHeader = r('new("TraceHeader")')
-    R_TraceHeader = _R_initialize(R_TraceHeader, R_headerList)
-    return R_TraceHeader
-
-
-###   Trace     ----------------------------------------------------------------
+    r_traceHeader = r('new("TraceHeader")')
+    r_traceHeader = _R_initialize(r_traceHeader, r_headerList)
+    return r_traceHeader
 
 
 def R_Trace(trace,
@@ -213,27 +205,17 @@ def R_Trace(trace,
     :param input_units: Units available from IRIS getChannel webservice.
     :return: IRISSeismic Trace object
     """
-    R_Trace = r('new("Trace")')
-    R_Trace = _R_initialize(R_Trace,
+    r_trace = r('new("Trace")')
+    r_trace = _R_initialize(r_trace,
                            id=trace.id,
                            stats=R_TraceHeader(trace.stats),
                            Sensor=sensor,
                            InstrumentSensitivity=R_float(instrument_sensitivity),
                            InputUnits=input_units,
                            data=R_float(trace.data))
-    return R_Trace
+    return r_trace
     
     
-###   Stream     ---------------------------------------------------------------
-
-
-# TODO:  Support url, sensor, scale, scaleunits as arguments in R_Stream()
-
-# TODO:  Should we automatically get channelInfo from R getChannels() as in
-# TODO:  IRISSeismic::getDataselect.IrisClient()?
-
-# TODO:  What about act_flags, io_flags, dq_flags and timing_qual?
-
 def R_Stream(stream,
              requestedStarttime=None,
              requestedEndtime=None):
@@ -244,17 +226,49 @@ def R_Stream(stream,
     :param requestedEndtime: ObsPy UTCDateTime object.
     :return: IRISSeismic Stream object
     """
-    R_listOfTraces = R_list(len(stream.traces))
+    
+    # TODO:  Support url, sensor, scale, scaleunits as arguments in R_Stream()
+    
+    # TODO:  Should we automatically get channelInfo from R getChannels() as in
+    # TODO:  IRISSeismic::getDataselect.IrisClient()?
+    
+    # TODO:  What about act_flags, io_flags, dq_flags and timing_qual?
+
+    r_listOfTraces = R_list(len(stream.traces))
     for i in range(len(stream.traces)):
-        R_listOfTraces[i] = R_Trace(stream.traces[i])
+        r_listOfTraces[i] = R_Trace(stream.traces[i])
         
-    R_Stream = r('new("Stream")')
-    R_Stream = _R_initialize(R_Stream,
+    r_stream = r('new("Stream")')
+    r_stream = _R_initialize(r_stream,
                              requestedStarttime=R_POSIXct(requestedStarttime),
                              requestedEndtime=R_POSIXct(requestedEndtime),
-                             traces=R_listOfTraces)
-    return(R_Stream)    
+                             traces=r_listOfTraces)
+    return(r_stream)    
 
+
+###   Python wrappers for R get~ webservice functions     ----------------------
+
+# TODO:  This and other webservice functions should be placed in webservices.py
+
+# NOTE:  ObsPy provides access to various IRIS webservices but these are returned
+# NOTE:  as python objects. Here we utilize the IRISSeismic R package to obtain
+# NOTE:  R objects which an be passed directly to the R metric functions.
+
+def R_getSNCL(sncl, starttime, endtime):
+    """
+    Obtain an IRISSeismic Stream using the IRISSeismic::getSNCL function.
+    :param sncl: SNCL (e.g. "US.OXF..BHZ")
+    :param starttime: ObsPy UTCDateTime object.
+    :param endtime: ObsPy UTCDateTime object.
+    :return: IRISSeismic Stream object
+    """
+    client = r('new("IrisClient")')
+    starttime = R_POSIXct(starttime)
+    endtime = R_POSIXct(endtime)
+    r_stream = _R_getSNCL(client, sncl, starttime, endtime) # NOTE:  Accepting R function default for final "quality" argument.
+    return(r_stream)
+    
+    
 
 ### ----------------------------------------------------------------------------
 

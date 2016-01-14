@@ -18,10 +18,10 @@ from future.builtins import *  # NOQA
 
 from obspy.core import UTCDateTime
 
+from irisseismic import R_getSNCL
+
 # Connect to R through the rpy2 module
 from rpy2.robjects import r, pandas2ri
-#import rpy2.robjects as robjects
-#r = robjects.r
 
 # R options
 r('options(digits.secs=6)')      # print out fractional seconds
@@ -42,37 +42,52 @@ _R_basicStatsMetric = r('IRISMustangMetrics::basicStatsMetric')
 _R_gapsMetric = r('IRISMustangMetrics::gapsMetric')
 
 
-###   Pythonic metrics functions     -------------------------------------------
+###   R functions still to be written     --------------------------------------
 
 
-def R_basicStatsMetric(R_Stream):
- R_MetricList = _R_basicStatsMetric(R_Stream)
- R_Dataframe = _R_metricList2DF(R_MetricList)
- df = pandas2ri.ri2py(R_Dataframe)
- # TODO:  How to automatically convert times
- starttime = []
- for i in range(len(df.starttime)):
-     starttime.append(UTCDateTime(df.starttime[i]))
- df.starttime = starttime
- endtime = []
- for i in range(len(df.endtime)):
-     endtime.append(UTCDateTime(df.endtime[i]))
- df.endtime = endtime
- return df
+def _R_listMetricFunctions(functionType="simple"):
+    """
+    Function to be added to the IRISMustangMetrics package.
+    
+    "simple" metrics are those that require only a single stream as input and
+    return a metricList of SingleValueMetrics as output. They may may have
+    additional arguments which can be used but the provided defaults are 
+    typically adequate
+    """
+    functionList = ['basicStatsMetric',
+                    'DCOffsetTimesMetric',
+                    'gapsMetric',
+                    'SNRMetric',
+                    'spikesMetric',
+                    'STALTAMetric',
+                    'stateOfHealthMetric',
+                    'upDownTimesMewtric']
+    return(functionList)
  
 
-# For conversion of ISO datestrings to R POSIXct
-R_gapsMetric = r('IRISMustangMetrics::gapsMetric')
+###   Functions for SingleValueMetrics     -------------------------------------
 
 
-###   SingleValueMetric class     ----------------------------------------------
+def applyMetric(r_stream, metricName, **kwargs):
+    # TODO:  use **kwargs
+    function = 'IRISMustangMetrics::' + metricName + 'Metric'
+    R_function = r(function)
+    r_metricList = R_function(r_stream)
+    r_dataframe = _R_metricList2DF(r_metricList)
+    df = pandas2ri.ri2py(r_dataframe)
+    # TODO:  How to automatically convert times
+    starttime = []
+    for i in range(len(df.starttime)):
+        starttime.append(UTCDateTime(df.starttime[i]))
+    df.starttime = starttime
+    endtime = []
+    for i in range(len(df.endtime)):
+        endtime.append(UTCDateTime(df.endtime[i]))
+    df.endtime = endtime
+    return df
 
 
-#print(_R_slotNames(bop))
- #[1] "snclq"                "starttime"            "endtime"             
- #[4] "metricName"           "valueName"            "value"               
- #[7] "valueString"          "quality_flag"         "quality_flagString"  
-#[10] "attributeName"        "attributeValueString"
+### ----------------------------------------------------------------------------
 
 
 if __name__ == '__main__':

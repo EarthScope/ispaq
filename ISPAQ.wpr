@@ -14,6 +14,9 @@ proj.file-type = 'shared'
 proj.launch-config = {loc('irisseismic/stream.py'): ('project',
         (u'-v',
          '')),
+                      loc('ispaq/irisseismic/stream.py'): ('project',
+        (u'-v',
+         '')),
                       loc('ispaq/test_ispaq_A.py'): ('project',
-        (u'--start="2002-04-20" --end="2002-04-21" --sncl US.OXF..BHZ --basic-stats',
+        (u'--start="2002-04-20" --end="2002-04-21" --sncl US.OXF..BHZ --metric-name basicStats',
          ''))}

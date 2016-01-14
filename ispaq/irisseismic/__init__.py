@@ -16,7 +16,7 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from future.builtins import *  # NOQA
 
-from .stream import R_TraceHeader, R_Trace, R_Stream
+from .stream import R_TraceHeader, R_Trace, R_Stream, R_getSNCL
 
 if __name__ == '__main__':
     import doctest

@@ -17,8 +17,8 @@ from obspy.fdsn import Client
 
 import pandas as pd
 
-from irisseismic import R_Stream
-from irismustangmetrics import R_basicStatsMetric, R_gapsMetric
+from irisseismic import R_getSNCL
+from irismustangmetrics import applyMetric
 
 __version__ = "0.0.1"
 
@@ -34,37 +34,22 @@ def main(argv=None):
                         help='starttime in ISO 8601 format')
     parser.add_argument('--end', action='store', required=True,
                         help='endtime in ISO 8601 format')
-    parser.add_argument('--basic-stats', action='store_true',
-                        help='print basic stats metrics')
-    parser.add_argument('--gaps', action='store_true',
-                        help='print out gap metrics')
+    parser.add_argument('--metric-name', choices=['basicStats','gaps'],
+                        help='name of metric to calculate')
 
     args = parser.parse_args(argv)
 
     
     # Validate arguments -------------------------------------------------------
-    try:
-        (network, station, location, channel) = args.sncl.split('.')
-    except ValueError:
-        raise ValueError('The sncl argument must contain exactly 3 "." separators.')
-    starttime = UTCDateTime(args.start) # default to 2002-04-20 + 1 day
+    sncl = args.sncl
+    starttime = UTCDateTime(args.start) # Test date for US.OXF..BHZ is 2002-04-20 + 1 day
     endtime = UTCDateTime(args.end)
+    metricName = args.metric_name
         
-    
-    
-    # Create a new IRIS client
-    client = Client("IRIS")
-    stream = client.get_waveforms('US', 'OXF', '', 'BHZ', starttime, endtime)
-    
-    r_stream = R_Stream(stream, starttime, endtime)
-     
-    if args.basic_stats:
-        basicStats_df = R_basicStatsMetric(r_stream)
-        print(basicStats_df)
-    
-    if args.gaps:
-        gaps = R_gapsMetric(r_stream)
-        print(gaps)
+    # Obtain data from IRIS DMC and apply desired metric -----------------------
+    r_stream = R_getSNCL(sncl, starttime, endtime)
+    df = applyMetric(r_stream,metricName)
+    print(df)
     
 
 if __name__ == "__main__":
