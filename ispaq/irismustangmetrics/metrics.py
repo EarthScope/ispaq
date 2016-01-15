@@ -18,7 +18,7 @@ from future.builtins import *  # NOQA
 
 from obspy.core import UTCDateTime
 
-from ispaq.irisseismic import R_getSNCL
+from ispaq.irisseismic.webservices import R_getSNCL
 
 # Connect to R through the rpy2 module
 from rpy2.robjects import r, pandas2ri
@@ -37,15 +37,11 @@ r('options(digits.secs=6)')      # print out fractional seconds
 _R_metricList2DF = r('IRISMustangMetrics::metricList2DF')
 _R_metricList2Xml = r('IRISMustangMetrics::metricList2Xml')
 
-# IRISMustangMetrics metrics functions
-_R_basicStatsMetric = r('IRISMustangMetrics::basicStatsMetric')
-_R_gapsMetric = r('IRISMustangMetrics::gapsMetric')
-
 
 ###   R functions still to be written     --------------------------------------
 
 
-def _R_listMetricFunctions(functionType="simple"):
+def listMetricFunctions(functionType="simple"):
     """
     Function to be added to the IRISMustangMetrics package.
     

@@ -17,17 +17,21 @@ from obspy.fdsn import Client
 
 import pandas as pd
 
-from ispaq.irisseismic import R_getSNCL
 from ispaq.irismustangmetrics import applyMetric
 
 __version__ = "0.0.1"
 
 
 def main(argv=None):
+    
+    
     # Parse arguments ----------------------------------------------------------
+    
     parser = ArgumentParser(description=__doc__.strip())
     parser.add_argument('-V', '--version', action='version',
                         version='%(prog)s ' + __version__)
+    parser.add_argument('--example-data', action='store_true', default=False,
+                        help='use example data from local disk')
     parser.add_argument('--sncl', action='store', required=True,
                         help='Network.Station.Location.Channel identifier (e.g. US.OXF..BHZ)')
     parser.add_argument('--start', action='store', required=True,
@@ -41,13 +45,30 @@ def main(argv=None):
 
     
     # Validate arguments -------------------------------------------------------
+    
     sncl = args.sncl
     starttime = UTCDateTime(args.start) # Test date for US.OXF..BHZ is 2002-04-20 + 1 day
     endtime = UTCDateTime(args.end)
     metricName = args.metric_name
         
-    # Obtain data from IRIS DMC and apply desired metric -----------------------
-    r_stream = R_getSNCL(sncl, starttime, endtime)
+        
+    # Obtain data --------------------------------------------------------------
+    
+    if args.example_data:
+        # Obtain data from file on disk
+        from obspy import read
+        from ispaq.irisseismic import R_Stream
+        filePath = '/Users/jonathancallahan/Projects/ObsPy/obspy/obspy/io/mseed/src/libmseed/example/test.mseed'
+        stream = read(filePath)
+        r_stream = R_Stream(stream)        
+    else:
+        # Obtain data from IRIS DMC
+        from ispaq.irisseismic import R_getSNCL
+        r_stream = R_getSNCL(sncl, starttime, endtime)
+        
+        
+    # Calculate the metric and print the result --------------------------------
+    
     df = applyMetric(r_stream,metricName)
     print(df)
     

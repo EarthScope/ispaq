@@ -233,10 +233,18 @@ def R_Stream(stream,
     
     # TODO:  What about act_flags, io_flags, dq_flags and timing_qual?
 
+    # Handle missing times
+    if requestedStarttime is None:
+        requestedStarttime = stream.traces[0].stats.starttime
+    if requestedEndtime is None:
+        requestedEndtime = stream.traces[-1].stats.endtime
+        
+    # Create R list of Trace objects
     r_listOfTraces = R_list(len(stream.traces))
     for i in range(len(stream.traces)):
         r_listOfTraces[i] = R_Trace(stream.traces[i])
         
+    # Create R Stream object
     r_stream = r('new("Stream")')
     r_stream = _R_initialize(r_stream,
                              requestedStarttime=R_POSIXct(requestedStarttime),
