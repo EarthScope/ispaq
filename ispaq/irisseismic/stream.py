@@ -51,8 +51,8 @@ _R_getSNCL = r('IRISSeismic::getSNCL')        # to obtain an R_Stream object fro
 def R_integer(x):
     """
     Creates an R integer vector from a python integer or list of integers.
-    :param x: python integer or list of integers
-    :return: R integer vector
+    :param x: Python integer or list of integers.
+    :return: R integer vector.
     
     .. note::
     
@@ -93,8 +93,8 @@ def R_integer(x):
 def R_float(x):
     """
     Creates an R float vector from a python ints, floats or a `numpy.ndarray`.
-    :param x: python int, float or `numpy.ndarray`
-    :return: R float vector
+    :param x: Python int, float or `numpy.ndarray`.
+    :return: R float vector.
                 
     .. rubric:: Example
     
@@ -120,8 +120,8 @@ def R_POSIXct(x):
     """
     Creates an R POSIXct vector from a python '~obspy.core.utcdatetime.UTCDateTime'
     or list of `UTCDatetime`s.
-    :param x: python `UTCDateTime` or list of `UTCDateTime`s
-    :return: R POSIXct vector
+    :param x: Python `UTCDateTime` or list of `UTCDateTime`s.
+    :return: R POSIXct vector.
            
     .. rubric:: Example
     
@@ -156,8 +156,8 @@ def R_POSIXct(x):
 def R_list(n):
     """
     Creates an empty R list of length `n`.
-    :param n: length of list to be created
-    :return: R list
+    :param n: Length of list to be created.
+    :return: R list.
            
     .. rubric:: Example
     
@@ -177,7 +177,7 @@ def R_TraceHeader(stats):
     """
     Create an IRISSeismic TraceHeader from and ObsPy Stats object
     :param stats: ObsPy Stats object.
-    :return: IRISSeismic TraceHeader object
+    :return: IRISSeismic TraceHeader object.
     """
     r_headerList = _R_list(network=stats.network,
                            station=stats.station,
@@ -202,7 +202,7 @@ def R_Trace(trace,
     :param sensor: Seismometer instrument type.
     :param instrument_sensitivity: Channel sensitivity available from IRIS getChannel webservice.
     :param input_units: Units available from IRIS getChannel webservice.
-    :return: IRISSeismic Trace object
+    :return: IRISSeismic Trace object.
     """
     r_trace = r('new("Trace")')
     r_trace = _R_initialize(r_trace,
@@ -223,7 +223,7 @@ def R_Stream(stream,
     :param stream: ObsPy Stream object.
     :param requestedStarttime: ObsPy UTCDateTime object.
     :param requestedEndtime: ObsPy UTCDateTime object.
-    :return: IRISSeismic Stream object
+    :return: IRISSeismic Stream object.
     """
     
     # TODO:  Support url, sensor, scale, scaleunits as arguments in R_Stream()
@@ -264,10 +264,10 @@ def R_Stream(stream,
 def R_getSNCL(sncl, starttime, endtime):
     """
     Obtain an IRISSeismic Stream using the IRISSeismic::getSNCL function.
-    :param sncl: SNCL (e.g. "US.OXF..BHZ")
+    :param sncl: SNCL (e.g. "US.OXF..BHZ").
     :param starttime: ObsPy UTCDateTime object.
     :param endtime: ObsPy UTCDateTime object.
-    :return: IRISSeismic Stream object
+    :return: IRISSeismic Stream object.
     """
     client = r('new("IrisClient")')
     starttime = R_POSIXct(starttime)

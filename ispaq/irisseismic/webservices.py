@@ -28,9 +28,55 @@ from ispaq.irisseismic.stream import *
 
 # Connect to R through the rpy2 module
 from rpy2.robjects import r, pandas2ri
+import rpy2.rinterface as ri
 
 # R options
 r('options(digits.secs=6)')                   # have R functions print out fractional seconds
+
+
+###   Helper functions ---------------------------------------------------------
+
+
+# TODO:  Probably could subsume more argument conversion in this single function.
+def _R_args(*args):
+    """
+    Convert any arguments that are `None` or `newint` to R's
+    `missing` and `integer`. Arguments of type `character` or `float`
+    are retured unmodified.
+    """
+    r_args = []
+    for arg in args:
+        if arg is None:
+            r_args.append(ri.MissingArg)
+        elif isinstance(arg,newint):
+            ###r_args.append(R_integer(arg))
+            r_args.append(arg)
+        else:
+            r_args.append(arg)
+            
+    return tuple(r_args)
+
+    
+def _R_radiusArgs(latitude, longitude, minradius, maxradius):
+    """
+    Several webservices support location-radius arguments.
+    
+    Make sure that if any of these are defined then lat, lon
+    and at least one of the radii are defined. Then, convert
+    any None values to `rpy2.rinterface.MissingArg`.
+    """
+    if any([latitude,longitude,minradius,maxradius]):
+        if all([latitude,longitude]) and any([minradius,maxradius]):
+            # TODO:  Could add domain validation of values at this point
+            if minradius is None:
+                minradius = ri.MissingArg
+            elif maxradius is None:
+                maxradius = ri.MissingArg
+            return (latitude, longitude, minradius, maxradius)
+        else:
+            raise ValueError("One of longitude, latitude or a radius is missing")
+    else:
+        return (ri.MissingArg, ri.MissingArg, ri.MissingArg, ri.MissingArg)
 
 
 
@@ -41,16 +87,16 @@ r('options(digits.secs=6)')                   # have R functions print out fract
 # NOTE:  R-compatible objects as arguments.[]
 
 # All webservice functions from IRISSeismic
-_R_getAvailability = r('IRISSeismic::getAvailability')
-_R_getChannel = r('IRISSeismic::getChannel')
+_R_getAvailability = r('IRISSeismic::getAvailability')       #
+_R_getChannel = r('IRISSeismic::getChannel')                 #
 _R_getDataselect = r('IRISSeismic::getDataselect')
 _R_getDistaz = r('IRISSeismic::getDistaz')
 _R_getEvalresp = r('IRISSeismic::getEvalresp')
-_R_getEvent = r('IRISSeismic::getEvent')
-_R_getNetwork = r('IRISSeismic::getNetwork')
+_R_getEvent = r('IRISSeismic::getEvent')                     #
+_R_getNetwork = r('IRISSeismic::getNetwork')                 #
 _R_getRotation = r('IRISSeismic::getRotation')
-_R_getSNCL = r('IRISSeismic::getSNCL')
-_R_getStation = r('IRISSeismic::getStation')
+_R_getSNCL = r('IRISSeismic::getSNCL')                       #
+_R_getStation = r('IRISSeismic::getStation')                 #
 _R_getTraveltime = r('IRISSeismic::getTraveltime')
 _R_getUnavailability = r('IRISSeismic::getUnavailability')
 
@@ -58,24 +104,129 @@ _R_getUnavailability = r('IRISSeismic::getUnavailability')
 ###   Python wrappers for R get~ webservice functions     ----------------------
 
 
-def getChannel(sncl, starttime, endtime):
+def getAvailability(sncl, starttime, endtime,
+                    latitude=None, longitude=None,
+                    minradius=None, maxradius=None):
     """
     Returns a dataframe with channel metadata.
     :param sncl: SNCL (e.g. "US.OXF..BHZ")
     :param starttime: ObsPy UTCDateTime object.
     :param endtime: ObsPy UTCDateTime object.
-    :return: R Stream object
+    :param latitude: Optional latitude used when specifying a location and radius.
+    :param longitude: Optional longitude used when specifying a location and radius.
+    :param minradius: Optional minimum radius used when specifying a location and radius.
+    :param maxradius: Optional maximum radius used when specifying a location and radius.
+    :return: Pandas dataframe of channel metadata.
     """
+    # Create/validate all arguments that can be accepted by the IRISSeismic::getAvailability() function
     r_client = r('new("IrisClient")')
     (network, station, location, channel) = sncl.split('.')
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    r_df = _R_getChannel(r_client, network, station, location, channel, starttime, endtime) # NOTE:  Accepting R function defaults for additional parameters
+    includerestricted = ri.MissingArg # NOTE:  IRIS DMC restricted datasets are not supported
+    (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
+    
+    # Call the function and return a Pandas dataframe with the results
+    r_df = _R_getAvailability(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
     return(df)
     
     
-def R_getSNCL(sncl, starttime, endtime):
+def getChannel(sncl, starttime, endtime,
+               latitude=None, longitude=None,
+               minradius=None, maxradius=None):
+    """
+    Returns a dataframe with channel metadata.
+    :param sncl: SNCL (e.g. "US.OXF..BHZ")
+    :param starttime: ObsPy UTCDateTime object.
+    :param endtime: ObsPy UTCDateTime object.
+    :param latitude: Optional latitude used when specifying a location and radius.
+    :param longitude: Optional longitude used when specifying a location and radius.
+    :param minradius: Optional minimum radius used when specifying a location and radius.
+    :param maxradius: Optional maximum radius used when specifying a location and radius.
+    :return: Pandas dataframe of channel metadata.
+    """
+    # Create/validate all arguments that can be accepted by the IRISSeismic::getAvailability() function
+    r_client = r('new("IrisClient")')
+    (network, station, location, channel) = sncl.split('.')
+    starttime = R_POSIXct(starttime)
+    endtime = R_POSIXct(endtime)
+    includerestricted = ri.MissingArg # NOTE:  IRIS DMC restricted datasets are not supported
+    (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
+    
+    # Call the function and return a Pandas dataframe with the results
+    r_df = _R_getChannel(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
+    df = pandas2ri.ri2py(r_df)
+    return(df)
+    
+    
+def getEvent(starttime, endtime,
+             minmag=None, maxmag=None, magtype=None,
+             mindepth=None, maxdepth=None):
+    """
+    Returns a dataframe with channel metadata.
+    :param starttime: ObsPy UTCDateTime object.
+    :param endtime: ObsPy UTCDateTime object.
+    :param minmag: Optional minimum magnitude.
+    :param maxmag: Optional maximum magnitude.
+    :param magtype:Optional magnitude type
+    :param mindepth: Optional minimum depth (km).
+    :param maxdepth: ptional maximum depth (km).
+    :return: Pandas dataframe of event metadata.
+    
+    .. rubric:: Example
+    
+    >>> df = getEvent(UTCDateTime("2012-06-21"),UTCDateTime("2012-06-28"),minmag=6)
+    >>> df.shape
+    (2, 13)
+    >>> df.eventLocationName
+    0    NORTHERN SUMATERA, INDONESIA
+    1    NEAR EAST COAST OF KAMCHATKA
+    Name: eventLocationName, dtype: object
+    """
+    # Create/validate all arguments that can be accepted by the IRISSeismic::getAvailability() function
+    r_client = r('new("IrisClient")')
+    (network, station, location, channel) = sncl.split('.')
+    starttime = R_POSIXct(starttime)
+    endtime = R_POSIXct(endtime)
+    (minmag, maxmag, magtype, mindepth, maxdepth) = _R_args(minmag, maxmag, magtype, mindepth, maxdepth)
+    
+    # Call the function and return a Pandas dataframe with the results
+    r_df = _R_getEvent(r_client, starttime, endtime, minmag, maxmag, magtype, mindepth, maxdepth)
+    df = pandas2ri.ri2py(r_df)
+    return(df)
+        
+    
+def getNetwork(sncl, starttime, endtime,
+               latitude=None, longitude=None,
+               minradius=None, maxradius=None):
+    """
+    Returns a dataframe with network metadata.
+    :param sncl: SNCL (e.g. "US.OXF..BHZ")
+    :param starttime: ObsPy UTCDateTime object.
+    :param endtime: ObsPy UTCDateTime object.
+    :param latitude: Optional latitude used when specifying a location and radius.
+    :param longitude: Optional longitude used when specifying a location and radius.
+    :param minradius: Optional minimum radius used when specifying a location and radius.
+    :param maxradius: Optional maximum radius used when specifying a location and radius.
+    :return: Pandas dataframe of network metadata.
+    """
+    # Create/validate all arguments that can be accepted by the IRISSeismic::getAvailability() function
+    r_client = r('new("IrisClient")')
+    (network, station, location, channel) = sncl.split('.')
+    starttime = R_POSIXct(starttime)
+    endtime = R_POSIXct(endtime)
+    includerestricted = ri.MissingArg # NOTE:  IRIS DMC restricted datasets are not supported
+    (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
+    
+    # Call the function and return a Pandas dataframe with the results
+    r_df = _R_getNetwork(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
+    df = pandas2ri.ri2py(r_df)
+    return(df)
+    
+    
+def R_getSNCL(sncl, starttime, endtime,
+              quality=None):
     """
     Obtain an R Stream using the IRISSeismic::getSNCL function.
     :param sncl: SNCL (e.g. "US.OXF..BHZ")
@@ -86,8 +237,38 @@ def R_getSNCL(sncl, starttime, endtime):
     r_client = r('new("IrisClient")')
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    r_stream = _R_getSNCL(r_client, sncl, starttime, endtime) # NOTE:  Accepting R function default for final "quality" argument.
+    if quality is None:
+        quality = ri.MissingArg
+    r_stream = _R_getSNCL(r_client, sncl, starttime, endtime, quality)
     return(r_stream)
+    
+    
+def getStation(sncl, starttime, endtime,
+               latitude=None, longitude=None,
+               minradius=None, maxradius=None):
+    """
+    Returns a dataframe with station metadata.
+    :param sncl: SNCL (e.g. "US.OXF..BHZ")
+    :param starttime: ObsPy UTCDateTime object.
+    :param endtime: ObsPy UTCDateTime object.
+    :param latitude: Optional latitude used when specifying a location and radius.
+    :param longitude: Optional longitude used when specifying a location and radius.
+    :param minradius: Optional minimum radius used when specifying a location and radius.
+    :param maxradius: Optional maximum radius used when specifying a location and radius.
+    :return: Pandas dataframe of channel metadata.
+    """
+    # Create/validate all arguments that can be accepted by the IRISSeismic::getAvailability() function
+    r_client = r('new("IrisClient")')
+    (network, station, location, channel) = sncl.split('.')
+    starttime = R_POSIXct(starttime)
+    endtime = R_POSIXct(endtime)
+    includerestricted = ri.MissingArg # NOTE:  IRIS DMC restricted datasets are not supported
+    (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
+    
+    # Call the function and return a Pandas dataframe with the results
+    r_df = _R_getStation(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
+    df = pandas2ri.ri2py(r_df)
+    return(df)
     
     
 
