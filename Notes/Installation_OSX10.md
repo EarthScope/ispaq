@@ -71,6 +71,7 @@ This worked:
 
 `conda config --add channels r`
 `conda install --yes r-rcurl`
+`conda install --yes r-xml`
 
 Then you can use R to install the rest with:
 
