@@ -58,7 +58,8 @@ def main(argv=None):
         # Obtain data from file on disk
         from obspy import read
         from ispaq.irisseismic import R_Stream
-        filePath = '/Users/jonathancallahan/Projects/ObsPy/obspy/obspy/io/mseed/src/libmseed/example/test.mseed'
+        import os
+        filePath = os.path.abspath('./test.mseed')
         stream = read(filePath)
         r_stream = R_Stream(stream)        
     else:
