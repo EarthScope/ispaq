@@ -17,7 +17,7 @@ from obspy.fdsn import Client
 
 import pandas as pd
 
-from ispaq.irismustangmetrics import applyMetric
+from ispaq.irismustangmetrics import listMetricFunctions, applyMetric
 
 __version__ = "0.0.1"
 
@@ -38,7 +38,7 @@ def main(argv=None):
                         help='starttime in ISO 8601 format')
     parser.add_argument('--end', action='store', required=True,
                         help='endtime in ISO 8601 format')
-    parser.add_argument('--metric-name', choices=['basicStats','gaps'],
+    parser.add_argument('--metric-name', choices=listMetricFunctions(),
                         help='name of metric to calculate')
 
     args = parser.parse_args(argv)

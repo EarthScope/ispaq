@@ -7,6 +7,17 @@ Python module containing wrappers for the IRISMustangMetrics R package.
 :license:
     GNU Lesser General Public License, Version 3
     (http://www.gnu.org/copyleft/lesser.html)
+    
+Metrics from the IRISMustangMetrics package fall into several categories
+depending on the following factors:
+
+* whether special *business logic* is required to identify appropriate data
+* number of r_stream objects passed in (1 or 2)
+* return type (single values, multilpe values, times, spectra, *etc.*)
+
+Functions in the IRISMustangMetrics R package provide this metadata so that
+functions can be called programmatically from python without the user having
+to know anything about the particular metric function they are calling.
 """
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
@@ -37,6 +48,25 @@ r('options(digits.secs=6)')      # print out fractional seconds
 _R_metricList2DF = r('IRISMustangMetrics::metricList2DF')
 _R_metricList2Xml = r('IRISMustangMetrics::metricList2Xml')
 
+def _R_getMetricMetadata():
+    """
+    This function should probably return a python dictionary with the following
+    information:
+     * name -- char
+     * streamCount -- int, (number of streams on input)
+     * fullDay -- logical
+     * outputType -- char, [SingleValue | MultipleValue | MultipleTime | Spectrum | Other?]
+     * speed -- char, [slow | medium | fast] (set basic expecations)
+     * extraAttributes -- char, (comma separated list of extra attributes returned in DF)
+     * businessLogic -- char, (Description of business logic which should be implmented in python.)
+    """
+    # TODO:  Replace this functionalitiy with IRISMustangMetrics::getMetricMetadata
+    functionDict = {'basicStats':{'streamCount':1,'outputType':'SingleValue','fullDay':True,'speed':'fast','extraAttributes':None,'businessLogic':None},
+                    'gaps':{'streamCount':1,'outputType':'SingleValue','fullDay':True,'speed':'fast','extraAttributes':None,'businessLogic':None},
+                    'stateOfHealth':{'streamCount':1,'outputType':'SingleValue','fullDay':True,'speed':'fast','extraAttributes':None,'businessLogic':None},
+                    'STALTA':{'streamCount':1,'outputType':'SingleValue','fullDay':True,'speed':'slow','extraAttributes':None,'businessLogic':'Limit to BH and HH channels.'},
+                    'spikes':{'streamCount':1,'outputType':'SingleValue','fullDay':True,'speed':'fast','extraAttributes':None,'businessLogic':None}}
+    return(functionDict)
 
 ###   R functions still to be written     --------------------------------------
 
@@ -48,27 +78,29 @@ def listMetricFunctions(functionType="simple"):
     "simple" metrics are those that require only a single stream as input and
     return a metricList of SingleValueMetrics as output. They may may have
     additional arguments which can be used but the provided defaults are 
-    typically adequate
+    typically adequate.
+
     """
-    functionList = ['basicStatsMetric',
-                    'DCOffsetTimesMetric',
-                    'gapsMetric',
-                    'SNRMetric',
-                    'spikesMetric',
-                    'STALTAMetric',
-                    'stateOfHealthMetric',
-                    'upDownTimesMewtric']
+    from pandas import DataFrame
+    df = DataFrame.from_dict(_R_getMetricMetadata(), orient='index')
+    names = df.index.tolist()
+    
+    
+    functionList = _R_getMetricMetadata().keys()
+    
     return(functionList)
  
 
 ###   Functions for SingleValueMetrics     -------------------------------------
 
 
-def applyMetric(r_stream, metricName, **kwargs):
-    # TODO:  use **kwargs
+def applyMetric(r_stream, metricName):
     function = 'IRISMustangMetrics::' + metricName + 'Metric'
     R_function = r(function)
-    r_metricList = R_function(r_stream)
+    try:
+        r_metricList = R_function(r_stream)
+    except Error as e:
+        print(e)
     r_dataframe = _R_metricList2DF(r_metricList)
     df = pandas2ri.ri2py(r_dataframe)
     # TODO:  How to automatically convert times
