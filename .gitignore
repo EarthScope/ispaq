@@ -4,3 +4,6 @@
 *.pyc
 *.wpu
 *.DS_Store
+ISPAQ.egg-info/
+build/
+dist/

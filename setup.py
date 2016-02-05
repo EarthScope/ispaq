@@ -8,5 +8,5 @@ setup(name='ISPAQ',
       url='http://mazamascience.com/',
       license='GNU GENERAL PUBLIC LICENSE',
       packages=find_packages(exclude=['', 'debug']),      
-      install_requires=['__future__', 'rpy2', 'future', 'numpy', 'pandas', 'obspy', 'argparse'],
+      install_requires=['rpy2', 'future', 'pandas', 'obspy', 'numpy', 'argparse'],
       )
