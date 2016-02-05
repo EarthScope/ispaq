@@ -3,3 +3,4 @@
 .RData
 *.pyc
 *.wpu
+*.DS_Store
