@@ -31,6 +31,8 @@ from obspy.core import UTCDateTime
 
 from ispaq.irisseismic.webservices import R_getSNCL
 
+import pandas as pd
+
 # Connect to R through the rpy2 module
 from rpy2.robjects import r, pandas2ri
 
@@ -81,14 +83,22 @@ def listMetricFunctions(functionType="simple"):
     typically adequate.
 
     """
-    from pandas import DataFrame
-    df = DataFrame.from_dict(_R_getMetricMetadata(), orient='index')
+    df = pd.DataFrame.from_dict(_R_getMetricMetadata(), orient='index')
     names = df.index.tolist()
     
     
     functionList = _R_getMetricMetadata().keys()
     
     return(functionList)
+
+
+def simpleMetricsOutput(df, path):
+    sigfigs = 6
+    # TODO actually finish this thing
+    # Look up how to calculate sigfigs using numpy or pandas
+    pd.to_csv(df, path)
+    
+    
  
 
 ###   Functions for SingleValueMetrics     -------------------------------------

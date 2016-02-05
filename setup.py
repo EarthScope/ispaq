@@ -10,3 +10,4 @@ setup(name='ISPAQ',
       packages=find_packages(exclude=['', 'debug']),      
       install_requires=['rpy2', 'future', 'pandas', 'obspy', 'numpy', 'argparse'],
       )
+# scipy might fail??
