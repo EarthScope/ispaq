@@ -23,7 +23,7 @@ __version__ = "0.0.1"
 
 
 def main(argv=None):
-    
+    from ispaq.irismustangmetrics import simpleMetricsOutput as smo
     
     # Parse arguments ----------------------------------------------------------
     
@@ -72,6 +72,7 @@ def main(argv=None):
     
     df = applyMetric(r_stream,metricName)
     print(df)
+    smo(df, '~/Projects/ISPAQ/output.csv')
     
 
 if __name__ == "__main__":

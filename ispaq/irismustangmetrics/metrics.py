@@ -96,7 +96,7 @@ def simpleMetricsOutput(df, path):
     sigfigs = 6
     # TODO actually finish this thing
     # Look up how to calculate sigfigs using numpy or pandas
-    pd.to_csv(df, path)
+    df.to_csv(path)
     
     
  
@@ -115,12 +115,12 @@ def applyMetric(r_stream, metricName):
     df = pandas2ri.ri2py(r_dataframe)
     # TODO:  How to automatically convert times
     starttime = []
-    for i in range(len(df.starttime)):
-        starttime.append(UTCDateTime(df.starttime[i]))
+    for i in df.starttime.tolist():
+        starttime.append(UTCDateTime(i))
     df.starttime = starttime
     endtime = []
-    for i in range(len(df.endtime)):
-        endtime.append(UTCDateTime(df.endtime[i]))
+    for i in df.endtime.tolist():
+        endtime.append(UTCDateTime(i))
     df.endtime = endtime
     return df
 
