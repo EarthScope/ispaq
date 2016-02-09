@@ -93,12 +93,14 @@ def listMetricFunctions(functionType="simple"):
 
 
 def simpleMetricsOutput(df, path):
-    sigfigs = 6
-    # TODO actually finish this thing
-    # Look up how to calculate sigfigs using numpy or pandas
+    df.value = df.value.astype(float)
+    df.value = df.value.apply(lambda x: roundToSigFig(x, 6))
     df.to_csv(path)
     
-    
+def roundToSigFig(number, sigfigs):
+    '''Returns the inputed number with the correct number of significant figures'''
+    from math import log10, floor
+    return round(number, -int(floor(log10(abs(number)))) + (sigfigs - 1))
  
 
 ###   Functions for SingleValueMetrics     -------------------------------------
