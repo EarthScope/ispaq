@@ -93,6 +93,7 @@ def listMetricFunctions(functionType="simple"):
 
 
 def simpleMetricsOutput(df, path):
+    '''Handles rounding and writes the the dataframe to file'''
     df.value = df.value.astype(float)
     df.value = df.value.apply(lambda x: roundToSigFig(x, 6))
     df.to_csv(path)
