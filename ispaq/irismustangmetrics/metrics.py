@@ -117,14 +117,10 @@ def applyMetric(r_stream, metricName):
     r_dataframe = _R_metricList2DF(r_metricList)
     df = pandas2ri.ri2py(r_dataframe)
     # TODO:  How to automatically convert times
-    starttime = []
-    for i in df.starttime.tolist():
-        starttime.append(UTCDateTime(i))
-    df.starttime = starttime
-    endtime = []
-    for i in df.endtime.tolist():
-        endtime.append(UTCDateTime(i))
-    df.endtime = endtime
+    
+    # Applies UTCDateTime to start and endtime columns
+    df.starttime = df.starttime.apply(UTCDateTime)
+    df.endtime = df.starttime.apply(UTCDateTime)
     return df
 
 

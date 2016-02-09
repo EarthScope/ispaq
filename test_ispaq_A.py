@@ -36,8 +36,8 @@ def main(argv=None):
                         help='Network.Station.Location.Channel identifier (e.g. US.OXF..BHZ)')
     parser.add_argument('--start', action='store', required=True,
                         help='starttime in ISO 8601 format')
-    parser.add_argument('--end', action='store', required=True,
-                        help='endtime in ISO 8601 format')
+    #parser.add_argument('--end', action='store', required=True,
+     #                   help='endtime in ISO 8601 format')
     parser.add_argument('--metric-name', choices=listMetricFunctions(),
                         help='name of metric to calculate')
 
@@ -48,7 +48,7 @@ def main(argv=None):
     
     sncl = args.sncl
     starttime = UTCDateTime(args.start) # Test date for US.OXF..BHZ is 2002-04-20 + 1 day
-    endtime = UTCDateTime(args.end)
+    endtime = starttime + (24 * 3600)
     metricName = args.metric_name
         
         
