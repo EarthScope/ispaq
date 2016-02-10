@@ -12,12 +12,16 @@ from future.builtins import *  # NOQA
 
 from argparse import ArgumentParser
 
+import json
+
 from obspy.core import UTCDateTime
 from obspy.fdsn import Client
 
 import pandas as pd
 
 from ispaq.irismustangmetrics import listMetricFunctions, applyMetric
+
+import sys
 
 __version__ = "0.0.1"
 
@@ -40,10 +44,27 @@ def main(argv=None):
      #                   help='endtime in ISO 8601 format')
     parser.add_argument('--metric-name', choices=listMetricFunctions(),
                         help='name of metric to calculate')
+    parser.add_argument('-P', '--preference-file', default='~/.irispref')
 
     args = parser.parse_args(argv)
-
     
+    # Load Preferences ---------------------------------------------------------
+    
+    try:
+        from os.path import expanduser
+        pref_loc = expanduser(args.preference_file)
+        pref_file = open(pref_loc, 'r')
+        preferences = json.load(pref_file)
+        print('Preferences loading from %s...' %pref_loc)
+        custom_metrics = preferences['MetricAlias']
+        print('Preferences loaded.\n')
+    except AttributeError:
+        print(sys.exc_info())
+        print('No user preferences discovered. Ignoring...\n')
+    except KeyError:
+        print(sys.exc_info())
+        print('preference file is incorrectly formated')
+            
     # Validate arguments -------------------------------------------------------
     
     sncl = args.sncl

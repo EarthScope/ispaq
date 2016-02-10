@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from pip import main as pip
 
 setup(name='ISPAQ',
-      version='1.0.0',
+      version='0.0.1',
       description='',
       author='Mazama Science',
       author_email='info@mazamascience.com',
