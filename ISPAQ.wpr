@@ -5,13 +5,17 @@
 ##################################################################
 [project attributes]
 proj.directory-list = [{'dirloc': loc('.'),
-                        'excludes': [u'ispaq/test_ispaq_A.py'],
+                        'excludes': [u'output.csv',
+                                     u'ispaq/test_ispaq_A.py'],
                         'filter': '*',
                         'include_hidden': False,
                         'recursive': True,
                         'watch_for_changes': True}]
 proj.file-type = 'shared'
 proj.launch-config = {loc('irisseismic/stream.py'): ('project',
+        (u'-v',
+         '')),
+                      loc('ispaq/irismustangmetrics/metrics.py'): ('project',
         (u'-v',
          '')),
                       loc('ispaq/irisseismic/stream.py'): ('project',
@@ -24,5 +28,6 @@ proj.launch-config = {loc('irisseismic/stream.py'): ('project',
         (u'--start="2002-04-20" --end="2002-04-21" --sncl US.OXF..BHZ --metric-name basicStats',
          '')),
                       loc('test_ispaq_A.py'): ('project',
-        (u'--start="2002-04-20" --end="2002-04-21" --sncl=US.OXF..BHZ --metric-name=basicStats\n',
+        (u'--start="2002-04-20" --sncl=US.OXF..BHZ --metric-name=basicStats\n',
          ''))}
+testing.test-framework = {None: ':internal doctest'}
