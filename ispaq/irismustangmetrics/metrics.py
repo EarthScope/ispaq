@@ -29,8 +29,6 @@ from future.builtins import *  # NOQA
 
 from obspy.core import UTCDateTime
 
-from ispaq.irisseismic.webservices import R_getSNCL
-
 import pandas as pd
 
 # Connect to R through the rpy2 module
@@ -92,14 +90,42 @@ def listMetricFunctions(functionType="simple"):
     return(functionList)
 
 
-def simpleMetricsOutput(df, path):
-    '''Handles rounding and writes the the dataframe to file'''
-    df.value = df.value.astype(float)
-    df.value = df.value.apply(lambda x: roundToSigFig(x, 6))
-    df.to_csv(path)
+def simpleMetricsPretty(df, sigfigs=6):
+    """
+    Create a pretty dataframe with appropriate significant figures.
+    :param df: Dataframe of simpleMetrics.
+    :param sigfigs: Number of significant figures to use.
+    :return: Dataframe of simpleMetrics.
     
-def roundToSigFig(number, sigfigs):
-    '''Returns the inputed number with the correct number of significant figures'''
+    The following conversions take place:
+    
+    * Round the 'value' column to the specified number of significant figures.
+    * Convert 'starttime' and 'endtime' to python 'date' objects.
+    """
+    df.value = df.value.astype(float)
+    df.value = df.value.apply(lambda x: signif(x, sigfigs))
+    df.starttime = df.starttime.apply(lambda x: getattr(x, 'date'))
+    df.endtime = df.endtime.apply(lambda x: getattr(x, 'date'))
+    return(df)
+    
+    
+def signif(number, sigfigs=6):
+    """
+    Returns number rounded to the specified number of significant figures.
+    :param number: Floating point number.
+    :param sigfigs: Significant figures to use.
+    :return: Number rounded to sigfigs significant figures.
+                
+    .. rubric:: Example
+    
+    >>> signif(123.456,3)
+    123.0
+    >>> signif(123.456,5)
+    123.46
+    >>> signif(123.456,7)
+    123.456
+    
+    """
     from math import log10, floor
     return round(number, -int(floor(log10(abs(number)))) + (sigfigs - 1))
  
@@ -107,7 +133,11 @@ def roundToSigFig(number, sigfigs):
 ###   Functions for SingleValueMetrics     -------------------------------------
 
 
-def applyMetric(r_stream, metricName):
+def applySimpleMetric(r_stream, metricName):
+    """"
+    Invoke a named "simple" R metric and convert the R dataframe result into
+    a Pandas dataframe.
+    """
     function = 'IRISMustangMetrics::' + metricName + 'Metric'
     R_function = r(function)
     try:
@@ -116,12 +146,11 @@ def applyMetric(r_stream, metricName):
         print(e)
     r_dataframe = _R_metricList2DF(r_metricList)
     df = pandas2ri.ri2py(r_dataframe)
-    # TODO:  How to automatically convert times
     
     # Applies UTCDateTime to start and endtime columns
     df.starttime = df.starttime.apply(UTCDateTime)
-    df.endtime = df.starttime.apply(UTCDateTime)
-    return df
+    df.endtime = df.endtime.apply(UTCDateTime)
+    return(df)
 
 
 ### ----------------------------------------------------------------------------

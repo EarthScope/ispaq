@@ -19,7 +19,7 @@ from obspy.fdsn import Client
 
 import pandas as pd
 
-from ispaq.irismustangmetrics import listMetricFunctions, applyMetric
+from ispaq.irismustangmetrics import *
 
 import sys
 
@@ -27,7 +27,6 @@ __version__ = "0.0.1"
 
 
 def main(argv=None):
-    from ispaq.irismustangmetrics import simpleMetricsOutput as smo
     
     # Parse arguments ----------------------------------------------------------
     
@@ -40,8 +39,6 @@ def main(argv=None):
                         help='Network.Station.Location.Channel identifier (e.g. US.OXF..BHZ)')
     parser.add_argument('--start', action='store', required=True,
                         help='starttime in ISO 8601 format')
-    #parser.add_argument('--end', action='store', required=True,
-     #                   help='endtime in ISO 8601 format')
     parser.add_argument('--metric-name', choices=listMetricFunctions(),
                         help='name of metric to calculate')
     parser.add_argument('-P', '--preference-file', default='~/.irispref')
@@ -89,12 +86,30 @@ def main(argv=None):
         r_stream = R_getSNCL(sncl, starttime, endtime)
         
         
-    # Calculate the metric and print the result --------------------------------
+    # Calculate the metric and save the result ---------------------------------
     
-    df = applyMetric(r_stream,metricName)
-    print(df)
-    smo(df, '~/Projects/ISPAQ/output.csv')
+    # TODO:  Need a dictionary so we can test whether a metrics is "simple" or something else.
     
+    # TODO:  Future iterations will need to handle the possibilty that a metric alias
+    # TODO:  will refer to simple and other types of metrics. In these cases it may be necessary
+    # TODO:  to deal with all of the simple metrics in a block first, outputting one csv file
+    # TODO:  for them and then continuing with other categories of metrics whose data will
+    # TODO:  will be stored in other files.
+    
+    if True:
+        df = applySimpleMetric(r_stream, metricName)
+        # Create a pretty version of the dataframe
+        df = simpleMetricsPretty(df, sigfigs=6)
+        print(df)
+        
+        output_dir = '.'
+        file_name = args.metric_name + '_' + args.start + '.csv'
+        path = output_dir + '/' + file_name
+        df.to_csv(path, index=False)
+    
+    else:
+        print('Need to figure out what to do with non-"simple" metrics.')
+        
 
 if __name__ == "__main__":
     main()
