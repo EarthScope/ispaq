@@ -3,3 +3,8 @@
 .RData
 *.pyc
 *.wpu
+*.DS_Store
+*.csv
+ISPAQ.egg-info/
+build/
+dist/

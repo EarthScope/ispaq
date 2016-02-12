@@ -84,21 +84,21 @@ def _R_radiusArgs(latitude, longitude, minradius, maxradius):
 
 
 # NOTE:  These functions behave exactly the same as the R versions and require
-# NOTE:  R-compatible objects as arguments.[]
+# NOTE:  R-compatible objects as arguments.
 
 # All webservice functions from IRISSeismic
 _R_getAvailability = r('IRISSeismic::getAvailability')       #
 _R_getChannel = r('IRISSeismic::getChannel')                 #
-_R_getDataselect = r('IRISSeismic::getDataselect')
-_R_getDistaz = r('IRISSeismic::getDistaz')
-_R_getEvalresp = r('IRISSeismic::getEvalresp')
+_R_getDataselect = r('IRISSeismic::getDataselect')           # TODO:  Same as getSNCL
+_R_getDistaz = r('IRISSeismic::getDistaz')                   #
+_R_getEvalresp = r('IRISSeismic::getEvalresp')               #
 _R_getEvent = r('IRISSeismic::getEvent')                     #
 _R_getNetwork = r('IRISSeismic::getNetwork')                 #
-_R_getRotation = r('IRISSeismic::getRotation')
+_R_getRotation = r('IRISSeismic::getRotation')               # TODO:  This returns 3 Streams
 _R_getSNCL = r('IRISSeismic::getSNCL')                       #
 _R_getStation = r('IRISSeismic::getStation')                 #
-_R_getTraveltime = r('IRISSeismic::getTraveltime')
-_R_getUnavailability = r('IRISSeismic::getUnavailability')
+_R_getTraveltime = r('IRISSeismic::getTraveltime')           #
+_R_getUnavailability = r('IRISSeismic::getUnavailability')   #
 
 
 ###   Python wrappers for R get~ webservice functions     ----------------------
@@ -156,6 +156,50 @@ def getChannel(sncl, starttime, endtime,
     
     # Call the function and return a Pandas dataframe with the results
     r_df = _R_getChannel(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
+    df = pandas2ri.ri2py(r_df)
+    return(df)
+    
+    
+def getDistaz(latitude, longitude, staLatitude, staLongitude):
+    """
+    Returns a dataframe with great circle distance data from the IRIS DMC distaz webservice.
+    :param latitude: Latitude of seismic event.
+    :param longitude: Longitude of seismic event.
+    :param staLatitude: Latitude of seismic station.
+    :param staLongitude: Longitude of seismic station.
+    :return: Pandas dataframe with a single row containing ``azimuth, backAzimuth, distance``.
+    """
+    # Create/validate all arguments that can be accepted by the IRISSeismic::getAvailability() function
+    r_client = r('new("IrisClient")')
+    
+    # Call the function and return a Pandas dataframe with the results
+    r_df = _R_getDistaz(latitude, longitude, staLatitude, staLongitude)
+    df = pandas2ri.ri2py(r_df)
+    return(df)
+    
+
+def getEvalresp(sncl, time,
+                minfreq=None, maxfreq=None,
+                nfreq=None, units=None, output="fap"):
+    """
+    Returns a dataframe with cinstrument response data from the IRIS DMC evalresp webservice.
+    :param sncl: SNCL (e.g. "US.OXF..BHZ")
+    :param time: ObsPy UTCDateTime object specifying the time at which the response is evaluated.
+    :param minfreq: Optional minimum frequency at which the response is evaluated.
+    :param maxfreq: Optional maximum frequency at which the response is evaluated.
+    :param nfreq: Optional number of frequencies at which response will be evaluated.
+    :param units: Optional code specifying unit conversion.
+    :param output: Output type ['fap'|'cs'].
+    :return: Pandas dataframe of response metadata.
+    """
+    # Create/validate all arguments that can be accepted by the IRISSeismic::getAvailability() function
+    r_client = r('new("IrisClient")')
+    (network, station, location, channel) = sncl.split('.')
+    time = R_POSIXct(time)
+    (minfreq, maxfreq, nfreq, units, output) = _R_args(minfreq, maxfreq, nfreq, units, output)
+
+    # Call the function and return a Pandas dataframe with the results
+    r_df = _R_getEvalresp(r_client, network, station, location, channel, time, minfreq, maxfreq, nfreq, units, output)
     df = pandas2ri.ri2py(r_df)
     return(df)
     
@@ -269,8 +313,53 @@ def getStation(sncl, starttime, endtime,
     r_df = _R_getStation(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
     return(df)
+
+
+def getTraveltime(latitude, longitude, depth, staLatitude, staLongitude):
+    """
+    Returns a dataframe with seismic traveltime data from the IRIS DMC traveltime web service.
+    :param latitude: Latitude of seismic event.
+    :param longitude: Longitude of seismic event.
+    :param staLatitude: Latitude of seismic station.
+    :param staLongitude: Longitude of seismic station.
+    :return: Pandas dataframe with coluns: ``distance, depth, phaseName, travelTime, rayParam, takeoff, incident, puristDistance, puristName``.
+    """
+    # Create/validate all arguments that can be accepted by the IRISSeismic::getAvailability() function
+    r_client = r('new("IrisClient")')
+    
+    # Call the function and return a Pandas dataframe with the results
+    r_df = _R_getTraveltime(latitude, longitude, depth, staLatitude, staLongitude)
+    df = pandas2ri.ri2py(r_df)
+    return(df)
     
     
+def getUnavailability(sncl, starttime, endtime,
+                      latitude=None, longitude=None,
+                      minradius=None, maxradius=None):
+    """
+    Returns a dataframe with channel metadata for non-available channels.
+    :param sncl: SNCL (e.g. "US.OXF..BHZ")
+    :param starttime: ObsPy UTCDateTime object.
+    :param endtime: ObsPy UTCDateTime object.
+    :param latitude: Optional latitude used when specifying a location and radius.
+    :param longitude: Optional longitude used when specifying a location and radius.
+    :param minradius: Optional minimum radius used when specifying a location and radius.
+    :param maxradius: Optional maximum radius used when specifying a location and radius.
+    :return: Pandas dataframe of channel metadata.
+    """
+    # Create/validate all arguments that can be accepted by the IRISSeismic::getAvailability() function
+    r_client = r('new("IrisClient")')
+    (network, station, location, channel) = sncl.split('.')
+    starttime = R_POSIXct(starttime)
+    endtime = R_POSIXct(endtime)
+    includerestricted = ri.MissingArg # NOTE:  IRIS DMC restricted datasets are not supported
+    (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
+    
+    # Call the function and return a Pandas dataframe with the results
+    r_df = _R_getUnvailability(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
+    df = pandas2ri.ri2py(r_df)
+    return(df)
+
 
 ### ----------------------------------------------------------------------------
 
