@@ -152,7 +152,7 @@ def main(argv=None):
     parser.add_argument('--start', action='store', required=True,
                         help='starttime in ISO 8601 format')
     parser.add_argument('-M', '--metric-set-name',
-                        help='name of metric to calculate')
+                        help='name of metric to calculate') # TODO re-add the limit
     parser.add_argument('-P', '--preference-file', default='~/.irispref',
                         help='location of preference file')
     parser.add_argument('-O', '--output-loc', default='.',
