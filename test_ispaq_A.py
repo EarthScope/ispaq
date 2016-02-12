@@ -26,6 +26,118 @@ import sys
 __version__ = "0.0.1"
 
 
+def preferenceLoader(pref_loc):
+    '''
+    Safely loads preference file from the specified location
+    :param pref_loc: string file location
+    :return: a tuple (metrics, sncls) where each refers to the specified
+             sub-dictionary of the JSON file
+    '''
+    try: # check if file exists
+        from os.path import expanduser
+        pref_loc = expanduser(pref_loc)
+        pref_file = open(pref_loc, 'r')
+        print('Loading preferences from %s...' %pref_loc)
+        preferences = json.load(pref_file)        
+    except AttributeError:
+        print(sys.exc_info())
+        print('No user preferences discovered. Ignoring...\n')
+        return null
+    
+    try: # check if file contains custom metrics
+        print('   Custom metric sets...', end='\t')
+        custom_metric_sets = preferences['MetricAlias']
+        print('Done')
+    except KeyError:
+        custom_metric_sets = None
+        print('not found')
+        
+    try: # check if file contains custom sncls
+        print('   Custom SNCLs...', end='\t')
+        custom_sncl = preferences['SNCLAlias']        
+        print('Done')
+    except KeyError:
+        custom_sncl = None
+        print('Not found')
+        
+    print('Preferences loaded.\n')    
+    return (custom_metric_sets, custom_sncl)
+
+
+def validateCustomMetricSets(metric_functions, custom_metricsets):
+    '''Validates custom metric sets and returns the necesary metric 
+    functions and an error list'''
+    
+    print('Validating custom metrics...')
+    error_list = []
+    custom_metricset_functions = {}
+    
+    # Creates a dictionary of {needed functions: [list of needed metrics that they provide]}
+    for custom_metricset in custom_metricsets:
+        required_functions = {}
+        for metric in custom_metricsets[custom_metricset]:
+            try: # check if metric exists
+                function = metric_functions[metric]
+            except KeyError:
+                print('   Metric "%s" not found' %metric)
+                error_list.append(metric)
+            
+            if function in required_functions:
+                required_functions[function].append(metric)
+            else:
+                required_functions[function] = [metric]
+            
+        custom_metricset_functions[custom_metricset] = required_functions
+    
+    print('Finished validating with %d errors.\n' %len(error_list))
+    return (custom_metricset_functions, error_list)
+    
+   
+def metricsList(function_data):
+    '''Returns a dictionary of {metrics: functionNames} based on the metrics and functions
+    contained within the Metric Metadata'''
+    
+    # invert the dictionary to be {metric: functionName}
+    # TODO: potentially move this to a class wrapping the original dict
+    metric_functions = {}
+    for function in function_data:
+        for metric in function_data[function]['metrics']:
+            metric_functions[metric] = function
+            
+    return metric_functions
+
+
+def getSimpleMetricSet(r_stream, function_metadata, custom_metricset_functions, metric_set):
+    '''
+    Returns a dataframe with the metrics specified in the metric_set
+    :param r_stream: r_stream
+    :param function_metadata: the metadata of all the default metric sets
+    :param custom_metricset_functions: dictionary of needed functions (see validateCustomMetricSets)
+    :param metric_set: the desired set of metrics
+    :returns: a dataframe with the desired metrics
+    '''
+    if metric_set in function_metadata: # if a preset metric-set 
+        df = applySimpleMetric(r_stream, metric_set)
+        # Create a pretty version of the dataframe
+        df = simpleMetricsPretty(df, sigfigs=6)
+        print(df)
+        return df
+    
+    elif metric_set in custom_metricset_functions: # if a custom metric-set
+        import pandas as pd
+        df_peices = []
+        metric_set_functions = custom_metricset_functions[metric_set]
+        for function in metric_set_functions:
+            tempdf = applySimpleMetric(r_stream, function)
+            tempdf = tempdf.loc[tempdf['metricName'].isin(metric_set_functions[function])]
+            df_peices.append(tempdf)
+        df = pd.concat(df_peices)
+        print(df)
+        return df
+    
+    print('Metric Set not found')
+    
+
 def main(argv=None):
     
     # Parse arguments ----------------------------------------------------------
@@ -39,35 +151,34 @@ def main(argv=None):
                         help='Network.Station.Location.Channel identifier (e.g. US.OXF..BHZ)')
     parser.add_argument('--start', action='store', required=True,
                         help='starttime in ISO 8601 format')
-    parser.add_argument('--metric-name', choices=listMetricFunctions(),
+    parser.add_argument('-M', '--metric-set-name',
                         help='name of metric to calculate')
-    parser.add_argument('-P', '--preference-file', default='~/.irispref')
+    parser.add_argument('-P', '--preference-file', default='~/.irispref',
+                        help='location of preference file')
+    parser.add_argument('-O', '--output-loc', default='.',
+                        help='location to output ')
 
     args = parser.parse_args(argv)
+
+    # Load function data -------------------------------------------------------
+    
+    from ispaq.irismustangmetrics.metrics import _R_getMetricMetadata
+    function_metadata = _R_getMetricMetadata()    
+    
+    metric_functions = metricsList(function_metadata)
     
     # Load Preferences ---------------------------------------------------------
     
-    try:
-        from os.path import expanduser
-        pref_loc = expanduser(args.preference_file)
-        pref_file = open(pref_loc, 'r')
-        preferences = json.load(pref_file)
-        print('Preferences loading from %s...' %pref_loc)
-        custom_metrics = preferences['MetricAlias']
-        print('Preferences loaded.\n')
-    except AttributeError:
-        print(sys.exc_info())
-        print('No user preferences discovered. Ignoring...\n')
-    except KeyError:
-        print(sys.exc_info())
-        print('preference file is incorrectly formated')
+    custom_metric_sets, custom_sncls = preferenceLoader(args.preference_file)
+    function_sets, custom_metric_errs = validateCustomMetricSets(metric_functions, custom_metric_sets)
             
-    # Validate arguments -------------------------------------------------------
+    # Format arguments ---------------------------------------------------------
     
     sncl = args.sncl
     starttime = UTCDateTime(args.start) # Test date for US.OXF..BHZ is 2002-04-20 + 1 day
     endtime = starttime + (24 * 3600)
-    metricName = args.metric_name
+    metricSetName = args.metric_set_name
+    output_dir = args.output_loc
         
         
     # Obtain data --------------------------------------------------------------
@@ -97,16 +208,10 @@ def main(argv=None):
     # TODO:  will be stored in other files.
     
     if True:
-        df = applySimpleMetric(r_stream, metricName)
-        # Create a pretty version of the dataframe
-        df = simpleMetricsPretty(df, sigfigs=6)
-        print(df)
-        
-        output_dir = '.'
-        file_name = args.metric_name + '_' + args.start + '.csv'
+        df = getSimpleMetricSet(r_stream, function_metadata, function_sets, metricSetName)
+        file_name = metricSetName + '_' + args.start + '.csv'
         path = output_dir + '/' + file_name
-        df.to_csv(path, index=False)
-    
+        df.to_csv(path, index=False)        
     else:
         print('Need to figure out what to do with non-"simple" metrics.')
         

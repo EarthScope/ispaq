@@ -61,11 +61,76 @@ def _R_getMetricMetadata():
      * businessLogic -- char, (Description of business logic which should be implmented in python.)
     """
     # TODO:  Replace this functionalitiy with IRISMustangMetrics::getMetricMetadata
-    functionDict = {'basicStats':{'streamCount':1,'outputType':'SingleValue','fullDay':True,'speed':'fast','extraAttributes':None,'businessLogic':None},
-                    'gaps':{'streamCount':1,'outputType':'SingleValue','fullDay':True,'speed':'fast','extraAttributes':None,'businessLogic':None},
-                    'stateOfHealth':{'streamCount':1,'outputType':'SingleValue','fullDay':True,'speed':'fast','extraAttributes':None,'businessLogic':None},
-                    'STALTA':{'streamCount':1,'outputType':'SingleValue','fullDay':True,'speed':'slow','extraAttributes':None,'businessLogic':'Limit to BH and HH channels.'},
-                    'spikes':{'streamCount':1,'outputType':'SingleValue','fullDay':True,'speed':'fast','extraAttributes':None,'businessLogic':None}}
+    functionDict = {
+        'basicStats':{
+            'streamCount':1,
+            'outputType':'SingleValue',
+            'fullDay':True,
+            'speed':'fast',
+            'extraAttributes':None,
+            'businessLogic':None,
+            'metrics':['sample_min',
+                       'sample_median',
+                       'sample_mean',
+                       'sample_max',
+                       'sample_rms']
+            },
+        'gaps':{
+            'streamCount':1,
+            'outputType':'SingleValue',
+            'fullDay':True,
+            'speed':'fast',
+            'extraAttributes':None,
+            'businessLogic':None,
+            'metrics':['num_gaps',
+                       'max_gap',
+                       'num_overlaps',
+                       'max_overlap',
+                       'percent_availability']
+            },
+        'stateOfHealth':{
+            'streamCount':1,
+            'outputType':'SingleValue',
+            'fullDay':True,
+            'speed':'fast',
+            'extraAttributes':None,
+            'businessLogic':None,
+            'metrics':["calibration_signal",
+                       "timing_correction",
+                       "event_begin",
+                       "event_end",
+                       "event_in_progress",
+                       "clock_locked",
+                       "amplifier_saturation",
+                       "digitizer_clipping",
+                       "spikes",
+                       "glitches",
+                       "missing_padded_data",
+                       "telemetry_sync_error",
+                       "digital_filter_charging",
+                       "suspect_time_tag",
+                       "timing_quality"]
+            },
+        
+        'STALTA':{
+            'streamCount':1,
+            'outputType':'SingleValue',
+            'fullDay':True,
+            'speed':'slow',
+            'extraAttributes':None,
+            'businessLogic':'Limit to BH and HH channels.',
+            'metrics':['max_stalta']
+            },
+        'spikes':{
+            'streamCount':1,
+            'outputType':'SingleValue',
+            'fullDay':True,
+            'speed':'fast',
+            'extraAttributes':None,
+            'businessLogic':None,
+            'metrics':['num_spikes']
+        }
+    }
     return(functionDict)
 
 ###   R functions still to be written     --------------------------------------
