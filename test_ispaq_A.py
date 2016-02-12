@@ -162,8 +162,8 @@ def main(argv=None):
 
     # Load function data -------------------------------------------------------
     
-    from ispaq.irismustangmetrics.metrics import _R_getMetricMetadata
-    function_metadata = _R_getMetricMetadata()    
+    from ispaq.irismustangmetrics.metrics import _R_getMetricFunctionMetdata
+    function_metadata = _R_getMetricFunctionMetdata()    
     
     metric_functions = metricsList(function_metadata)
     
