@@ -48,7 +48,7 @@ r('options(digits.secs=6)')      # print out fractional seconds
 _R_metricList2DF = r('IRISMustangMetrics::metricList2DF')
 _R_metricList2Xml = r('IRISMustangMetrics::metricList2Xml')
 
-def _R_getMetricMetadata():
+def _R_getMetricFunctionMetdata():
     """
     This function should probably return a python dictionary with the following
     information:
