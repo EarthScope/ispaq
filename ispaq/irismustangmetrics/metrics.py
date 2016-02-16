@@ -48,6 +48,7 @@ r('options(digits.secs=6)')      # print out fractional seconds
 _R_metricList2DF = r('IRISMustangMetrics::metricList2DF')
 _R_metricList2Xml = r('IRISMustangMetrics::metricList2Xml')
 
+
 def _R_getMetricFunctionMetdata():
     """
     This function should probably return a python dictionary with the following
@@ -136,6 +137,27 @@ def _R_getMetricFunctionMetdata():
 ###   R functions still to be written     --------------------------------------
 
 
+def functionmetadata(): # TODO _methods are protected which makes access difficult
+    return _R_getMetricFunctionMetdata()
+
+
+def metricslist(function_data=_R_getMetricFunctionMetdata()):
+    """
+    :param function_data: the function metadata returned by _R_getMetricFunctionMetdata
+    :return: a dictionary of {metrics: functionNames} based on the metrics and functions
+    contained within the Metric Metadata
+    """
+
+    # invert the dictionary to be {metric: functionName}
+    # TODO: potentially move this to a class wrapping the original dict
+    metric_functions = {}
+    for function in function_data:
+        for metric in function_data[function]['metrics']:
+            metric_functions[metric] = function
+
+    return metric_functions
+
+
 def listMetricFunctions(functionType="simple"):
     """
     Function to be added to the IRISMustangMetrics package.
@@ -146,11 +168,11 @@ def listMetricFunctions(functionType="simple"):
     typically adequate.
 
     """
-    df = pd.DataFrame.from_dict(_R_getMetricMetadata(), orient='index')
+    df = pd.DataFrame.from_dict(_R_getMetricFunctionMetdata(), orient='index')
     names = df.index.tolist()
     
     
-    functionList = _R_getMetricMetadata().keys()
+    functionList = _R_getMetricFunctionMetdata().keys()
     
     return(functionList)
 
