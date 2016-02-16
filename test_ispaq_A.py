@@ -27,12 +27,12 @@ __version__ = "0.0.1"
 
 
 def preferenceLoader(pref_loc):
-    '''
+    """
     Safely loads preference file from the specified location
     :param pref_loc: string file location
     :return: a tuple (metrics, sncls) where each refers to the specified
              sub-dictionary of the JSON file
-    '''
+    """
     try: # check if file exists
         from os.path import expanduser
         pref_loc = expanduser(pref_loc)
@@ -42,7 +42,7 @@ def preferenceLoader(pref_loc):
     except AttributeError:
         print(sys.exc_info())
         print('No user preferences discovered. Ignoring...\n')
-        return null
+        return None
     
     try: # check if file contains custom metrics
         print('   Custom metric sets...', end='\t')
@@ -65,8 +65,8 @@ def preferenceLoader(pref_loc):
 
 
 def validateCustomMetricSets(metric_functions, custom_metricsets):
-    '''Validates custom metric sets and returns the necesary metric 
-    functions and an error list'''
+    """Validates custom metric sets and returns the necesary metric
+    functions and an error list"""
     
     print('Validating custom metrics...')
     error_list = []
