@@ -60,7 +60,7 @@ def _R_getMetricFunctionMetdata():
      * extraAttributes -- char, (comma separated list of extra attributes returned in DF)
      * businessLogic -- char, (Description of business logic which should be implmented in python.)
     """
-    # TODO:  Replace this functionalitiy with IRISMustangMetrics::getMetricMetadata
+    # TODO:  Replace this functionality with IRISMustangMetrics::getMetricMetadata
     functionDict = {
         'basicStats':{
             'streamCount':1,
