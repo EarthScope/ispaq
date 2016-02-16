@@ -20,7 +20,7 @@ def validate(custom_metric_sets, metric_functions=metricslist()):
             try:  # check if metric exists
                 function = metric_functions[metric]
             except KeyError:
-                print('   Metric "%s" not found' % metric)
+                print('\033[93m   Metric "%s" not found\033[0m' % metric)
                 error_list.append(metric)
 
             if function in required_functions:
@@ -30,7 +30,7 @@ def validate(custom_metric_sets, metric_functions=metricslist()):
 
         custom_metricset_functions[custom_metricset] = required_functions
 
-    print('Finished validating with %d errors.\n' % len(error_list))
+    print('Finished validating with \033[93m%d\033[0m errors.\n' % len(error_list))
     return custom_metricset_functions, error_list
 
 
@@ -61,7 +61,9 @@ def simpleset(metric_set, custom_metric_set_functions, r_stream,
             tempdf = tempdf.loc[tempdf['metricName'].isin(metric_set_functions[function])]
             df_peices.append(tempdf)
         df = pd.concat(df_peices)
+        df = df.reset_index(drop=True)        
         print(df)
         return df
 
-    print('Metric Set not found')
+    print('\033[93mMetric Set "%s" not found\033[0m' % metric_set)
+    return None

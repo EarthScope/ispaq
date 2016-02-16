@@ -66,7 +66,12 @@ def main(argv=None):
     else:
         # Obtain data from IRIS DMC
         from ispaq.irisseismic import R_getSNCL
-        r_stream = R_getSNCL(sncl, starttime, endtime)
+        from rpy2.rinterface import RRuntimeError
+        try:
+            r_stream = R_getSNCL(sncl, starttime, endtime)
+        except RRuntimeError:
+            sys.exit('\033[91m\nError: Could not fetch data. '
+                     'Check your internet connection?\033[0m\n')
 
     # Calculate the metric and save the result ---------------------------------
     
@@ -80,9 +85,10 @@ def main(argv=None):
     
     if True:
         df = ms.simpleset(args.metric_set_name, function_sets, r_stream)
-        file_name = args.metric_set_name + '_' + args.start + '.csv'
-        path = args.output_loc + '/' + file_name
-        df.to_csv(path, index=False)        
+        if df is not None:
+            file_name = args.metric_set_name + '_' + args.start + '.csv'
+            path = args.output_loc + '/' + file_name
+            df.to_csv(path, index=False)        
     else:
         # TODO: Need to figure out what to do with non-"simple" metrics.
         print('This will output something eventually')
