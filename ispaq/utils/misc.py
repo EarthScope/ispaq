@@ -40,3 +40,9 @@ def preferenceloader(pref_loc):
 
     print('Preferences loaded.\n')
     return custom_metric_sets, custom_sncl
+
+
+def statuswrap(function, *arg):
+    v = function(*arg)
+    print('   Done')
+    return v

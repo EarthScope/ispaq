@@ -34,36 +34,44 @@ def validate(custom_metric_sets, metric_functions=metricslist()):
     return custom_metricset_functions, error_list
 
 
-def simpleset(metric_set, custom_metric_set_functions, r_stream,
+def simpleset(metric_set, custom_metric_set_functions, r_streams,
               function_metadata=functionmetadata()):
     """
     Returns a dataframe with the metrics specified in the metric_set
-    :param r_stream: r_stream
+    :param r_stream: pandas series of r_streams
     :param function_metadata: the metadata of all the default metric sets
     :param custom_metric_set_functions: dictionary of needed functions (see validateCustomMetricSets)
     :param metric_set: the desired set of metrics
     :returns: a dataframe with the desired metrics
     """
+    import pandas as pd    
 
     if metric_set in function_metadata:  # if a preset metric-set
-        df = applySimpleMetric(r_stream, metric_set)
+        df_peices = r_streams.apply(lambda r_stream: applySimpleMetric(r_stream, metric_set))
+        df = pd.concat(df_peices.tolist())
+        df = df.reset_index(drop=True)  # make indices make sense
         # Create a pretty version of the dataframe
         df = simpleMetricsPretty(df, sigfigs=6)
-        print(df)
         return df
 
     elif metric_set in custom_metric_set_functions:  # if a custom metric-set
-        import pandas as pd
-        df_peices = []
         metric_set_functions = custom_metric_set_functions[metric_set]
-        for function in metric_set_functions:
-            tempdf = applySimpleMetric(r_stream, function)
-            tempdf = tempdf.loc[tempdf['metricName'].isin(metric_set_functions[function])]
-            df_peices.append(tempdf)
-        df = pd.concat(df_peices)
-        df = df.reset_index(drop=True)        
-        print(df)
+        df_peices = r_streams.apply(lambda r_stream: _buildcustom(r_stream, metric_set_functions))
+        df = pd.concat(df_peices.tolist())
+        df = df.reset_index(drop=True)  # make indices make sense        
+        df = simpleMetricsPretty(df, sigfigs=6)
         return df
 
     print('\033[93mMetric Set "%s" not found\033[0m' % metric_set)
     return None
+
+def _buildcustom(r_stream, metric_set_functions):
+    """Builds a df for an individual r_stream given the needed functions for a custom metric_set"""
+    df_peices = []    
+    for function in metric_set_functions:
+        tempdf = applySimpleMetric(r_stream, function)
+        tempdf = tempdf.loc[tempdf['metricName'].isin(metric_set_functions[function])]
+        df_peices.append(tempdf)    
+    df = pd.concat(df_peices)
+    return df
+        

@@ -15,7 +15,10 @@ from argparse import ArgumentParser
 from ispaq.irismustangmetrics import *
 
 import ispaq.utils.metric_sets as ms
+import ispaq.utils.sncls as su
 from ispaq.utils.misc import *
+
+import obspy
 
 __version__ = "0.0.1"
 
@@ -29,11 +32,11 @@ def main(argv=None):
                         version='%(prog)s ' + __version__)
     parser.add_argument('--example-data', action='store_true', default=False,
                         help='use example data from local disk')
-    parser.add_argument('--sncl', action='store', required=True,
+    parser.add_argument('--sncl', action='store', default=False,
                         help='Network.Station.Location.Channel identifier (e.g. US.OXF..BHZ)')
-    parser.add_argument('--start', action='store', required=True,
+    parser.add_argument('--start', action='store', default=False,
                         help='starttime in ISO 8601 format')
-    parser.add_argument('-M', '--metric-set-name',
+    parser.add_argument('-M', '--metric-set-name', required=True,
                         help='name of metric to calculate')  # TODO re-add the limit
     parser.add_argument('-P', '--preference-file', default='~/.irispref',
                         help='location of preference file')
@@ -42,37 +45,44 @@ def main(argv=None):
 
     args = parser.parse_args(argv)
     
+    print(args)
+    if not args.example_data and (not args.sncl or not args.start):
+        sys.exit('Requires either --example data or --start and --sncl')
+    
     # Load Preferences ---------------------------------------------------------
     
     custom_metric_sets, custom_sncls = preferenceloader(args.preference_file)
     function_sets, custom_metric_errs = ms.validate(custom_metric_sets)
-            
-    # Format arguments ---------------------------------------------------------
-    
-    sncl = args.sncl
-    starttime = UTCDateTime(args.start)  # Test date for US.OXF..BHZ is 2002-04-20 + 1 day
-    endtime = starttime + (24 * 3600)
+    custom_sncls = su.build(custom_sncls)
         
     # Obtain data --------------------------------------------------------------
     
     if args.example_data:
         # Obtain data from file on disk
-        from obspy import read
         from ispaq.irisseismic import R_Stream
         import os
         filepath = os.path.abspath('./test.mseed')
-        stream = read(filepath)
-        r_stream = R_Stream(stream)        
+        stream = obspy.read(filepath)
+        r_stream = R_Stream(stream)
+        args.start = 'example'
     else:
         # Obtain data from IRIS DMC
         from ispaq.irisseismic import R_getSNCL
         from rpy2.rinterface import RRuntimeError
-        try:
-            r_stream = R_getSNCL(sncl, starttime, endtime)
+        
+        # format arguments
+        starttime = obspy.UTCDateTime(args.start)  # Test date for US.OXF..BHZ is 2002-04-20 + 1 day
+        endtime = starttime + (24 * 3600)
+        sncls = su.decompose(args.sncl, starttime, endtime)
+        
+        print('Building %s Streams' % len(sncls))
+        try:  # in case lack of internet
+            r_streams = sncls.apply(lambda sncl: statuswrap(R_getSNCL, sncl, starttime, endtime))
         except RRuntimeError:
             sys.exit('\033[91m\nError: Could not fetch data. '
                      'Check your internet connection?\033[0m\n')
-
+        print('Building streams complete.\n')        
+        
     # Calculate the metric and save the result ---------------------------------
     
     # TODO:  Need a dictionary so we can test whether a metrics is "simple" or something else.
@@ -84,11 +94,14 @@ def main(argv=None):
     # TODO:  will be stored in other files.
     
     if True:
-        df = ms.simpleset(args.metric_set_name, function_sets, r_stream)
+        df = ms.simpleset(args.metric_set_name, function_sets, r_streams)
         if df is not None:
             file_name = args.metric_set_name + '_' + args.start + '.csv'
             path = args.output_loc + '/' + file_name
-            df.to_csv(path, index=False)        
+            df.to_csv(path, index=False)
+            
+            print(('=' * 30) + ' OUTPUT ' + ('=' * 30))
+            print(df)
     else:
         # TODO: Need to figure out what to do with non-"simple" metrics.
         print('This will output something eventually')
