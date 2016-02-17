@@ -45,7 +45,6 @@ def main(argv=None):
 
     args = parser.parse_args(argv)
     
-    print(args)
     if not args.example_data and (not args.sncl or not args.start):
         sys.exit('Requires either --example data or --start and --sncl')
     
