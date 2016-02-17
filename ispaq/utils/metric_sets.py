@@ -38,7 +38,7 @@ def simpleset(metric_set, custom_metric_set_functions, r_streams,
               function_metadata=functionmetadata()):
     """
     Returns a dataframe with the metrics specified in the metric_set
-    :param r_stream: pandas series of r_streams
+    :param r_streams: pandas series of r_streams
     :param function_metadata: the metadata of all the default metric sets
     :param custom_metric_set_functions: dictionary of needed functions (see validateCustomMetricSets)
     :param metric_set: the desired set of metrics
