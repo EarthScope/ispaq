@@ -65,6 +65,7 @@ def simpleset(metric_set, custom_metric_set_functions, r_streams,
     print('\033[93mMetric Set "%s" not found\033[0m' % metric_set)
     return None
 
+
 def _buildcustom(r_stream, metric_set_functions):
     """Builds a df for an individual r_stream given the needed functions for a custom metric_set"""
     df_peices = []    
@@ -74,4 +75,3 @@ def _buildcustom(r_stream, metric_set_functions):
         df_peices.append(tempdf)    
     df = pd.concat(df_peices)
     return df
-        
