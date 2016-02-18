@@ -6,7 +6,7 @@ def validate(custom_metric_sets, metric_functions=metricslist()):
     :param metric_functions: a dictionary of metrics and the functions that produce
     them
     :param custom_metric_sets: dictionary of custom metric sets
-    custom metric sets and returns the necesary metric
+    custom metric sets and returns the necessary metric
     functions and an error list
     """
     print('Validating custom metrics...')
