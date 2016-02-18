@@ -28,6 +28,6 @@ proj.launch-config = {loc('irisseismic/stream.py'): ('project',
         (u'--start="2002-04-20" --end="2002-04-21" --sncl US.OXF..BHZ --metric-name basicStats',
          '')),
                       loc('test_ispaq_A.py'): ('project',
-        (u'--start="2002-04-20" --sncl=US.OXF..BHZ --metric-name=basicStats\n',
+        (u'--start="2002-04-20" --end="2002-04-21" --sncl US.OXF..BHZ --metric-name gaps --example-data',
          ''))}
 testing.test-framework = {None: ':internal doctest'}
