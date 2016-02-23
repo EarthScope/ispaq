@@ -48,6 +48,7 @@ r('options(digits.secs=6)')      # print out fractional seconds
 _R_metricList2DF = r('IRISMustangMetrics::metricList2DF')
 _R_metricList2Xml = r('IRISMustangMetrics::metricList2Xml')
 
+
 def _R_getMetricFunctionMetdata():
     """
     This function should probably return a python dictionary with the following
@@ -60,80 +61,101 @@ def _R_getMetricFunctionMetdata():
      * extraAttributes -- char, (comma separated list of extra attributes returned in DF)
      * businessLogic -- char, (Description of business logic which should be implmented in python.)
     """
-    # TODO:  Replace this functionalitiy with IRISMustangMetrics::getMetricMetadata
-    functionDict = {
-        'basicStats':{
-            'streamCount':1,
-            'outputType':'SingleValue',
-            'fullDay':True,
-            'speed':'fast',
-            'extraAttributes':None,
-            'businessLogic':None,
-            'metrics':['sample_min',
-                       'sample_median',
-                       'sample_mean',
-                       'sample_max',
-                       'sample_rms']
+    # TODO:  Replace this functionality with IRISMustangMetrics::getMetricMetadata
+    functiondict = {
+        'basicStats': {
+            'streamCount': 1,
+            'outputType': 'SingleValue',
+            'fullDay': True,
+            'speed': 'fast',
+            'extraAttributes': None,
+            'businessLogic': None,
+            'metrics': ['sample_min',
+                        'sample_median',
+                        'sample_mean',
+                        'sample_max',
+                        'sample_rms']
             },
-        'gaps':{
-            'streamCount':1,
-            'outputType':'SingleValue',
-            'fullDay':True,
-            'speed':'fast',
-            'extraAttributes':None,
-            'businessLogic':None,
-            'metrics':['num_gaps',
-                       'max_gap',
-                       'num_overlaps',
-                       'max_overlap',
-                       'percent_availability']
+        'gaps': {
+            'streamCount': 1,
+            'outputType': 'SingleValue',
+            'fullDay': True,
+            'speed': 'fast',
+            'extraAttributes': None,
+            'businessLogic': None,
+            'metrics': ['num_gaps',
+                        'max_gap',
+                        'num_overlaps',
+                        'max_overlap',
+                        'percent_availability']
             },
-        'stateOfHealth':{
-            'streamCount':1,
-            'outputType':'SingleValue',
-            'fullDay':True,
-            'speed':'fast',
-            'extraAttributes':None,
-            'businessLogic':None,
-            'metrics':["calibration_signal",
-                       "timing_correction",
-                       "event_begin",
-                       "event_end",
-                       "event_in_progress",
-                       "clock_locked",
-                       "amplifier_saturation",
-                       "digitizer_clipping",
-                       "spikes",
-                       "glitches",
-                       "missing_padded_data",
-                       "telemetry_sync_error",
-                       "digital_filter_charging",
-                       "suspect_time_tag",
-                       "timing_quality"]
+        'stateOfHealth': {
+            'streamCount': 1,
+            'outputType': 'SingleValue',
+            'fullDay': True,
+            'speed': 'fast',
+            'extraAttributes': None,
+            'businessLogic': None,
+            'metrics': ["calibration_signal",
+                        "timing_correction",
+                        "event_begin",
+                        "event_end",
+                        "event_in_progress",
+                        "clock_locked",
+                        "amplifier_saturation",
+                        "digitizer_clipping",
+                        "spikes",
+                        "glitches",
+                        "missing_padded_data",
+                        "telemetry_sync_error",
+                        "digital_filter_charging",
+                        "suspect_time_tag",
+                        "timing_quality"]
             },
         
-        'STALTA':{
-            'streamCount':1,
-            'outputType':'SingleValue',
-            'fullDay':True,
-            'speed':'slow',
-            'extraAttributes':None,
-            'businessLogic':'Limit to BH and HH channels.',
-            'metrics':['max_stalta']
+        'STALTA': {
+            'streamCount': 1,
+            'outputType': 'SingleValue',
+            'fullDay': True,
+            'speed': 'slow',
+            'extraAttributes': None,
+            'businessLogic': 'Limit to BH and HH channels.',
+            'metrics': ['max_stalta']
             },
-        'spikes':{
-            'streamCount':1,
-            'outputType':'SingleValue',
-            'fullDay':True,
-            'speed':'fast',
-            'extraAttributes':None,
-            'businessLogic':None,
-            'metrics':['num_spikes']
+        'spikes': {
+            'streamCount': 1,
+            'outputType': 'SingleValue',
+            'fullDay': True,
+            'speed': 'fast',
+            'extraAttributes': None,
+            'businessLogic': None,
+            'metrics': ['num_spikes']
         }
     }
-    return(functionDict)
+    return(functiondict)
 
 ###   R functions still to be written     --------------------------------------
+
+
+def functionmetadata():
+    return _R_getMetricFunctionMetdata()
+
+
+def metricslist(function_data=_R_getMetricFunctionMetdata()):
+    """
+    :param function_data: the function metadata returned by _R_getMetricFunctionMetdata
+    :return: a dictionary of {metrics: functionNames} based on the metrics and functions
+    contained within the Metric Metadata
+    """
+
+    # invert the dictionary to be {metric: functionName}
+    # TODO: potentially move this to a class wrapping the original dict
+    metric_functions = {}
+    for function in function_data:
+        for metric in function_data[function]['metrics']:
+            metric_functions[metric] = function
+
+    return metric_functions
 
 
 def listMetricFunctions(functionType="simple"):
@@ -146,13 +168,12 @@ def listMetricFunctions(functionType="simple"):
     typically adequate.
 
     """
-    df = pd.DataFrame.from_dict(_R_getMetricMetadata(), orient='index')
+    df = pd.DataFrame.from_dict(_R_getMetricFunctionMetdata(), orient='index')
     names = df.index.tolist()
+
+    functionlist = _R_getMetricFunctionMetdata().keys()
     
-    
-    functionList = _R_getMetricMetadata().keys()
-    
-    return(functionList)
+    return functionlist
 
 
 def simpleMetricsPretty(df, sigfigs=6):
@@ -171,7 +192,7 @@ def simpleMetricsPretty(df, sigfigs=6):
     df.value = df.value.apply(lambda x: signif(x, sigfigs))
     df.starttime = df.starttime.apply(lambda x: getattr(x, 'date'))
     df.endtime = df.endtime.apply(lambda x: getattr(x, 'date'))
-    return(df)
+    return df
     
     
 def signif(number, sigfigs=6):
@@ -198,24 +219,24 @@ def signif(number, sigfigs=6):
 ###   Functions for SingleValueMetrics     -------------------------------------
 
 
-def applySimpleMetric(r_stream, metricName):
+def applySimpleMetric(r_stream, metric_set_name):
     """"
     Invoke a named "simple" R metric and convert the R dataframe result into
     a Pandas dataframe.
+    :param r_stream: an r_stream object
+    :param metric_set_name: the name of the set of metrics
+    :return:
     """
-    function = 'IRISMustangMetrics::' + metricName + 'Metric'
+    function = 'IRISMustangMetrics::' + metric_set_name + 'Metric'
     R_function = r(function)
-    try:
-        r_metricList = R_function(r_stream)
-    except Error as e:
-        print(e)
-    r_dataframe = _R_metricList2DF(r_metricList)
+    r_metriclist = R_function(r_stream)
+    r_dataframe = _R_metricList2DF(r_metriclist)
     df = pandas2ri.ri2py(r_dataframe)
     
-    # Applies UTCDateTime to start and endtime columns
+    # Applies UTCDateTime to start and end time columns
     df.starttime = df.starttime.apply(UTCDateTime)
     df.endtime = df.endtime.apply(UTCDateTime)
-    return(df)
+    return df
 
 
 ### ----------------------------------------------------------------------------

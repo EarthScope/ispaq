@@ -17,14 +17,11 @@
         ]
     },
     "SNCLAlias": {
-        "MyVirtualNetwork": [
-            "IU+IC+CU",
-            "*",
-            "*",
-            "BH?, LH?"
-        ]
-    },
-    "UpdateMetrics": [
-        "automatic"
-    ]
+        "MyVirtualNetwork": {
+        "Network":"IU",
+        "Station":"*",
+        "Location":"*",
+        "Channel":"BH?"
+        }
+    }
 }
