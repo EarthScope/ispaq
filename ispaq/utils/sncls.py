@@ -10,6 +10,10 @@ def decompose(sncl, startime, endtime):
     from ispaq.irisseismic.webservices import getAvailability
     return getAvailability(sncl, startime, endtime).reset_index(drop=True)['snclId']
 
+def validate(sncl):
+    """It would be useful to be able to validate whether sncls are in the correct format"""
+    pass
+
 def build(sncldict):
     """
     Builds complex sncls from dictionary

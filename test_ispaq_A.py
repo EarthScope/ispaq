@@ -14,8 +14,8 @@ from argparse import ArgumentParser
 
 from ispaq.irismustangmetrics import *
 
-import ispaq.utils.metric_sets as ms
-import ispaq.utils.sncls as su
+import ispaq.utils.metric_sets as metric_sets
+import ispaq.utils.sncls as sncl_utils
 from ispaq.utils.misc import *
 
 import obspy
@@ -42,6 +42,8 @@ def main(argv=None):
                         help='location of preference file')
     parser.add_argument('-O', '--output-loc', default='.',
                         help='location to output ')
+    parser.add_argument('-S', '--sigfigs', default=6,
+                            help='number of significant figures to roung metrics to')    
 
     args = parser.parse_args(argv)
     
@@ -51,8 +53,10 @@ def main(argv=None):
     # Load Preferences ---------------------------------------------------------
     
     custom_metric_sets, custom_sncls = preferenceloader(args.preference_file)
-    function_sets, custom_metric_errs = ms.validate(custom_metric_sets)
-    custom_sncls = su.build(custom_sncls)
+    function_sets, custom_metric_errs = metric_sets.validate(custom_metric_sets)
+    custom_sncls = sncl_utils.build(custom_sncls)
+    
+    # TODO: Verify that desired metric set exists in preference file or otherwise
         
     # Obtain data --------------------------------------------------------------
     
@@ -72,7 +76,7 @@ def main(argv=None):
         # format arguments
         starttime = obspy.UTCDateTime(args.start)  # Test date for US.OXF..BHZ is 2002-04-20 + 1 day
         endtime = starttime + (24 * 3600)
-        sncls = su.decompose(args.sncl, starttime, endtime)
+        sncls = sncl_utils.decompose(args.sncl, starttime, endtime)
         
         print('Building %s Streams' % len(sncls))
         try:  # in case lack of internet
@@ -93,7 +97,7 @@ def main(argv=None):
     # TODO:  will be stored in other files.
     
     if True:
-        df = ms.simpleset(args.metric_set_name, function_sets, r_streams)
+        df = metric_sets.simpleset(args.metric_set_name, function_sets, r_streams)
         if df is not None:
             file_name = args.metric_set_name + '_' + args.start + '.csv'
             path = args.output_loc + '/' + file_name
