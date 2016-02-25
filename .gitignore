@@ -9,3 +9,4 @@ ISPAQ.egg-info/
 build/
 dist/
 .idea/
+*.wpr
