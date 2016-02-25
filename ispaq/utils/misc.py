@@ -4,6 +4,8 @@ import json
 import sys
 
 
+    
+
 def preferenceloader(pref_loc):
     """
     Safely loads preference file from the specified location
@@ -46,3 +48,8 @@ def statuswrap(function, *arg):
     v = function(*arg)
     print('   Done')
     return v
+
+if __name__ == "__main__":
+    s = preferenceloader('~/.irispref')
+    print(s[0])
+    print(s[1])
