@@ -34,8 +34,8 @@ def validate(custom_metric_sets, metric_functions=metricslist()):
     return custom_metricset_functions, error_list
 
 
-def simpleset(metric_set, custom_metric_set_functions, r_streams,
-              function_metadata=functionmetadata()):
+def simple_set(metric_set, custom_metric_set_functions, r_streams,
+               function_metadata=functionmetadata()):
     """
     Returns a dataframe with the metrics specified in the metric_set
     :param r_streams: pandas series of r_streams

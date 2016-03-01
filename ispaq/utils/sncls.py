@@ -8,22 +8,26 @@ def decompose(sncl, startime, endtime):
     """
     
     from ispaq.irisseismic.webservices import getAvailability
-    return getAvailability(sncl, startime, endtime).reset_index(drop=True)['snclId']
+    channel_metadata = getAvailability(sncl, startime, endtime).reset_index(drop=True)
+    print(channel_metadata)
+    return channel_metadata['snclId']
+
 
 def validate(sncl):
     """It would be useful to be able to validate whether sncls are in the correct format"""
     pass
 
-def build(sncldict):
+
+def build(sncl_dict):  # TODO potentially no longer useful
     """
     Builds complex sncls from dictionary
-    :param sncldict: a dictionary {snclalias:{network:n,station:s,location:l,channel:c}}
+    :param sncl_dict: a dictionary {snclalias:{network:n,station:s,location:l,channel:c}}
     :return: a dictionary {snclalias:sncl}
     """
     
     returndict = {}
-    for alias in sncldict:
-        sub = sncldict[alias]
+    for alias in sncl_dict:
+        sub = sncl_dict[alias]
         returndict[alias] = '%s.%s.%s.%s' % (sub['Network'], sub['Station'],
                                              sub['Location'], sub['Channel'])
         

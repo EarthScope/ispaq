@@ -4,9 +4,7 @@ import json
 import sys
 
 
-    
-
-def preferenceloader(pref_loc):
+def preferenceloader(pref_loc):  # TODO remove this for being old
     """
     Safely loads preference file from the specified location
     :param pref_loc: string file location
@@ -45,6 +43,7 @@ def preferenceloader(pref_loc):
 
 
 def statuswrap(function, *arg):
+    """helps track progress when using apply"""
     v = function(*arg)
     print('   Done')
     return v

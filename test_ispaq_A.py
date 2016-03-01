@@ -16,7 +16,10 @@ from ispaq.irismustangmetrics import *
 
 import ispaq.utils.metric_sets as metric_sets
 import ispaq.utils.sncls as sncl_utils
+import ispaq.utils.preferences as preferences
 from ispaq.utils.misc import *
+
+import pandas as pd
 
 import obspy
 
@@ -43,7 +46,7 @@ def main(argv=None):
     parser.add_argument('-O', '--output-loc', default='.',
                         help='location to output ')
     parser.add_argument('-S', '--sigfigs', default=6,
-                            help='number of significant figures to roung metrics to')    
+                        help='number of significant figures to round metrics to')
 
     args = parser.parse_args(argv)
     
@@ -52,10 +55,12 @@ def main(argv=None):
     
     # Load Preferences ---------------------------------------------------------
     
-    custom_metric_sets, custom_sncls = preferenceloader(args.preference_file)
+    custom_metric_sets, custom_sncls = preferences.load(args.preference_file)
     function_sets, custom_metric_errs = metric_sets.validate(custom_metric_sets)
-    custom_sncls = sncl_utils.build(custom_sncls)
-    
+    print(custom_metric_sets)  # DEBUG
+    print(custom_sncls)  # DEBUG
+
+    # TODO: validate and or build sncls
     # TODO: Verify that desired metric set exists in preference file or otherwise
         
     # Obtain data --------------------------------------------------------------
@@ -66,7 +71,7 @@ def main(argv=None):
         import os
         filepath = os.path.abspath('./test.mseed')
         stream = obspy.read(filepath)
-        r_stream = R_Stream(stream)
+        r_streams = pd.Series(R_Stream(stream))
         args.start = 'example'
     else:
         # Obtain data from IRIS DMC
@@ -84,8 +89,8 @@ def main(argv=None):
         except RRuntimeError:
             sys.exit('\033[91m\nError: Could not fetch data. '
                      'Check your internet connection?\033[0m\n')
-        print('Building streams complete.\n')        
-        
+        print('Building streams complete.\n')
+
     # Calculate the metric and save the result ---------------------------------
     
     # TODO:  Need a dictionary so we can test whether a metrics is "simple" or something else.
@@ -97,7 +102,7 @@ def main(argv=None):
     # TODO:  will be stored in other files.
     
     if True:
-        df = metric_sets.simpleset(args.metric_set_name, function_sets, r_streams)
+        df = metric_sets.simple_set(args.metric_set_name, function_sets, r_streams)
         if df is not None:
             file_name = args.metric_set_name + '_' + args.start + '.csv'
             path = args.output_loc + '/' + file_name
