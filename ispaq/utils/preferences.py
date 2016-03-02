@@ -2,6 +2,7 @@ import sys
 
 
 def _remove_comments(line):
+    '''removes a comment from a given single line string'''
     line = line.split("#")
     return line[0].strip()
 
@@ -18,6 +19,12 @@ def _read_entry(entry):
 
 
 def load(pref_loc):
+    '''
+    loads a preference file
+    :param pref_loc: the location of the preference file
+    :returns: a metric set dictionary {metric_set_name: [metrics]} and a sncl dict 
+    {sncl_alias: [sncls]}
+    '''
     try:  # check if file exists
         from os.path import expanduser
         pref_loc = expanduser(pref_loc)
@@ -49,6 +56,10 @@ def load(pref_loc):
     print('Preferences loaded.\n')  
     
     return custom_metric_sets, custom_sncl
+
+def validate():
+    '''Function that could be called from cmd to verify that the given preference file shouldn't break things'''
+    pass
             
 
 if __name__ == "__main__":

@@ -21,6 +21,8 @@ from ispaq.utils.misc import *
 
 import pandas as pd
 
+import sys
+
 import obspy
 
 __version__ = "0.0.1"
@@ -57,8 +59,6 @@ def main(argv=None):
     
     custom_metric_sets, custom_sncls = preferences.load(args.preference_file)
     function_sets, custom_metric_errs = metric_sets.validate(custom_metric_sets)
-    print(custom_metric_sets)  # DEBUG
-    print(custom_sncls)  # DEBUG
 
     # TODO: validate and or build sncls
     # TODO: Verify that desired metric set exists in preference file or otherwise
@@ -81,11 +81,13 @@ def main(argv=None):
         # format arguments
         starttime = obspy.UTCDateTime(args.start)  # Test date for US.OXF..BHZ is 2002-04-20 + 1 day
         endtime = starttime + (24 * 3600)
-        sncls = sncl_utils.decompose(args.sncl, starttime, endtime)
+        sncls = sncl_utils.get_simple_sncls(args.sncl, custom_sncls, starttime, endtime)
         
         print('Building %s Streams' % len(sncls))
         try:  # in case lack of internet
-            r_streams = sncls.apply(lambda sncl: statuswrap(R_getSNCL, sncl, starttime, endtime))
+            r_streams = sncls.apply(lambda sncl: statuswrap(R_getSNCL, 0, RRuntimeError, sncl,
+                                                            starttime, endtime))
+            r_streams = r_streams.dropna()
         except RRuntimeError:
             sys.exit('\033[91m\nError: Could not fetch data. '
                      'Check your internet connection?\033[0m\n')
