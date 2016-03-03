@@ -18,22 +18,13 @@ def _read_entry(entry):
     return name, values
 
 
-def load(pref_loc):
+def load(pref_file):
     '''
     loads a preference file
     :param pref_loc: the location of the preference file
     :returns: a metric set dictionary {metric_set_name: [metrics]} and a sncl dict 
     {sncl_alias: [sncls]}
     '''
-    try:  # check if file exists
-        from os.path import expanduser
-        pref_loc = expanduser(pref_loc)
-        pref_file = open(pref_loc, 'r')
-        print('Loading preferences from %s...' % pref_loc)
-    except AttributeError:
-        print(sys.exc_info())
-        print('No user preferences discovered. Ignoring...\n')
-        return None
     
     custom_metric_sets, custom_sncl = {}, {}
     current = None

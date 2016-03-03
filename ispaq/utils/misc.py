@@ -10,3 +10,10 @@ def statuswrap(function, arg_to_print, exception, *arg):
         return v
     except exception:
         print('   %s Failed' % arg[arg_to_print])
+
+def check_negative(value):
+    import argparse
+    ivalue = int(value)
+    if ivalue < 0:
+        raise argparse.ArgumentTypeError("%s is an invalid positive int value" % value)
+    return ivalue

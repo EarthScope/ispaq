@@ -204,17 +204,22 @@ def signif(number, sigfigs=6):
                 
     .. rubric:: Example
     
+    >>> signif(123.456, 1)
+    100.0
     >>> signif(123.456,3)
     123.0
-    >>> signif(123.456,5)
-    123.46
+    >>> signif(123.456,4)
+    123.5
     >>> signif(123.456,7)
     123.456
     
     """
     from math import log10, floor
-    return round(number, -int(floor(log10(abs(number)))) + (sigfigs - 1))
- 
+    digit = -int(floor(log10(abs(number)))) + (sigfigs - 1)
+    if digit > 0:
+        return round(number, digit)
+    else: # future.builtins.newround doesn't handle negative ndigits yet (3/3/16)
+        return number - (number % (10 ** -digit))
 
 ###   Functions for SingleValueMetrics     -------------------------------------
 
@@ -244,4 +249,4 @@ def applySimpleMetric(r_stream, metric_set_name):
 
 if __name__ == '__main__':
     import doctest
-    doctest.testmod(exclude_empty=True)
+    print(doctest.testmod(exclude_empty=True))

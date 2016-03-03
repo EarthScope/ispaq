@@ -10,7 +10,7 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from future.builtins import *  # NOQA
 
-from argparse import ArgumentParser
+import argparse
 
 from ispaq.irismustangmetrics import *
 
@@ -23,6 +23,8 @@ import pandas as pd
 
 import sys
 
+from os.path import expanduser
+
 import obspy
 
 __version__ = "0.0.1"
@@ -32,7 +34,7 @@ def main(argv=None):
     
     # Parse arguments ----------------------------------------------------------
     
-    parser = ArgumentParser(description=__doc__.strip())
+    parser = argparse.ArgumentParser(description=__doc__.strip())
     parser.add_argument('-V', '--version', action='version',
                         version='%(prog)s ' + __version__)
     parser.add_argument('--example-data', action='store_true', default=False,
@@ -43,11 +45,11 @@ def main(argv=None):
                         help='starttime in ISO 8601 format')
     parser.add_argument('-M', '--metric-set-name', required=True,
                         help='name of metric to calculate')  # TODO re-add the limit
-    parser.add_argument('-P', '--preference-file', default='~/.irispref',
-                        help='location of preference file')
+    parser.add_argument('-P', '--preference-file', default=expanduser('~/.irispref'),
+                        type=argparse.FileType('r'), help='location of preference file')
     parser.add_argument('-O', '--output-loc', default='.',
                         help='location to output ')
-    parser.add_argument('-S', '--sigfigs', default=6,
+    parser.add_argument('-S', '--sigfigs', type=check_negative, default=6,
                         help='number of significant figures to round metrics to')
 
     args = parser.parse_args(argv)
@@ -104,13 +106,13 @@ def main(argv=None):
     # TODO:  will be stored in other files.
     
     if True:
-        df = metric_sets.simple_set(args.metric_set_name, function_sets, r_streams)
+        df = metric_sets.simple_set(args.metric_set_name, function_sets, r_streams, sigfigs=args.sigfigs)
         if df is not None:
             file_name = args.metric_set_name + '_' + args.start + '.csv'
             path = args.output_loc + '/' + file_name
             df.to_csv(path, index=False)
             
-            print(('=' * 30) + ' OUTPUT ' + ('=' * 30))
+            print(('=' * 34) + ' OUTPUT ' + ('=' * 34))
             print(df)
     else:
         # TODO: Need to figure out what to do with non-"simple" metrics.
