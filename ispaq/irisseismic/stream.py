@@ -269,6 +269,7 @@ def R_getSNCL(sncl, starttime, endtime):
     :param endtime: ObsPy UTCDateTime object.
     :return: IRISSeismic Stream object.
     """
+    r['options'](warn=-1)                   # have R surpress warning messages    
     client = r('new("IrisClient")')
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)

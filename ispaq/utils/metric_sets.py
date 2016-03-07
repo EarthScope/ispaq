@@ -34,8 +34,8 @@ def validate(custom_metric_sets, metric_functions=metricslist()):
     return custom_metricset_functions, error_list
 
 
-def simpleset(metric_set, custom_metric_set_functions, r_streams,
-              function_metadata=functionmetadata()):
+def simple_set(metric_set, custom_metric_set_functions, r_streams, sigfigs=6,
+               function_metadata=functionmetadata()):
     """
     Returns a dataframe with the metrics specified in the metric_set
     :param r_streams: pandas series of r_streams
@@ -51,7 +51,7 @@ def simpleset(metric_set, custom_metric_set_functions, r_streams,
         df = pd.concat(df_peices.tolist())
         df = df.reset_index(drop=True)  # make indices make sense
         # Create a pretty version of the dataframe
-        df = simpleMetricsPretty(df, sigfigs=6)
+        df = simpleMetricsPretty(df, sigfigs=sigfigs)
         return df
 
     elif metric_set in custom_metric_set_functions:  # if a custom metric-set
@@ -59,7 +59,7 @@ def simpleset(metric_set, custom_metric_set_functions, r_streams,
         df_peices = r_streams.apply(lambda r_stream: _buildcustom(r_stream, metric_set_functions))
         df = pd.concat(df_peices.tolist())
         df = df.reset_index(drop=True)  # make indices make sense        
-        df = simpleMetricsPretty(df, sigfigs=6)
+        df = simpleMetricsPretty(df, sigfigs=sigfigs)
         return df
 
     print('\033[93mMetric Set "%s" not found\033[0m' % metric_set)
