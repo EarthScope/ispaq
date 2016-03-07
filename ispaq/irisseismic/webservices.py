@@ -123,11 +123,12 @@ def getAvailability(sncl, starttime, endtime,
     (network, station, location, channel) = sncl.split('.')
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    includerestricted = ri.MissingArg # NOTE:  IRIS DMC restricted datasets are not supported
-    (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
+    includerestricted = ri.MissingArg  # NOTE:  IRIS DMC restricted datasets are not supported
+    (latitude, longitude, minradius, maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
     
     # Call the function and return a Pandas dataframe with the results
-    r_df = _R_getAvailability(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
+    r_df = _R_getAvailability(r_client, network, station, location, channel, starttime, endtime, includerestricted,
+                              latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
     return(df)
     
