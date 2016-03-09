@@ -104,8 +104,7 @@ _R_getUnavailability = r('IRISSeismic::getUnavailability')   #
 ###   Python wrappers for R get~ webservice functions     ----------------------
 
 
-def getAvailability(sncl, starttime, endtime,
-                    latitude=None, longitude=None,
+def getAvailability(sncl, starttime, endtime, latitude=None, longitude=None,
                     minradius=None, maxradius=None):
     """
     Returns a dataframe with channel metadata.
@@ -133,8 +132,7 @@ def getAvailability(sncl, starttime, endtime,
     return df
     
     
-def getChannel(sncl, starttime, endtime,
-               latitude=None, longitude=None,
+def getChannel(sncl, starttime, endtime, latitude=None, longitude=None,
                minradius=None, maxradius=None):
     """
     Returns a dataframe with channel metadata.
