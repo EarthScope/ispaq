@@ -224,7 +224,7 @@ def signif(number, sigfigs=6):
 ###   Functions for SingleValueMetrics     -------------------------------------
 
 
-def applySimpleMetric(r_stream, metric_set_name):
+def applySimpleMetric(r_stream, metric_set_name, *args, **kwargs):
     """"
     Invoke a named "simple" R metric and convert the R dataframe result into
     a Pandas dataframe.
@@ -234,7 +234,7 @@ def applySimpleMetric(r_stream, metric_set_name):
     """
     function = 'IRISMustangMetrics::' + metric_set_name + 'Metric'
     R_function = r(function)
-    r_metriclist = R_function(r_stream)
+    r_metriclist = R_function(r_stream, *args, **kwargs)  # args and kwargs shouldn't be needed in theory
     r_dataframe = _R_metricList2DF(r_metriclist)
     df = pandas2ri.ri2py(r_dataframe)
     
