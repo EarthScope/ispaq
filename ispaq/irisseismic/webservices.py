@@ -159,7 +159,27 @@ def getChannel(sncl, starttime, endtime,
     r_df = _R_getChannel(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
     return df
-    
+
+
+def get_dataselect(network, station, location, channel, starttime, endtime, quality=None):
+    """
+    Obtain an R Stream using the IRISSeismic::getSNCL function.
+    :param network: sncl network (string)
+    :param station: sncl station (string)
+    :param location: sncl location (string)
+    :param channel: sncl channel (string)
+    :param starttime: ObsPy UTCDateTime object.
+    :param endtime: ObsPy UTCDateTime object.
+    :return: R Stream object
+    """
+    r_client = r('new("IrisClient")')
+    starttime = R_POSIXct(starttime)
+    endtime = R_POSIXct(endtime)
+    if quality is None:
+        quality = ri.MissingArg
+    r_stream = _R_getDataselect(r_client, network, station, location, channel, starttime, endtime, quality)
+    return r_stream
+
     
 def getDistaz(latitude, longitude, staLatitude, staLongitude):
     """
