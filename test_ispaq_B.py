@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Initial stab at ISPAQ script.
+Second stab at ISPAQ script.
 
-This version runs from command line arguments only and assumes that we are 
-connected to the internet.
+This version runs from command line arguments only.
 """
+
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from future.builtins import *  # NOQA
@@ -14,7 +14,7 @@ import argparse
 
 from ispaq.irismustangmetrics import *
 
-import ispaq.utils.metric_sets as metric_sets
+import ispaq.utils.metric_calculators as metric_sets
 import ispaq.utils.sncls as sncl_utils
 import ispaq.utils.preferences as preferences
 from ispaq.utils.misc import *
@@ -64,35 +64,35 @@ def main(argv=None):
     # Generate Simple Metrics -------------------------------------------------
 
     try:
-      simple_output = ispaq.businessLogic.generateSimpleMetrics(userRequest)
-      try:
-          # Dump output to a file
-      except:
-          #
+        simple_output = ispaq.businessLogic.generateSimpleMetrics(userRequest)
+        try: # Dump output to a file
+            pass
+        except:
+            pass
     except:
-          #
+        pass
 
     # Generate SNR Metrics ----------------------------------------------------
 
     try:
-      snr_output = ispaq.businessLogic.generateSNRMetrics(userRequest)
-      try:
-          # Dump output to a file
-      except:
-          #
+        snr_output = ispaq.businessLogic.generateSNRMetrics(userRequest)
+        try:
+            pass # Dump output to a file
+        except:
+            pass
     except:
-          #
+        pass
 
     # Generate [increasingly complex/time-consuming metrics] ------------------
 
     try:
-      complex_output = ispaq.businessLogic.generateComplexMetric(userRequest)
-      try:
-          # Dump output to a file
-      except:
-          #
+        complex_output = ispaq.businessLogic.generateComplexMetric(userRequest)
+        try:
+          pass # Dump output to a file
+        except:
+          pass
     except:
-          #
+          pass
         
     # Cleanup -----------------------------------------------------------------
 

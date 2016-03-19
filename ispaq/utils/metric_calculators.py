@@ -1,39 +1,10 @@
+"""I imagine that this file will contain the business logic to calculate all the different sorts of metric sets"""
+
+
 from ispaq.irismustangmetrics.metrics import *
 
 
-def validate(custom_metric_sets, metric_functions=metricslist()):
-    """
-    :param metric_functions: a dictionary of metrics and the functions that produce
-    them
-    :param custom_metric_sets: dictionary of custom metric sets
-    custom metric sets and returns the necessary metric
-    functions and an error list
-    """
-    print('Validating custom metrics...')
-    error_list = []
-    custom_metricset_functions = {}
-
-    # Creates a dictionary of {needed functions: [list of needed metrics that they provide]}
-    for custom_metricset in custom_metric_sets:
-        required_functions = {}
-        for metric in custom_metric_sets[custom_metricset]:
-            try:  # check if metric exists
-                function = metric_functions[metric]
-            except KeyError:
-                print('\033[93m   Metric "%s" not found\033[0m' % metric)
-                error_list.append(metric)
-
-            if function in required_functions:
-                required_functions[function].append(metric)
-            else:
-                required_functions[function] = [metric]
-
-        custom_metricset_functions[custom_metricset] = required_functions
-
-    print('Finished validating with \033[93m%d\033[0m errors.\n' % len(error_list))
-    return custom_metricset_functions, error_list
-
-
+# TODO make this function accept a UserRequests object
 def simple_set(metric_set, custom_metric_set_functions, r_streams, sigfigs=6,
                function_metadata=functionmetadata()):
     """
