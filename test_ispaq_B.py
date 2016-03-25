@@ -54,17 +54,72 @@ def main(argv=None):
 
     args = parser.parse_args(argv)
     
+
     # Load Preferences ---------------------------------------------------------
+    #
+    # The user_request class is in charge of parsing arguments, loading and
+    # parsing a preferences file and setting a bunch of properties that capture
+    # the totality of what the user wants in this invocation of the script.
+    #
+    # Properties that must be specified include at a minimum:
+    #  * metric_names[]
+    #  * sncl_patterns[]
+    #  * starttime
+    #  * endtime
+    #  * event_url
+    #  * station_url
+    #  * dataselect_url
+    #
+    # All methods are internal except for load_json() and dump_json() which can
+    # be used for debugging. The user_request will be stored by the concierge
+    # for future reference.
+    #
+    # Think of the methods of the user_request object as the work of a lower
+    # level front desk person who is taking guest information from a handwritten
+    # request (preferences file) and phone call (command line arguments)
+    # and transcribing that info[ onto a standard form that the cocierge keeps
+    # for each guest. (Each unique invocation of this script is a new 'guest'.)
+    # 
+    # When the guest asks for something later, the concierge has already done
+    # the background work and can provide the guest whatever they want in their
+    # preferred format.
 
     try:
-        userRequest = ispaq.userRequest(args)
+        user_request = ispaq.user_request(args)
     except userRquestError:
-        print(userRequestError)
+        print(user_requestError)
 
-    # Generate Simple Metrics -------------------------------------------------
+
+    # Create Concierge (aka Expediter) -----------------------------------------
+    #
+    # The concierge uses the completely filled out user_request and has the
+    # job of expediting requests for information that may be made by any of the
+    # business_logic methods.
+    #
+    # The goal is to have business_logic methods that can be written as clearly
+    # as possible without having to know about the intricacies of ObsPy. Thus,
+    # if business logic needs a list of SNCLs, they should be able to say:
+    #
+    #   concierge.get_sncl_list()
+    #
+    # If they would rather work with an ObsPy Inventory, then:
+    #
+    #   concierge.get_sncl_inventory()
+    #
+    # It is assumed that all of the information required to generate this list 
+    # or inventory of sncls [starttime, endtime, sncl_patterns, client_url, ...]
+    # are part of the user_request object that the concierge has access to
+  
+    try:
+        concierge = ispaq.concierge(user_request)
+    except conciergeError:
+        print(conciergeError)
+
+
+    # Generate Simple Metrics --------------------------------------------------
 
     try:
-      simple_output = ispaq.businessLogic.generateSimpleMetrics(userRequest)
+      simple_output = ispaq.business_logic.generate_simple_metrics(concierge)
       try:
           # Dump output to a file
       except:
@@ -72,10 +127,11 @@ def main(argv=None):
     except:
           #
 
-    # Generate SNR Metrics ----------------------------------------------------
+
+    # Generate SNR Metrics -----------------------------------------------------
 
     try:
-      snr_output = ispaq.businessLogic.generateSNRMetrics(userRequest)
+      snr_output = ispaq.business_logic.generate_SNR_metrics(concierge)
       try:
           # Dump output to a file
       except:
@@ -83,10 +139,11 @@ def main(argv=None):
     except:
           #
 
-    # Generate [increasingly complex/time-consuming metrics] ------------------
+
+    # Generate [increasingly complex/time-consuming metrics] -------------------
 
     try:
-      complex_output = ispaq.businessLogic.generateComplexMetric(userRequest)
+      complex_output = ispaq.business_logic.generate_complex_metrics(concierge)
       try:
           # Dump output to a file
       except:
@@ -94,7 +151,7 @@ def main(argv=None):
     except:
           #
         
-    # Cleanup -----------------------------------------------------------------
+    # Cleanup ------------------------------------------------------------------
 
 if __name__ == "__main__":
     main()
