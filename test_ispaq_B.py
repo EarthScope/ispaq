@@ -19,6 +19,8 @@ import ispaq.utils.sncls as sncl_utils
 import ispaq.utils.preferences as preferences
 from ispaq.utils.misc import *
 
+from ispaq.concierge import Concierge, DummyUserRequest
+
 import pandas as pd
 
 import sys
@@ -84,11 +86,12 @@ def main(argv=None):
     # the background work and can provide the guest whatever they want in their
     # preferred format.
 
-    try:
-        user_request = ispaq.user_request(args)
-    except userRquestError:
-        print(user_requestError)
+    #try:
+        #user_request = ispaq.user_request(args)
+    #except userRquestError:
+        #print(user_requestError)
 
+    user_request = DummyUserRequest()
 
     # Create Concierge (aka Expediter) -----------------------------------------
     #
@@ -111,45 +114,52 @@ def main(argv=None):
     # are part of the user_request object that the concierge has access to
   
     try:
-        concierge = ispaq.concierge(user_request)
-    except conciergeError:
-        print(conciergeError)
+        concierge = Concierge(user_request)
+    except Exception as e:
+        if str(e) == "Not really an error.":
+            pass
+        else:
+            raise
+
+    # dummy test
+    print(concierge.get_sncls())
 
 
     # Generate Simple Metrics --------------------------------------------------
 
-    try:
-      simple_output = ispaq.business_logic.generate_simple_metrics(concierge)
-      try:
-          # Dump output to a file
-      except:
-          #
-    except:
-          #
+    #try:
+      #simple_output = ispaq.business_logic.generate_simple_metrics(concierge)
+      #try:
+          ## Dump output to a file
+      #except:
+          ##
+    #except:
+          ##
 
 
     # Generate SNR Metrics -----------------------------------------------------
 
-    try:
-      snr_output = ispaq.business_logic.generate_SNR_metrics(concierge)
-      try:
-          # Dump output to a file
-      except:
-          #
-    except:
-          #
+    #try:
+      #snr_output = ispaq.business_logic.generate_SNR_metrics(concierge)
+      #try:
+          ## Dump output to a file
+      #except:
+          ##
+    #except:
+          ##
 
 
     # Generate [increasingly complex/time-consuming metrics] -------------------
 
-    try:
-      complex_output = ispaq.business_logic.generate_complex_metrics(concierge)
-      try:
-          # Dump output to a file
-      except:
-          #
-    except:
-          #
+    #try:
+      #complex_output = ispaq.business_logic.generate_complex_metrics(concierge)
+      #try:
+          ## Dump output to a file
+      #except:
+          ##
+    #except:
+          ##
+    
         
     # Cleanup ------------------------------------------------------------------
 
