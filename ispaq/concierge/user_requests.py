@@ -9,6 +9,7 @@ ISPAQ Preferences Loader and Container.
 """
 import json
 import ispaq.utils.preferences as preferences
+from ispaq.irismustangmetrics.metrics import metricslist
 
 from obspy import UTCDateTime
 
@@ -90,8 +91,34 @@ class UserRequest(object):
 
             self.custom_metric_sets, self.sncl_aliases = custom_metric_sets, custom_sncl
 
+            #     Finding required metric_set functions----------------------------
+
+            print('Validating custom metrics...')
+            error_list = []
+            custom_metricset_functions = {}
+            metric_functions = metricslist()
+
+            # Creates a dictionary of {needed functions: [list of needed metrics that they provide]}
+            for custom_metricset in custom_metric_sets:
+                required_functions = {}
+                for metric in custom_metric_sets[custom_metricset]:
+                    try:  # check if metric exists
+                        function = metric_functions[metric]
+                    except KeyError:
+                        print('\033[93m   Metric "%s" not found\033[0m' % metric)
+                        error_list.append(metric)
+
+                    if function in required_functions:
+                        required_functions[function].append(metric)
+                    else:
+                        required_functions[function] = [metric]
+
+                custom_metricset_functions[custom_metricset] = required_functions
+
+            print('Finished validating with \033[93m%d\033[0m errors.\n' % len(error_list))
+
             # {irismustang function: custom metric set that they provide data for}, [metrics that don't exist]
-            self.required_metric_set_functions, self.dne_metrics = preferences.validate_metric_sets(self.custom_metric_sets)
+            self.required_metric_set_functions, self.dne_metrics = custom_metricset_functions, error_list
 
     def json_dump(self):
         """
