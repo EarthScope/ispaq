@@ -16,7 +16,7 @@ from ispaq.irismustangmetrics import *
 
 import ispaq.utils.metric_calculators as metric_sets
 import ispaq.utils.sncls as sncl_utils
-import ispaq.utils.preferences as preferences
+from ispaq.concierge.user_requests import UserRequest
 from ispaq.utils.misc import *
 
 import pandas as pd
@@ -43,6 +43,8 @@ def main(argv=None):
                         help='Network.Station.Location.Channel identifier (e.g. US.OXF..BHZ)')
     parser.add_argument('--start', action='store', default=False,
                         help='starttime in ISO 8601 format')
+    parser.add_argument('--end', action='store', default=False,
+                        help='starttime in ISO 8601 format')
     parser.add_argument('-M', '--metric-set-name', required=True,
                         help='name of metric to calculate')  # TODO re-add the limit
     parser.add_argument('-P', '--preference-file', default=expanduser('~/.irispref'),
@@ -59,8 +61,8 @@ def main(argv=None):
 
     # Load Preferences ---------------------------------------------------------
     
-    custom_metric_sets, custom_sncls = preferences.load(args.preference_file)
-    function_sets, custom_metric_errs = preferences.validate_metric_sets(custom_metric_sets)
+    user_request = UserRequest(args.start, args.end, args.metric_set_name, args.sncl, args.preference_file)
+    print(user_request)
 
     # TODO: validate and or build sncls
     # TODO: Verify that desired metric set exists in preference file or otherwise
@@ -80,15 +82,13 @@ def main(argv=None):
         from ispaq.irisseismic import R_getSNCL
         from rpy2.rinterface import RRuntimeError
 
-        # format arguments
-        starttime = obspy.UTCDateTime(args.start)  # Test date for US.OXF..BHZ is 2002-04-20 + 1 day
-        endtime = starttime + (24 * 3600)
-        sncls = sncl_utils.get_simple_sncls(args.sncl, custom_sncls, starttime, endtime)
+        sncls = sncl_utils.get_simple_sncls(user_request)
 
         print('Building %s Streams' % len(sncls))
         try:  # in case lack of internet
             r_streams = sncls.apply(lambda sncl: statuswrap(R_getSNCL, 0, RRuntimeError, sncl,
-                                                            starttime, endtime))
+                                                            user_request.requested_start_time,
+                                                            user_request.requested_end_time))
             r_streams = r_streams.dropna()
         except RRuntimeError:
             sys.exit('\033[91m\nError: Could not fetch data. '
@@ -106,7 +106,7 @@ def main(argv=None):
     # TODO:  will be stored in other files.
     
     if True:
-        df = metric_sets.simple_set(args.metric_set_name, function_sets, r_streams, sigfigs=args.sigfigs)
+        df = metric_sets.simple_set(args.metric_set_name, user_request.required_metric_set_functions, r_streams, sigfigs=args.sigfigs)
         if df is not None:
             file_name = args.metric_set_name + '_' + args.start + '.csv'
             path = args.output_loc + '/' + file_name
