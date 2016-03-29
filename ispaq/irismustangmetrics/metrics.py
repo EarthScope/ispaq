@@ -69,7 +69,7 @@ def _R_getMetricFunctionMetdata():
             'fullDay': True,
             'speed': 'fast',
             'extraAttributes': None,
-            'businessLogic': None,
+            'businessLogic': 'simple',
             'metrics': ['sample_min',
                         'sample_median',
                         'sample_mean',
@@ -82,7 +82,7 @@ def _R_getMetricFunctionMetdata():
             'fullDay': True,
             'speed': 'fast',
             'extraAttributes': None,
-            'businessLogic': None,
+            'businessLogic': 'simple',
             'metrics': ['num_gaps',
                         'max_gap',
                         'num_overlaps',
@@ -95,7 +95,7 @@ def _R_getMetricFunctionMetdata():
             'fullDay': True,
             'speed': 'fast',
             'extraAttributes': None,
-            'businessLogic': None,
+            'businessLogic': 'simple',
             'metrics': ["calibration_signal",
                         "timing_correction",
                         "event_begin",
@@ -128,7 +128,7 @@ def _R_getMetricFunctionMetdata():
             'fullDay': True,
             'speed': 'fast',
             'extraAttributes': None,
-            'businessLogic': None,
+            'businessLogic': 'simple',
             'metrics': ['num_spikes']
         }
     }

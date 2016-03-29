@@ -34,7 +34,8 @@ from __future__ import (absolute_import, division, print_function,
 from future.builtins import *  # NOQA
 from future.utils import native_str
 
-from ispaq.concierge.concierge import *
+from ispaq.concierge.concierge import Concierge
+from ispaq.concierge.preferences import DummyUserRequest, UserRequest
 
 
 if __name__ == '__main__':

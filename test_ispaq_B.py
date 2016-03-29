@@ -19,7 +19,7 @@ import ispaq.utils.sncls as sncl_utils
 import ispaq.utils.preferences as preferences
 from ispaq.utils.misc import *
 
-from ispaq.concierge import Concierge, DummyUserRequest
+from ispaq.concierge import Concierge, DummyUserRequest, UserRequest
 
 import pandas as pd
 
@@ -39,20 +39,22 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.strip())
     parser.add_argument('-V', '--version', action='version',
                         version='%(prog)s ' + __version__)
-    parser.add_argument('--example-data', action='store_true', default=False,
-                        help='use example data from local disk')
+    # parser.add_argument('--example-data', action='store_true', default=False,
+    #                     help='use example data from local disk')
     parser.add_argument('--sncl', action='store', default=False,
                         help='Network.Station.Location.Channel identifier (e.g. US.OXF..BHZ)')
-    parser.add_argument('--start', action='store', default=False,
+    parser.add_argument('--start', action='store', required=True,
                         help='starttime in ISO 8601 format')
-    parser.add_argument('-M', '--metric-set-name', required=True,
-                        help='name of metric to calculate')  # TODO re-add the limit
-    parser.add_argument('-P', '--preference-file', default=expanduser('~/.irispref'),
-                        type=argparse.FileType('r'), help='location of preference file')
-    parser.add_argument('-O', '--output-loc', default='.',
-                        help='location to output ')
-    parser.add_argument('-S', '--sigfigs', type=check_negative, default=6,
-                        help='number of significant figures to round metrics to')
+    parser.add_argument('--end', action='store', required=False,
+                        help='endtime in ISO 8601 format')
+    # parser.add_argument('-M', '--metric-set-name', required=True,
+    #                     help='name of metric to calculate')  # TODO re-add the limit
+    # parser.add_argument('-P', '--preference-file', default=expanduser('~/.irispref'),
+    #                     type=argparse.FileType('r'), help='location of preference file')
+    # parser.add_argument('-O', '--output-loc', default='.',
+    #                     help='location to output ')
+    # parser.add_argument('-S', '--sigfigs', type=check_negative, default=6,
+    #                     help='number of significant figures to round metrics to')
 
     args = parser.parse_args(argv)
     
@@ -86,12 +88,15 @@ def main(argv=None):
     # the background work and can provide the guest whatever they want in their
     # preferred format.
 
-    #try:
-        #user_request = ispaq.user_request(args)
-    #except userRquestError:
-        #print(user_requestError)
+    try:
+        user_request = UserRequest(args)
+    except Exception as e:
+        if str(e) == "Not really an error.":
+            pass
+        else:
+            raise
 
-    user_request = DummyUserRequest()
+    ###user_request = DummyUserRequest()
 
     # Create Concierge (aka Expediter) -----------------------------------------
     #
@@ -121,20 +126,18 @@ def main(argv=None):
         else:
             raise
 
-    # dummy test
-    print(concierge.get_sncls())
-
 
     # Generate Simple Metrics --------------------------------------------------
 
-    #try:
-      #simple_output = ispaq.business_logic.generate_simple_metrics(concierge)
-      #try:
-          ## Dump output to a file
-      #except:
-          ##
-    #except:
-          ##
+    try:
+        print(concierge.get_sncls())
+        #simple_output = ispaq.business_logic.generate_simple_metrics(concierge)
+        #try:
+            ## Dump output to a file
+        #except:
+            ##
+    except Exception as e:
+          print(str(e))
 
 
     # Generate SNR Metrics -----------------------------------------------------

@@ -57,9 +57,18 @@ class Concierge(object):
         self.user_request = user_request
 
         # Create a new webservice clients
-        self.event_client = Client(self.user_request.event_url)
-        self.station_client = Client(self.user_request.station_url)
-        self.dataselect_client = Client(self.user_request.dataselect_url)
+        self.event_client = Client(user_request.event_url)
+        self.station_client = Client(user_request.station_url)
+        self.dataselect_client = Client(user_request.dataselect_url)
+
+        # TODO:  Need code to convert user_request.metric_names into
+        # TODO:  different sets of arrays based on metric metadata.
+
+        # NOTE:  metric_sets are defined in irismustangmetrics/metrics.py but will
+        # NOTE:  ultimately come from the R package. Current sets include:
+        # NOTE:  basicStats, gaps, spikes, stateOfHealth and STALTA (slow).
+        self.metric_dictionary = user_request.metric_dictionary
+
 
     def get_events(self, starttime=None, endtime=None, minlatitude=None,
                    maxlatitude=None, minlongitude=None, maxlongitude=None,
