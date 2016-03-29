@@ -14,7 +14,7 @@ import argparse
 
 from ispaq.irismustangmetrics import *
 
-import ispaq.utils.metric_sets as metric_sets
+import ispaq.utils.metric_calculators as metric_sets
 import ispaq.utils.sncls as sncl_utils
 import ispaq.utils.preferences as preferences
 from ispaq.utils.misc import *
@@ -53,18 +53,18 @@ def main(argv=None):
                         help='number of significant figures to round metrics to')
 
     args = parser.parse_args(argv)
-    
+
     if not args.example_data and (not args.sncl or not args.start):
         sys.exit('Requires either --example data or --start and --sncl')
-    
+
     # Load Preferences ---------------------------------------------------------
     
     custom_metric_sets, custom_sncls = preferences.load(args.preference_file)
-    function_sets, custom_metric_errs = metric_sets.validate(custom_metric_sets)
+    function_sets, custom_metric_errs = preferences.validate_metric_sets(custom_metric_sets)
 
     # TODO: validate and or build sncls
     # TODO: Verify that desired metric set exists in preference file or otherwise
-        
+
     # Obtain data --------------------------------------------------------------
     
     if args.example_data:
@@ -79,12 +79,12 @@ def main(argv=None):
         # Obtain data from IRIS DMC
         from ispaq.irisseismic import R_getSNCL
         from rpy2.rinterface import RRuntimeError
-        
+
         # format arguments
         starttime = obspy.UTCDateTime(args.start)  # Test date for US.OXF..BHZ is 2002-04-20 + 1 day
         endtime = starttime + (24 * 3600)
         sncls = sncl_utils.get_simple_sncls(args.sncl, custom_sncls, starttime, endtime)
-        
+
         print('Building %s Streams' % len(sncls))
         try:  # in case lack of internet
             r_streams = sncls.apply(lambda sncl: statuswrap(R_getSNCL, 0, RRuntimeError, sncl,

@@ -49,7 +49,7 @@ class UserRequest(object):
         TODO:  Generate doctest examples by loading from json.
         """
 
-        #     Load json data if requested     ---------------------------------
+        #     Set fields from JSON if requested--------------------------------
 
         if json_user_request is not None:
             # Load json dictionary from file (or string)
@@ -60,41 +60,27 @@ class UserRequest(object):
             # TODO:
             print("'json'_file argument not supported yet.")
 
-        #     Assign basic internal properties     ----------------------------
+        #     Set fields from arguments       ---------------------------------
 
-        # times
-        self.starttime = UTCDateTime(requested_start_time)
+        # desired metric set
+        self.metric_set_name = requested_metric_set
+        self.sncl_alias = requested_sncl_alias
+
+        # start and end times
+        self.requested_start_time = UTCDateTime(requested_start_time)
+
         if requested_end_time is None:
-            self.endtime = self.starttime + 24 * 3600
+            self.requested_end_time = self.requested_start_time + (24 * 60 * 60)
         else:
-            self.endtime = UTCDateTime(requested_end_time)
+            self.requested_end_time = UTCDateTime(requested_end_time)
 
-        # TODO:  remove these when preferences get loaded
-        self.event_url = "IRIS"
-        self.station_url = "IRIS"
-        self.dataselect_url = "IRIS"
+        #     Load preferences from file      ---------------------------------
 
-        # More to be added as needed
-
-        #     Load preferences from file     ----------------------------------
-
+        # custom metrics sets and sncls
         self.custom_metric_sets, self.sncl_aliases = preferences.load(pref_file)
 
-        #     Create metric_dictionary     ------------------------------------
-
-        # NOTE:  metric_sets are defined in irismustangmetrics/metrics.py but will
-        # NOTE:  ultimately come from the R package. Current sets include:
-        # NOTE:  basicStats, gaps, spikes, stateOfHealth and STALTA (slow).
-
-        # TODO:  After loading the preferences file, we need to load the
-        # TODO:  dictionary of function meatadata organized as:
-        # TODO:    metric_set > logic_type > metric name
-        # TODO:
-        # TODO:  We need to winnow this dictionary to omit any metrics
-        # TODO:  who do not have any metrics namded in self.metric_names.
-        # TODO:
-        # TODO:  Finally, we restructure into another dictionary organized as:
-        # TODO:    logic_type > metric_set > metric_name
+        # {irismustang function: custom metric set that they provide data for}, [sets that don't exist]
+        self.required_metric_set_functions, dne_sets = preferences.validate_metric_sets(self.custom_metric_sets)
 
     def json_dump(self):
         """
