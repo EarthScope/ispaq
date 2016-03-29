@@ -8,6 +8,7 @@ ISPAQ Preferences Loader and Container.
     (http://www.gnu.org/copyleft/lesser.html)
 """
 import json
+import ispaq.utils.preferences as preferences
 
 from obspy import UTCDateTime
 
@@ -29,7 +30,7 @@ class DummyUserRequest(object):
         self.event_url = "IRIS"
         self.station_url = "IRIS"
         self.dataselect_url = "IRIS"
-        self.metric_names = ["num_gaps"] # TODO:  to be removed
+        self.metric_names = ["num_gaps"]  # TODO:  to be removed
         self.sncl_patterns = ["US.OXF..*"]
         self.metric_dictionary = {'simple': {'basicStats': ['sample_min','sample_max'],
                                              'gaps': ['num_gaps']} }
@@ -38,7 +39,8 @@ class DummyUserRequest(object):
 
 # Real UserRequest object
 class UserRequest(object):
-    def __init__(self, args=None, json=None):
+    def __init__(self, requested_start_time, requested_end_time, requested_metric_set, requested_sncl_alias, pref_file,
+                 json_user_request=None):
         """
         Creates a UserRequest object.
 
@@ -49,7 +51,7 @@ class UserRequest(object):
 
         #     Load json data if requested     ---------------------------------
 
-        if json is not None:
+        if json_user_request is not None:
             # Load json dictionary from file (or string)
             # TODO:  Test whether the `json` argument is a file or a string and
             # TODO:  use json.load() or json.loads() accordingly
@@ -58,37 +60,25 @@ class UserRequest(object):
             # TODO:
             print("'json'_file argument not supported yet.")
 
-
         #     Assign basic internal properties     ----------------------------
 
-        # Record of all arguments
-        self.args = args
-
         # times
-        self.starttime = UTCDateTime(args.start)
-        if args.end is None:
+        self.starttime = UTCDateTime(requested_start_time)
+        if requested_end_time is None:
             self.endtime = self.starttime + 24 * 3600
         else:
-            self.endtime = UTCDateTime(args.end)
+            self.endtime = UTCDateTime(requested_end_time)
 
         # TODO:  remove these when preferences get loaded
         self.event_url = "IRIS"
         self.station_url = "IRIS"
         self.dataselect_url = "IRIS"
-        self.metric_names = ["num_gaps"] # TODO:  to be removed
-        self.sncl_patterns = ["US.OXF..*"]
 
         # More to be added as needed
 
-
         #     Load preferences from file     ----------------------------------
 
-        # Load and validate preferences file
-        # TODO:  load and validate preferences file
-
-        # Assign preferences file properties
-        # self.sncl_patterns = [] # TODO:  fill this in
-        # self.metric_names = [] # TODO:  fill this in
+        self.custom_metric_sets, self.sncl_aliases = preferences.load(pref_file)
 
         #     Create metric_dictionary     ------------------------------------
 
@@ -106,17 +96,11 @@ class UserRequest(object):
         # TODO:  Finally, we restructure into another dictionary organized as:
         # TODO:    logic_type > metric_set > metric_name
 
-        self.metric_dictionary = {'simple': {'basicStats': ['sample_min','sample_max'],
-                                             'gaps': ['num_gaps']} }
-
-
-
-
     def json_dump(self):
         """
         Dump a dictionary of UserRequest properties as a json string
         
-        # TODO:  If a file argument is given, dump to a file with json.dumpf.
+        # TODO:  If a file argument is given, dump to a file with json.dump.
         # TODO:  Otherwise, return the json string.
         """
 
@@ -127,11 +111,8 @@ class UserRequest(object):
         
         properties_json = json.dumps(properties_dict)
         
-        return(properties_json)
+        return properties_json
         
-                
-
-
 
 if __name__ == '__main__':
     import doctest
