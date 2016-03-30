@@ -65,14 +65,16 @@ class UserRequest(object):
             #     Load preferences from file      ---------------------------------
 
             # custom metrics sets and sncls
-            custom_metric_sets, custom_sncl = {}, {}
+            custom_metric_sets, custom_sncl, custom_urls = {}, {}, {}
             current = None
             for line in pref_file:  # parse file
-                line = line.split('#')[0].strip() # remove comments
+                line = line.split('#')[0].strip()  # remove comments
                 if line.lower() == "custom metric sets:":  # metric header
                     current = 'm'
                 elif line.lower() == "sncl aliases:":  # sncl header
                     current = 's'
+                elif line.lower() == "networking:":
+                    current = 'n'
                 elif current is not None:  # line following header
                     entry = line.split(':')
                     if len(entry) <= 1:  # empty line
@@ -88,8 +90,14 @@ class UserRequest(object):
                         custom_metric_sets[name] = values
                     elif current == 's':
                         custom_sncl[name] = values
+                    elif current == 'n':
+                        custom_urls[name] = values[0]
 
             self.custom_metric_sets, self.sncl_aliases = custom_metric_sets, custom_sncl
+            print(custom_urls)
+            self.dataselect_url = custom_urls['dataselect_url']
+            self.event_url = custom_urls['event_url']
+            self.station_url = custom_urls['station_url']
 
             #     Finding required metric_set functions----------------------------
 
@@ -143,6 +151,9 @@ class UserRequest(object):
                "requested sncl alias: %s \n\t" \
                "requested start time: %s \n\t" \
                "requested end time: %s \n\t" \
+               "station url: %s \n\t" \
+               "event url: %s \n\t" \
+               "dataselect url: %s \n\t" \
                "custom metric sets: %s \n\t" \
                "requested metrics that dne: %s \n\t" \
                "custom sncl aliases: %s \n\t" \
@@ -151,6 +162,9 @@ class UserRequest(object):
                                                          self.requested_sncl_alias,
                                                          self.requested_start_time,
                                                          self.requested_end_time,
+                                                         self.station_url,
+                                                         self.event_url,
+                                                         self.dataselect_url,
                                                          self.custom_metric_sets,
                                                          self.dne_metrics,
                                                          self.sncl_aliases,
