@@ -31,6 +31,7 @@ class DummyUserRequest(object):
         self.dataselect_url = "IRIS"
         self.metric_names = ["num_gaps"]
         self.sncl_patterns = ["US.OXF..*"]
+        self.metric_dictionary = {}
 
 
 class Concierge(object):
@@ -238,8 +239,8 @@ class Concierge(object):
         .. rubric:: Example
 
         >>> my_request =  DummyUserRequest()
-        >>> gustave = Concierge(my_request)
-        >>> gustave.get_sncls() #doctest: +ELLIPSIS
+        >>> concierge = Concierge(my_request)
+        >>> concierge.get_sncls() #doctest: +ELLIPSIS
         [u'US.OXF..BHE', u'US.OXF..BHN', ... u'US.OXF..LHN', u'US.OXF..LHZ']
         """
 
