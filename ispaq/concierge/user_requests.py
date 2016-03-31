@@ -8,7 +8,8 @@ ISPAQ Preferences Loader and Container.
     (http://www.gnu.org/copyleft/lesser.html)
 """
 import json
-import ispaq.utils.preferences as preferences
+from os.path import expanduser
+
 from ispaq.irismustangmetrics.metrics import metricslist
 
 from obspy import UTCDateTime
@@ -16,7 +17,7 @@ from obspy import UTCDateTime
 
 class UserRequest(object):
     def __init__(self, requested_start_time=None, requested_end_time=None, requested_metric_set=None,
-                 requested_sncl_alias=None, pref_file=None, json_user_request=None, dummy_object=False):
+                 requested_sncl_alias=None, pref_file=None, json_representation=None, dummy=False):
         """
         Creates a UserRequest object.
 
@@ -26,17 +27,28 @@ class UserRequest(object):
         """
 
         #     Set fields from JSON if requested--------------------------------
-        if json_user_request is not None:
+        if json_representation is not None:
             # Load json dictionary from file (or string)
-            # TODO:  Test whether the `json` argument is a file or a string and
-            # TODO:  use json.load() or json.loads() accordingly
+            try:
+                with open(expanduser(json_representation), 'r') as infile:
+                    representation = json.load(infile)
+            except IOError:
+                representation = json.loads(json_representation)
 
-            # Create new 'args' object
-            # TODO:
-            print("'json'_file argument not supported yet.")
+            self.requested_metric_set = representation['requested_metric_set']
+            self.requested_sncl_alias = representation['requested_sncl_alias']
+            self.requested_start_time = representation['requested_start_time']
+            self.requested_end_time = representation['requested_end_time']
+            self.custom_metric_sets = representation['custom_metric_sets']
+            self.sncl_aliases = representation['sncl_aliases']
+            self.required_metric_set_functions = representation['required_metric_set_functions']
+            self.dne_metrics = representation['dne_metrics']
+            self.event_url = representation['event_url']
+            self.station_url = representation['station_url']
+            self.dataselect_url = representation['dataselect_url']
 
         #     Create dummy object if requested---------------------------------
-        elif dummy_object:
+        elif dummy:
             self.requested_metric_set = 'dummySetName'
             self.requested_sncl_alias = 'dummySNCLAlias'
             self.requested_start_time = UTCDateTime("2002-04-20")
@@ -139,7 +151,7 @@ class UserRequest(object):
 
         json_string = json.dumps(self, default=lambda o: o.__dict__)
         if file_loc is not None:
-            with open(file_loc, 'w') as outfile:
+            with open(expanduser(file_loc), 'w') as outfile:
                 outfile.write(json_string)
         return json_string
 
