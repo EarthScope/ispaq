@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def get_simple_sncls(sncl_alias, custom_sncls, starttime, endtime):
+def get_simple_sncls(user_request):
     """
     returns the simplest sncls that compose any sncl or sncl alias
     :param sncl_alias: any sncl or sncl alias
@@ -10,10 +10,13 @@ def get_simple_sncls(sncl_alias, custom_sncls, starttime, endtime):
     :param endtime: end of period to decompose over
     :returns: a pandas series of simple sncls (as strings)
     """
-    if _validate(sncl_alias): 
-        return _decompose(sncl_alias, starttime, endtime)
-    elif sncl_alias in custom_sncls:
-        simple_sncls = pd.concat([_decompose(sncl, starttime, endtime) for sncl in custom_sncls[sncl_alias]])
+    if _validate(user_request.requested_sncl_alias):
+        return _decompose(user_request.requested_sncl_alias, user_request.requested_start_time,
+                          user_request.requested_end_time)
+    elif user_request.requested_sncl_alias in user_request.sncl_aliases:
+        simple_sncls = pd.concat([_decompose(sncl, user_request.requested_start_time,
+                                             user_request.requested_end_time)
+                                  for sncl in user_request.sncl_aliases[user_request.requested_sncl_alias]])
         return simple_sncls.reset_index(drop=True)
 
 

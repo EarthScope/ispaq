@@ -7,3 +7,8 @@ Custom Metric Sets:
 
 SNCL Aliases:
   MyVirtualNetwork: IU.*.*.BH?, US.OXF.*.BH?
+
+Networking:
+  event_url: IRIS
+  station_url: IRIS
+  dataselect_url: IRIS
