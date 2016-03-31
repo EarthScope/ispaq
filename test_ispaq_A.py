@@ -39,11 +39,11 @@ def main(argv=None):
                         version='%(prog)s ' + __version__)
     parser.add_argument('--example-data', action='store_true', default=False,
                         help='use example data from local disk')
-    parser.add_argument('--sncl', action='store', default=False,
+    parser.add_argument('--sncl', action='store', default=None,
                         help='Network.Station.Location.Channel identifier (e.g. US.OXF..BHZ)')
-    parser.add_argument('--start', action='store', default=False,
+    parser.add_argument('--start', action='store', default=None,
                         help='starttime in ISO 8601 format')
-    parser.add_argument('--end', action='store', default=False,
+    parser.add_argument('--end', action='store', default=None,
                         help='starttime in ISO 8601 format')
     parser.add_argument('-M', '--metric-set-name', required=True,
                         help='name of metric to calculate')  # TODO re-add the limit

@@ -13,9 +13,10 @@ from ispaq.irismustangmetrics.metrics import metricslist
 
 from obspy import UTCDateTime
 
+
 class UserRequest(object):
-    def __init__(self, requested_start_time, requested_end_time, requested_metric_set, requested_sncl_alias, pref_file,
-                 json_user_request=None, dummy_object=False):
+    def __init__(self, requested_start_time=None, requested_end_time=None, requested_metric_set=None,
+                 requested_sncl_alias=None, pref_file=None, json_user_request=None, dummy_object=False):
         """
         Creates a UserRequest object.
 
@@ -57,7 +58,7 @@ class UserRequest(object):
             # start and end times
             self.requested_start_time = UTCDateTime(requested_start_time)
 
-            if requested_end_time:
+            if requested_end_time is not None:
                 self.requested_end_time = UTCDateTime(requested_end_time)
             else:
                 self.requested_end_time = self.requested_start_time + (24 * 60 * 60)
@@ -128,47 +129,22 @@ class UserRequest(object):
             # {irismustang function: custom metric set that they provide data for}, [metrics that don't exist]
             self.required_metric_set_functions, self.dne_metrics = custom_metricset_functions, error_list
 
-    def json_dump(self):
+    def json_dump(self, file_loc=None):
         """
         Dump a dictionary of UserRequest properties as a json string
-        
-        # TODO:  If a file argument is given, dump to a file with json.dump.
-        # TODO:  Otherwise, return the json string.
+        Does not catch IOError if file_loc is invalid
+        :param file_loc: location to write json
+        :returns: a json string
         """
 
-        properties_dict = {}
-        
-        # TODO:  Fill in properties_dict with all properties, converting from
-        # TODO:  UTCDateTime with str(self.starttime) and str(self.endtime).
-        
-        properties_json = json.dumps(properties_dict)
-        
-        return properties_json
+        json_string = json.dumps(self, default=lambda o: o.__dict__)
+        if file_loc is not None:
+            with open(file_loc, 'w') as outfile:
+                outfile.write(json_string)
+        return json_string
 
     def __str__(self):
-        return "UserRequest Object @ %s: \n\t" \
-               "requested metric set: %s \n\t" \
-               "requested sncl alias: %s \n\t" \
-               "requested start time: %s \n\t" \
-               "requested end time: %s \n\t" \
-               "station url: %s \n\t" \
-               "event url: %s \n\t" \
-               "dataselect url: %s \n\t" \
-               "custom metric sets: %s \n\t" \
-               "requested metrics that dne: %s \n\t" \
-               "custom sncl aliases: %s \n\t" \
-               "required metric set functions: %s \n" % (hex(id(self)),
-                                                         self.requested_metric_set,
-                                                         self.requested_sncl_alias,
-                                                         self.requested_start_time,
-                                                         self.requested_end_time,
-                                                         self.station_url,
-                                                         self.event_url,
-                                                         self.dataselect_url,
-                                                         self.custom_metric_sets,
-                                                         self.dne_metrics,
-                                                         self.sncl_aliases,
-                                                         self.required_metric_set_functions)
+        return self.json_dump()
         
 
 if __name__ == '__main__':
