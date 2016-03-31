@@ -147,6 +147,14 @@ class UserRequest(object):
         Does not catch IOError if file_loc is invalid
         :param file_loc: location to write json
         :returns: a json string
+
+        >>> u = UserRequest(dummy=True)
+        >>> output = u.json_dump()
+        >>> output #doctest: +ELLIPSIS
+        '{"custom_metric_sets": ... "event_url": "IRIS", ... "dataselect_url": "IRIS", "dne_metrics": null}'
+        >>> s = UserRequest(json_representation=output)
+        >>> s.json_dump() #doctest: +ELLIPSIS
+        '{"custom_metric_sets": ... "event_url": "IRIS", ... "dataselect_url": "IRIS", "dne_metrics": null}'
         """
 
         json_string = json.dumps(self, default=lambda o: o.__dict__)
