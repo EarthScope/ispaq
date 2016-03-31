@@ -79,16 +79,16 @@ class UserRequest(object):
 
             # custom metrics sets and sncls
             custom_metric_sets, custom_sncl, custom_urls = {}, {}, {}
-            current = None
+            currentSection = None
             for line in pref_file:  # parse file
                 line = line.split('#')[0].strip()  # remove comments
                 if line.lower() == "custom metric sets:":  # metric header
-                    current = 'm'
+                    currentSection = 'metric'
                 elif line.lower() == "sncl aliases:":  # sncl header
-                    current = 's'
+                    currentSection = 'sncl'
                 elif line.lower() == "networking:":
-                    current = 'n'
-                elif current is not None:  # line following header
+                    currentSection = 'networking'
+                elif currentSection is not None:  # line following header
                     entry = line.split(':')
                     if len(entry) <= 1:  # empty line
                         name, values = None, None
@@ -99,15 +99,15 @@ class UserRequest(object):
                         values = filter(None, values)  # remove empty strings
                     if name is None:
                         pass
-                    elif current == 'm':
+                    elif currentSection == 'metric':
                         custom_metric_sets[name] = values
-                    elif current == 's':
+                    elif currentSection == 'sncl':
                         custom_sncl[name] = values
-                    elif current == 'n':
+                    elif currentSection == 'networking':
                         custom_urls[name] = values[0]
 
             self.custom_metric_sets, self.sncl_aliases = custom_metric_sets, custom_sncl
-            print(custom_urls)
+            ###print(custom_urls)
             self.dataselect_url = custom_urls['dataselect_url']
             self.event_url = custom_urls['event_url']
             self.station_url = custom_urls['station_url']
@@ -117,7 +117,7 @@ class UserRequest(object):
             print('Validating custom metrics...')
             error_list = []
             custom_metricset_functions = {}
-            metric_functions = metricslist()
+            metric_functions = metricslist() # this is a dictionary: function_name > contained_metrics
 
             # Creates a dictionary of {needed functions: [list of needed metrics that they provide]}
             for custom_metricset in custom_metric_sets:
