@@ -37,8 +37,8 @@ class UserRequest(object):
 
             self.requested_metric_set = representation['requested_metric_set']
             self.requested_sncl_alias = representation['requested_sncl_alias']
-            self.requested_start_time = representation['requested_start_time']
-            self.requested_end_time = representation['requested_end_time']
+            self.requested_start_time = UTCDateTime(representation['requested_start_time']["timestamp"])
+            self.requested_end_time = UTCDateTime(representation['requested_end_time']["timestamp"])
             self.custom_metric_sets = representation['custom_metric_sets']
             self.sncl_aliases = representation['sncl_aliases']
             self.required_metric_set_functions = representation['required_metric_set_functions']
