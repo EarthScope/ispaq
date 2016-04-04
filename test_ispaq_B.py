@@ -16,10 +16,10 @@ from ispaq.irismustangmetrics import *
 
 import ispaq.utils.metric_sets as metric_sets
 import ispaq.utils.sncls as sncl_utils
-import ispaq.utils.preferences as preferences
 from ispaq.utils.misc import *
 
-from ispaq.concierge import Concierge, DummyUserRequest, UserRequest
+from ispaq.concierge.user_request import UserRequest
+#from ispaq.concierge.concierge import Concierge
 
 import pandas as pd
 
@@ -47,14 +47,14 @@ def main(argv=None):
                         help='starttime in ISO 8601 format')
     parser.add_argument('--end', action='store', required=False,
                         help='endtime in ISO 8601 format')
-    # parser.add_argument('-M', '--metric-set-name', required=True,
-    #                     help='name of metric to calculate')  # TODO re-add the limit
-    # parser.add_argument('-P', '--preference-file', default=expanduser('~/.irispref'),
-    #                     type=argparse.FileType('r'), help='location of preference file')
-    # parser.add_argument('-O', '--output-loc', default='.',
-    #                     help='location to output ')
-    # parser.add_argument('-S', '--sigfigs', type=check_negative, default=6,
-    #                     help='number of significant figures to round metrics to')
+    parser.add_argument('-M', '--metric-set-name', required=True,
+                        help='name of metric to calculate')
+    parser.add_argument('-P', '--preference-file', default=expanduser('~/.irispref'),
+                        type=argparse.FileType('r'), help='location of preference file')
+    parser.add_argument('-O', '--output-loc', default='.',
+                        help='location to output ')
+    parser.add_argument('-S', '--sigfigs', type=check_negative, default=6,
+                        help='number of significant figures to round metrics to')
 
     args = parser.parse_args(argv)
     
@@ -89,7 +89,10 @@ def main(argv=None):
     # preferred format.
 
     try:
-        user_request = UserRequest(args)
+        #user_request = UserRequest(args)
+        user_request = UserRequest(args.start, args.end, args.metric_set_name, args.sncl, args.preference_file)
+        print(user_request)
+
     except Exception as e:
         if str(e) == "Not really an error.":
             pass
@@ -118,26 +121,26 @@ def main(argv=None):
     # or inventory of sncls [starttime, endtime, sncl_patterns, client_url, ...]
     # are part of the user_request object that the concierge has access to
   
-    try:
-        concierge = Concierge(user_request)
-    except Exception as e:
-        if str(e) == "Not really an error.":
-            pass
-        else:
-            raise
+    # try:
+    #     concierge = Concierge(user_request)
+    # except Exception as e:
+    #     if str(e) == "Not really an error.":
+    #         pass
+    #     else:
+    #         raise
 
 
     # Generate Simple Metrics --------------------------------------------------
 
-    try:
-        print(concierge.get_sncls())
-        #simple_output = ispaq.business_logic.generate_simple_metrics(concierge)
-        #try:
-            ## Dump output to a file
-        #except:
-            ##
-    except Exception as e:
-          print(str(e))
+    # try:
+    #     print(concierge.get_sncls())
+    #     #simple_output = ispaq.business_logic.generate_simple_metrics(concierge)
+    #     #try:
+    #         ## Dump output to a file
+    #     #except:
+    #         ##
+    # except Exception as e:
+    #       print(str(e))
 
 
     # Generate SNR Metrics -----------------------------------------------------

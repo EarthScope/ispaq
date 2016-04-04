@@ -35,7 +35,7 @@ from future.builtins import *  # NOQA
 from future.utils import native_str
 
 from ispaq.concierge.concierge import Concierge
-from ispaq.concierge.user_requests import UserRequest
+from ispaq.concierge.user_request import UserRequest
 
 
 if __name__ == '__main__':

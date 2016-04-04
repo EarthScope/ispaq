@@ -16,7 +16,7 @@ from ispaq.irismustangmetrics import *
 
 import ispaq.utils.metric_calculators as metric_sets
 import ispaq.utils.sncls as sncl_utils
-from ispaq.concierge.user_requests import UserRequest
+from ispaq.concierge.user_request import UserRequest
 from ispaq.utils.misc import *
 
 import pandas as pd
@@ -87,8 +87,8 @@ def main(argv=None):
         print('Building %s Streams' % len(sncls))
         try:  # in case lack of internet
             r_streams = sncls.apply(lambda sncl: statuswrap(R_getSNCL, 0, RRuntimeError, sncl,
-                                                            user_request.requested_start_time,
-                                                            user_request.requested_end_time))
+                                                            user_request.requested_starttime,
+                                                            user_request.requested_endtime))
             r_streams = r_streams.dropna()
         except RRuntimeError:
             sys.exit('\033[91m\nError: Could not fetch data. '
@@ -99,7 +99,7 @@ def main(argv=None):
     
     # TODO:  Need a dictionary so we can test whether a metrics is "simple" or something else.
     
-    # TODO:  Future iterations will need to handle the possibility that a metric alias
+    # TODO:  Future iterations will need to handle the possibility that a metric set
     # TODO:  will refer to simple and other types of metrics. In these cases it may be necessary
     # TODO:  to deal with all of the simple metrics in a block first, outputting one csv file
     # TODO:  for them and then continuing with other categories of metrics whose data will

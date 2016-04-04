@@ -1,6 +1,6 @@
 # text to the           right of `#` are comments and are ignored by the parser
 
-Custom Metric Sets:
+Metrics:
 
   MyContinuityMetrics: num_gaps,          num_overlaps, num_spikes
   MyStats: sample_max, sample_mean, sample_median, sample_rms
@@ -8,10 +8,10 @@ Custom Metric Sets:
 
   Uptime: percent_availability, channel_up_time
 
-SNCL Aliases:
+SNCLs:
   MyVirtualNetwork: IU.*.*.BH?,      US.OXF.*.BH?
 
-  Custom Metric Sets:
+  Metrics:
   MyContinuityMetrics:        num_gaps,   num_overlaps, num_spikes
 
 

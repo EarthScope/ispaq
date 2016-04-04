@@ -1,14 +1,22 @@
 # text to the right of `#` are comments and are ignored by the parser
 
-Custom Metric Sets:
+# User defined sets of metrics ------------------------------------------------
+
+Metrics:
   MyContinuityMetrics: num_gaps, num_overlaps, num_spikes
   MyStats: sample_max, sample_mean, sample_median, sample_rms
   Uptime: percent_availability, channel_up_time
 
-SNCL Aliases:
+
+# User defined sets of SNCLs --------------------------------------------------
+
+SNCLs:
   MyVirtualNetwork: IU.*.*.BH?, US.OXF.*.BH?
 
-Networking:
+
+# Data services (typically FDSN web service providers) ------------------------
+
+Data Services:
   event_url: IRIS
   station_url: IRIS
   dataselect_url: IRIS
