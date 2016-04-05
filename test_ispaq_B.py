@@ -14,8 +14,6 @@ import argparse
 
 from ispaq.irismustangmetrics import *
 
-import ispaq.utils.metric_sets as metric_sets
-import ispaq.utils.sncls as sncl_utils
 from ispaq.utils.misc import *
 
 from ispaq.concierge.user_request import UserRequest
@@ -41,57 +39,36 @@ def main(argv=None):
                         version='%(prog)s ' + __version__)
     # parser.add_argument('--example-data', action='store_true', default=False,
     #                     help='use example data from local disk')
-    parser.add_argument('--sncl', action='store', default=False,
-                        help='Network.Station.Location.Channel identifier (e.g. US.OXF..BHZ)')
     parser.add_argument('--start', action='store', required=True,
                         help='starttime in ISO 8601 format')
     parser.add_argument('--end', action='store', required=False,
                         help='endtime in ISO 8601 format')
-    parser.add_argument('-M', '--metric-set-name', required=True,
+    parser.add_argument('-M', '--metrics', required=True,
                         help='name of metric to calculate')
-    parser.add_argument('-P', '--preference-file', default=expanduser('~/.irispref'),
+    parser.add_argument('-S', '--sncls', action='store', default=False,
+                        help='Network.Station.Location.Channel identifier (e.g. US.OXF..BHZ)')
+    parser.add_argument('-P', '--preferences-file', default=expanduser('~/.irispref'),
                         type=argparse.FileType('r'), help='location of preference file')
     parser.add_argument('-O', '--output-loc', default='.',
                         help='location to output ')
-    parser.add_argument('-S', '--sigfigs', type=check_negative, default=6,
-                        help='number of significant figures to round metrics to')
+
+    # TODO:  additional configurable elements like sigfigs should be in the preferences file
+    # parser.add_argument('--sigfigs', type=check_negative, default=6,
+    #                     help='number of significant figures to round metrics to')
 
     args = parser.parse_args(argv)
     
 
-    # Load Preferences ---------------------------------------------------------
+    #     Create UserRequest object     ---------------------------------------
     #
-    # The user_request class is in charge of parsing arguments, loading and
-    # parsing a preferences file and setting a bunch of properties that capture
-    # the totality of what the user wants in this invocation of the script.
-    #
-    # Properties that must be specified include at a minimum:
-    #  * metric_names[]
-    #  * sncl_patterns[]
-    #  * starttime
-    #  * endtime
-    #  * event_url
-    #  * station_url
-    #  * dataselect_url
-    #
-    # All methods are internal except for load_json() and dump_json() which can
-    # be used for debugging. The user_request will be stored by the concierge
-    # for future reference.
-    #
-    # Think of the methods of the user_request object as the work of a lower
-    # level front desk person who is taking guest information from a handwritten
-    # request (preferences file) and phone call (command line arguments)
-    # and transcribing that info[ onto a standard form that the cocierge keeps
-    # for each guest. (Each unique invocation of this script is a new 'guest'.)
-    # 
-    # When the guest asks for something later, the concierge has already done
-    # the background work and can provide the guest whatever they want in their
-    # preferred format.
+    # The UserRequest class is in charge of parsing arguments issued on the
+    # command line, loading and parsing a preferences file, and setting a bunch
+    # of properties that capture the totality of what the user wants in a single
+    # invocation of the ISPAQ top level script.
 
     try:
-        #user_request = UserRequest(args)
-        user_request = UserRequest(args.start, args.end, args.metric_set_name, args.sncl, args.preference_file)
-        print(user_request)
+        user_request = UserRequest(args.start, args.end, args.metrics, args.sncls, args.preferences_file)
+        print(user_request.json_dump(pretty=True))
 
     except Exception as e:
         if str(e) == "Not really an error.":
@@ -99,8 +76,7 @@ def main(argv=None):
         else:
             raise
 
-    ###user_request = DummyUserRequest()
-
+    ###a = 1
     # Create Concierge (aka Expediter) -----------------------------------------
     #
     # The concierge uses the completely filled out user_request and has the

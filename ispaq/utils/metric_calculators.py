@@ -6,7 +6,7 @@ from ispaq.irismustangmetrics.metrics import *
 
 # TODO make this function accept a UserRequests object
 def simple_set(metric_set, custom_metric_set_functions, r_streams, sigfigs=6,
-               function_metadata=functionmetadata()):
+               function_metadata=function_metadata()):
     """
     Returns a dataframe with the metrics specified in the metric_set
     :param r_streams: pandas series of r_streams

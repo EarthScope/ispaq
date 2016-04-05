@@ -12,11 +12,12 @@ Metrics:
 
 SNCLs:
   MyVirtualNetwork: IU.*.*.BH?, US.OXF.*.BH?
+  OXF: US.OXF..BH?
 
 
-# Data services (typically FDSN web service providers) ------------------------
+# Data access (typically FDSN web service providers) --------------------------
 
-Data Services:
+Data_access:
   event_url: IRIS
   station_url: IRIS
   dataselect_url: IRIS

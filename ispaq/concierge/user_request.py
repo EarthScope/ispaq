@@ -16,43 +16,48 @@ from obspy import UTCDateTime
 # The metricslist function returns a dictionary information on "metric sets",
 # "business logic" and "metric names".
 # TODO:  metricslist should be a function in the R irisMustangMetrics package.
-from ispaq.irismustangmetrics.metrics import metricslist
+from ispaq.irismustangmetrics.metrics import function_metadata
 
 
 class UserRequest(object):
     """
     The user_request class is in charge of parsing arguments issued on the
-    command line, loading and parsing a preferences file and setting a bunch
+    command line, loading and parsing a preferences file, and setting a bunch
     of properties that capture the totality of what the user wants in a single
     invocation of the ISPAQ top level script.
 
-    Properties that must be specified include at a minimum:
-     * metric_names[]
-     * sncl_patterns[]
-     * starttime
-     * endtime
-     * event_url
-     * station_url
-     * dataselect_url
+    After processing the preferences file, the list of internal properties
+    will include:
+     * requested_starttime -- ISO 8601 formatted start time for each seismic signal
+     * requested_endtime -- ISO 8601 formatted end time for each seismic signal
+     * requested_metric_set -- alias for a list of metrics in the preferences file
+     * requested_sncl_set -- alias for a list of SNCLs in the preferences file
+     * metric_sets -- dictionary of available metric sets
+     * sncl_sets -- dictionary of available sncl sets
+     * event_url -- resource to use for event meatadata
+     * station_url -- resource to use for station metadata
+     * dataselect_url -- resource to use for seismic data
 
-    All methods are internal except for load_json() and dump_json() which can
-    be used for debugging. The user_request will be stored by the concierge
-    for future reference.
-
-    Think of the methods of the user_request object as the work of a lower
+    Think of the initialization of the user_request object as the work of a lower
     level front desk person who is taking guest information from a handwritten
-    request (preferences file) and phone call (command line arguments)
-    and transcribing that info[ onto a standard form that the cocierge keeps
+    request (preferences file) and phone call (command line arguments) and
+    transcribing that information onto a standard form that the concierge keeps
     for each guest. (Each unique invocation of this script is a new 'guest'.)
 
-    When the guest asks for something later, the concierge has already done
-    the background work and can provide the guest whatever they want in their
-    preferred format.
+    When downstream processing in the metrics business logic needs specific
+    information, the concierge has already done the background work and can
+    provide the business processing logic whatever it needs.
+
+    The concierge is an adapter that allows preference files to be simple and
+    sensible for the end user and provides an API to the business logic code
+    that is simple and sensible from that perspective.
     """
     def __init__(self,
                  requested_starttime=None, requested_endtime=None,
                  requested_metric_set=None, requested_sncl_set=None,
-                 pref_file=None, json_representation=None, dummy=False):
+                 preferences_file=None,
+                 json_representation=None, dummy=False,
+                 verbose=False):
         """
         Creates a UserRequest object.
 
@@ -67,40 +72,50 @@ class UserRequest(object):
             # Load json dictionary from file (or string)
             try:
                 with open(expanduser(json_representation), 'r') as infile:
-                    representation = json.load(infile)
+                    json_dict = json.load(infile)
             except IOError:
-                representation = json.loads(json_representation)
+                json_dict = json.loads(json_representation)
 
-            self.requested_starttime = UTCDateTime(representation['requested_starttime']["timestamp"])
-            self.requested_endtime = UTCDateTime(representation['requested_endtime']["timestamp"])
-            self.requested_metric_set = representation['requested_metric_set']
-            self.requested_sncl_set = representation['requested_sncl_set']
-
-            self.custom_metric_sets = representation['custom_metric_sets']
-            self.sncl_sets = representation['sncl_sets']
-            self.required_metric_set_functions = representation['required_metric_set_functions']
-            self.dne_metrics = representation['dne_metrics']
-            self.event_url = representation['event_url']
-            self.station_url = representation['station_url']
-            self.dataselect_url = representation['dataselect_url']
-
+            # Information coming in from the command line
+            self.requested_starttime = UTCDateTime(json_dict['requested_starttime']["timestamp"])
+            self.requested_endtime = UTCDateTime(json_dict['requested_endtime']["timestamp"])
+            self.requested_metric_set = json_dict['requested_metric_set']
+            self.requested_sncl_set = json_dict['requested_sncl_set']
+            # Metric and SNCL information from the preferences file
+            self.metrics = json_dict['metrics']
+            self.sncls = json_dict['sncls']
+            # Data access information from the preferences file
+            self.event_url = json_dict['event_url']
+            self.station_url = json_dict['station_url']
+            self.dataselect_url = json_dict['dataselect_url']
+            # Metric functions determined by querying the R package
+            self.invalid_metrics = json_dict['invalid_metrics']
+            self.function_by_logic = json_dict['function_by_logic']
 
         #     Initialize a dummy object     -----------------------------------
 
         elif dummy:
+            # Information coming in from the command line
             self.requested_starttime = UTCDateTime("2002-04-20")
             self.requested_endtime = UTCDateTime("2002-04-21")
             self.requested_metric_set = 'dummy_metric_set'
             self.requested_sncl_set = 'dummy_sncl_set'
-
-            self.custom_metric_sets = {'dummySetName': ['sample_min', 'sample_rms']}
-            self.sncl_sets = {'dummySNCLAlias': ['US.OXF..BHZ', 'IU.OXF..BH?']}
-            self.required_metric_set_functions = {'basicStats': 'dummySetName'}
-            self.dne_metrics = None
+            # Metric and SNCL information from the preferences file
+            self.metrics = ['sample_min', 'sample_rms']
+            self.sncls = ['US.OXF..BHZ', 'IU.OXF..BH?']
+            # Data access information from the preferences file
             self.event_url = "IRIS"
             self.station_url = "IRIS"
             self.dataselect_url = "IRIS"
-
+            # Metric functions determined by querying the R package
+            self.invalid_metrics = None
+            self.function_by_logic = {'simple':{'basicStats':{'businessLogic': 'simple',
+                                                              'extraAttributes': None,
+                                                              'fullDay': True,
+                                                              'metrics': ['sample_min', 'sample_rms'],
+                                                              'outputType': 'SingleValue',
+                                                              'speed': 'fast',
+                                                              'streamCount': 1}}}
 
         #     Initialize from arguments       ---------------------------------
 
@@ -116,19 +131,20 @@ class UserRequest(object):
             self.requested_metric_set = requested_metric_set
             self.requested_sncl_set = requested_sncl_set
 
+
             #     Load preferences from file      -----------------------------
 
-            # custom metrics sets and sncls
-            custom_metric_sets, custom_sncl, custom_urls = {}, {}, {}
+            # Metric and SNCL information from the preferences file
+            metric_sets, sncl_sets, data_access = {}, {}, {}
             currentSection = None
-            for line in pref_file:  # parse file
+            for line in preferences_file:  # parse file
                 line = line.split('#')[0].strip()  # remove comments
                 if line.lower() == "metrics:":  # metric header
                     currentSection = 'metric'
                 elif line.lower() == "sncls:":  # sncl header
                     currentSection = 'sncl'
-                elif line.lower() == "data services:":
-                    currentSection = 'data_services'
+                elif line.lower() == "data_access:":
+                    currentSection = 'data_access'
                 elif currentSection is not None:  # line following header
                     entry = line.split(':')
                     if len(entry) <= 1:  # empty line
@@ -141,49 +157,74 @@ class UserRequest(object):
                     if name is None:
                         pass
                     elif currentSection == 'metric':
-                        custom_metric_sets[name] = values
+                        metric_sets[name] = values
                     elif currentSection == 'sncl':
-                        custom_sncl[name] = values
-                    elif currentSection == 'data_services':
-                        custom_urls[name] = values[0]
+                        sncl_sets[name] = values
+                    elif currentSection == 'data_access':
+                        data_access[name] = values[0]
 
-            self.custom_metric_sets, self.sncl_sets = custom_metric_sets, custom_sncl
-            ###print(custom_urls)
-            self.dataselect_url = custom_urls['dataselect_url']
-            self.event_url = custom_urls['event_url']
-            self.station_url = custom_urls['station_url']
+            self.metrics = metric_sets[self.requested_metric_set]
+            self.sncls = sncl_sets[self.requested_sncl_set]
 
-            #     Finding required metric_set functions----------------------------
+            self.dataselect_url = data_access['dataselect_url']
+            self.event_url = data_access['event_url']
+            self.station_url = data_access['station_url']
 
-            print('Validating custom metrics...')
-            error_list = []
-            custom_metricset_functions = {}
-            metric_functions = metricslist() # this is a dictionary: function_name > contained_metrics
+            #     Find required metric functions     --------------------------
 
-            # Creates a dictionary of {needed functions: [list of needed metrics that they provide]}
-            for custom_metricset in custom_metric_sets:
-                required_functions = {}
-                for metric in custom_metric_sets[custom_metricset]:
-                    try:  # check if metric exists
-                        function = metric_functions[metric]
-                    except KeyError:
-                        print('\033[93m   Metric "%s" not found\033[0m' % metric)
-                        error_list.append(metric)
+            if verbose:
+                print('Validating preferred metrics...')
 
-                    if function in required_functions:
-                        required_functions[function].append(metric)
-                    else:
-                        required_functions[function] = [metric]
+            # Obtain a dictionary from ispaq.irismustangmetrics of the following form:
+            # {metric_function_1: <various metadata including list of metrics>}
+            # We will restructure this dictionary, modifying the list of metrics
+            # generated by each function to include only those that were requested.
+            # The final form will have the following hierarchy:
+            #   business_logic > function_name > metric name
 
-                custom_metricset_functions[custom_metricset] = required_functions
+            # Get the dictionary from the R package
+            default_function_dict = function_metadata()
 
-            print('Finished validating with \033[93m%d\033[0m errors.\n' % len(error_list))
+            # Determine which functions and logic types are required
+            valid_function_names = set()
+            valid_logic_types = set()
 
-            # {irismustang function: custom metric set that they provide data for}, [metrics that don't exist]
-            self.required_metric_set_functions, self.dne_metrics = custom_metricset_functions, error_list
+            # Keep track of valid metrics (typos might cause some to not be found)
+            valid_metrics = set()
+
+            # Loop over all default functions to see if any associated metrics were requested
+            for function_name in default_function_dict:
+                default_function = default_function_dict[function_name]
+                for metric in self.metrics:
+                    if metric in default_function['metrics']:
+                        valid_function_names.add(function_name)
+                        valid_logic_types.add(default_function['businessLogic'])
+                        valid_metrics.add(metric)
+
+            # Warn of invalid metrics
+            invalid_metrics = set(self.metrics).difference(valid_metrics)
+            if len(invalid_metrics):
+                print('The following invalid metric names were ignored: ' + invalid_metrics)
+            
+            # Now reconstruct the reorganized function_by_logic dictionary with only 
+            # user requested logic types, functions and metrics.
+            function_by_logic = {}
+            for logic_type in valid_logic_types:
+                function_by_logic[logic_type] = {}
+                for function_name in valid_function_names:
+                    function = default_function_dict[function_name]
+                    if function['businessLogic'] == logic_type:
+                        # Modify the metric names associated with this function
+                        function['metrics'] = list( set(function['metrics']).intersection(valid_metrics) )
+                        function_by_logic[logic_type][function_name] = function
+                        
+                        
+            # Assign the invalid metrics and restructured function_by_logic dictionary
+            self.invalid_metrics = list(invalid_metrics)
+            self.function_by_logic = function_by_logic
 
 
-    def json_dump(self, file_loc=None):
+    def json_dump(self, file_loc=None, pretty=False):
         """
         Dump a dictionary of UserRequest properties as a json string
         Does not catch IOError if file_loc is invalid
@@ -193,18 +234,23 @@ class UserRequest(object):
         >>> u = UserRequest(dummy=True)
         >>> output = u.json_dump()
         >>> output #doctest: +ELLIPSIS
-        '{"custom_metric_sets": ... "event_url": "IRIS", ... "dataselect_url": "IRIS", "dne_metrics": null}'
+        '{"dataselect_url": "IRIS", "event_url": "IRIS", "function_by_logic": {"simple": {"basicStats":...'
         >>> s = UserRequest(json_representation=output)
         >>> s.json_dump() #doctest: +ELLIPSIS
-        '{"custom_metric_sets": ... "event_url": "IRIS", ... "dataselect_url": "IRIS", "dne_metrics": null}'
+        '{"dataselect_url": "IRIS", "event_url": "IRIS", "function_by_logic": {"simple": {"basicStats":...'
         """
 
-        json_string = json.dumps(self, default=lambda o: o.__dict__)
+        if pretty:
+            json_string = json.dumps(self, default=lambda o: o.__dict__,
+                                     sort_keys=True, indent=4, separators=(',', ': '))
+        else:
+            json_string = json.dumps(self, default=lambda o: o.__dict__,
+                                     sort_keys=True)
+
         if file_loc is not None:
             with open(expanduser(file_loc), 'w') as outfile:
                 outfile.write(json_string)
         return json_string
-
 
     def __str__(self):
         return self.json_dump()

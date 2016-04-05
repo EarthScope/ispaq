@@ -5,7 +5,7 @@ def get_simple_sncls(user_request):
     """
     returns the simplest sncls that compose any sncl or sncl_set
     :param sncl_set: any sncl or sncl_set
-    :param custom_sncls: a dictonary {sncl_set: [list of sncls]}
+    :param sncl_sets: a dictonary {sncl_set: [list of sncls]}
     :param starttime: start of period to decompose over
     :param endtime: end of period to decompose over
     :returns: a pandas series of simple sncls (as strings)

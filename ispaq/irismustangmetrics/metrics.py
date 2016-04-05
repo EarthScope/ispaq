@@ -137,7 +137,7 @@ def _R_getMetricFunctionMetdata():
 ###   R functions still to be written     --------------------------------------
 
 
-def functionmetadata():
+def function_metadata():
     return _R_getMetricFunctionMetdata()
 
 

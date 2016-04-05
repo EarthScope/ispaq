@@ -73,11 +73,11 @@ def get_snr_for_event(event, sncl, max_radius=180):
         return none_series
 
     event_time = obspy.UTCDateTime(event.time)
-    start_time = event_time - (60 * 2)  # 2 min prior to event
-    end_time = event_time + (60 * 28)  # 28 min after
+    starttime = event_time - (60 * 2)  # 2 min prior to event
+    endtime = event_time + (60 * 28)  # 28 min after
 
     try:
-        availability = getAvailability(sncl, start_time, end_time, event.latitude, event.longitude,
+        availability = getAvailability(sncl, starttime, endtime, event.latitude, event.longitude,
                                        minradius=0, maxradius=max_radius)
 
         if availability is None or len(availability) == 0:
