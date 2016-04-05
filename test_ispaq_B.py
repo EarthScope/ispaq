@@ -14,10 +14,12 @@ import argparse
 
 from ispaq.irismustangmetrics import *
 
-from ispaq.utils.misc import *
+###from ispaq.utils.misc import *
 
 from ispaq.concierge.user_request import UserRequest
-#from ispaq.concierge.concierge import Concierge
+from ispaq.concierge.concierge import Concierge
+
+from ispaq.business_logic.simple_metrics import generate_simple_metrics
 
 import pandas as pd
 
@@ -68,55 +70,42 @@ def main(argv=None):
 
     try:
         user_request = UserRequest(args.start, args.end, args.metrics, args.sncls, args.preferences_file)
-        print(user_request.json_dump(pretty=True))
-
+        ###print(user_request.json_dump(pretty=True))
     except Exception as e:
         if str(e) == "Not really an error.":
             pass
         else:
             raise
 
-    ###a = 1
     # Create Concierge (aka Expediter) -----------------------------------------
     #
-    # The concierge uses the completely filled out user_request and has the
+    # The Concierge class uses the completely filled out UserRequest and has the
     # job of expediting requests for information that may be made by any of the
-    # business_logic methods.
-    #
-    # The goal is to have business_logic methods that can be written as clearly
-    # as possible without having to know about the intricacies of ObsPy. Thus,
-    # if business logic needs a list of SNCLs, they should be able to say:
-    #
-    #   concierge.get_sncl_list()
-    #
-    # If they would rather work with an ObsPy Inventory, then:
-    #
-    #   concierge.get_sncl_inventory()
-    #
-    # It is assumed that all of the information required to generate this list 
-    # or inventory of sncls [starttime, endtime, sncl_patterns, client_url, ...]
-    # are part of the user_request object that the concierge has access to
+    # business_logic methods. The goal is to have business_logic methods that can
+    # be written as clearly as possible without having to know about the intricacies
+    # of ObsPy.
   
-    # try:
-    #     concierge = Concierge(user_request)
-    # except Exception as e:
-    #     if str(e) == "Not really an error.":
-    #         pass
-    #     else:
-    #         raise
+    try:
+        concierge = Concierge(user_request)
+    except Exception as e:
+        if str(e) == "Not really an error.":
+            pass
+        else:
+            raise
 
 
     # Generate Simple Metrics --------------------------------------------------
 
-    # try:
-    #     print(concierge.get_sncls())
-    #     #simple_output = ispaq.business_logic.generate_simple_metrics(concierge)
-    #     #try:
-    #         ## Dump output to a file
-    #     #except:
-    #         ##
-    # except Exception as e:
-    #       print(str(e))
+    try:
+        simple_df = generate_simple_metrics(concierge, verbose=True)
+        try:
+            print('Dumping to a file')
+            simple_df = simpleMetricsPretty(simple_df, sigfigs=6)
+            print(simple_df)
+        except:
+            print('Exception to dump to a file')
+    except Exception as e:
+        print(str(e))
 
 
     # Generate SNR Metrics -----------------------------------------------------

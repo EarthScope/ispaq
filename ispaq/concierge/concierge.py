@@ -7,40 +7,22 @@ ISPAQ Data Access Expediter.
     GNU Lesser General Public License, Version 3
     (http://www.gnu.org/copyleft/lesser.html)
 """
+# Use UTCDateTime internally for all times
 from obspy import UTCDateTime
 from obspy.clients.fdsn import Client
 
+from ispaq.concierge.user_request import UserRequest
+
 import pandas as pd
-
-
-# Dummy user_request object
-class DummyUserRequest(object):
-    def __init__(self):
-        """
-        Creates a dummy UserRequest object with sufficient properties for testing.
-        .. rubric:: Example
-
-        >>> my_request =  DummyUserRequest()
-        >>> my_request.sncl_patterns
-        ['US.OXF..*']
-        """
-        self.starttime = UTCDateTime("2002-04-20")
-        self.endtime = UTCDateTime("2002-04-21")
-        self.event_url = "IRIS"
-        self.station_url = "IRIS"
-        self.dataselect_url = "IRIS"
-        self.metric_names = ["num_gaps"]
-        self.sncl_patterns = ["US.OXF..*"]
-        self.metric_dictionary = {}
 
 
 class Concierge(object):
     """
     ISPAQ Data Access Expediter.
 
-    :type user_request: :class:`~ispaq.concierge`
+    :type user_request: :class:`~ispaq.concierge.user_request`
     :param user_request: User request containing the combination of command-line
-        arguments and information from the parsed user preference file.
+        arguments and information from the parsed user preferences file.
 
     :rtype: :class:`~ispaq.concierge` or ``None``
     :return: ISPAQ Concierge.
@@ -55,20 +37,21 @@ class Concierge(object):
 
         See :mod:`ispaq.concierge` for all parameters.
         """
+        # Keep the entire UserRequest
         self.user_request = user_request
+        
+        # Copy important UserRequest properties to the Concierge for smpler access
+        self.requested_starttime = user_request.requested_starttime
+        self.requested_endtime = user_request.requested_endtime
+        self.metric_names = user_request.metrics
+        self.sncl_patterns = user_request.sncls
+        self.function_by_logic = user_request.function_by_logic
 
-        # Create a new webservice clients
+        # TODO:  Should test for name (i.e. "IRIS"), full url or local file
         self.event_client = Client(user_request.event_url)
         self.station_client = Client(user_request.station_url)
         self.dataselect_client = Client(user_request.dataselect_url)
 
-        # TODO:  Need code to convert user_request.metric_names into
-        # TODO:  different sets of arrays based on metric metadata.
-
-        # NOTE:  metric_sets are defined in irismustangmetrics/metrics.py but will
-        # NOTE:  ultimately come from the R package. Current sets include:
-        # NOTE:  basicStats, gaps, spikes, stateOfHealth and STALTA (slow).
-        self.metric_dictionary = user_request.metric_dictionary
 
 
     def get_events(self, starttime=None, endtime=None, minlatitude=None,
@@ -144,9 +127,9 @@ class Concierge(object):
 
         # Get the information for the get_events() request if it is not provided
         if starttime is None:
-            starttime = self.user_request.starttime
+            starttime = self.requested_starttime
         if endtime is None:
-            endtime = self.user_request.endtime
+            endtime = self.requested_endtime
 
         if return_type.lower() == "catalog":
             print('TODO:  support "catalog" return type.')
@@ -238,19 +221,20 @@ class Concierge(object):
 
         .. rubric:: Example
 
-        >>> my_request =  DummyUserRequest()
+        >>> my_request =  UserRequest(dummy=True)
         >>> concierge = Concierge(my_request)
         >>> concierge.get_sncls() #doctest: +ELLIPSIS
-        [u'US.OXF..BHE', u'US.OXF..BHN', ... u'US.OXF..LHN', u'US.OXF..LHZ']
+        [u'US.OXF..BHE', u'US.OXF..BHN', u'US.OXF..BHZ']
         """
 
         # Get the information for the get_stations() request if it is not provided
-        (ur_network, ur_station, ur_location, ur_channel) = self.user_request.sncl_patterns[0].split('.')
+        # TODO:  Handle multiple user_request.sncls
+        (ur_network, ur_station, ur_location, ur_channel) = self.sncl_patterns[0].split('.')
 
         if starttime is None:
-            starttime = self.user_request.starttime
+            starttime = self.requested_starttime
         if endtime is None:
-            endtime = self.user_request.endtime
+            endtime = self.requested_endtime
         if network is None:
             network = ur_network
         if station is None:
@@ -281,7 +265,6 @@ class Concierge(object):
 
         else:
             return None # TODO:  return an exception
-
 
 
 if __name__ == '__main__':

@@ -21,7 +21,7 @@ from ispaq.irismustangmetrics.metrics import function_metadata
 
 class UserRequest(object):
     """
-    The user_request class is in charge of parsing arguments issued on the
+    The UserRequest class is in charge of parsing arguments issued on the
     command line, loading and parsing a preferences file, and setting a bunch
     of properties that capture the totality of what the user wants in a single
     invocation of the ISPAQ top level script.
@@ -38,19 +38,15 @@ class UserRequest(object):
      * station_url -- resource to use for station metadata
      * dataselect_url -- resource to use for seismic data
 
-    Think of the initialization of the user_request object as the work of a lower
+    Think of the initialization of the UserRequest object as the work of a lower
     level front desk person who is taking guest information from a handwritten
     request (preferences file) and phone call (command line arguments) and
-    transcribing that information onto a standard form that the concierge keeps
+    transcribing that information onto a standard form that the Concierge keeps
     for each guest. (Each unique invocation of this script is a new 'guest'.)
 
-    When downstream processing in the metrics business logic needs specific
-    information, the concierge has already done the background work and can
-    provide the business processing logic whatever it needs.
-
-    The concierge is an adapter that allows preference files to be simple and
-    sensible for the end user and provides an API to the business logic code
-    that is simple and sensible from that perspective.
+    It is the job of the Concierge class to use the information in the UserRequest
+    to simplify access to data and metadata when requested by downstream
+    business logic code.
     """
     def __init__(self,
                  requested_starttime=None, requested_endtime=None,
@@ -61,14 +57,41 @@ class UserRequest(object):
         """
         Creates a UserRequest object.
 
+        TODO:  More documentation for __init__?
+
         .. rubric:: Example
 
-        TODO:  Generate doctest examples by loading from json.
+        TODO:  Generate doctest examples by loading from json?
         """
+
+        #     Initialize a dummy object     -----------------------------------
+
+        if dummy:
+            # Information coming in from the command line
+            self.requested_starttime = UTCDateTime("2002-04-20")
+            self.requested_endtime = UTCDateTime("2002-04-21")
+            self.requested_metric_set = 'dummy_metric_set'
+            self.requested_sncl_set = 'dummy_sncl_set'
+            # Metric and SNCL information from the preferences file
+            self.metrics = ['sample_min', 'sample_rms']
+            self.sncls = ['US.OXF..BH?']
+            # Data access information from the preferences file
+            self.event_url = "IRIS"
+            self.station_url = "IRIS"
+            self.dataselect_url = "IRIS"
+            # Metric functions determined by querying the R package
+            self.invalid_metrics = None
+            self.function_by_logic = {'simple': {'basicStats': {'businessLogic': 'simple',
+                                                                'extraAttributes': None,
+                                                                'fullDay': True,
+                                                                'metrics': ['sample_min', 'sample_rms'],
+                                                                'outputType': 'SingleValue',
+                                                                'speed': 'fast',
+                                                                'streamCount': 1}}}
 
         #     Initialize from JSON     ----------------------------------------
 
-        if json_representation is not None:
+        elif json_representation is not None:
             # Load json dictionary from file (or string)
             try:
                 with open(expanduser(json_representation), 'r') as infile:
@@ -91,31 +114,6 @@ class UserRequest(object):
             # Metric functions determined by querying the R package
             self.invalid_metrics = json_dict['invalid_metrics']
             self.function_by_logic = json_dict['function_by_logic']
-
-        #     Initialize a dummy object     -----------------------------------
-
-        elif dummy:
-            # Information coming in from the command line
-            self.requested_starttime = UTCDateTime("2002-04-20")
-            self.requested_endtime = UTCDateTime("2002-04-21")
-            self.requested_metric_set = 'dummy_metric_set'
-            self.requested_sncl_set = 'dummy_sncl_set'
-            # Metric and SNCL information from the preferences file
-            self.metrics = ['sample_min', 'sample_rms']
-            self.sncls = ['US.OXF..BHZ', 'IU.OXF..BH?']
-            # Data access information from the preferences file
-            self.event_url = "IRIS"
-            self.station_url = "IRIS"
-            self.dataselect_url = "IRIS"
-            # Metric functions determined by querying the R package
-            self.invalid_metrics = None
-            self.function_by_logic = {'simple':{'basicStats':{'businessLogic': 'simple',
-                                                              'extraAttributes': None,
-                                                              'fullDay': True,
-                                                              'metrics': ['sample_min', 'sample_rms'],
-                                                              'outputType': 'SingleValue',
-                                                              'speed': 'fast',
-                                                              'streamCount': 1}}}
 
         #     Initialize from arguments       ---------------------------------
 

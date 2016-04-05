@@ -10,10 +10,17 @@ ISPAQ Business Logic for Simple Metrics.
 from obspy import UTCDateTime
 from obspy.clients.fdsn import Client
 
+from ispaq.concierge.concierge import Concierge
+
+from ispaq.irisseismic.webservices import *
+
+from ispaq.irismustangmetrics import *
+
+
 import pandas as pd
 
 
-def generate_simple_metrics(concierge):
+def generate_simple_metrics(concierge, verbose=False):
     """
     Generate *simple* metrics.
 
@@ -27,41 +34,50 @@ def generate_simple_metrics(concierge):
 
     TODO:  doctest examples
     """
-
+    
     # Container for all of the metrics dataframes generated
-    metric_dfs = []
+    dataframes = []
 
     # ----- All UN-available SNCLs ----------------------------------------------
 
 
 
     # ----- All available SNCLs -------------------------------------------------
+    
 
-
+    # function metadata dictionary
+    simple_function_meta = concierge.function_by_logic['simple']
+    
     # loop over available SNCLS
     for sncl in concierge.get_sncls():
-        print(sncl)
+        print('Calculating simple metrics for ' + sncl)
 
         # Get the data ----------------------------------------------
 
         # NOTE:  Use the requested starttime, not just what is available
-        ###r_stream = R_getSNCL(sncl, starttime, endtime)
+        r_stream = R_getSNCL(sncl, concierge.requested_starttime, concierge.requested_endtime)
 
         # Calculate the metrics -------------------------------------
 
-        for metric_set in concierge.simple_metric_sets:
+        for function_name in simple_function_meta.keys():
+            function_meta = simple_function_meta[function_name]
 
             # Special logic for Spikes metric -----------------------
 
-            if 'num_spikes' in simple_metrics:
-                print('special logic for num_spikes')
+            if 'num_spikes' in function_meta['metrics']:
+                print('special logic required for num_spikes metric with ' + function_name + ' function')
                 # TODO:  special logic for num_spikes
 
             else:
-                print('calculating' + metric)
-                # TODO:  calculate metric
+                print('    ' + function_name + ' will calculate ' + str(function_meta['metrics']))
+                df = applySimpleMetric(r_stream, function_name)
+                dataframes.append(df)
 
-
+    # Concatenate all data frames
+    # TODO:  Check to guarantee that columns will ALWAYS be the same
+    result = pd.concat(dataframes)
+    
+    return(result)
 
 
 if __name__ == '__main__':
