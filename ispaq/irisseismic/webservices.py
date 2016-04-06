@@ -287,7 +287,7 @@ def getNetwork(sncl, starttime, endtime,
     return df
     
     
-def R_getSNCL(sncl, starttime, endtime,
+def R_getSNCL(client_url="http://service.iris.edu", sncl=None, starttime=None, endtime=None,
               quality=None):
     """
     Obtain an R Stream using the IRISSeismic::getSNCL function.
@@ -296,7 +296,9 @@ def R_getSNCL(sncl, starttime, endtime,
     :param endtime: ObsPy UTCDateTime object.
     :return: R Stream object
     """
-    r_client = r('new("IrisClient")')
+    ###r_client = r('new("IrisClient")')
+    cmd = 'new("IrisClient", site="' + client_url + '")'
+    r_client = r(cmd)
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
     if quality is None:
