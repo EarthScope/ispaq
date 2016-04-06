@@ -10,6 +10,7 @@ ISPAQ Data Access Expediter.
 # Use UTCDateTime internally for all times
 from obspy import UTCDateTime
 from obspy.clients.fdsn import Client
+from obspy.clients.fdsn.header import URL_MAPPINGS
 
 from ispaq.concierge.user_request import UserRequest
 
@@ -48,9 +49,27 @@ class Concierge(object):
         self.function_by_logic = user_request.function_by_logic
 
         # TODO:  Should test for name (i.e. "IRIS"), full url or local file
-        self.event_client = Client(user_request.event_url)
-        self.station_client = Client(user_request.station_url)
-        self.dataselect_client = Client(user_request.dataselect_url)
+        
+        # Add event clients and URLs
+        if user_request.event_url in URL_MAPPINGS.keys():
+            self.event_client = Client(user_request.event_url)
+            self.event_url = URL_MAPPINGS[user_request.event_url]
+        else:
+            print("TODO:  deal with non-URL_MAPPING event_url")
+
+        # Add station clients and URLs 
+        if user_request.station_url in URL_MAPPINGS.keys():
+            self.station_client = Client(user_request.station_url)
+            self.station_url = URL_MAPPINGS[user_request.station_url]
+        else:
+            print("TODO:  deal with non-URL_MAPPING station_url")
+
+        # Add dataselect clients and URLs 
+        if user_request.dataselect_url in URL_MAPPINGS.keys():
+            self.dataselect_client = Client(user_request.dataselect_url)
+            self.dataselect_url = URL_MAPPINGS[user_request.dataselect_url]
+        else:
+            print("TODO:  deal with non-URL_MAPPING dataselect_url")
 
 
 

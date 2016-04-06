@@ -25,11 +25,12 @@ SNCLs:
   MyVirtualNetwork: IU.*.*.BH?, US.OXF.*.BH?
   OXF: US.OXF..BH?
   sncls_1: US.O*.*.LHZ
+  sncls_2: U*.*.*.??Z
 
 
 # Data access (typically FDSN web service providers) --------------------------
 
 Data_access:
-  event_url: IRIS
-  station_url: IRIS
-  dataselect_url: IRIS
+  event_url: NCEDC #IRIS
+  station_url: NCEDC #IRIS
+  dataselect_url: NCEDC #IRIS

@@ -55,7 +55,7 @@ def generate_simple_metrics(concierge, verbose=False):
         # Get the data ----------------------------------------------
 
         # NOTE:  Use the requested starttime, not just what is available
-        r_stream = R_getSNCL(sncl, concierge.requested_starttime, concierge.requested_endtime)
+        r_stream = R_getSNCL(concierge.dataselect_url, sncl, concierge.requested_starttime, concierge.requested_endtime)
 
         # Calculate the metrics -------------------------------------
 
@@ -77,13 +77,13 @@ def generate_simple_metrics(concierge, verbose=False):
     # TODO:  Check to guarantee that columns will ALWAYS be the same
     result = pd.concat(dataframes)
     
+    # Filter the full dataframe ------------------------------------------------
+    
     # Create a boolean mask for filtering the dataframe
     def valid_metric(x):
         return x in concierge.metric_names
         
     mask = result.metricName.apply(valid_metric)
-        
-    # Filter to include only the requested metrics
     result = result[(mask)]
     
     return(result)
