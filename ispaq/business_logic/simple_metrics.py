@@ -77,6 +77,15 @@ def generate_simple_metrics(concierge, verbose=False):
     # TODO:  Check to guarantee that columns will ALWAYS be the same
     result = pd.concat(dataframes)
     
+    # Create a boolean mask for filtering the dataframe
+    def valid_metric(x):
+        return x in concierge.metric_names
+        
+    mask = result.metricName.apply(valid_metric)
+        
+    # Filter to include only the requested metrics
+    result = result[(mask)]
+    
     return(result)
 
 

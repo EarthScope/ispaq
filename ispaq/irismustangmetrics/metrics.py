@@ -188,38 +188,40 @@ def simpleMetricsPretty(df, sigfigs=6):
     * Round the 'value' column to the specified number of significant figures.
     * Convert 'starttime' and 'endtime' to python 'date' objects.
     """
+    format_string = "." + str(sigfigs) + "g"
     df.value = df.value.astype(float)
-    df.value = df.value.apply(lambda x: signif(x, sigfigs))
+    df.value = df.value.apply(lambda x: format(x, format_string))
     df.starttime = df.starttime.apply(lambda x: getattr(x, 'date'))
     df.endtime = df.endtime.apply(lambda x: getattr(x, 'date'))
+
     return df
     
     
-def signif(number, sigfigs=6):
-    """
-    Returns number rounded to the specified number of significant figures.
-    :param number: Floating point number.
-    :param sigfigs: Significant figures to use.
-    :return: Number rounded to sigfigs significant figures.
+#def signif(number, sigfigs=6):
+    #"""
+    #Returns number rounded to the specified number of significant figures.
+    #:param number: Floating point number.
+    #:param sigfigs: Significant figures to use.
+    #:return: Number rounded to sigfigs significant figures.
                 
-    .. rubric:: Example
+    #.. rubric:: Example
     
-    >>> signif(123.456, 1)
-    100.0
-    >>> signif(123.456,3)
-    123.0
-    >>> signif(123.456,4)
-    123.5
-    >>> signif(123.456,7)
-    123.456
+    #>>> signif(123.456, 1)
+    #100.0
+    #>>> signif(123.456,3)
+    #123.0
+    #>>> signif(123.456,4)
+    #123.5
+    #>>> signif(123.456,7)
+    #123.456
     
-    """
-    from math import log10, floor
-    digit = -int(floor(log10(abs(number)))) + (sigfigs - 1)
-    if digit > 0:
-        return round(number, digit)
-    else: # future.builtins.newround doesn't handle negative ndigits yet (3/3/16)
-        return number - (number % (10 ** -digit))
+    #"""
+    #from math import log10, floor
+    #digit = -int(floor(log10(abs(number)))) + (sigfigs - 1)
+    #if digit > 0:
+        #return round(number, digit)
+    #else: # future.builtins.newround doesn't handle negative ndigits yet (3/3/16)
+        #return number - (number % (10 ** -digit))
 
 ###   Functions for SingleValueMetrics     -------------------------------------
 

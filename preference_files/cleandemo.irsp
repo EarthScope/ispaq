@@ -3,9 +3,20 @@
 # User defined sets of metrics ------------------------------------------------
 
 Metrics:
+
+  # ----- Default combinations -----
+  basicStats: sample_min, sample_median, sample_mean, sample_max, sample_rms
+  gaps: num_gaps, max_gap, num_overlaps, max_overlap', percent_availability
+  stateOfHealth: calibration_signal, timing_correction, event_begin, event_end, vent_in_progress, clock_locked, amplifier_saturation, digitizer_clipping, spikes, glitches, missing_padded_data, telemetry_sync_error, digital_filter_charging, suspect_time_tag, timing_quality
+  STALTA: max_stalta
+  spikes: num_spikes
+  
+  # ----- Custom combinations -----
+  metrics_1: sample_rms, num_gaps, percent_availability
+  metrics_2: num_gaps, max_gap, percent_availability, timing_correction, spikes, glitches, missing_padded_data
   MyContinuityMetrics: num_gaps, num_overlaps, num_spikes
   MyStats: sample_max, sample_mean, sample_median, sample_rms
-  Uptime: percent_availability, channel_up_time
+  
 
 
 # User defined sets of SNCLs --------------------------------------------------
@@ -13,6 +24,7 @@ Metrics:
 SNCLs:
   MyVirtualNetwork: IU.*.*.BH?, US.OXF.*.BH?
   OXF: US.OXF..BH?
+  sncls_1: US.O*.*.LHZ
 
 
 # Data access (typically FDSN web service providers) --------------------------
