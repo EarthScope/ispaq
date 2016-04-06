@@ -69,7 +69,7 @@ def _R_getMetricFunctionMetdata():
             'fullDay': True,
             'speed': 'fast',
             'extraAttributes': None,
-            'businessLogic': None,
+            'businessLogic': 'simple',
             'metrics': ['sample_min',
                         'sample_median',
                         'sample_mean',
@@ -82,7 +82,7 @@ def _R_getMetricFunctionMetdata():
             'fullDay': True,
             'speed': 'fast',
             'extraAttributes': None,
-            'businessLogic': None,
+            'businessLogic': 'simple',
             'metrics': ['num_gaps',
                         'max_gap',
                         'num_overlaps',
@@ -95,7 +95,7 @@ def _R_getMetricFunctionMetdata():
             'fullDay': True,
             'speed': 'fast',
             'extraAttributes': None,
-            'businessLogic': None,
+            'businessLogic': 'simple',
             'metrics': ["calibration_signal",
                         "timing_correction",
                         "event_begin",
@@ -128,7 +128,7 @@ def _R_getMetricFunctionMetdata():
             'fullDay': True,
             'speed': 'fast',
             'extraAttributes': None,
-            'businessLogic': None,
+            'businessLogic': 'simple',
             'metrics': ['num_spikes']
         }
     }
@@ -137,7 +137,7 @@ def _R_getMetricFunctionMetdata():
 ###   R functions still to be written     --------------------------------------
 
 
-def functionmetadata():
+def function_metadata():
     return _R_getMetricFunctionMetdata()
 
 
@@ -188,43 +188,45 @@ def simpleMetricsPretty(df, sigfigs=6):
     * Round the 'value' column to the specified number of significant figures.
     * Convert 'starttime' and 'endtime' to python 'date' objects.
     """
+    format_string = "." + str(sigfigs) + "g"
     df.value = df.value.astype(float)
-    df.value = df.value.apply(lambda x: signif(x, sigfigs))
+    df.value = df.value.apply(lambda x: format(x, format_string))
     df.starttime = df.starttime.apply(lambda x: getattr(x, 'date'))
     df.endtime = df.endtime.apply(lambda x: getattr(x, 'date'))
+
     return df
     
     
-def signif(number, sigfigs=6):
-    """
-    Returns number rounded to the specified number of significant figures.
-    :param number: Floating point number.
-    :param sigfigs: Significant figures to use.
-    :return: Number rounded to sigfigs significant figures.
+#def signif(number, sigfigs=6):
+    #"""
+    #Returns number rounded to the specified number of significant figures.
+    #:param number: Floating point number.
+    #:param sigfigs: Significant figures to use.
+    #:return: Number rounded to sigfigs significant figures.
                 
-    .. rubric:: Example
+    #.. rubric:: Example
     
-    >>> signif(123.456, 1)
-    100.0
-    >>> signif(123.456,3)
-    123.0
-    >>> signif(123.456,4)
-    123.5
-    >>> signif(123.456,7)
-    123.456
+    #>>> signif(123.456, 1)
+    #100.0
+    #>>> signif(123.456,3)
+    #123.0
+    #>>> signif(123.456,4)
+    #123.5
+    #>>> signif(123.456,7)
+    #123.456
     
-    """
-    from math import log10, floor
-    digit = -int(floor(log10(abs(number)))) + (sigfigs - 1)
-    if digit > 0:
-        return round(number, digit)
-    else: # future.builtins.newround doesn't handle negative ndigits yet (3/3/16)
-        return number - (number % (10 ** -digit))
+    #"""
+    #from math import log10, floor
+    #digit = -int(floor(log10(abs(number)))) + (sigfigs - 1)
+    #if digit > 0:
+        #return round(number, digit)
+    #else: # future.builtins.newround doesn't handle negative ndigits yet (3/3/16)
+        #return number - (number % (10 ** -digit))
 
 ###   Functions for SingleValueMetrics     -------------------------------------
 
 
-def applySimpleMetric(r_stream, metric_set_name):
+def applySimpleMetric(r_stream, metric_set_name, *args, **kwargs):
     """"
     Invoke a named "simple" R metric and convert the R dataframe result into
     a Pandas dataframe.
@@ -234,7 +236,7 @@ def applySimpleMetric(r_stream, metric_set_name):
     """
     function = 'IRISMustangMetrics::' + metric_set_name + 'Metric'
     R_function = r(function)
-    r_metriclist = R_function(r_stream)
+    r_metriclist = R_function(r_stream, *args, **kwargs)  # args and kwargs shouldn't be needed in theory
     r_dataframe = _R_metricList2DF(r_metriclist)
     df = pandas2ri.ri2py(r_dataframe)
     

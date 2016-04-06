@@ -14,9 +14,9 @@ import argparse
 
 from ispaq.irismustangmetrics import *
 
-import ispaq.utils.metric_sets as metric_sets
+import ispaq.utils.metric_calculators as metric_sets
 import ispaq.utils.sncls as sncl_utils
-import ispaq.utils.preferences as preferences
+from ispaq.concierge.user_request import UserRequest
 from ispaq.utils.misc import *
 
 import pandas as pd
@@ -39,32 +39,34 @@ def main(argv=None):
                         version='%(prog)s ' + __version__)
     parser.add_argument('--example-data', action='store_true', default=False,
                         help='use example data from local disk')
-    parser.add_argument('--sncl', action='store', default=False,
-                        help='Network.Station.Location.Channel identifier (e.g. US.OXF..BHZ)')
-    parser.add_argument('--start', action='store', default=False,
+    parser.add_argument('--start', action='store', default=None,
                         help='starttime in ISO 8601 format')
-    parser.add_argument('-M', '--metric-set-name', required=True,
-                        help='name of metric to calculate')  # TODO re-add the limit
-    parser.add_argument('-P', '--preference-file', default=expanduser('~/.irispref'),
+    parser.add_argument('--end', action='store', default=None,
+                        help='starttime in ISO 8601 format')
+    parser.add_argument('-M', '--metrics', required=True,
+                        help='name of metric to calculate')
+    parser.add_argument('-S', '--sncls', action='store', default=None,
+                        help='Network.Station.Location.Channel identifier (e.g. US.OXF..BHZ)')
+    parser.add_argument('-P', '--preferences-file', default=expanduser('~/.irispref'),
                         type=argparse.FileType('r'), help='location of preference file')
     parser.add_argument('-O', '--output-loc', default='.',
                         help='location to output ')
-    parser.add_argument('-S', '--sigfigs', type=check_negative, default=6,
+    parser.add_argument('--sigfigs', type=check_negative, default=6,
                         help='number of significant figures to round metrics to')
 
     args = parser.parse_args(argv)
-    
-    if not args.example_data and (not args.sncl or not args.start):
-        sys.exit('Requires either --example data or --start and --sncl')
-    
+
+    if not args.example_data and (not args.sncls or not args.start):
+        sys.exit('Requires either --example data or --start and --sncls')
+
     # Load Preferences ---------------------------------------------------------
     
-    custom_metric_sets, custom_sncls = preferences.load(args.preference_file)
-    function_sets, custom_metric_errs = metric_sets.validate(custom_metric_sets)
+    user_request = UserRequest(args.start, args.end, args.metrics, args.sncls, args.preferences_file)
+    print(user_request.json_dump(pretty=True))
 
     # TODO: validate and or build sncls
     # TODO: Verify that desired metric set exists in preference file or otherwise
-        
+
     # Obtain data --------------------------------------------------------------
     
     if args.example_data:
@@ -79,16 +81,14 @@ def main(argv=None):
         # Obtain data from IRIS DMC
         from ispaq.irisseismic import R_getSNCL
         from rpy2.rinterface import RRuntimeError
-        
-        # format arguments
-        starttime = obspy.UTCDateTime(args.start)  # Test date for US.OXF..BHZ is 2002-04-20 + 1 day
-        endtime = starttime + (24 * 3600)
-        sncls = sncl_utils.get_simple_sncls(args.sncl, custom_sncls, starttime, endtime)
-        
+
+        sncls = sncl_utils.get_simple_sncls(user_request)
+
         print('Building %s Streams' % len(sncls))
         try:  # in case lack of internet
             r_streams = sncls.apply(lambda sncl: statuswrap(R_getSNCL, 0, RRuntimeError, sncl,
-                                                            starttime, endtime))
+                                                            user_request.requested_starttime,
+                                                            user_request.requested_endtime))
             r_streams = r_streams.dropna()
         except RRuntimeError:
             sys.exit('\033[91m\nError: Could not fetch data. '
@@ -99,14 +99,14 @@ def main(argv=None):
     
     # TODO:  Need a dictionary so we can test whether a metrics is "simple" or something else.
     
-    # TODO:  Future iterations will need to handle the possibility that a metric alias
+    # TODO:  Future iterations will need to handle the possibility that a metric set
     # TODO:  will refer to simple and other types of metrics. In these cases it may be necessary
     # TODO:  to deal with all of the simple metrics in a block first, outputting one csv file
     # TODO:  for them and then continuing with other categories of metrics whose data will
     # TODO:  will be stored in other files.
     
     if True:
-        df = metric_sets.simple_set(args.metric_set_name, function_sets, r_streams, sigfigs=args.sigfigs)
+        df = metric_sets.simple_set(args.metric_set_name, user_request.funcion_by_logic, r_streams, sigfigs=args.sigfigs)
         if df is not None:
             file_name = args.metric_set_name + '_' + args.start + '.csv'
             path = args.output_loc + '/' + file_name

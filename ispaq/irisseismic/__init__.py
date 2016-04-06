@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-irisseismic - Python Wrappers for the IRISSeismic R Package
+ispaq.irisseismic - Python Wrappers for the IRISSeismic R Package
 ===================================================
 Capabilities include creation of IRISSeismic Trace and Stream objects
 from ObsPy Trace and Stream objects.

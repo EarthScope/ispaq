@@ -104,8 +104,7 @@ _R_getUnavailability = r('IRISSeismic::getUnavailability')   #
 ###   Python wrappers for R get~ webservice functions     ----------------------
 
 
-def getAvailability(sncl, starttime, endtime,
-                    latitude=None, longitude=None,
+def getAvailability(sncl, starttime, endtime, latitude=None, longitude=None,
                     minradius=None, maxradius=None):
     """
     Returns a dataframe with channel metadata.
@@ -130,11 +129,10 @@ def getAvailability(sncl, starttime, endtime,
     r_df = _R_getAvailability(r_client, network, station, location, channel, starttime, endtime, includerestricted,
                               latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
-    return(df)
+    return df
     
     
-def getChannel(sncl, starttime, endtime,
-               latitude=None, longitude=None,
+def getChannel(sncl, starttime, endtime, latitude=None, longitude=None,
                minradius=None, maxradius=None):
     """
     Returns a dataframe with channel metadata.
@@ -158,8 +156,28 @@ def getChannel(sncl, starttime, endtime,
     # Call the function and return a Pandas dataframe with the results
     r_df = _R_getChannel(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
-    return(df)
-    
+    return df
+
+
+def get_dataselect(network, station, location, channel, starttime, endtime, quality=None):
+    """
+    Obtain an R Stream using the IRISSeismic::getSNCL function.
+    :param network: sncl network (string)
+    :param station: sncl station (string)
+    :param location: sncl location (string)
+    :param channel: sncl channel (string)
+    :param starttime: ObsPy UTCDateTime object.
+    :param endtime: ObsPy UTCDateTime object.
+    :return: R Stream object
+    """
+    r_client = r('new("IrisClient")')
+    starttime = R_POSIXct(starttime)
+    endtime = R_POSIXct(endtime)
+    if quality is None:
+        quality = ri.MissingArg
+    r_stream = _R_getDataselect(r_client, network, station, location, channel, starttime, endtime, quality)
+    return r_stream
+
     
 def getDistaz(latitude, longitude, staLatitude, staLongitude):
     """
@@ -176,7 +194,7 @@ def getDistaz(latitude, longitude, staLatitude, staLongitude):
     # Call the function and return a Pandas dataframe with the results
     r_df = _R_getDistaz(latitude, longitude, staLatitude, staLongitude)
     df = pandas2ri.ri2py(r_df)
-    return(df)
+    return df
     
 
 def getEvalresp(sncl, time,
@@ -202,7 +220,7 @@ def getEvalresp(sncl, time,
     # Call the function and return a Pandas dataframe with the results
     r_df = _R_getEvalresp(r_client, network, station, location, channel, time, minfreq, maxfreq, nfreq, units, output)
     df = pandas2ri.ri2py(r_df)
-    return(df)
+    return df
     
     
 def getEvent(starttime, endtime,
@@ -231,7 +249,6 @@ def getEvent(starttime, endtime,
     """
     # Create/validate all arguments that can be accepted by the IRISSeismic::getAvailability() function
     r_client = r('new("IrisClient")')
-    (network, station, location, channel) = sncl.split('.')
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
     (minmag, maxmag, magtype, mindepth, maxdepth) = _R_args(minmag, maxmag, magtype, mindepth, maxdepth)
@@ -239,7 +256,7 @@ def getEvent(starttime, endtime,
     # Call the function and return a Pandas dataframe with the results
     r_df = _R_getEvent(r_client, starttime, endtime, minmag, maxmag, magtype, mindepth, maxdepth)
     df = pandas2ri.ri2py(r_df)
-    return(df)
+    return df
         
     
 def getNetwork(sncl, starttime, endtime,
@@ -267,7 +284,7 @@ def getNetwork(sncl, starttime, endtime,
     # Call the function and return a Pandas dataframe with the results
     r_df = _R_getNetwork(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
-    return(df)
+    return df
     
     
 def R_getSNCL(sncl, starttime, endtime,
@@ -285,7 +302,7 @@ def R_getSNCL(sncl, starttime, endtime,
     if quality is None:
         quality = ri.MissingArg
     r_stream = _R_getSNCL(r_client, sncl, starttime, endtime, quality)
-    return(r_stream)
+    return r_stream
     
     
 def getStation(sncl, starttime, endtime,
@@ -313,7 +330,7 @@ def getStation(sncl, starttime, endtime,
     # Call the function and return a Pandas dataframe with the results
     r_df = _R_getStation(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
-    return(df)
+    return df
 
 
 def getTraveltime(latitude, longitude, depth, staLatitude, staLongitude):
@@ -329,9 +346,9 @@ def getTraveltime(latitude, longitude, depth, staLatitude, staLongitude):
     r_client = r('new("IrisClient")')
     
     # Call the function and return a Pandas dataframe with the results
-    r_df = _R_getTraveltime(latitude, longitude, depth, staLatitude, staLongitude)
+    r_df = _R_getTraveltime(r_client, latitude, longitude, depth, staLatitude, staLongitude)
     df = pandas2ri.ri2py(r_df)
-    return(df)
+    return df
     
     
 def getUnavailability(sncl, starttime, endtime,
@@ -359,7 +376,7 @@ def getUnavailability(sncl, starttime, endtime,
     # Call the function and return a Pandas dataframe with the results
     r_df = _R_getUnvailability(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
-    return(df)
+    return df
 
 
 ### ----------------------------------------------------------------------------
