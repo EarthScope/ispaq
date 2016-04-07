@@ -14,10 +14,10 @@ from future.types import newint
 
 import numpy as np
 
-from obspy.core.utcdatetime import UTCDateTime
+from obspy import UTCDateTime
 
 
-### ----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 
 # Connect to R through the rpy2 module
@@ -28,7 +28,7 @@ r = robjects.r
 r('options(digits.secs=6)')                   # have R functions print out fractional seconds
 
 
-###   R functions called internally     ----------------------------------------
+#     R functions called internally     ----------------------------------------
 
 
 # NOTE:  These functions behave exactly the same as the R versions and require
@@ -45,7 +45,7 @@ _R_initialize = r('IRISSeismic::initialize')  # initialization of various object
 _R_getSNCL = r('IRISSeismic::getSNCL')        # to obtain an R_Stream object from IRIS DMC
 
 
-###   Python --> R conversion functions    -------------------------------------
+#     Python --> R conversion functions    -------------------------------------
 
 
 def R_integer(x):
@@ -253,32 +253,7 @@ def R_Stream(stream,
     return(r_stream)    
 
 
-###   Python wrappers for R get~ webservice functions     ----------------------
-
-# TODO:  This and other webservice functions should be placed in webservices.py
-
-# NOTE:  ObsPy provides access to various IRIS webservices but these are returned
-# NOTE:  as python objects. Here we utilize the IRISSeismic R package to obtain
-# NOTE:  R objects which an be passed directly to the R metric functions.
-
-def R_getSNCL(sncl, starttime, endtime):
-    """
-    Obtain an IRISSeismic Stream using the IRISSeismic::getSNCL function.
-    :param sncl: SNCL (e.g. "US.OXF..BHZ").
-    :param starttime: ObsPy UTCDateTime object.
-    :param endtime: ObsPy UTCDateTime object.
-    :return: IRISSeismic Stream object.
-    """
-    r['options'](warn=-1)                   # have R surpress warning messages    
-    client = r('new("IrisClient")')
-    starttime = R_POSIXct(starttime)
-    endtime = R_POSIXct(endtime)
-    r_stream = _R_getSNCL(client, sncl, starttime, endtime) # NOTE:  Accepting R function default for final "quality" argument.
-    return(r_stream)
-    
-    
-
-### ----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 
 if __name__ == '__main__':

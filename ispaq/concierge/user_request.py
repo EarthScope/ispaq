@@ -224,7 +224,8 @@ class UserRequest(object):
 
     def json_dump(self, file_loc=None, pretty=False):
         """
-        Dump a dictionary of UserRequest properties as a json string
+        Dump a dictionary of UserRequest properties as a json string.
+        
         Does not catch IOError if file_loc is invalid
         :param file_loc: location to write json
         :return: json string representation of internal properties

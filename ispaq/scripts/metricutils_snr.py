@@ -1,7 +1,7 @@
 from ispaq.irisseismic.webservices import *
 import obspy
 from rpy2.rinterface import RRuntimeError
-from ispaq.irismustangmetrics.metrics import applySimpleMetric
+from ispaq.irismustangmetrics.metrics import apply_simple_metric
 import pandas as pd
 
 
@@ -45,7 +45,7 @@ def get_snr_for_available_sncl(availability_row, event_time, event_latitude,
             print('gaps at end(s) of stream')
             return none_series
 
-        metric_output = applySimpleMetric(stream, 'SNR', windowSecs=window_secs)
+        metric_output = apply_simple_metric(stream, 'SNR', windowSecs=window_secs)
         return metric_output.iloc[0]  # convert to series
 
     except RRuntimeError as e:

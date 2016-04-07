@@ -14,22 +14,13 @@ import argparse
 
 from ispaq.irismustangmetrics import *
 
-###from ispaq.utils.misc import *
-
 from ispaq.concierge.user_request import UserRequest
 from ispaq.concierge.concierge import Concierge
-
 from ispaq.business_logic.simple_metrics import generate_simple_metrics
-
-import pandas as pd
-
-import sys
 
 from os.path import expanduser
 
-import obspy
-
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 
 def main(argv=None):
@@ -39,11 +30,9 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.strip())
     parser.add_argument('-V', '--version', action='version',
                         version='%(prog)s ' + __version__)
-    # parser.add_argument('--example-data', action='store_true', default=False,
-    #                     help='use example data from local disk')
-    parser.add_argument('--start', action='store', required=True,
+    parser.add_argument('--starttime', action='store', required=True,
                         help='starttime in ISO 8601 format')
-    parser.add_argument('--end', action='store', required=False,
+    parser.add_argument('--endtime', action='store', required=False,
                         help='endtime in ISO 8601 format')
     parser.add_argument('-M', '--metrics', required=True,
                         help='name of metric to calculate')
@@ -69,7 +58,7 @@ def main(argv=None):
     # invocation of the ISPAQ top level script.
 
     try:
-        user_request = UserRequest(args.start, args.end, args.metrics, args.sncls, args.preferences_file)
+        user_request = UserRequest(args.starttime, args.endtime, args.metrics, args.sncls, args.preferences_file)
         ###print(user_request.json_dump(pretty=True))
     except Exception as e:
         if str(e) == "Not really an error.":
@@ -77,7 +66,7 @@ def main(argv=None):
         else:
             raise
 
-    # Create Concierge (aka Expediter) -----------------------------------------
+    #     Create Concierge (aka Expediter)     ---------------------------------
     #
     # The Concierge class uses the completely filled out UserRequest and has the
     # job of expediting requests for information that may be made by any of the
@@ -94,7 +83,7 @@ def main(argv=None):
             raise
 
 
-    # Generate Simple Metrics --------------------------------------------------
+    #     Generate Simple Metrics     ------------------------------------------
 
     try:
         simple_df = generate_simple_metrics(concierge, verbose=True)

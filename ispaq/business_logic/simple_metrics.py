@@ -12,9 +12,9 @@ from obspy.clients.fdsn import Client
 
 from ispaq.concierge.concierge import Concierge
 
-from ispaq.irisseismic.webservices import *
+from ispaq.irisseismic.webservices import R_getSNCL
 
-from ispaq.irismustangmetrics import *
+from ispaq.irismustangmetrics import apply_simple_metric
 
 
 import pandas as pd
@@ -55,7 +55,12 @@ def generate_simple_metrics(concierge, verbose=False):
         # Get the data ----------------------------------------------
 
         # NOTE:  Use the requested starttime, not just what is available
-        r_stream = R_getSNCL(concierge.dataselect_url, sncl, concierge.requested_starttime, concierge.requested_endtime)
+        try:
+            r_stream = R_getSNCL(concierge.dataselect_url, sncl, concierge.requested_starttime, concierge.requested_endtime)
+        except Exception as e:
+            if verbose:
+                print('\n*** Unable to obtain data for %s from %s ***\n' % (sncl, concierge.dataselect_url))
+            continue
 
         # Calculate the metrics -------------------------------------
 
@@ -70,7 +75,7 @@ def generate_simple_metrics(concierge, verbose=False):
 
             else:
                 print('    ' + function_name + ' will calculate ' + str(function_meta['metrics']))
-                df = applySimpleMetric(r_stream, function_name)
+                df = apply_simple_metric(r_stream, function_name)
                 dataframes.append(df)
 
     # Concatenate all data frames

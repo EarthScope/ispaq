@@ -51,12 +51,11 @@ _R_metricList2Xml = r('IRISMustangMetrics::metricList2Xml')
 
 def _R_getMetricFunctionMetdata():
     """
-    This function should probably return a python dictionary with the following
-    information:
+    This function returns a dictionary with the following information:
      * name -- char
      * streamCount -- int, (number of streams on input)
-     * fullDay -- logical
      * outputType -- char, [SingleValue | MultipleValue | MultipleTime | Spectrum | Other?]
+     * fullDay -- logical
      * speed -- char, [slow | medium | fast] (set basic expecations)
      * extraAttributes -- char, (comma separated list of extra attributes returned in DF)
      * businessLogic -- char, (Description of business logic which should be implmented in python.)
@@ -134,46 +133,47 @@ def _R_getMetricFunctionMetdata():
     }
     return(functiondict)
 
-###   R functions still to be written     --------------------------------------
-
-
 def function_metadata():
     return _R_getMetricFunctionMetdata()
 
 
-def metricslist(function_data=_R_getMetricFunctionMetdata()):
-    """
-    :param function_data: the function metadata returned by _R_getMetricFunctionMetdata
-    :return: a dictionary of {metrics: functionNames} based on the metrics and functions
-    contained within the Metric Metadata
-    """
-
-    # invert the dictionary to be {metric: functionName}
-    # TODO: potentially move this to a class wrapping the original dict
-    metric_functions = {}
-    for function in function_data:
-        for metric in function_data[function]['metrics']:
-            metric_functions[metric] = function
-
-    return metric_functions
+#     R functions still to be written     -------------------------------------
 
 
-def listMetricFunctions(functionType="simple"):
-    """
-    Function to be added to the IRISMustangMetrics package.
-    
-    "simple" metrics are those that require only a single stream as input and
-    return a metricList of SingleValueMetrics as output. They may may have
-    additional arguments which can be used but the provided defaults are 
-    typically adequate.
 
-    """
-    df = pd.DataFrame.from_dict(_R_getMetricFunctionMetdata(), orient='index')
-    names = df.index.tolist()
-
-    functionlist = _R_getMetricFunctionMetdata().keys()
-    
-    return functionlist
+# def metricslist(function_data=_R_getMetricFunctionMetdata()):
+#     """
+#     :param function_data: the function metadata returned by _R_getMetricFunctionMetdata
+#     :return: a dictionary of {metrics: functionNames} based on the metrics and functions
+#     contained within the Metric Metadata
+#     """
+#
+#     # invert the dictionary to be {metric: functionName}
+#     # TODO: potentially move this to a class wrapping the original dict
+#     metric_functions = {}
+#     for function in function_data:
+#         for metric in function_data[function]['metrics']:
+#             metric_functions[metric] = function
+#
+#     return metric_functions
+#
+#
+# def listMetricFunctions(functionType="simple"):
+#     """
+#     Function to be added to the IRISMustangMetrics package.
+#
+#     "simple" metrics are those that require only a single stream as input and
+#     return a metricList of SingleValueMetrics as output. They may may have
+#     additional arguments which can be used but the provided defaults are
+#     typically adequate.
+#
+#     """
+#     df = pd.DataFrame.from_dict(_R_getMetricFunctionMetdata(), orient='index')
+#     names = df.index.tolist()
+#
+#     functionlist = _R_getMetricFunctionMetdata().keys()
+#
+#     return functionlist
 
 
 def simpleMetricsPretty(df, sigfigs=6):
@@ -197,36 +197,36 @@ def simpleMetricsPretty(df, sigfigs=6):
     return df
     
     
-#def signif(number, sigfigs=6):
-    #"""
-    #Returns number rounded to the specified number of significant figures.
-    #:param number: Floating point number.
-    #:param sigfigs: Significant figures to use.
-    #:return: Number rounded to sigfigs significant figures.
-                
-    #.. rubric:: Example
-    
-    #>>> signif(123.456, 1)
-    #100.0
-    #>>> signif(123.456,3)
-    #123.0
-    #>>> signif(123.456,4)
-    #123.5
-    #>>> signif(123.456,7)
-    #123.456
-    
-    #"""
-    #from math import log10, floor
-    #digit = -int(floor(log10(abs(number)))) + (sigfigs - 1)
-    #if digit > 0:
-        #return round(number, digit)
-    #else: # future.builtins.newround doesn't handle negative ndigits yet (3/3/16)
-        #return number - (number % (10 ** -digit))
+# def signif(number, sigfigs=6):
+#     """
+#     Returns number rounded to the specified number of significant figures.
+#     :param number: Floating point number.
+#     :param sigfigs: Significant figures to use.
+#     :return: Number rounded to sigfigs significant figures.
+#
+#     .. rubric:: Example
+#
+#     >>> signif(123.456, 1)
+#     100.0
+#     >>> signif(123.456,3)
+#     123.0
+#     >>> signif(123.456,4)
+#     123.5
+#     >>> signif(123.456,7)
+#     123.456
+#
+#     """
+#     from math import log10, floor
+#     digit = -int(floor(log10(abs(number)))) + (sigfigs - 1)
+#     if digit > 0:
+#         return round(number, digit)
+#     else: # future.builtins.newround doesn't handle negative ndigits yet (3/3/16)
+#         return number - (number % (10 ** -digit))
 
-###   Functions for SingleValueMetrics     -------------------------------------
+#     Functions for SingleValueMetrics     ------------------------------------
 
 
-def applySimpleMetric(r_stream, metric_set_name, *args, **kwargs):
+def apply_simple_metric(r_stream, metric_set_name, *args, **kwargs):
     """"
     Invoke a named "simple" R metric and convert the R dataframe result into
     a Pandas dataframe.
@@ -246,7 +246,7 @@ def applySimpleMetric(r_stream, metric_set_name, *args, **kwargs):
     return df
 
 
-### ----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 if __name__ == '__main__':

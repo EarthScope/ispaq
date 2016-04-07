@@ -18,7 +18,7 @@ def simple_set(metric_set, custom_metric_set_functions, r_streams, sigfigs=6,
     import pandas as pd    
 
     if metric_set in function_metadata:  # if a preset metric-set
-        df_peices = r_streams.apply(lambda r_stream: applySimpleMetric(r_stream, metric_set))
+        df_peices = r_streams.apply(lambda r_stream: apply_simple_metric(r_stream, metric_set))
         df = pd.concat(df_peices.tolist())
         df = df.reset_index(drop=True)  # make indices make sense
         # Create a pretty version of the dataframe
@@ -41,7 +41,7 @@ def _buildcustom(r_stream, metric_set_functions):
     """Builds a df for an individual r_stream given the needed functions for a custom metric_set"""
     df_peices = []    
     for function in metric_set_functions:
-        tempdf = applySimpleMetric(r_stream, function)
+        tempdf = apply_simple_metric(r_stream, function)
         tempdf = tempdf.loc[tempdf['metricName'].isin(metric_set_functions[function])]
         df_peices.append(tempdf)    
     df = pd.concat(df_peices)
