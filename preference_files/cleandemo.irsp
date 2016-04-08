@@ -2,6 +2,10 @@
 
 # User defined sets of metrics ------------------------------------------------
 
+# Dates for testing:
+#
+# 2010-02-27 -- large quake
+
 Metrics:
 
   # ----- Default combinations -----
@@ -10,6 +14,7 @@ Metrics:
   stateOfHealth: calibration_signal, timing_correction, event_begin, event_end, vent_in_progress, clock_locked, amplifier_saturation, digitizer_clipping, spikes, glitches, missing_padded_data, telemetry_sync_error, digital_filter_charging, suspect_time_tag, timing_quality
   STALTA: max_stalta
   spikes: num_spikes
+  SNR: sample_snr
   
   # ----- Custom combinations -----
   metrics_1: sample_rms, num_gaps, percent_availability
@@ -28,6 +33,7 @@ SNCLs:
   sncls_1: US.O*.*.LHZ
   sncls_2: U*.*.*.??Z
   US_LHZ: US.*.*.LHZ
+  IU_ANMO: IU.ANMO.*.*
   spikes: IU.RAO.10.BH? # --starttime "2013-01-03"
   bad_sncl: US.OXF..BOP # does not exist
   bad_good: US.OXF..BOP, US.OXF.*.BH?

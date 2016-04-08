@@ -13,7 +13,7 @@ from obspy.clients.fdsn import Client
 from ispaq.concierge.concierge import Concierge
 
 ###from ispaq.irisseismic.stream import get_R_Stream_property
-from ispaq.irisseismic.webservices import R_getSNCL
+from ispaq.irisseismic.webservices import R_getSNCL, getEvent
 
 from ispaq.irismustangmetrics import apply_simple_metric
 
@@ -37,6 +37,15 @@ def generate_SNR_metrics(concierge, verbose=False):
     TODO:  doctest examples
     """
     
+    # Default parameters from IRISMustangUtils::generateMetrics_SNR
+    minmag = 5.5
+    maxradius = 180
+    windowSecs = 60
+        
+    # Get the seismic events in this time period
+    ###events <- IRISSeismic::getEvent(iris, starttime, endtime, minmag=minmag)
+    events = concierge.get_event()
+        
     # Container for all of the metrics dataframes generated
     dataframes = []
 

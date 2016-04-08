@@ -129,6 +129,15 @@ def _R_getMetricFunctionMetdata():
             'extraAttributes': None,
             'businessLogic': 'simple',
             'metrics': ['num_spikes']
+        },
+        'SNR': {
+            'streamCount': 1,
+            'outputType': 'SingleValue',
+            'fullDay': False,
+            'speed': 'fast',
+            'extraAttributes': None,
+            'businessLogic': 'SNR',
+            'metrics': ['sample_snr']
         }
     }
     return(functiondict)
@@ -140,42 +149,7 @@ def function_metadata():
 #     R functions still to be written     -------------------------------------
 
 
-
-# def metricslist(function_data=_R_getMetricFunctionMetdata()):
-#     """
-#     :param function_data: the function metadata returned by _R_getMetricFunctionMetdata
-#     :return: a dictionary of {metrics: functionNames} based on the metrics and functions
-#     contained within the Metric Metadata
-#     """
-#
-#     # invert the dictionary to be {metric: functionName}
-#     # TODO: potentially move this to a class wrapping the original dict
-#     metric_functions = {}
-#     for function in function_data:
-#         for metric in function_data[function]['metrics']:
-#             metric_functions[metric] = function
-#
-#     return metric_functions
-#
-#
-# def listMetricFunctions(functionType="simple"):
-#     """
-#     Function to be added to the IRISMustangMetrics package.
-#
-#     "simple" metrics are those that require only a single stream as input and
-#     return a metricList of SingleValueMetrics as output. They may may have
-#     additional arguments which can be used but the provided defaults are
-#     typically adequate.
-#
-#     """
-#     df = pd.DataFrame.from_dict(_R_getMetricFunctionMetdata(), orient='index')
-#     names = df.index.tolist()
-#
-#     functionlist = _R_getMetricFunctionMetdata().keys()
-#
-#     return functionlist
-
-
+# TODO:  rename "simpleMetricPretty" to "single_value_metrics_pretty"
 def simpleMetricsPretty(df, sigfigs=6):
     """
     Create a pretty dataframe with appropriate significant figures.
@@ -197,35 +171,10 @@ def simpleMetricsPretty(df, sigfigs=6):
     return df
     
     
-# def signif(number, sigfigs=6):
-#     """
-#     Returns number rounded to the specified number of significant figures.
-#     :param number: Floating point number.
-#     :param sigfigs: Significant figures to use.
-#     :return: Number rounded to sigfigs significant figures.
-#
-#     .. rubric:: Example
-#
-#     >>> signif(123.456, 1)
-#     100.0
-#     >>> signif(123.456,3)
-#     123.0
-#     >>> signif(123.456,4)
-#     123.5
-#     >>> signif(123.456,7)
-#     123.456
-#
-#     """
-#     from math import log10, floor
-#     digit = -int(floor(log10(abs(number)))) + (sigfigs - 1)
-#     if digit > 0:
-#         return round(number, digit)
-#     else: # future.builtins.newround doesn't handle negative ndigits yet (3/3/16)
-#         return number - (number % (10 ** -digit))
-
 #     Functions for SingleValueMetrics     ------------------------------------
 
 
+# TODO:  rename "apply_simple_metric" to "apply_single_value_metric"
 def apply_simple_metric(r_stream, metric_function_name, *args, **kwargs):
     """"
     Invoke a named "simple" R metric and convert the R dataframe result into

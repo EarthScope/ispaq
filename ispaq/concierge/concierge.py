@@ -14,6 +14,8 @@ from obspy.clients.fdsn.header import URL_MAPPINGS
 
 from ispaq.concierge.user_request import UserRequest
 
+import ispaq.irisseismic.webservices as iris_ws
+
 import pandas as pd
 
 
@@ -71,87 +73,6 @@ class Concierge(object):
         else:
             print("TODO:  deal with non-URL_MAPPING dataselect_url")
 
-
-
-    def get_events(self, starttime=None, endtime=None, minlatitude=None,
-                   maxlatitude=None, minlongitude=None, maxlongitude=None,
-                   latitude=None, longitude=None, minradius=None,
-                   maxradius=None, mindepth=None, maxdepth=None,
-                   minmagnitude=None, maxmagnitude=None, magnitudetype=None,
-                   includeallorigins=None, includeallmagnitudes=None,
-                   includearrivals=None, return_type="catalog"):
-        """
-        Query the event service of the client.
-
-        :type starttime: :class:`~obspy.core.utcdatetime.UTCDateTime`, optional
-        :param starttime: Limit to events on or after the specified start time.
-        :type endtime: :class:`~obspy.core.utcdatetime.UTCDateTime`, optional
-        :param endtime: Limit to events on or before the specified end time.
-        :type minlatitude: float, optional
-        :param minlatitude: Limit to events with a latitude larger than the
-            specified minimum.
-        :type maxlatitude: float, optional
-        :param maxlatitude: Limit to events with a latitude smaller than the
-            specified maximum.
-        :type minlongitude: float, optional
-        :param minlongitude: Limit to events with a longitude larger than the
-            specified minimum.
-        :type maxlongitude: float, optional
-        :param maxlongitude: Limit to events with a longitude smaller than the
-            specified maximum.
-        :type latitude: float, optional
-        :param latitude: Specify the latitude to be used for a radius search.
-        :type longitude: float, optional
-        :param longitude: Specify the longitude to the used for a radius
-            search.
-        :type minradius: float, optional
-        :param minradius: Limit to events within the specified minimum number
-            of degrees from the geographic point defined by the latitude and
-            longitude parameters.
-        :type maxradius: float, optional
-        :param maxradius: Limit to events within the specified maximum number
-            of degrees from the geographic point defined by the latitude and
-            longitude parameters.
-        :type mindepth: float, optional
-        :param mindepth: Limit to events with depth, in kilometers, larger than
-            the specified minimum.
-        :type maxdepth: float, optional
-        :param maxdepth: Limit to events with depth, in kilometers, smaller
-            than the specified maximum.
-        :type minmagnitude: float, optional
-        :param minmagnitude: Limit to events with a magnitude larger than the
-            specified minimum.
-        :type maxmagnitude: float, optional
-        :param maxmagnitude: Limit to events with a magnitude smaller than the
-            specified maximum.
-        :type magnitudetype: str, optional
-        :param magnitudetype: Specify a magnitude type to use for testing the
-            minimum and maximum limits.
-        :type includeallorigins: bool, optional
-        :param includeallorigins: Specify if all origins for the event should
-            be included, default is data center dependent but is suggested to
-            be the preferred origin only.
-        :type includeallmagnitudes: bool, optional
-        :param includeallmagnitudes: Specify if all magnitudes for the event
-            should be included, default is data center dependent but is
-            suggested to be the preferred magnitude only.
-        :type includearrivals: bool, optional
-        :param includearrivals: Specify if phase arrivals should be included.
-        :type format: str
-        :param format: return type ("catalog", "dataframe")
-
-        TODO:  doctest example
-
-        """
-
-        # Get the information for the get_events() request if it is not provided
-        if starttime is None:
-            starttime = self.requested_starttime
-        if endtime is None:
-            endtime = self.requested_endtime
-
-        if return_type.lower() == "catalog":
-            print('TODO:  support "catalog" return type.')
 
 
     def get_availability(self,
@@ -247,7 +168,8 @@ class Concierge(object):
         for sncl_pattern in self.sncl_patterns:
             
             (UR_network, UR_station, UR_location, UR_channel) = sncl_pattern.split('.')
-    
+
+            # Allow arguments to override UserRequest parameters
             if starttime is None:
                 _starttime = self.requested_starttime
             else:
@@ -319,6 +241,103 @@ class Concierge(object):
         else:
             return result
     
+
+    def get_event(self,
+                  starttime=None, endtime=None,
+                  minmag=5.5, maxmag=None, magtype=None,
+                  mindepth=None, maxdepth=None):
+        """
+        ################################################################################
+        # getEvent method returns seismic event data from the event webservice:
+        #
+        #   http://service.iris.edu/fdsnws/event/1/
+        #
+        # TODO:  The getEvent method could be fleshed out with a more complete list
+        # TODO:  of arguments to be used as ws-event parameters.
+        ################################################################################
+        
+        # http://service.iris.edu/fdsnws/event/1/query?starttime=2013-02-01T00:00:00&endtime=2013-02-02T00:00:00&minmag=5&format=text
+        #
+        # #EventID | Time | Latitude | Longitude | Depth | Author | Catalog | Contributor | ContributorID | MagType | Magnitude | MagAuthor | EventLocationName
+        # 4075900|2013-02-01T22:18:33|-11.12|165.378|10.0|NEIC|NEIC PDE|NEIC PDE-Q||MW|6.4|GCMT|SANTA CRUZ ISLANDS
+
+        if (!isGeneric("getEvent")) {
+          setGeneric("getEvent", function(obj, starttime, endtime, minmag, maxmag, magtype,
+                                          mindepth, maxdepth) {
+            standardGeneric("getEvent")
+          })
+        }
+
+        # END of R documentation
+
+
+        Returns a dataframe of events returned by the `event_url` source
+        specified in the `user_request` object used to initialize the
+        `Concierge`.
+
+        By default, information in the `user_request` is used to generate
+        a FDSN webservices request for event data. Where arguments are
+        provided, these are used to override the information found in
+        `user_request.
+
+        :type starttime: :class:`~obspy.core.utcdatetime.UTCDateTime`
+        :param starttime: Limit to metadata epochs starting on or after the
+            specified start time.
+        :type endtime: :class:`~obspy.core.utcdatetime.UTCDateTime`
+        :param endtime: Limit to metadata epochs ending on or before the
+            specified end time.
+        :type minmagnitude: float, optional
+        :param minmagnitude: Limit to events with a magnitude larger than the
+            specified minimum.
+        :type maxmagnitude: float, optional
+        :param maxmagnitude: Limit to events with a magnitude smaller than the
+            specified maximum.
+        :type magnitudetype: str, optional
+        :param magnitudetype: Specify a magnitude type to use for testing the
+            minimum and maximum limits.
+        :type mindepth: float, optional
+        :param mindepth: Limit to events with depth, in kilometers, larger than
+            the specified minimum.
+        :type maxdepth: float, optional
+        :param maxdepth: Limit to events with depth, in kilometers, smaller
+            than the specified maximum.
+
+        #.. rubric:: Example
+
+        #>>> my_request =  UserRequest(dummy=True)
+        #>>> concierge = Concierge(my_request)
+        #>>> concierge.get_sncls() #doctest: +ELLIPSIS
+        #[u'US.OXF..BHE', u'US.OXF..BHN', u'US.OXF..BHZ']
+        """
+
+        # Default values from IRISMustangUtils::generateMetrics_SNR
+        maxradius=180
+        windowSecs=60
+
+        # Allow arguments to override UserRequest parameters
+        if starttime is None:
+            _starttime = self.requested_starttime
+        else:
+            _starttime = starttime
+        if endtime is None:
+            _endtime = self.requested_endtime
+        else:
+            _endtime = endtime
+
+        # For now, just use the IRISSeismic::getEvent function.
+        # TODO:  Generate events dataframe using ObsPy
+        
+        events = iris_ws.getEvent(starttime=_starttime,
+                                  endtime=_endtime)
+
+        a = 1
+        
+           
+        if result.shape[0] == 0:              
+            return None # TODO:  raise an exception
+        else:
+            return result
+
 
 if __name__ == '__main__':
     import doctest

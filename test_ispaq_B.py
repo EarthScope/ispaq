@@ -17,6 +17,7 @@ from ispaq.irismustangmetrics import *
 from ispaq.concierge.user_request import UserRequest
 from ispaq.concierge.concierge import Concierge
 from ispaq.business_logic.simple_metrics import generate_simple_metrics
+from ispaq.business_logic.SNR_metrics import generate_SNR_metrics
 
 from os.path import expanduser
 
@@ -99,14 +100,16 @@ def main(argv=None):
 
     # Generate SNR Metrics -----------------------------------------------------
 
-    #try:
-      #snr_output = ispaq.business_logic.generate_SNR_metrics(concierge)
-      #try:
-          ## Dump output to a file
-      #except:
-          ##
-    #except:
-          ##
+    try:
+        snr_output = generate_SNR_metrics(concierge, verbose=True)
+        try:
+            print('Dumping to a file')
+            simple_df = simpleMetricsPretty(simple_df, sigfigs=6)
+            print(simple_df)
+        except:
+            print('Exception to dump to a file')
+    except Exception as e:
+        print(str(e))
 
 
     # Generate [increasingly complex/time-consuming metrics] -------------------
