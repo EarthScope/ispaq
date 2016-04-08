@@ -118,7 +118,7 @@ def _R_getMetricFunctionMetdata():
             'fullDay': True,
             'speed': 'slow',
             'extraAttributes': None,
-            'businessLogic': 'Limit to BH and HH channels.',
+            'businessLogic': 'simple',
             'metrics': ['max_stalta']
             },
         'spikes': {
@@ -226,15 +226,15 @@ def simpleMetricsPretty(df, sigfigs=6):
 #     Functions for SingleValueMetrics     ------------------------------------
 
 
-def apply_simple_metric(r_stream, metric_set_name, *args, **kwargs):
+def apply_simple_metric(r_stream, metric_function_name, *args, **kwargs):
     """"
     Invoke a named "simple" R metric and convert the R dataframe result into
     a Pandas dataframe.
     :param r_stream: an r_stream object
-    :param metric_set_name: the name of the set of metrics
+    :param metric_function_name: the name of the set of metrics
     :return:
     """
-    function = 'IRISMustangMetrics::' + metric_set_name + 'Metric'
+    function = 'IRISMustangMetrics::' + metric_function_name + 'Metric'
     R_function = r(function)
     r_metriclist = R_function(r_stream, *args, **kwargs)  # args and kwargs shouldn't be needed in theory
     r_dataframe = _R_metricList2DF(r_metriclist)

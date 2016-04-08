@@ -250,7 +250,75 @@ def R_Stream(stream,
                              requestedStarttime=R_POSIXct(requestedStarttime),
                              requestedEndtime=R_POSIXct(requestedEndtime),
                              traces=r_listOfTraces)
-    return(r_stream)    
+    return(r_stream) 
+
+
+#     R --> Python conversion functions    -------------------------------------
+
+
+## TODO:  Why didn't this work inside of the irisseismic.stream module?
+
+#def get_R_Stream_property(r_stream, prop):
+    #"""
+    #Return a property from the R_Stream.
+    #:param r_stream: IRISSeismic Stream object.
+    #:param prop: Name of slot in r_stream or r_stream@traces[[1]]@stats
+    #:return: value contained in the named property (aka 'slot')
+    #"""
+    ## IRISSeismic slots as of 2016-04-07
+    
+    ## stream_slots = r_stream.slotnames()
+    ##  * url
+    ##  * requestedStarttime
+    ##  * requestedEndtime
+    ##  * act_flags
+    ##  * io_flags
+    ##  * dq_flags
+    ##  * timing_qual
+    ##  * traces
+    
+    ## trace_slots = r_stream.do_slot('traces')[0].slotnames()
+    ##  * stats
+    ##  * Sensor
+    ##  * InstrumentSensitivity
+    ##  * InputUnits
+    ##  * data
+    
+    ## stats_slots = r_stream.do_slot('traces')[0].do_slot('stats').slotnames()
+    ##  * sampling_rate
+    ##  * delta
+    ##  * calib
+    ##  * npts
+    ##  * network
+    ##  * location
+    ##  * station
+    ##  * channel
+    ##  * quality
+    ##  * starttime
+    ##  * endtime
+    ##  * processing
+    
+    ## Here we specify only those slots with single valued strings or floats
+    #stream_slots = ['url']
+    
+    #trace_slots = ['id','Sensor','InstrumentSensitivity','InputUnits']
+    
+    #r_stats_slots = r_stream.do_slot('traces')[0].do_slot('stats').slotnames() # <type 'rpy2.rinterface.StrSexpVector'>
+    #stats_slots = list(r_stats_slots) # <type 'list'>
+    #stats_slots.remove('starttime') # does not apply to entire r_stream
+    #stats_slots.remove('endtime') # does not apply to entire r_stream
+    
+    #if prop in stream_slots:
+        #val = r_stream.do_slot(prop)[0]
+    #elif prop in trace_slots:
+        #val = r_stream.do_slot('traces')[0].do_slot(prop)[0]
+    #elif prop in stats_slots:
+        #val = r_stream.do_slot('traces')[0].do_slot('stats').do_slot(prop)[0]
+    #else:
+        #print('Property %s not handled yet.' % prop)
+        #raise
+    
+    #return(val)
 
 
 # ------------------------------------------------------------------------------

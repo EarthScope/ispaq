@@ -202,7 +202,7 @@ class UserRequest(object):
             # Warn of invalid metrics
             invalid_metrics = set(self.metrics).difference(valid_metrics)
             if len(invalid_metrics):
-                print('The following invalid metric names were ignored: ' + invalid_metrics)
+                print('The following invalid metric names were ignored: ' + str(invalid_metrics))
             
             # Now reconstruct the reorganized function_by_logic dictionary with only 
             # user requested logic types, functions and metrics.

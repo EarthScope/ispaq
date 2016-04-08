@@ -6,7 +6,7 @@ Metrics:
 
   # ----- Default combinations -----
   basicStats: sample_min, sample_median, sample_mean, sample_max, sample_rms
-  gaps: num_gaps, max_gap, num_overlaps, max_overlap', percent_availability
+  gaps: num_gaps, max_gap, num_overlaps, max_overlap, percent_availability
   stateOfHealth: calibration_signal, timing_correction, event_begin, event_end, vent_in_progress, clock_locked, amplifier_saturation, digitizer_clipping, spikes, glitches, missing_padded_data, telemetry_sync_error, digital_filter_charging, suspect_time_tag, timing_quality
   STALTA: max_stalta
   spikes: num_spikes
@@ -14,6 +14,7 @@ Metrics:
   # ----- Custom combinations -----
   metrics_1: sample_rms, num_gaps, percent_availability
   metrics_2: num_gaps, max_gap, percent_availability, timing_correction, spikes, glitches, missing_padded_data
+  metrics_3: sample_min, num_gaps, clock_locked, max_stalta, num_spikes
   MyContinuityMetrics: num_gaps, num_overlaps, num_spikes
   MyStats: sample_max, sample_mean, sample_median, sample_rms
   
@@ -27,6 +28,9 @@ SNCLs:
   sncls_1: US.O*.*.LHZ
   sncls_2: U*.*.*.??Z
   US_LHZ: US.*.*.LHZ
+  spikes: IU.RAO.10.BH? # --starttime "2013-01-03"
+  bad_sncl: US.OXF..BOP # does not exist
+  bad_good: US.OXF..BOP, US.OXF.*.BH?
 
 
 # Data access (typically FDSN web service providers) --------------------------

@@ -247,43 +247,60 @@ class Concierge(object):
         """
 
         # Get the information for the get_stations() request if it is not provided
-        # TODO:  Handle multiple user_request.sncls
-        (ur_network, ur_station, ur_location, ur_channel) = self.sncl_patterns[0].split('.')
-
-        if starttime is None:
-            starttime = self.requested_starttime
-        if endtime is None:
-            endtime = self.requested_endtime
-        if network is None:
-            network = ur_network
-        if station is None:
-            station = ur_station
-        if location is None:
-            location = ur_location
-        if channel is None:
-            channel = ur_channel
-
-        # Get an Inventory object
-        sncl_inventory = self.station_client.get_stations(starttime=starttime, endtime=endtime,
-                                                          network=network, station=station,
-                                                          location=location, channel=channel,
-                                                          level="channel")
-
-        if return_type.lower() == "inventory":
-            return sncl_inventory
-
-        elif return_type.lower() == "list":
-            sncl_list = []
-            # Walk through the Inventory object
-            for n in sncl_inventory.networks:
-                for s in n.stations:
-                    for c in s.channels:
-                        sncl = n.code + "." + s.code + "." + c.location_code + "." + c.code
-                        sncl_list.append(sncl)
+        sncl_list = []
+        
+        for sncl_pattern in self.sncl_patterns:
+            
+            (UR_network, UR_station, UR_location, UR_channel) = sncl_pattern.split('.')
+    
+            if starttime is None:
+                _starttime = self.requested_starttime
+            else:
+                _starttime = starttime
+            if endtime is None:
+                endtime = self.requested_endtime
+            else:
+                _endtime = endtime
+            if network is None:
+                _network = UR_network
+            else:
+                _network = network
+            if station is None:
+                _station = UR_station
+            else:
+                _station = station
+            if location is None:
+                _location = UR_location
+            else:
+                _location = location
+            if channel is None:
+                _channel = UR_channel
+            else:
+                _channel = channel
+    
+            # Get an Inventory object
+            try:
+                sncl_inventory = self.station_client.get_stations(starttime=_starttime, endtime=_endtime,
+                                                                  network=_network, station=_station,
+                                                                  location=_location, channel=_channel,
+                                                                  level="channel")
+            except Exception as e:
+                print('\n*** ERROR in Concierge.get_sncls():  No sncls matching %s found at %s ***\n' % (sncl_pattern, self.station_url))
+                continue
+    
+            if return_type.lower() == "list":
+                # Walk through the Inventory object
+                for n in sncl_inventory.networks:
+                    for s in n.stations:
+                        for c in s.channels:
+                            sncl = n.code + "." + s.code + "." + c.location_code + "." + c.code
+                            sncl_list.append(sncl)
+                        
+           
+        if return_type.lower() == "list":               
             return sncl_list
-
         else:
-            return None # TODO:  return an exception
+            return None # TODO:  raise an exception
 
 
 if __name__ == '__main__':
