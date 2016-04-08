@@ -46,27 +46,26 @@ def generate_simple_metrics(concierge, verbose=False):
 
     # ----- All available SNCLs -------------------------------------------------
     
+    availability = concierge.get_availability()
 
     # function metadata dictionary
     simple_function_meta = concierge.function_by_logic['simple']
     
-    # loop over available SNCLS
-    for sncl in concierge.get_sncls():
-        
-        (network, station, location, channel) = sncl.split('.')
-        
-        if verbose: print('Calculating simple metrics for ' + sncl)
+    # Loop over rows of the availability dataframe
+    for (index, av) in availability.iterrows():
+                
+        if verbose: print('Calculating simple metrics for ' + av.snclId)
 
         # Get the data ----------------------------------------------
 
         # NOTE:  Use the requested starttime, not just what is available
         try:
-            r_stream = R_getSNCL(concierge.dataselect_url, sncl, concierge.requested_starttime, concierge.requested_endtime)
+            r_stream = R_getSNCL(concierge.dataselect_url, av.snclId, concierge.requested_starttime, concierge.requested_endtime)
         except Exception as e:
-            if verbose: print('\n*** Unable to obtain data for %s from %s ***\n' % (sncl, concierge.dataselect_url))
+            if verbose: print('\n*** Unable to obtain data for %s from %s ***\n' % (av.snclId, concierge.dataselect_url))
             df = pd.DataFrame({'metricName': 'percent_available',
                                'value': 0,
-                               'snclq': snclq+'.M',
+                               'snclq': av.snclId + '.M',
                                'starttime': concierge.requested_starttime,
                                'endtime': concierge.requested_endtime,
                                'qualityFlag': -9}) 
@@ -81,7 +80,7 @@ def generate_simple_metrics(concierge, verbose=False):
                 df = apply_simple_metric(r_stream, 'gaps')
                 dataframes.append(df)
             except Exception as e:
-                if verbose: print('\n*** ERROR in "gaps" metric calculation for %s ***\n' % (sncl))
+                if verbose: print('\n*** ERROR in "gaps" metric calculation for %s ***\n' % (av.snclId))
                 
                 
         # Run the State-of-Health metric -----------------------------
@@ -91,7 +90,7 @@ def generate_simple_metrics(concierge, verbose=False):
                 df = apply_simple_metric(r_stream, 'stateOfHealth')
                 dataframes.append(df)
             except Exception as e:
-                if verbose: print('\n*** ERROR in "stateOfHealth" metric calculation for %s ***\n' % (sncl))
+                if verbose: print('\n*** ERROR in "stateOfHealth" metric calculation for %s ***\n' % (av.snclId))
                             
             
         # Run the Basic Stats metric ---------------------------------
@@ -101,7 +100,7 @@ def generate_simple_metrics(concierge, verbose=False):
                 df = apply_simple_metric(r_stream, 'basicStats')
                 dataframes.append(df)
             except Exception as e:
-                if verbose: print('\n*** ERROR in "basicStats" metric calculation for %s ***\n' % (sncl))
+                if verbose: print('\n*** ERROR in "basicStats" metric calculation for %s ***\n' % (av.snclId))
                             
        
         # Run the STALTA metric --------------------------------------
@@ -116,7 +115,7 @@ def generate_simple_metrics(concierge, verbose=False):
             
             # TODO:  Should we limit STALTA channels?
             # Limit this metric to BH. and HH. channels
-            # if channel.startswith('BH') or channel.startswith('HH'):
+            # if av.channel.startswith('BH') or av.channel.startswith('HH'):
             sampling_rate = get_R_Stream_property(r_stream, 'sampling_rate')
             increment = math.ceil(sampling_rate/2)
             
@@ -124,7 +123,7 @@ def generate_simple_metrics(concierge, verbose=False):
                 df = apply_simple_metric(r_stream, 'STALTA', staSecs=3, ltaSecs=30, increment=increment, algorithm='classic_LR')
                 dataframes.append(df)
             except Exception as e:
-                if verbose: print('\n*** ERROR in "STALTA" metric calculation for %s ***\n' % (sncl))
+                if verbose: print('\n*** ERROR in "STALTA" metric calculation for %s ***\n' % (av.snclId))
             
             
         # Run the Spikes metric --------------------------------------
@@ -146,7 +145,7 @@ def generate_simple_metrics(concierge, verbose=False):
                 df = apply_simple_metric(r_stream, 'spikes', windowSize, thresholdMin, selectivity)
                 dataframes.append(df)
             except Exception as e:
-                if verbose: print('\n*** ERROR in "spikes" metric calculation for %s ***\n' % (sncl))            
+                if verbose: print('\n*** ERROR in "spikes" metric calculation for %s ***\n' % (av.snclId))            
                 
 
     # Concatenate and filter dataframes before returning -----------------------

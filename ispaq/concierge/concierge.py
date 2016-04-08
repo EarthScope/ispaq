@@ -154,17 +154,39 @@ class Concierge(object):
             print('TODO:  support "catalog" return type.')
 
 
-
-    def get_sncls(self, starttime=None, endtime=None,
-                  network=None, station=None, location=None, channel=None,
-                  minlatitude=None, maxlatitude=None, minlongitude=None,
-                  maxlongitude=None, latitude=None, longitude=None,
-                  minradius=None, maxradius=None, level=None,
-                  includerestricted=None, includeavailability=None,
-                  updatedafter=None, matchtimeseries=None,
-                  return_type="list"):
+    def get_availability(self,
+                         network=None, station=None, location=None, channel=None,
+                         starttime=None, endtime=None, includerestricted=None,
+                         latitude=None, longitude=None, minradius=None, maxradius=None):
         """
-        Returns a list of SNCLs available from the `station_url` source
+        ################################################################################
+        # getAvailability method returns a dataframe with information from the output
+        # of the fdsn station web service with "format=text&level=channel".
+        # With additional parameters, this webservice returns information on all
+        # matching SNCLs that have available data.
+        #
+        # The fdsnws/station/availability web service will return space characters for location
+        # codes that are SPACE SPACE.
+        #
+        #   http://service.iris.edu/fdsnws/station/1/
+        #
+        # #Network | Station | Location | Channel | Latitude | Longitude | Elevation | Depth | Azimuth | Dip | Instrument | Scale | ScaleFreq | ScaleUnits | SampleRate | StartTime | EndTime
+        # CU|ANWB|00|LHZ|17.66853|-61.78557|39.0|0.0|0.0|-90.0|Streckeisen STS-2 Standard-gain|2.43609E9|0.05|M/S|1.0|2010-02-10T18:35:00|2599-12-31T23:59:59
+        #
+        ################################################################################
+        
+        if (!isGeneric("getAvailability")) {
+          setGeneric("getAvailability", function(obj, network, station, location, channel,
+                                                 starttime, endtime, includerestricted,
+                                                 latitude, longitude, minradius, maxradius) {
+            standardGeneric("getAvailability")
+          })
+        }
+        
+        # END of R documentation
+
+
+        Returns a dataframe of SNCLs available from the `station_url` source
         specified in the `user_request` object used to initialize the
         `Concierge`.
 
@@ -173,12 +195,6 @@ class Concierge(object):
         provided, these are used to override the information found in
         `user_request.
 
-        :type starttime: :class:`~obspy.core.utcdatetime.UTCDateTime`
-        :param starttime: Limit to metadata epochs starting on or after the
-            specified start time.
-        :type endtime: :class:`~obspy.core.utcdatetime.UTCDateTime`
-        :param endtime: Limit to metadata epochs ending on or before the
-            specified end time.
         :type network: str
         :param network: Select one or more network codes. Can be SEED network
             codes or data center defined codes. Multiple codes are
@@ -194,18 +210,15 @@ class Concierge(object):
         :type channel: str
         :param channel: Select one or more SEED channel codes. Multiple codes
             are comma-separated.
-        :type minlatitude: float
-        :param minlatitude: Limit to stations with a latitude larger than the
-            specified minimum.
-        :type maxlatitude: float
-        :param maxlatitude: Limit to stations with a latitude smaller than the
-            specified maximum.
-        :type minlongitude: float
-        :param minlongitude: Limit to stations with a longitude larger than the
-            specified minimum.
-        :type maxlongitude: float
-        :param maxlongitude: Limit to stations with a longitude smaller than
-            the specified maximum.
+        :type starttime: :class:`~obspy.core.utcdatetime.UTCDateTime`
+        :param starttime: Limit to metadata epochs starting on or after the
+            specified start time.
+        :type endtime: :class:`~obspy.core.utcdatetime.UTCDateTime`
+        :param endtime: Limit to metadata epochs ending on or before the
+            specified end time.
+        :type includerestricted: bool
+        :param includerestricted: Specify if results should include information
+            for restricted stations.
         :type latitude: float
         :param latitude: Specify the latitude to be used for a radius search.
         :type longitude: float
@@ -219,35 +232,17 @@ class Concierge(object):
         :param maxradius: Limit results to stations within the specified
             maximum number of degrees from the geographic point defined by the
             latitude and longitude parameters.
-        :type level: str
-        :param level: Specify the level of detail for the results ("network",
-            "station", "channel", "response"), e.g. specify "response" to get
-            full information including instrument response for each channel.
-        :type includerestricted: bool
-        :param includerestricted: Specify if results should include information
-            for restricted stations.
-        :type includeavailability: bool
-        :param includeavailability: Specify if results should include
-            information about time series data availability.
-        :type updatedafter: :class:`~obspy.core.utcdatetime.UTCDateTime`
-        :param updatedafter: Limit to metadata updated after specified date;
-            updates are data center specific.
-        :type matchtimeseries: bool
-        :param matchtimeseries: Only include data for which matching time
-            series data is available.
-        :type return_type: str
-        :param return_type: return type ("dataframe", "inventory", "list")
 
-        .. rubric:: Example
+        #.. rubric:: Example
 
-        >>> my_request =  UserRequest(dummy=True)
-        >>> concierge = Concierge(my_request)
-        >>> concierge.get_sncls() #doctest: +ELLIPSIS
-        [u'US.OXF..BHE', u'US.OXF..BHN', u'US.OXF..BHZ']
+        #>>> my_request =  UserRequest(dummy=True)
+        #>>> concierge = Concierge(my_request)
+        #>>> concierge.get_sncls() #doctest: +ELLIPSIS
+        #[u'US.OXF..BHE', u'US.OXF..BHN', u'US.OXF..BHZ']
         """
 
-        # Get the information for the get_stations() request if it is not provided
-        sncl_list = []
+        # Container for all of the individual SNCL dataframes generated
+        dataframes = []
         
         for sncl_pattern in self.sncl_patterns:
             
@@ -258,7 +253,7 @@ class Concierge(object):
             else:
                 _starttime = starttime
             if endtime is None:
-                endtime = self.requested_endtime
+                _endtime = self.requested_endtime
             else:
                 _endtime = endtime
             if network is None:
@@ -288,20 +283,42 @@ class Concierge(object):
                 print('\n*** ERROR in Concierge.get_sncls():  No sncls matching %s found at %s ***\n' % (sncl_pattern, self.station_url))
                 continue
     
-            if return_type.lower() == "list":
-                # Walk through the Inventory object
-                for n in sncl_inventory.networks:
-                    for s in n.stations:
-                        for c in s.channels:
-                            sncl = n.code + "." + s.code + "." + c.location_code + "." + c.code
-                            sncl_list.append(sncl)
-                        
+            # Walk through the Inventory object
+            for n in sncl_inventory.networks:
+                for s in n.stations:
+                    for c in s.channels:
+                        # "network"    "station"    "location"   "channel"    "latitude"   "longitude"  "elevation"  "depth"      "azimuth"    "dip"        "instrument"
+                        # "scale"      "scalefreq"  "scaleunits" "samplerate" "starttime"  "endtime"    "snclId"         
+                        df = pd.DataFrame({'network': n.code,
+                                           'station': s.code,
+                                           'location': c.location_code,
+                                           'channel': c.code,
+                                           'latitude': c.latitude,
+                                           'longitude': c.longitude,
+                                           'elevation': c.elevation,
+                                           'depth': c.depth,
+                                           'azimuth': c.azimuth,
+                                           'dip': c.dip,
+                                           'instrument': c.sensor.description,
+                                           'scale': None,          # TODO:  Figure out how to get instrument 'scale'
+                                           'scalefreq': None,      # TODO:  Figure out how to get instrument 'scalefreq'
+                                           'scaleunits': None,     # TODO:  Figure out how to get instrument 'scaleunits'
+                                           'samplerate': c.sample_rate,
+                                           'starttime': c.start_date,
+                                           'endtime': c.end_date,
+                                           'snclId': n.code + "." + s.code + "." + c.location_code + "." + c.code},
+                                          index=[0]) 
+                        dataframes.append(df)
+                            
+        # END of sncl_patterns
+        
+        result = pd.concat(dataframes, ignore_index=True)    
            
-        if return_type.lower() == "list":               
-            return sncl_list
-        else:
+        if result.shape[0] == 0:              
             return None # TODO:  raise an exception
-
+        else:
+            return result
+    
 
 if __name__ == '__main__':
     import doctest
