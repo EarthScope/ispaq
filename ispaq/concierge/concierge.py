@@ -331,9 +331,9 @@ class Concierge(object):
                                   endtime=_endtime)
 
         a = 1
-        
-           
-        if result.shape[0] == 0:              
+
+
+        if result.shape[0] == 0:
             return None # TODO:  raise an exception
         else:
             return result
