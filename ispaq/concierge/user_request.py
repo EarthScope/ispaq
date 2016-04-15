@@ -49,7 +49,7 @@ class UserRequest(object):
     business logic code.
     """
     def __init__(self,
-                 args,
+                 args = None,
                  json_representation=None, dummy=False,
                  verbose=False):
         """

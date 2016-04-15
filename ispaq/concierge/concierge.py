@@ -306,8 +306,9 @@ class Concierge(object):
 
         #>>> my_request =  UserRequest(dummy=True)
         #>>> concierge = Concierge(my_request)
-        #>>> concierge.get_sncls() #doctest: +ELLIPSIS
-        #[u'US.OXF..BHE', u'US.OXF..BHN', u'US.OXF..BHZ']
+        #>>> concierge.get_event() #doctest: +ELLIPSIS
+        '
+         eventId                         time  latitude  longitude  depth author...'
         """
 
         # Default values from IRISMustangUtils::generateMetrics_SNR
@@ -324,6 +325,7 @@ class Concierge(object):
         else:
             _endtime = endtime
 
+
         # For now, just use the IRISSeismic::getEvent function.
         # TODO:  Generate events dataframe using ObsPy
         
@@ -333,10 +335,10 @@ class Concierge(object):
         a = 1
 
 
-        if result.shape[0] == 0:
+        if events.shape[0] == 0:
             return None # TODO:  raise an exception
         else:
-            return result
+            return events
 
 
 if __name__ == '__main__':

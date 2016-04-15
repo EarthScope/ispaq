@@ -265,6 +265,8 @@ def getEvent(client_url="http://service.iris.edu", starttime=None, endtime=None,
     # Call the function and return a pandas dataframe with the results
     r_df = _R_getEvent(r_client, starttime, endtime, minmag, maxmag, magtype, mindepth, maxdepth)
     df = pandas2ri.ri2py(r_df)
+    df['time'] = df['time'].apply(lambda x: UTCDateTime(x))
+
     return df
         
     
