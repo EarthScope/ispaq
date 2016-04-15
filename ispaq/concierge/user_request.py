@@ -49,9 +49,7 @@ class UserRequest(object):
     business logic code.
     """
     def __init__(self,
-                 requested_starttime=None, requested_endtime=None,
-                 requested_metric_set=None, requested_sncl_set=None,
-                 preferences_file=None,
+                 args,
                  json_representation=None, dummy=False,
                  verbose=False):
         """
@@ -63,6 +61,10 @@ class UserRequest(object):
 
         TODO:  Generate doctest examples by loading from json?
         """
+
+        # Save args
+
+        self.args = args
 
         #     Initialize a dummy object     -----------------------------------
 
@@ -119,15 +121,15 @@ class UserRequest(object):
 
         else:
             # start and end times
-            self.requested_starttime = UTCDateTime(requested_starttime)
-            if requested_endtime is None:
+            self.requested_starttime = UTCDateTime(args.starttime)
+            if args.endtime is None:
                 self.requested_endtime = self.requested_starttime + (24 * 60 * 60)
             else:
-                self.requested_endtime = UTCDateTime(requested_endtime)
+                self.requested_endtime = UTCDateTime(args.endtime)
 
             # metric and sncl sets
-            self.requested_metric_set = requested_metric_set
-            self.requested_sncl_set = requested_sncl_set
+            self.requested_metric_set = args.metrics
+            self.requested_sncl_set = args.sncls
 
 
             #     Load preferences from file      -----------------------------
@@ -135,7 +137,7 @@ class UserRequest(object):
             # Metric and SNCL information from the preferences file
             metric_sets, sncl_sets, data_access = {}, {}, {}
             currentSection = None
-            for line in preferences_file:  # parse file
+            for line in args.preferences_file:  # parse file
                 line = line.split('#')[0].strip()  # remove comments
                 if line.lower() == "metrics:":  # metric header
                     currentSection = 'metric'
