@@ -59,7 +59,7 @@ def main(argv=None):
     # invocation of the ISPAQ top level script.
 
     try:
-        user_request = UserRequest(args.starttime, args.endtime, args.metrics, args.sncls, args.preferences_file)
+        user_request = UserRequest(args)
         ###print(user_request.json_dump(pretty=True))
     except Exception as e:
         if str(e) == "Not really an error.":
