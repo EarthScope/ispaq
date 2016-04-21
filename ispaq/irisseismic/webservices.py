@@ -133,6 +133,8 @@ def getAvailability(client_url="http://service.iris.edu", sncl=None, starttime=N
     r_df = _R_getAvailability(r_client, network, station, location, channel, starttime, endtime, includerestricted,
                               latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
+    df['starttime'] = df['starttime'].apply(lambda x: UTCDateTime(x))
+    df['endtime'] = df['endtime'].apply(lambda x: UTCDateTime(x))
     return df
     
     
@@ -161,6 +163,8 @@ def getChannel(client_url="http://service.iris.edu", sncl=None, starttime=None, 
     # Call the function and return a pandas dataframe with the results
     r_df = _R_getChannel(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
+    df['starttime'] = df['starttime'].apply(lambda x: UTCDateTime(x))
+    df['endtime'] = df['endtime'].apply(lambda x: UTCDateTime(x))
     return df
 
 
@@ -202,7 +206,7 @@ def getDistaz(latitude, longitude, staLatitude, staLongitude):
     r_client = r('new("IrisClient")')
     
     # Call the function and return a pandas dataframe with the results
-    r_df = _R_getDistaz(latitude, longitude, staLatitude, staLongitude)
+    r_df = _R_getDistaz(r_client, latitude, longitude, staLatitude, staLongitude)
     df = pandas2ri.ri2py(r_df)
     return df
     
@@ -248,7 +252,7 @@ def getEvent(client_url="http://service.iris.edu", starttime=None, endtime=None,
     
     .. rubric:: Example
     
-    >>> df = getEvent("http://service.iris.edu", UTCDateTime("2012-06-21"), UTCDateTime("2012-06-28"),minmag=6)
+    >>> df = getEvent("http://service.iris.edu", UTCDateTime("2012-06-21"), UTCDateTime("2012-06-28"), minmag=6)
     >>> df.shape
     (2, 13)
     >>> df.eventLocationName  #doctest: +ELLIPSIS
@@ -266,7 +270,6 @@ def getEvent(client_url="http://service.iris.edu", starttime=None, endtime=None,
     r_df = _R_getEvent(r_client, starttime, endtime, minmag, maxmag, magtype, mindepth, maxdepth)
     df = pandas2ri.ri2py(r_df)
     df['time'] = df['time'].apply(lambda x: UTCDateTime(x))
-
     return df
         
     
@@ -295,6 +298,8 @@ def getNetwork(client_url="http://service.iris.edu", sncl=None, starttime=None, 
     # Call the function and return a pandas dataframe with the results
     r_df = _R_getNetwork(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
+    df['starttime'] = df['starttime'].apply(lambda x: UTCDateTime(x))
+    df['endtime'] = df['endtime'].apply(lambda x: UTCDateTime(x))
     return df
     
     
@@ -345,6 +350,8 @@ def getStation(client_url="http://service.iris.edu", sncl=None, starttime=None, 
     # Call the function and return a pandas dataframe with the results
     r_df = _R_getStation(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
+    df['starttime'] = df['starttime'].apply(lambda x: UTCDateTime(x))
+    df['endtime'] = df['endtime'].apply(lambda x: UTCDateTime(x))
     return df
 
 
@@ -392,6 +399,8 @@ def getUnavailability(client_url="http://service.iris.edu", sncl=None, starttime
                                 starttime, endtime, includerestricted,
                                 latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
+    df['starttime'] = df['starttime'].apply(lambda x: UTCDateTime(x))
+    df['endtime'] = df['endtime'].apply(lambda x: UTCDateTime(x))
     return df
 
 

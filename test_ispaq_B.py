@@ -60,7 +60,6 @@ def main(argv=None):
 
     try:
         user_request = UserRequest(args)
-        ###print(user_request.json_dump(pretty=True))
     except Exception as e:
         if str(e) == "Not really an error.":
             pass

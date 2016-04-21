@@ -158,7 +158,7 @@ class Concierge(object):
 
         #>>> my_request =  UserRequest(dummy=True)
         #>>> concierge = Concierge(my_request)
-        #>>> concierge.get_sncls() #doctest: +ELLIPSIS
+        #>>> concierge.get_availability() #doctest: +ELLIPSIS
         #[u'US.OXF..BHE', u'US.OXF..BHN', u'US.OXF..BHZ']
         """
 
@@ -196,6 +196,9 @@ class Concierge(object):
                 _channel = channel
     
             # Get an Inventory object
+            # TODO:  Should use "includeAvailability=true, matchtimeseries=true" if these are supported.
+            # TODO:  But we need to handle cases and reissue without these arguments when they are not supported.
+            # TODO:  Is all this even worth the bother if we skip SNCLs that don't return data?
             try:
                 sncl_inventory = self.station_client.get_stations(starttime=_starttime, endtime=_endtime,
                                                                   network=_network, station=_station,
@@ -205,7 +208,7 @@ class Concierge(object):
                                                                   minradius=minradius, maxradius=maxradius,                                                                
                                                                   level="channel")
             except Exception as e:
-                print('\n*** ERROR in Concierge.get_sncls():  No sncls matching %s found at %s ***\n' % (sncl_pattern, self.station_url))
+                print('\n*** ERROR in Concierge.get_availability():  No sncls matching %s found at %s ***\n' % (sncl_pattern, self.station_url))
                 continue
     
             # Walk through the Inventory object
@@ -340,83 +343,12 @@ class Concierge(object):
                                   mindepth=mindepth,
                                   maxdepth=maxdepth)
 
-        a = 1
-
-
         if events.shape[0] == 0:
             return None # TODO:  raise an exception
         else:
             return events
 
 
-    #     R --> Python conversion functions    ---------------------------------
-    
-    def get_slot(self,
-                 r_object, prop):
-        """
-        Return a property from the R_Stream.
-        :param r_object: IRISSeismic Stream, Trace or TraceHeader object
-        :param prop: Name of slot in the R object or any child object
-        :return: python version value contained in the named property (aka 'slot')
-        
-        This convenience function allows business logic code to easily extract
-        any property that is an atomic value in one of the R objects defined in
-        the IRISSeismic R package.
-        
-        IRISSeismic slots as of 2016-04-07
-        
-        stream_slots = r_stream.slotnames()
-         * url
-         * requestedStarttime
-         * requestedEndtime
-         * act_flags
-         * io_flags
-         * dq_flags
-         * timing_qual
-         * traces
-        
-        trace_slots = r_stream.do_slot('traces')[0].slotnames()
-         * stats
-         * Sensor
-         * InstrumentSensitivity
-         * InputUnits
-         * data
-        
-        stats_slots = r_stream.do_slot('traces')[0].do_slot('stats').slotnames()
-         * sampling_rate
-         * delta
-         * calib
-         * npts
-         * network
-         * location
-         * station
-         * channel
-         * quality
-         * starttime
-         * endtime
-         * processing
-        """
-        
-        # Here we specify only those slots with single valued strings or floats
-        stream_slots = ['url']
-        
-        trace_slots = ['id','Sensor','InstrumentSensitivity','InputUnits']
-        
-        r_stats_slots = r_stream.do_slot('traces')[0].do_slot('stats').slotnames() # <type 'rpy2.rinterface.StrSexpVector'>
-        stats_slots = list(r_stats_slots) # <type 'list'>
-        
-        if prop in stream_slots:
-            val = r_stream.do_slot(prop)[0]
-        elif prop in trace_slots:
-            val = r_stream.do_slot('traces')[0].do_slot(prop)[0]
-        elif prop in stats_slots:
-            val = r_stream.do_slot('traces')[0].do_slot('stats').do_slot(prop)[0]
-        else:
-            print('Property %s not handled yet.' % prop)
-            raise
-        
-        return(val)
-    
 
 if __name__ == '__main__':
     import doctest

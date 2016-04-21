@@ -13,8 +13,6 @@ from obspy.clients.fdsn import Client
 from ispaq.concierge.concierge import Concierge
 import ispaq.concierge.utils as utils
 
-###from ispaq.irisseismic.stream import get_R_Stream_property
-###from ispaq.irisseismic.webservices import R_getSNCL
 import ispaq.irisseismic.webservices as webservices
 
 from ispaq.irismustangmetrics import apply_simple_metric
@@ -30,7 +28,7 @@ import rpy2.robjects as robjects
 r = robjects.r
 
 
-def SNR_metrics(concierge, verbose=True):
+def SNR_metrics(concierge, verbose=False):
     """
     Generate *SNR* metrics.
 
@@ -65,7 +63,11 @@ def SNR_metrics(concierge, verbose=True):
     ## Loop through each event.
     #############################################################
 
+    if verbose: print('Calculating SNR metrics for %d events.' % events.shape[0])
+
     for (index, event) in events.iterrows():
+
+        if verbose: print('Calculating SNR metrics for magnitude %3.1f event: %s' % (event.magnitude, event.eventLocationName))
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
