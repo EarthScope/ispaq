@@ -7,7 +7,10 @@ ISPAQ Data Access Expediter.
     GNU Lesser General Public License, Version 3
     (http://www.gnu.org/copyleft/lesser.html)
 """
-# Use UTCDateTime internally for all times
+
+import os
+import pandas as pd
+
 from obspy import UTCDateTime
 from obspy.clients.fdsn import Client
 from obspy.clients.fdsn.header import URL_MAPPINGS
@@ -15,8 +18,6 @@ from obspy.clients.fdsn.header import URL_MAPPINGS
 from ispaq.concierge.user_request import UserRequest
 
 import ispaq.irisseismic.webservices as iris_ws
-
-import pandas as pd
 
 
 class Concierge(object):
@@ -49,6 +50,12 @@ class Concierge(object):
         self.metric_names = user_request.metrics
         self.sncl_patterns = user_request.sncls
         self.function_by_logic = user_request.function_by_logic
+        
+        # Output information
+        file_base = '%s_%s_%s' % (self.user_request.requested_metric_set,
+                                  self.user_request.requested_sncl_set, 
+                                  self.requested_starttime.date)
+        self.output_file_base = os.getcwd() + '/' + file_base
 
         # TODO:  Should test for name (i.e. "IRIS"), full url or local file
         
@@ -208,7 +215,7 @@ class Concierge(object):
                                                                   minradius=minradius, maxradius=maxradius,                                                                
                                                                   level="channel")
             except Exception as e:
-                print('\n*** ERROR in Concierge.get_availability():  No sncls matching %s found at %s ***\n' % (sncl_pattern, self.station_url))
+                print('\n*** WARNING in Concierge.get_availability():  No sncls matching %s found at %s ***\n' % (sncl_pattern, self.station_url))
                 continue
     
             # Walk through the Inventory object

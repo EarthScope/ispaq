@@ -7,14 +7,40 @@ ISPAQ Data Access Expediter.
     GNU Lesser General Public License, Version 3
     (http://www.gnu.org/copyleft/lesser.html)
 """
-# Use UTCDateTime internally for all times
-from obspy import UTCDateTime
 
 import pandas as pd
 
+from obspy import UTCDateTime
 
 
-#     R --> Python conversion functions    ---------------------------------
+def format_simple_df(df, sigfigs=6):
+    """
+    Create a pretty dataframe with appropriate significant figures.
+    :param df: Dataframe of simpleMetrics.
+    :param sigfigs: Number of significant figures to use.
+    :return: Dataframe of simpleMetrics.
+    
+    The following conversions take place:
+    
+    * Round the 'value' column to the specified number of significant figures.
+    * Convert 'starttime' and 'endtime' to python 'date' objects.
+    """
+    # TODO:  Why is type(df.value[0]) = 'str' at this point?
+    format_string = "." + str(sigfigs) + "g"
+    df.value = df.value.astype(float)
+    df.value = df.value.apply(lambda x: format(x, format_string))
+    if 'starttime' in df.columns:
+        df.starttime = df.starttime.apply(lambda x: x.isoformat())
+    if 'endtime' in df.columns:
+        df.endtime = df.endtime.apply(lambda x: x.isoformat())
+    # NOTE:  df.time from SNR metric is already a string, otherwise it is NA
+    #if 'time' in df.columns:
+        #df.time = df.time.apply(lambda x: x.format_iris_web_service())
+    if 'qualityFlag' in df.columns:
+        df.qualityFlag = df.qualityFlag.astype(int)
+
+    return df
+    
     
 def get_slot(r_object, prop):
     """

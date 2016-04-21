@@ -68,7 +68,8 @@ def simple_metrics(concierge, verbose=False):
                                'snclq': av.snclId + '.M',
                                'starttime': concierge.requested_starttime,
                                'endtime': concierge.requested_endtime,
-                               'qualityFlag': -9}) 
+                               'qualityFlag': -9},
+                              index=[0]) 
             dataframes.append(df)
             continue
 
@@ -113,17 +114,16 @@ def simple_metrics(concierge, verbose=False):
     
         if simple_function_meta.has_key('STALTA'):
             
-            # TODO:  Should we limit STALTA channels?
             # Limit this metric to BH. and HH. channels
-            # if av.channel.startswith('BH') or av.channel.startswith('HH'):
-            sampling_rate = utils.get_slot(r_stream, 'sampling_rate')
-            increment = math.ceil(sampling_rate/2)
-            
-            try:
-                df = apply_simple_metric(r_stream, 'STALTA', staSecs=3, ltaSecs=30, increment=increment, algorithm='classic_LR')
-                dataframes.append(df)
-            except Exception as e:
-                if verbose: print('\n*** ERROR in "STALTA" metric calculation for %s ***\n' % (av.snclId))
+            if av.channel.startswith('BH') or av.channel.startswith('HH'):
+                sampling_rate = utils.get_slot(r_stream, 'sampling_rate')
+                increment = math.ceil(sampling_rate/2)
+                
+                try:
+                    df = apply_simple_metric(r_stream, 'STALTA', staSecs=3, ltaSecs=30, increment=increment, algorithm='classic_LR')
+                    dataframes.append(df)
+                except Exception as e:
+                    if verbose: print('\n*** ERROR in "STALTA" metric calculation for %s ***\n' % (av.snclId))
             
             
         # Run the Spikes metric --------------------------------------

@@ -19,9 +19,11 @@ from ispaq.concierge.concierge import Concierge
 from ispaq.business_logic.simple_metrics import simple_metrics
 from ispaq.business_logic.SNR_metrics import SNR_metrics
 
+import ispaq.concierge.utils as utils
+
 from os.path import expanduser
 
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 
 
 def main(argv=None):
@@ -88,11 +90,12 @@ def main(argv=None):
     try:
         simple_df = simple_metrics(concierge, verbose=True)
         try:
-            print('Dumping to a file')
-            simple_df = simpleMetricsPretty(simple_df, sigfigs=6)
-            print(simple_df)
-        except:
-            print('Exception to dump to a file')
+            filename = concierge.output_file_base + "__simpleMetrics.csv"
+            print('\nWriting simple metrics to %s.\n' % filename)
+            simple_df = utils.format_simple_df(simple_df, sigfigs=6)
+            simple_df.to_csv(filename)
+        except Exception as e:
+            print('Exception to dump to a file: %s' % e)
     except Exception as e:
         print(str(e))
 
@@ -102,11 +105,12 @@ def main(argv=None):
     try:
         SNR_df = SNR_metrics(concierge, verbose=True)
         try:
-            print('Dumping to a file')
-            SNR_df = simpleMetricsPretty(SNR_df, sigfigs=6)
-            print(SNR_df)
-        except:
-            print('Exception to dump to a file')
+            filename = concierge.output_file_base + "__SNRMetrics.csv"
+            print('\nWriting SNR metrics to %s.\n' % filename)
+            SNR_df = utils.format_simple_df(SNR_df, sigfigs=6)
+            SNR_df.to_csv(filename)
+        except Exception as e:
+            print('Exception to dump to a file: %s' % e)
     except Exception as e:
         print(str(e))
 

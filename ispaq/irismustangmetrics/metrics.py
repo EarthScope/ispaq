@@ -26,10 +26,9 @@ from future.builtins import *  # NOQA
 
 ### ----------------------------------------------------------------------------
 
+import pandas as pd
 
 from obspy.core import UTCDateTime
-
-import pandas as pd
 
 # Connect to R through the rpy2 module
 from rpy2.robjects import r, pandas2ri
@@ -46,7 +45,6 @@ r('options(digits.secs=6)')      # print out fractional seconds
 
 # IRISMustangMetrics helper functions
 _R_metricList2DF = r('IRISMustangMetrics::metricList2DF')
-_R_metricList2Xml = r('IRISMustangMetrics::metricList2Xml')
 
 
 def _R_getMetricFunctionMetdata():
@@ -146,31 +144,6 @@ def function_metadata():
     return _R_getMetricFunctionMetdata()
 
 
-#     R functions still to be written     -------------------------------------
-
-
-# TODO:  rename "simpleMetricPretty" to "single_value_metrics_pretty"
-def simpleMetricsPretty(df, sigfigs=6):
-    """
-    Create a pretty dataframe with appropriate significant figures.
-    :param df: Dataframe of simpleMetrics.
-    :param sigfigs: Number of significant figures to use.
-    :return: Dataframe of simpleMetrics.
-    
-    The following conversions take place:
-    
-    * Round the 'value' column to the specified number of significant figures.
-    * Convert 'starttime' and 'endtime' to python 'date' objects.
-    """
-    format_string = "." + str(sigfigs) + "g"
-    df.value = df.value.astype(float)
-    df.value = df.value.apply(lambda x: format(x, format_string))
-    df.starttime = df.starttime.apply(lambda x: getattr(x, 'date'))
-    df.endtime = df.endtime.apply(lambda x: getattr(x, 'date'))
-
-    return df
-    
-    
 #     Functions for SingleValueMetrics     ------------------------------------
 
 
@@ -189,7 +162,7 @@ def apply_simple_metric(r_stream, metric_function_name, *args, **kwargs):
     r_dataframe = _R_metricList2DF(r_metriclist)
     df = pandas2ri.ri2py(r_dataframe)
     
-    # Applies UTCDateTime to start and end time columns
+    # Convert columns from R POSIXct to pyton UTCDateTime
     df.starttime = df.starttime.apply(UTCDateTime)
     df.endtime = df.endtime.apply(UTCDateTime)
     return df

@@ -137,7 +137,8 @@ def SNR_metrics(concierge, verbose=False):
                                    'snclq': av.snclId+'.M',
                                    'starttime': concierge.requested_starttime,
                                    'endtime': concierge.requested_endtime,
-                                   'qualityFlag': -9}) 
+                                   'qualityFlag': -9},
+                                  index=[0]) 
                 dataframes.append(df)
                 continue
 

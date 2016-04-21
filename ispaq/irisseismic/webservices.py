@@ -18,10 +18,13 @@ from future.builtins import *  # NOQA
 from future.types import newint
 
 import numpy as np
+import pandas as pd
 
 from obspy import UTCDateTime
 
 from ispaq.irisseismic.stream import R_POSIXct
+
+
 
 
 # -----------------------------------------------------------------------------
@@ -133,8 +136,11 @@ def getAvailability(client_url="http://service.iris.edu", sncl=None, starttime=N
     r_df = _R_getAvailability(r_client, network, station, location, channel, starttime, endtime, includerestricted,
                               latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
-    df['starttime'] = df['starttime'].apply(lambda x: UTCDateTime(x))
-    df['endtime'] = df['endtime'].apply(lambda x: UTCDateTime(x))
+    
+    # Convert columns from R POSIXct to pyton UTCDateTime
+    df.starttime = df.starttime.apply(UTCDateTime)
+    df.endtime = df.endtime.apply(UTCDateTime)
+    
     return df
     
     
@@ -163,8 +169,11 @@ def getChannel(client_url="http://service.iris.edu", sncl=None, starttime=None, 
     # Call the function and return a pandas dataframe with the results
     r_df = _R_getChannel(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
-    df['starttime'] = df['starttime'].apply(lambda x: UTCDateTime(x))
-    df['endtime'] = df['endtime'].apply(lambda x: UTCDateTime(x))
+    
+    # Convert columns from R POSIXct to pyton UTCDateTime
+    df.starttime = df.starttime.apply(UTCDateTime)
+    df.endtime = df.endtime.apply(UTCDateTime)
+    
     return df
 
 
@@ -269,7 +278,10 @@ def getEvent(client_url="http://service.iris.edu", starttime=None, endtime=None,
     # Call the function and return a pandas dataframe with the results
     r_df = _R_getEvent(r_client, starttime, endtime, minmag, maxmag, magtype, mindepth, maxdepth)
     df = pandas2ri.ri2py(r_df)
-    df['time'] = df['time'].apply(lambda x: UTCDateTime(x))
+    
+    # Convert columns from R POSIXct to pyton UTCDateTime
+    df.time = df.time.apply(UTCDateTime)
+     
     return df
         
     
@@ -298,8 +310,11 @@ def getNetwork(client_url="http://service.iris.edu", sncl=None, starttime=None, 
     # Call the function and return a pandas dataframe with the results
     r_df = _R_getNetwork(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
-    df['starttime'] = df['starttime'].apply(lambda x: UTCDateTime(x))
-    df['endtime'] = df['endtime'].apply(lambda x: UTCDateTime(x))
+    
+    # Convert columns from R POSIXct to pyton UTCDateTime
+    df.starttime = df.starttime.apply(UTCDateTime)
+    df.endtime = df.endtime.apply(UTCDateTime)
+    
     return df
     
     
@@ -350,8 +365,11 @@ def getStation(client_url="http://service.iris.edu", sncl=None, starttime=None, 
     # Call the function and return a pandas dataframe with the results
     r_df = _R_getStation(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
-    df['starttime'] = df['starttime'].apply(lambda x: UTCDateTime(x))
-    df['endtime'] = df['endtime'].apply(lambda x: UTCDateTime(x))
+    
+    # Convert columns from R POSIXct to pyton UTCDateTime
+    df.starttime = df.starttime.apply(UTCDateTime)
+    df.endtime = df.endtime.apply(UTCDateTime)
+    
     return df
 
 
@@ -399,8 +417,11 @@ def getUnavailability(client_url="http://service.iris.edu", sncl=None, starttime
                                 starttime, endtime, includerestricted,
                                 latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
-    df['starttime'] = df['starttime'].apply(lambda x: UTCDateTime(x))
-    df['endtime'] = df['endtime'].apply(lambda x: UTCDateTime(x))
+    
+    # Convert columns from R POSIXct to pyton UTCDateTime
+    df.starttime = df.starttime.apply(UTCDateTime)
+    df.endtime = df.endtime.apply(UTCDateTime)
+    
     return df
 
 
