@@ -16,8 +16,8 @@ from ispaq.irismustangmetrics import *
 
 from ispaq.concierge.user_request import UserRequest
 from ispaq.concierge.concierge import Concierge
-from ispaq.business_logic.simple_metrics import generate_simple_metrics
-from ispaq.business_logic.SNR_metrics import generate_SNR_metrics
+from ispaq.business_logic.simple_metrics import simple_metrics
+from ispaq.business_logic.SNR_metrics import SNR_metrics
 
 from os.path import expanduser
 
@@ -87,7 +87,7 @@ def main(argv=None):
     #     Generate Simple Metrics     ------------------------------------------
 
     try:
-        simple_df = generate_simple_metrics(concierge, verbose=True)
+        simple_df = simple_metrics(concierge, verbose=True)
         try:
             print('Dumping to a file')
             simple_df = simpleMetricsPretty(simple_df, sigfigs=6)
@@ -101,11 +101,11 @@ def main(argv=None):
     # Generate SNR Metrics -----------------------------------------------------
 
     try:
-        snr_output = generate_SNR_metrics(concierge, verbose=True)
+        SNR_df = SNR_metrics(concierge, verbose=True)
         try:
             print('Dumping to a file')
-            simple_df = simpleMetricsPretty(simple_df, sigfigs=6)
-            print(simple_df)
+            SNR_df = simpleMetricsPretty(SNR_df, sigfigs=6)
+            print(SNR_df)
         except:
             print('Exception to dump to a file')
     except Exception as e:
@@ -115,7 +115,7 @@ def main(argv=None):
     # Generate [increasingly complex/time-consuming metrics] -------------------
 
     #try:
-      #complex_output = ispaq.business_logic.generate_complex_metrics(concierge)
+      #complex_output = ispaq.business_logic.complex_metrics(concierge)
       #try:
           ## Dump output to a file
       #except:

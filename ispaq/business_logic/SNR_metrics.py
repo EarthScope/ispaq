@@ -11,18 +11,26 @@ from obspy import UTCDateTime
 from obspy.clients.fdsn import Client
 
 from ispaq.concierge.concierge import Concierge
+import ispaq.concierge.utils as utils
 
 ###from ispaq.irisseismic.stream import get_R_Stream_property
-from ispaq.irisseismic.webservices import R_getSNCL, getEvent
+###from ispaq.irisseismic.webservices import R_getSNCL
+import ispaq.irisseismic.webservices as webservices
 
 from ispaq.irismustangmetrics import apply_simple_metric
 
-import math
 
 import pandas as pd
+import numpy as np
+import math
 
 
-def generate_SNR_metrics(concierge, verbose=False):
+# Connect to R through the rpy2 module
+import rpy2.robjects as robjects
+r = robjects.r
+
+
+def SNR_metrics(concierge, verbose=True):
     """
     Generate *SNR* metrics.
 
@@ -43,119 +51,111 @@ def generate_SNR_metrics(concierge, verbose=False):
     windowSecs = 60
         
     # Get the seismic events in this time period
-    ###events <- IRISSeismic::getEvent(iris, starttime, endtime, minmag=minmag)
-    events = concierge.get_event()
+    events = concierge.get_event(minmag=minmag)
+        
+    # Sanity checkc
+    if events.shape[0] == 0:
+        print('No events found for SNR metrics.')
+        return None
         
     # Container for all of the metrics dataframes generated
     dataframes = []
 
-    ## ----- All UN-available SNCLs ----------------------------------------------
+    #############################################################
+    ## Loop through each event.
+    #############################################################
 
-    ## TODO:  Create percent_availability metric with   0% available
-
-    ## ----- All available SNCLs -------------------------------------------------
-    
-
-    ## function metadata dictionary
-    #simple_function_meta = concierge.function_by_logic['simple']
-    
-    ## loop over available SNCLS
-    #for sncl in concierge.get_sncls():
+    for (index, event) in events.iterrows():
         
-        #(network, station, location, channel) = sncl.split('.')
+        # Sanity check
+        if pd.isnull(event.latitude) or pd.isnull(event.longitude):
+            # TODO:  Print message if verbose ???
+            continue
+    
+        # Sanity check
+        if pd.isnull(event.depth):
+            continue        
         
-        #if verbose: print('Calculating simple metrics for ' + sncl)
+        # Get the data availability around this event
+        # NOTE:  Get availability from 2 minutes before event until 28 minutes after
+        # Get the data availability using spatial search parameters
+        halfHourStart = event.time - 60 * 2
+        halfHourEnd = event.time + 60 * 28
 
-        ## Get the data ----------------------------------------------
-
-        ## NOTE:  Use the requested starttime, not just what is available
-        #try:
-            #r_stream = R_getSNCL(concierge.dataselect_url, sncl, concierge.requested_starttime, concierge.requested_endtime)
-        #except Exception as e:
-            #if verbose: print('\n*** Unable to obtain data for %s from %s ***\n' % (sncl, concierge.dataselect_url))
-            #df = pd.DataFrame({'metricName': 'percent_available',
-                               #'value': 0,
-                               #'snclq': snclq+'.M',
-                               #'starttime': concierge.requested_starttime,
-                               #'endtime': concierge.requested_endtime,
-                               #'qualityFlag': -9}) 
-            #dataframes.append(df)
-            #continue
-
-
-        ## Run the Gaps metric ----------------------------------------
-
-        #if simple_function_meta.has_key('gaps'):
-            #try:
-                #df = apply_simple_metric(r_stream, 'gaps')
-                #dataframes.append(df)
-            #except Exception as e:
-                #if verbose: print('\n*** ERROR in "gaps" metric calculation for %s ***\n' % (sncl))
-                
-                
-        ## Run the State-of-Health metric -----------------------------
-
-        #if simple_function_meta.has_key('stateOfHealth'):
-            #try:
-                #df = apply_simple_metric(r_stream, 'stateOfHealth')
-                #dataframes.append(df)
-            #except Exception as e:
-                #if verbose: print('\n*** ERROR in "stateOfHealth" metric calculation for %s ***\n' % (sncl))
-                            
-            
-        ## Run the Basic Stats metric ---------------------------------
-
-        #if simple_function_meta.has_key('basicStats'):
-            #try:
-                #df = apply_simple_metric(r_stream, 'basicStats')
-                #dataframes.append(df)
-            #except Exception as e:
-                #if verbose: print('\n*** ERROR in "basicStats" metric calculation for %s ***\n' % (sncl))
-                            
-       
-        ## Run the STALTA metric --------------------------------------
-       
-        ## NOTE:  To improve performance, we do not calculate STA/LTA at every single point in 
-        ## NOTE:  high resolution data.  Instead, we calculate STA/LTA at one point and then skip
-        ## NOTE:  ahead a few points as determined by the "increment" parameter.
-        ## NOTE:  An increment that translates to 0.2-0.5 secs seems to be a good compromise
-        ## NOTE:  between performance and accuracy.
+        try:        
+            availability = concierge.get_availability(starttime=halfHourStart, endtime=halfHourEnd,
+                                                      longitude=event.longitude, latitude=event.latitude,
+                                                      minradius=0, maxradius=maxradius)
+        except Exception as e:
+            # TODO:  Print message if verbose ???
+            continue
+                    
+        # Sanity check   that some SNCLs exist
+        if availability.shape[0] == 0:
+            # TODO:  print message if verbose ???
+            continue
     
-        #if simple_function_meta.has_key('STALTA'):
-            
-            ## TODO:  Should we limit STALTA channels?
-            ## Limit this metric to BH. and HH. channels
-            ## if channel.startswith('BH') or channel.startswith('HH'):
-            #sampling_rate = get_R_Stream_property(r_stream, 'sampling_rate')
-            #increment = math.ceil(sampling_rate/2)
-            
-            #try:
-                #df = apply_simple_metric(r_stream, 'STALTA', staSecs=3, ltaSecs=30, increment=increment, algorithm='classic_LR')
-                #dataframes.append(df)
-            #except Exception as e:
-                #if verbose: print('\n*** ERROR in "STALTA" metric calculation for %s ***\n' % (sncl))
-            
-            
-        ## Run the Spikes metric --------------------------------------
-
-        ## NOTE:  Appropriate values for spikesMetric arguments are determined empirically
-            
-        #if simple_function_meta.has_key('spikes'):
-       
-            #windowSize = 41
-            #thresholdMin = 7
-            #selectivity = 0.5
-       
-            ## Lower resolution channels L.. need a higher thresholdMin
-            #sampling_rate = get_R_Stream_property(r_stream, 'sampling_rate')
-            #if sampling_rate >= 1:
-                #thresholdMin = 12
     
-            #try:
-                #df = apply_simple_metric(r_stream, 'spikes', windowSize, thresholdMin, selectivity)
-                #dataframes.append(df)
-            #except Exception as e:
-                #if verbose: print('\n*** ERROR in "spikes" metric calculation for %s ***\n' % (sncl))            
+        # ----- All available SNCLs -------------------------------------------------
+
+        # function metadata dictionary
+        function_meta = concierge.function_by_logic['SNR']
+    
+        # Loop over rows of the availability dataframe
+        for (index, av) in availability.iterrows():
+            
+            # get the travel time between the event and the station
+            try:
+                tt = webservices.getTraveltime(event.latitude, event.longitude, event.depth, 
+                                               av.latitude, av.longitude)
+            except Exception as e:
+                # TODO:  print message if verbose ???
+                continue
+        
+            # get P arrival or first arrival
+            if not np.any(tt.phaseName == 'P'):
+                travelTime = min(tt.travelTime)
+            else:
+                travelTime = min(tt.travelTime[tt.phaseName == 'P'])
+                
+            # For the arrival (P phase in some cases) minimum, define the SNR window
+            windowStart = event.time + travelTime - windowSecs/2
+            windowEnd = event.time + travelTime + windowSecs/2
+                
+            # Get the data
+            # NOTE:  Exapand the window by an extra second to guarantee that 
+            # NOTE:  windowStart < tr.stats.starttime and windowEnd > tr.stats.endtime
+            try:
+                r_stream = webservices.R_getSNCL(concierge.dataselect_url, av.snclId, windowStart-1, windowEnd+1)
+            except Exception as e:
+                if verbose: print('\n*** Unable to obtain data for %s from %s ***\n' % (av.snclId, concierge.dataselect_url))
+                # TODO:  Create appropriate empty dataframe
+                df = pd.DataFrame({'metricName': 'SNR',
+                                   'value': 0,
+                                   'snclq': av.snclId+'.M',
+                                   'starttime': concierge.requested_starttime,
+                                   'endtime': concierge.requested_endtime,
+                                   'qualityFlag': -9}) 
+                dataframes.append(df)
+                continue
+
+            # Run the SNR metric
+            if len(r_stream.do_slot('traces')) > 1:
+                if verbose: print('\n*** skipping %s becuase it has gaps ***\n' % (av.snclId)) 
+                continue
+            
+            else:
+                if (utils.get_slot(r_stream, 'starttime') > windowStart) or (utils.get_slot(r_stream,'endtime') < windowEnd):
+                    if verbose: print('\n*** skipping %s becuase it is missing data in the SNR window ***\n' % (av.snclId)) 
+                    continue
+                else:
+                    if function_meta.has_key('SNR'):
+                        try:
+                            df = apply_simple_metric(r_stream, 'SNR', algorithm="splitWindow", windowSecs=windowSecs)
+                            dataframes.append(df)
+                        except Exception as e:
+                            if verbose: print('\n*** ERROR in "SNR" metric calculation for %s ***\n' % (av.snclId))
+                    
                 
 
     # Concatenate and filter dataframes before returning -----------------------
@@ -170,73 +170,6 @@ def generate_SNR_metrics(concierge, verbose=False):
     result.reset_index(drop=True, inplace=True)
     
     return(result)
-
-
-#     R --> Python conversion functions    -------------------------------------
-
-# TODO:  Why didn't this work inside of the irisseismic.stream module?
-
-def get_R_Stream_property(r_stream, prop):
-    """
-    Return a property from the R_Stream.
-    :param r_stream: IRISSeismic Stream object.
-    :param prop: Name of slot in r_stream or r_stream@traces[[1]]@stats
-    :return: value contained in the named property (aka 'slot')
-    """
-    # IRISSeismic slots as of 2016-04-07
-    
-    # stream_slots = r_stream.slotnames()
-    #  * url
-    #  * requestedStarttime
-    #  * requestedEndtime
-    #  * act_flags
-    #  * io_flags
-    #  * dq_flags
-    #  * timing_qual
-    #  * traces
-    
-    # trace_slots = r_stream.do_slot('traces')[0].slotnames()
-    #  * stats
-    #  * Sensor
-    #  * InstrumentSensitivity
-    #  * InputUnits
-    #  * data
-    
-    # stats_slots = r_stream.do_slot('traces')[0].do_slot('stats').slotnames()
-    #  * sampling_rate
-    #  * delta
-    #  * calib
-    #  * npts
-    #  * network
-    #  * location
-    #  * station
-    #  * channel
-    #  * quality
-    #  * starttime
-    #  * endtime
-    #  * processing
-    
-    # Here we specify only those slots with single valued strings or floats
-    stream_slots = ['url']
-    
-    trace_slots = ['id','Sensor','InstrumentSensitivity','InputUnits']
-    
-    r_stats_slots = r_stream.do_slot('traces')[0].do_slot('stats').slotnames() # <type 'rpy2.rinterface.StrSexpVector'>
-    stats_slots = list(r_stats_slots) # <type 'list'>
-    stats_slots.remove('starttime') # does not apply to entire r_stream
-    stats_slots.remove('endtime') # does not apply to entire r_stream
-    
-    if prop in stream_slots:
-        val = r_stream.do_slot(prop)[0]
-    elif prop in trace_slots:
-        val = r_stream.do_slot('traces')[0].do_slot(prop)[0]
-    elif prop in stats_slots:
-        val = r_stream.do_slot('traces')[0].do_slot('stats').do_slot(prop)[0]
-    else:
-        print('Property %s not handled yet.' % prop)
-        raise
-    
-    return(val)
 
 
 # ------------------------------------------------------------------------------

@@ -20,6 +20,7 @@ Metrics:
   metrics_1: sample_rms, num_gaps, percent_availability
   metrics_2: num_gaps, max_gap, percent_availability, timing_correction, spikes, glitches, missing_padded_data
   metrics_3: sample_min, num_gaps, clock_locked, max_stalta, num_spikes
+  metrics_4: sample_mean, num_gaps, max_stalta, num_spikes, sample_snr
   MyContinuityMetrics: num_gaps, num_overlaps, num_spikes
   MyStats: sample_max, sample_mean, sample_median, sample_rms
   

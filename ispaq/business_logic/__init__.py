@@ -33,7 +33,8 @@ from __future__ import (absolute_import, division, print_function,
 from future.builtins import *  # NOQA
 from future.utils import native_str
 
-from ispaq.business_logic.simple_metrics import generate_simple_metrics
+from ispaq.business_logic.simple_metrics import simple_metrics
+from ispaq.business_logic.SNR_metrics import SNR_metrics
 
 
 if __name__ == '__main__':
