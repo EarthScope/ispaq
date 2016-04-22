@@ -113,6 +113,19 @@ def main(argv=None):
     except Exception as e:
         print(str(e))
 
+        # Generate SNR Metrics -----------------------------------------------------
+
+        try:
+            snr_output = generate_SNR_metrics(concierge, verbose=True)
+            try:
+                print('Dumping to a file')
+                simple_df = simpleMetricsPretty(simple_df, sigfigs=6)
+                print(simple_df)
+            except:
+                print('Exception to dump to a file')
+        except Exception as e:
+            print(str(e))
+
 
     # Generate [increasingly complex/time-consuming metrics] -------------------
 

@@ -163,10 +163,13 @@ class Concierge(object):
 
         #.. rubric:: Example
 
-        #>>> my_request =  UserRequest(dummy=True)
-        #>>> concierge = Concierge(my_request)
-        #>>> concierge.get_availability() #doctest: +ELLIPSIS
-        #[u'US.OXF..BHE', u'US.OXF..BHN', u'US.OXF..BHZ']
+        >>> my_request =  UserRequest(dummy=True)
+        >>> concierge = Concierge(my_request)
+        >>> dataframe = concierge.get_availability()
+        >>> len(dataframe)
+        3
+        >>> dataframe.columns #doctest: +ELLIPSIS
+        Index([u'azimuth', u'channel', u'depth', u'dip', u'elevation', u'endtime'...
         """
 
         # Container for all of the individual SNCL dataframes generated
@@ -317,11 +320,15 @@ class Concierge(object):
 
         #.. rubric:: Example
 
-        #>>> my_request =  UserRequest(dummy=True)
-        #>>> concierge = Concierge(my_request)
-        #>>> concierge.get_event() #doctest: +ELLIPSIS
-        '
-         eventId                         time  latitude  longitude  depth author...'
+        >>> my_request =  UserRequest(dummy=True)
+        >>> concierge = Concierge(my_request)
+        >>> dataframe = concierge.get_event()
+        >>> len(dataframe)
+        1
+        >>> dataframe.columns #doctest: +ELLIPSIS
+        Index([u'eventId', u'time', u'latitude', u'longitude', u'depth', u'author'...
+
+         eventId                         time  latitude  longitude  depth author...
         """
 
         # Default values from IRISMustangUtils::generateMetrics_SNR
