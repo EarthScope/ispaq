@@ -51,17 +51,23 @@ That site should be consulted if any of the instructions below do not work
 
 ### pip
 
-'Copied from [here](https://python-packaging-user-guide.readthedocs.org/en/latest/installing/#install-pip-setuptools-and-wheel):`
+*Copied from [here](https://python-packaging-user-guide.readthedocs.org/en/latest/installing/#install-pip-setuptools-and-wheel):*
 
-If you have Python 2 >=2.7.9 or Python 3 >=3.4 installed from python.org, you will already have pip and setuptools, but will need to upgrade to the latest version:
+  If you have Python 2 >=2.7.9 or Python 3 >=3.4 installed from python.org, you will already have pip and setuptools, but will need to upgrade to the latest version:
 
-On Linux or OS X:
+  On Linux or OS X:
+
+  ```
+  pip install -U pip setuptools
+  ```
 
 ### virtualenv
 
-`Copied from [here](https://python-packaging-user-guide.readthedocs.org/en/latest/installing/#optionally-create-a-virtual-environment):`
+*Copied from [here](https://python-packaging-user-guide.readthedocs.org/en/latest/installing/#optionally-create-a-virtual-environment):*
 
-```pip install virtualenv```
+  ```
+  pip install virtualenv
+  ```
 
 ### Setting up a virtual environment
 
@@ -86,10 +92,12 @@ with:
 
 All python prerequisites should be installable with:
 
-```pip install numpy
+```
+pip install numpy
 pip install obspy
 pip install pandas
-pip install rpy2```
+pip install rpy2
+```
 
 ## Installing and Running ispaq from Source
 
