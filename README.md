@@ -53,21 +53,21 @@ That site should be consulted if any of the instructions below do not work
 
 *Copied from [here](https://python-packaging-user-guide.readthedocs.org/en/latest/installing/#install-pip-setuptools-and-wheel):*
 
-  If you have Python 2 >=2.7.9 or Python 3 >=3.4 installed from python.org, you will already have pip and setuptools, but will need to upgrade to the latest version:
+If you have Python 2 >=2.7.9 or Python 3 >=3.4 installed from python.org, you will already have pip and setuptools, but will need to upgrade to the latest version:
 
-  On Linux or OS X:
+On Linux or OS X:
 
-  ```
-  pip install -U pip setuptools
-  ```
+```
+pip install -U pip setuptools
+```
 
 ### virtualenv
 
 *Copied from [here](https://python-packaging-user-guide.readthedocs.org/en/latest/installing/#optionally-create-a-virtual-environment):*
 
-  ```
-  pip install virtualenv
-  ```
+```
+pip install virtualenv
+```
 
 ### Setting up a virtual environment
 
@@ -77,16 +77,22 @@ up a local environment where python packages will be installed and referenced
 To set up a virtual environment for python 2.7 in your home directory type
 the following on OSX:
 
-```virtualenv --python=/usr/bin/python2.7 ~/venvpy27```
+```
+virtualenv --python=/usr/bin/python2.7 ~/venvpy27
+```
 
 To activate the environment type:
 
-```source ~/venvpy27/bin/activate```
+```
+source ~/venvpy27/bin/activate
+```
 
 You can check that your version of python is now coming from this environment 
 with:
 
-```which python```
+```
+which python
+```
 
 ### Install python prerequisites
 
