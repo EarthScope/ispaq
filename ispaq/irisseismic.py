@@ -1,0 +1,650 @@
+# -*- coding: utf-8 -*-
+"""
+Python module containing wrappers for the IRISSeismic R package.
+:copyright:
+    Mazama Science
+:license:
+    GNU Lesser General Public License, Version 3
+    (http://www.gnu.org/copyleft/lesser.html)
+"""
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from future.builtins import *  # NOQA
+from future.types import newint
+
+import numpy as np
+import pandas as pd
+
+from obspy import UTCDateTime
+
+# Connect to R through the rpy2 module
+from rpy2 import robjects
+from rpy2 import rinterface
+from rpy2.robjects import pandas2ri
+
+# R options
+robjects.r('options(digits.secs=6)')                   # have R functions print out fractional seconds
+
+
+#     R functions called internally     ----------------------------------------
+
+
+# NOTE:  These functions behave exactly the same as the R versions and require
+# NOTE:  R-compatible objects as arguments.
+
+# from base
+_R_as_integer = robjects.r('base::as.integer')         # for conversion of python integers to R integer vectors
+_R_as_POSIXct = robjects.r('base::as.POSIXct')         # for conversion of ISO datestrings to R POSIXct
+_R_vector = robjects.r('base::vector')                 # for creation of a the list of Traces used in R_Trace
+_R_list = robjects.r('base::list')                     # for creation of the headerList used in R_Trace
+
+# from IRISSeismic
+_R_initialize = robjects.r('IRISSeismic::initialize')  # initialization of various objects
+_R_getSNCL = robjects.r('IRISSeismic::getSNCL')        # to obtain an R_Stream object from IRIS DMC
+
+
+#     Python --> R conversion functions    -------------------------------------
+
+
+def R_integer(x):
+    """
+    Creates an R integer vector from a python integer or list of integers.
+    :param x: Python integer or list of integers.
+    :return: R integer vector.
+    
+    .. note::
+    
+    The `x` argument may contain single values or lists of values with type
+    'int', 'unicode' or 'future.types.newint.newint'.
+            
+    .. rubric:: Example
+    
+    >>> R_integer(3) #doctest: +ELLIPSIS
+    <IntVector - Python:...>
+    [       3]
+    >>> R_integer(int(3)) #doctest: +ELLIPSIS
+    <IntVector - Python:...>
+    [       3]
+    >>> R_integer('3') #doctest: +ELLIPSIS
+    <IntVector - Python:...>
+    [       3]
+    >>> R_integer([1,2,3]) #doctest: +ELLIPSIS
+    <IntVector - Python:...>
+    [       1,        2,        3]
+    """
+    # NOTE:  ObsPy uses future.builtins which means that the integer values can be
+    # NOTE:  of type 'future.types.newint.newint'. When passed to R, this is converted
+    # NOTE:  to an integer value of 1 rather than the actual value. In the hack 
+    # NOTE:  below, we obtain the string version of x and then use the R 
+    # NOTE:  _R_as_integer() function to convert the string to the required integer value.
+    
+    # Convert vectors and single values into strings
+    if isinstance(x,list):
+        x = [str(a) for a in x]
+    else:
+        x = [str(x)]
+    
+    # Pass the array of strings to the R as.integer() function
+    return _R_as_integer(x)
+
+
+def R_float(x):
+    """
+    Creates an R float vector from a python ints, floats or a `numpy.ndarray`.
+    :param x: Python int, float or `numpy.ndarray`.
+    :return: R float vector.
+                
+    .. rubric:: Example
+    
+    >>> R_float(int(3)) #doctest: +ELLIPSIS
+    <FloatVector - Python:...>
+    [3.000000]
+    >>> R_float(3.5) #doctest: +ELLIPSIS
+    <FloatVector - Python:...>
+    [3.500000]
+    >>> R_float([1.5,2.5,3.5]) #doctest: +ELLIPSIS
+    <FloatVector - Python:...>
+    [1.500000, 2.500000, 3.500000]
+    >>> R_float(np.array([1.5,2.5,3.5])) #doctest: +ELLIPSIS
+    <FloatVector - Python:...>
+    [1.500000, 2.500000, 3.500000]
+    """
+    if isinstance(x,float) or isinstance(x, int) or isinstance(x, newint):
+        x = [x]
+    return robjects.vectors.FloatVector(x)
+
+
+def R_POSIXct(x):
+    """
+    Creates an R POSIXct vector from a python '~obspy.core.utcdatetime.UTCDateTime'
+    or list of `UTCDatetime`s.
+    :param x: Python `UTCDateTime` or list of `UTCDateTime`s.
+    :return: R POSIXct vector.
+           
+    .. rubric:: Example
+    
+    >>> print(R_POSIXct(UTCDateTime("2010-11-12 13:14:15.1617")))
+    [1] "2010-11-12 13:14:15.1617 GMT"
+    <BLANKLINE>
+    >>> print(R_POSIXct(None))
+    [1] NA
+    <BLANKLINE>
+    >>> print(R_POSIXct(123)) #doctest: +ELLIPSIS
+    Traceback (most recent call last):
+    ...
+    TypeError: Argument 'x' must be of type 'obspy.core.utcdatetime.UTCDateTime'.
+    """
+    if x is None:
+        x = robjects.NA_Logical
+        
+    elif isinstance(x,UTCDateTime):
+        # Convert vectors and single values into strings
+        if isinstance(x,list):
+            raise NotImplementedError("Argument 'x' does not yet support lists of 'UTCDateTime's.")
+        else:
+            x = x.isoformat()
+    
+    else:
+        raise TypeError("Argument 'x' must be of type 'obspy.core.utcdatetime.UTCDateTime'.")
+        
+    # Pass the array of strings to the R as.integer() function
+    return _R_as_POSIXct(x, format="%Y-%m-%dT%H:%M:%OS", tz="GMT")
+
+
+def R_list(n):
+    """
+    Creates an empty R list of length `n`.
+    :param n: Length of list to be created.
+    :return: R list.
+           
+    .. rubric:: Example
+    
+    >>> print(R_list(2))
+    [[1]]
+    NULL
+    <BLANKLINE>
+    [[2]]
+    NULL
+    <BLANKLINE>
+    <BLANKLINE>
+    """
+    return _R_vector("list",n)
+
+
+def R_TraceHeader(stats):
+    """
+    Create an IRISSeismic TraceHeader from and ObsPy Stats object
+    :param stats: ObsPy Stats object.
+    :return: IRISSeismic TraceHeader object.
+    """
+    r_headerList = _R_list(network=stats.network,
+                           station=stats.station,
+                           location=stats.location,
+                           channel=stats.channel,
+                           quality=stats.mseed.dataquality,
+                           starttime=R_POSIXct(stats.starttime),
+                           npts=R_integer(stats.npts),
+                           sampling_rate=R_float(stats.sampling_rate))
+    r_traceHeader = robjects.r('new("TraceHeader")')
+    r_traceHeader = _R_initialize(r_traceHeader, r_headerList)
+    return r_traceHeader
+
+
+def R_Trace(trace,
+            sensor="",
+            instrument_sensitivity=1.0,
+            input_units=""):
+    """
+    Create an IRISSeismic Trace from and ObsPy Trace object
+    :param trace: ObsPy Trace object.
+    :param sensor: Seismometer instrument type.
+    :param instrument_sensitivity: Channel sensitivity available from IRIS getChannel webservice.
+    :param input_units: Units available from IRIS getChannel webservice.
+    :return: IRISSeismic Trace object.
+    """
+    r_trace = robjects.r('new("Trace")')
+    r_trace = _R_initialize(r_trace,
+                           id=trace.id,
+                           stats=R_TraceHeader(trace.stats),
+                           Sensor=sensor,
+                           InstrumentSensitivity=R_float(instrument_sensitivity),
+                           InputUnits=input_units,
+                           data=R_float(trace.data))
+    return r_trace
+    
+    
+def R_Stream(stream,
+             requestedStarttime=None,
+             requestedEndtime=None):
+    """
+    Create an IRISSeismic Stream from and ObsPy Stream object
+    :param stream: ObsPy Stream object.
+    :param requestedStarttime: ObsPy UTCDateTime object.
+    :param requestedEndtime: ObsPy UTCDateTime object.
+    :return: IRISSeismic Stream object.
+    """
+    
+    # TODO:  Support url, sensor, scale, scaleunits as arguments in R_Stream()
+    
+    # TODO:  Should we automatically get channelInfo from R getChannels() as in
+    # TODO:  IRISSeismic::getDataselect.IrisClient()?
+    
+    # TODO:  What about act_flags, io_flags, dq_flags and timing_qual?
+
+    # Handle missing times
+    if requestedStarttime is None:
+        requestedStarttime = stream.traces[0].stats.starttime
+    if requestedEndtime is None:
+        requestedEndtime = stream.traces[-1].stats.endtime
+        
+    # Create R list of Trace objects
+    r_listOfTraces = R_list(len(stream.traces))
+    for i in range(len(stream.traces)):
+        r_listOfTraces[i] = R_Trace(stream.traces[i])
+        
+    # Create R Stream object
+    r_stream = robjects.r('new("Stream")')
+    r_stream = _R_initialize(r_stream,
+                             requestedStarttime=R_POSIXct(requestedStarttime),
+                             requestedEndtime=R_POSIXct(requestedEndtime),
+                             traces=r_listOfTraces)
+    return(r_stream) 
+
+
+# ------------------------------------------------------------------------------
+
+
+
+#     Helper functions     ----------------------------------------------------
+
+
+# TODO:  Probably could subsume more argument conversion in this single function.
+def _R_args(*args):
+    """
+    Convert any arguments that are `None` or `newint` to R's
+    `missing` and `integer`. Arguments of type `character` or `float`
+    are retured unmodified.
+    """
+    r_args = []
+    for arg in args:
+        if arg is None:
+            r_args.append(rinterface.MissingArg)
+        elif isinstance(arg,newint):
+            ###r_args.append(R_integer(arg))
+            r_args.append(arg)
+        else:
+            r_args.append(arg)
+            
+    return tuple(r_args)
+
+    
+def _R_radiusArgs(latitude, longitude, minradius, maxradius):
+    """
+    Validate location-radius arguments.
+    
+    Make sure that if any of these are defined then lat, lon
+    and at least one of the radii are defined. Then, convert
+    any None values to `rpy2.rinterface.MissingArg`.
+    
+    Several webservices support location-radius arguments.
+
+    """
+    if any([latitude,longitude,minradius,maxradius]):
+        if all([latitude,longitude]) and any([minradius,maxradius]):
+            # TODO:  Could add domain validation of values at this point
+            if minradius is None:
+                minradius = rinterface.MissingArg
+            elif maxradius is None:
+                maxradius = rinterface.MissingArg
+            return (latitude, longitude, minradius, maxradius)
+        else:
+            raise ValueError("One of longitude, latitude or a radius is missing")
+    else:
+        return (rinterface.MissingArg, rinterface.MissingArg, rinterface.MissingArg, rinterface.MissingArg)
+
+
+#     R functions called internally     ---------------------------------------
+
+
+# NOTE:  These functions behave exactly the same as the R versions and require
+# NOTE:  R-compatible objects as arguments.
+
+# All webservice functions from IRISSeismic
+_R_getAvailability = robjects.r('IRISSeismic::getAvailability')       #
+_R_getChannel = robjects.r('IRISSeismic::getChannel')                 #
+_R_getDataselect = robjects.r('IRISSeismic::getDataselect')           #
+_R_getDistaz = robjects.r('IRISSeismic::getDistaz')                   #
+_R_getEvalresp = robjects.r('IRISSeismic::getEvalresp')               #
+_R_getEvent = robjects.r('IRISSeismic::getEvent')                     #
+_R_getNetwork = robjects.r('IRISSeismic::getNetwork')                 #
+_R_getRotation = robjects.r('IRISSeismic::getRotation')               # TODO:  This returns 3 Streams
+_R_getSNCL = robjects.r('IRISSeismic::getSNCL')                       #
+_R_getStation = robjects.r('IRISSeismic::getStation')                 #
+_R_getTraveltime = robjects.r('IRISSeismic::getTraveltime')           #
+_R_getUnavailability = robjects.r('IRISSeismic::getUnavailability')   #
+
+
+#     Python wrappers for R get~ webservice functions     ---------------------
+
+
+def getAvailability(client_url="http://service.iris.edu", sncl=None, starttime=None, endtime=None,
+                    latitude=None, longitude=None,
+                    minradius=None, maxradius=None):
+    """
+    Returns a pandas dataframe with channel metadata.
+    :param sncl: SNCL (e.g. "US.OXF..BHZ")
+    :param starttime: ObsPy UTCDateTime object.
+    :param endtime: ObsPy UTCDateTime object.
+    :param latitude: Optional latitude used when specifying a location and radius.
+    :param longitude: Optional longitude used when specifying a location and radius.
+    :param minradius: Optional minimum radius used when specifying a location and radius.
+    :param maxradius: Optional maximum radius used when specifying a location and radius.
+    :return: pandas dataframe of channel metadata.
+    """
+    cmd = 'new("IrisClient", site="' + client_url + '")'
+    r_client = robjects.r(cmd)
+    (network, station, location, channel) = sncl.split('.')
+    starttime = R_POSIXct(starttime)
+    endtime = R_POSIXct(endtime)
+    includerestricted = rinterface.MissingArg  # NOTE:  IRIS DMC restricted datasets are not supported
+    (latitude, longitude, minradius, maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
+    
+    # Call the function and return a pandas dataframe with the results
+    r_df = _R_getAvailability(r_client, network, station, location, channel, starttime, endtime, includerestricted,
+                              latitude, longitude, minradius, maxradius)
+    df = pandas2ri.ri2py(r_df)
+    
+    # Convert columns from R POSIXct to pyton UTCDateTime
+    df.starttime = df.starttime.apply(UTCDateTime)
+    df.endtime = df.endtime.apply(UTCDateTime)
+    
+    return df
+    
+    
+def getChannel(client_url="http://service.iris.edu", sncl=None, starttime=None, endtime=None,
+               latitude=None, longitude=None,
+               minradius=None, maxradius=None):
+    """
+    Returns a pandas dataframe with channel metadata.
+    :param sncl: SNCL (e.g. "US.OXF..BHZ")
+    :param starttime: ObsPy UTCDateTime object.
+    :param endtime: ObsPy UTCDateTime object.
+    :param latitude: Optional latitude used when specifying a location and radius.
+    :param longitude: Optional longitude used when specifying a location and radius.
+    :param minradius: Optional minimum radius used when specifying a location and radius.
+    :param maxradius: Optional maximum radius used when specifying a location and radius.
+    :return: pandas dataframe of channel metadata.
+    """
+    cmd = 'new("IrisClient", site="' + client_url + '")'
+    r_client = robjects.r(cmd)
+    (network, station, location, channel) = sncl.split('.')
+    starttime = R_POSIXct(starttime)
+    endtime = R_POSIXct(endtime)
+    includerestricted = rinterface.MissingArg # NOTE:  IRIS DMC restricted datasets are not supported
+    (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
+    
+    # Call the function and return a pandas dataframe with the results
+    r_df = _R_getChannel(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
+    df = pandas2ri.ri2py(r_df)
+    
+    # Convert columns from R POSIXct to pyton UTCDateTime
+    df.starttime = df.starttime.apply(UTCDateTime)
+    df.endtime = df.endtime.apply(UTCDateTime)
+    
+    return df
+
+
+def R_getDataselect(client_url="http://service.iris.edu",
+                    network=None, station=None, location=None, channel=None,
+                    starttime=None, endtime=None, quality=None):
+    """
+    Obtain an R Stream using the IRISSeismic::getSNCL function.
+    :param client_url: FDSN web services site URL
+    :param network: sncl network (string)
+    :param station: sncl station (string)
+    :param location: sncl location (string)
+    :param channel: sncl channel (string)
+    :param starttime: ObsPy UTCDateTime object.
+    :param endtime: ObsPy UTCDateTime object.
+    :return: R Stream object
+    """
+    cmd = 'new("IrisClient", site="' + client_url + '")'
+    r_client = robjects.r(cmd)
+    starttime = R_POSIXct(starttime)
+    endtime = R_POSIXct(endtime)
+    if quality is None:
+        quality = rinterface.MissingArg
+        
+    # Call the function and return an R Stream
+    r_stream = _R_getDataselect(r_client, network, station, location, channel, starttime, endtime, quality)
+    return r_stream
+
+    
+def getDistaz(latitude, longitude, staLatitude, staLongitude):
+    """
+    Returns a pandas dataframe with great circle distance data from the IRIS DMC distaz webservice.
+    :param latitude: Latitude of seismic event.
+    :param longitude: Longitude of seismic event.
+    :param staLatitude: Latitude of seismic station.
+    :param staLongitude: Longitude of seismic station.
+    :return: pandas dataframe with a single row containing ``azimuth, backAzimuth, distance``.
+    """
+    r_client = robjects.r('new("IrisClient")')
+    
+    # Call the function and return a pandas dataframe with the results
+    r_df = _R_getDistaz(r_client, latitude, longitude, staLatitude, staLongitude)
+    df = pandas2ri.ri2py(r_df)
+    return df
+    
+
+def getEvalresp(sncl, time,
+                minfreq=None, maxfreq=None,
+                nfreq=None, units=None, output="fap"):
+    """
+    Returns a pandas dataframe with cinstrument response data from the IRIS DMC evalresp webservice.
+    :param sncl: SNCL (e.g. "US.OXF..BHZ")
+    :param time: ObsPy UTCDateTime object specifying the time at which the response is evaluated.
+    :param minfreq: Optional minimum frequency at which the response is evaluated.
+    :param maxfreq: Optional maximum frequency at which the response is evaluated.
+    :param nfreq: Optional number of frequencies at which response will be evaluated.
+    :param units: Optional code specifying unit conversion.
+    :param output: Output type ['fap'|'cs'].
+    :return: pandas dataframe of response metadata.
+    """
+    r_client = robjects.r('new("IrisClient")')
+    (network, station, location, channel) = sncl.split('.')
+    time = R_POSIXct(time)
+    (minfreq, maxfreq, nfreq, units, output) = _R_args(minfreq, maxfreq, nfreq, units, output)
+    
+    # Call the function and return a pandas dataframe with the results
+    r_df = _R_getEvalresp(r_client, network, station, location, channel, time, minfreq, maxfreq, nfreq, units, output)
+    df = pandas2ri.ri2py(r_df)
+    return df
+    
+    
+def getEvent(client_url="http://service.iris.edu", starttime=None, endtime=None,
+             minmag=None, maxmag=None, magtype=None,
+             mindepth=None, maxdepth=None):
+    """
+    Returns a pandas dataframe with channel metadata.
+    :param starttime: ObsPy UTCDateTime object.
+    :param endtime: ObsPy UTCDateTime object.
+    :param minmag: Optional minimum magnitude.
+    :param maxmag: Optional maximum magnitude.
+    :param magtype:Optional magnitude type
+    :param mindepth: Optional minimum depth (km).
+    :param maxdepth: ptional maximum depth (km).
+    :return: pandas dataframe of event metadata.
+    
+    .. rubric:: Example
+    
+    >>> df = getEvent("http://service.iris.edu", UTCDateTime("2012-06-21"), UTCDateTime("2012-06-28"), minmag=6)
+    >>> df.shape
+    (2, 13)
+    >>> df.eventLocationName  #doctest: +ELLIPSIS
+    2    NORTHERN SUMATERA, INDONESIA
+    1    NEAR EAST COAST OF KAMCHATKA
+    Name: eventLocationName, dtype: object
+    """
+    cmd = 'new("IrisClient", site="' + client_url + '")'
+    r_client = robjects.r(cmd)
+    starttime = R_POSIXct(starttime)
+    endtime = R_POSIXct(endtime)
+    (minmag, maxmag, magtype, mindepth, maxdepth) = _R_args(minmag, maxmag, magtype, mindepth, maxdepth)
+    
+    # Call the function and return a pandas dataframe with the results
+    r_df = _R_getEvent(r_client, starttime, endtime, minmag, maxmag, magtype, mindepth, maxdepth)
+    df = pandas2ri.ri2py(r_df)
+    
+    # Convert columns from R POSIXct to pyton UTCDateTime
+    df.time = df.time.apply(UTCDateTime)
+     
+    return df
+        
+    
+def getNetwork(client_url="http://service.iris.edu", sncl=None, starttime=None, endtime=None,
+               latitude=None, longitude=None,
+               minradius=None, maxradius=None):
+    """
+    Returns a pandas dataframe with network metadata.
+    :param sncl: SNCL (e.g. "US.OXF..BHZ")
+    :param starttime: ObsPy UTCDateTime object.
+    :param endtime: ObsPy UTCDateTime object.
+    :param latitude: Optional latitude used when specifying a location and radius.
+    :param longitude: Optional longitude used when specifying a location and radius.
+    :param minradius: Optional minimum radius used when specifying a location and radius.
+    :param maxradius: Optional maximum radius used when specifying a location and radius.
+    :return: pandas dataframe of network metadata.
+    """
+    cmd = 'new("IrisClient", site="' + client_url + '")'
+    r_client = robjects.r(cmd)
+    (network, station, location, channel) = sncl.split('.')
+    starttime = R_POSIXct(starttime)
+    endtime = R_POSIXct(endtime)
+    includerestricted = rinterface.MissingArg # NOTE:  IRIS DMC restricted datasets are not supported
+    (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
+    
+    # Call the function and return a pandas dataframe with the results
+    r_df = _R_getNetwork(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
+    df = pandas2ri.ri2py(r_df)
+    
+    # Convert columns from R POSIXct to pyton UTCDateTime
+    df.starttime = df.starttime.apply(UTCDateTime)
+    df.endtime = df.endtime.apply(UTCDateTime)
+    
+    return df
+    
+    
+def R_getSNCL(client_url="http://service.iris.edu", sncl=None, starttime=None, endtime=None,
+              quality=None):
+    """
+    Obtain an R Stream using the IRISSeismic::getSNCL function.
+    :param client_url: FDSN web services site URL
+    :param sncl: SNCL (e.g. "US.OXF..BHZ")
+    :param starttime: ObsPy UTCDateTime object.
+    :param endtime: ObsPy UTCDateTime object.
+    :return: R Stream object
+    """
+    cmd = 'new("IrisClient", site="' + client_url + '")'
+    r_client = robjects.r(cmd)
+    starttime = R_POSIXct(starttime)
+    endtime = R_POSIXct(endtime)
+    if quality is None:
+        quality = rinterface.MissingArg
+        
+    # Call the function and return a pandas dataframe with the results
+    r_stream = _R_getSNCL(r_client, sncl, starttime, endtime, quality)
+    return r_stream
+    
+    
+def getStation(client_url="http://service.iris.edu", sncl=None, starttime=None, endtime=None,
+               latitude=None, longitude=None,
+               minradius=None, maxradius=None):
+    """
+    Returns a pandas dataframe with station metadata.
+    :param sncl: SNCL (e.g. "US.OXF..BHZ")
+    :param starttime: ObsPy UTCDateTime object.
+    :param endtime: ObsPy UTCDateTime object.
+    :param latitude: Optional latitude used when specifying a location and radius.
+    :param longitude: Optional longitude used when specifying a location and radius.
+    :param minradius: Optional minimum radius used when specifying a location and radius.
+    :param maxradius: Optional maximum radius used when specifying a location and radius.
+    :return: pandas dataframe of channel metadata.
+    """
+    cmd = 'new("IrisClient", site="' + client_url + '")'
+    r_client = robjects.r(cmd)
+    (network, station, location, channel) = sncl.split('.')
+    starttime = R_POSIXct(starttime)
+    endtime = R_POSIXct(endtime)
+    includerestricted = rinterface.MissingArg # NOTE:  IRIS DMC restricted datasets are not supported
+    (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
+    
+    # Call the function and return a pandas dataframe with the results
+    r_df = _R_getStation(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
+    df = pandas2ri.ri2py(r_df)
+    
+    # Convert columns from R POSIXct to pyton UTCDateTime
+    df.starttime = df.starttime.apply(UTCDateTime)
+    df.endtime = df.endtime.apply(UTCDateTime)
+    
+    return df
+
+
+def getTraveltime(latitude, longitude, depth, staLatitude, staLongitude):
+    """
+    Returns a pandas dataframe with seismic traveltime data from the IRIS DMC traveltime web service.
+    :param latitude: Latitude of seismic event.
+    :param longitude: Longitude of seismic event.
+    :param staLatitude: Latitude of seismic station.
+    :param staLongitude: Longitude of seismic station.
+    :return: pandas dataframe with columns: ``distance, depth, phaseName, travelTime, rayParam, takeoff, incident, puristDistance, puristName``.
+    """
+    r_client = robjects.r('new("IrisClient")')
+    
+    # Call the function and return a pandas dataframe with the results
+    r_df = _R_getTraveltime(r_client, latitude, longitude, depth, staLatitude, staLongitude)
+    df = pandas2ri.ri2py(r_df)
+    return df
+    
+    
+def getUnavailability(client_url="http://service.iris.edu", sncl=None, starttime=None, endtime=None,
+                      latitude=None, longitude=None,
+                      minradius=None, maxradius=None):
+    """
+    Returns a pandas dataframe with channel metadata for non-available channels.
+    :param sncl: SNCL (e.g. "US.OXF..BHZ")
+    :param starttime: ObsPy UTCDateTime object.
+    :param endtime: ObsPy UTCDateTime object.
+    :param latitude: Optional latitude used when specifying a location and radius.
+    :param longitude: Optional longitude used when specifying a location and radius.
+    :param minradius: Optional minimum radius used when specifying a location and radius.
+    :param maxradius: Optional maximum radius used when specifying a location and radius.
+    :return: pandas dataframe of channel metadata.
+    """
+    cmd = 'new("IrisClient", site="' + client_url + '")'
+    r_client = robjects.r(cmd)
+    (network, station, location, channel) = sncl.split('.')
+    starttime = R_POSIXct(starttime)
+    endtime = R_POSIXct(endtime)
+    includerestricted = rinterface.MissingArg # NOTE:  IRIS DMC restricted datasets are not supported
+    (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
+    
+    # Call the function and return a pandas dataframe with the results
+    r_df = _R_getUnavailability(r_client, network, station, location, channel,
+                                starttime, endtime, includerestricted,
+                                latitude, longitude, minradius, maxradius)
+    df = pandas2ri.ri2py(r_df)
+    
+    # Convert columns from R POSIXct to pyton UTCDateTime
+    df.starttime = df.starttime.apply(UTCDateTime)
+    df.endtime = df.endtime.apply(UTCDateTime)
+    
+    return df
+
+
+# ------------------------------------------------------------------------------
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod(exclude_empty=True)
