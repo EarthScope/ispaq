@@ -15,7 +15,7 @@ version = re.search(
     ).group(1)
 
 
-with open("README.rst", "rb") as f:
+with open("README.md", "rb") as f:
     long_descr = f.read().decode("utf-8")
 
 
@@ -26,9 +26,9 @@ setup(
         "console_scripts": ['ispaq = ispaq.ispaq:main']
         },
     version = version,
-    description = "Python command line application bare bones template.",
+    description = "IRIS System for Portable Assessment of Quality (ISPAQ)",
     long_description = long_descr,
-    author = "Jan-Philip Gehrcke",
-    author_email = "jgehrcke@googlemail.com",
-    url = "http://gehrcke.de/2014/02/distributing-a-python-command-line-application",
+    author = "Jonathan Callahan",
+    author_email = "jonathan@mazamascience.com",
+    url = "http://github.com/mazamascience/ispaq",
     )

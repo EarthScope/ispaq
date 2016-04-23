@@ -1,3 +1,5 @@
+# -----  GitHub Default  ------------------------------------------------------
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -60,3 +62,13 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+
+# -----  Local Customizations  -------------------------------------------------
+
+# ISPAQ output files
+*.csv
+
+# WingIDE files
+*.wpr
+*.wpu
