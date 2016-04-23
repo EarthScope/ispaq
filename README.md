@@ -49,7 +49,7 @@ The
 is the closest thing python has to a *definitive* guide to package creation and installation.
 That site should be consulted if any of the instructions below do not work
 
-### pip
+### Installing pip
 
 *Copied from [here](https://python-packaging-user-guide.readthedocs.org/en/latest/installing/#install-pip-setuptools-and-wheel):*
 
@@ -61,7 +61,7 @@ On Linux or OS X:
 pip install -U pip setuptools
 ```
 
-### virtualenv
+### Installing virtualenv
 
 *Copied from [here](https://python-packaging-user-guide.readthedocs.org/en/latest/installing/#optionally-create-a-virtual-environment):*
 
