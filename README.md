@@ -36,7 +36,7 @@ is included in the CRAN repository, ISPAQ would learn about it automatically and
 enable the execution of the new metric algorithm on a local set of data. R provides 
 facilities for this update detection.
 
-## Installing Prerequisites
+## Installing Python Prerequisites
 
 This python application is best installed by using
 [virtualenv](https://python-packaging-user-guide.readthedocs.org/en/latest/projects/#virtualenv)
@@ -94,9 +94,9 @@ with:
 which python
 ```
 
-### Install python prerequisites
+### Install python packages
 
-All python prerequisites should be installable with:
+All python prerequisites can be installed with:
 
 ```
 pip install numpy
