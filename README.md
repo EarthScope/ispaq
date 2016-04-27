@@ -110,7 +110,7 @@ pip install rpy2
 If you have downloaded the [ispaq source](https://github.com/mazamascience/ispaq) you can
 enter the top level directory and type:
 
-```python setup.py insall```
+```python setup.py install```
 
 In this same directory you can test the installation with:
 
