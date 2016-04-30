@@ -9,9 +9,10 @@ ISPAQ Data Access Expediter.
 """
 
 import os
+import re
 import pandas as pd
 
-from obspy import UTCDateTime
+import obspy
 from obspy.clients.fdsn import Client
 from obspy.clients.fdsn.header import URL_MAPPINGS
 
@@ -215,22 +216,34 @@ class Concierge(object):
                 _channel = UR_channel
             else:
                 _channel = channel
-    
-            # Get an Inventory object
-            # TODO:  Should use "includeAvailability=true, matchtimeseries=true" if these are supported.
-            # TODO:  But we need to handle cases and reissue without these arguments when they are not supported.
-            # TODO:  Is all this even worth the bother if we skip SNCLs that don't return data?
-            try:
-                sncl_inventory = self.station_client.get_stations(starttime=_starttime, endtime=_endtime,
-                                                                  network=_network, station=_station,
-                                                                  location=_location, channel=_channel,
-                                                                  includerestricted=None,
-                                                                  latitude=latitude, longitude=longitude,
-                                                                  minradius=minradius, maxradius=maxradius,                                                                
-                                                                  level="channel")
-            except Exception as e:
-                print('\n*** WARNING in Concierge.get_availability():  No sncls matching %s found at %s ***\n' % (sncl_pattern, self.station_url))
-                continue
+
+            if self.station_client is None:
+                # Read local StationXML file
+                #
+                try:
+                    sncl_inventory = obspy.read_inventory(self.station_url)
+                except Exception as e:
+                    err_msg = "The StationXML file: '%s' is not valid." % self.station_url
+                    raise ValueError(err_msg)
+                debug_breakpoint = True
+            
+            else:
+                # Read from FDSN web services
+                #
+                # TODO:  Should use "includeAvailability=true, matchtimeseries=true" if these are supported.
+                # TODO:  But we need to handle cases and reissue without these arguments when they are not supported.
+                # TODO:  Is all this even worth the bother if we skip SNCLs that don't return data?
+                try:
+                    sncl_inventory = self.station_client.get_stations(starttime=_starttime, endtime=_endtime,
+                                                                      network=_network, station=_station,
+                                                                      location=_location, channel=_channel,
+                                                                      includerestricted=None,
+                                                                      latitude=latitude, longitude=longitude,
+                                                                      minradius=minradius, maxradius=maxradius,                                                                
+                                                                      level="channel")
+                except Exception as e:
+                    print('\n*** WARNING in Concierge.get_availability():  No sncls matching %s found at %s ***\n' % (sncl_pattern, self.station_url))
+                    continue
 
 
             # TODO:  Need to figure out file naming conventions and whether users with local files will want to reference multiple
@@ -363,16 +376,62 @@ class Concierge(object):
             _endtime = endtime
 
 
-        # For now, just use the IRISSeismic::getEvent function.
-        # TODO:  Generate events dataframe using ObsPy
-        
-        events = irisseismic.getEvent(starttime=_starttime,
-                                  endtime=_endtime,
-                                  minmag=minmag,
-                                  maxmag=maxmag,
-                                  magtype=magtype,
-                                  mindepth=mindepth,
-                                  maxdepth=maxdepth)
+        if self.event_client is None:
+            # Read local QuakeML file
+            try:
+                event_catalog = obspy.read_events(self.event_url)
+            except Exception as e:
+                err_msg = "The StationXML file: '%s' is not valid." % self.station_url
+                raise ValueError(err_msg)
+            
+            # events.columns
+            # Index([u'eventId', u'time', u'latitude', u'longitude', u'depth', u'author',
+            #        u'cCatalog', u'contributor', u'contributorId', u'magType', u'magnitude',
+            #        u'magAuthor', u'eventLocationName'],
+            #        dtype='object')
+            #
+            dataframes = []
+            
+            for event in event_catalog:
+                origin = event.preferred_origin()
+                magnitude = event.preferred_magnitude()
+                df = pd.DataFrame({'eventId': re.sub('.*eventid=','',event.resource_id.id),
+                                   'time': origin.time,
+                                   'latitude': origin.latitude,
+                                   'longitude': origin.longitude,
+                                   'depth': origin.depth/1000, # IRIS event webservice returns depth in km # TODO:  check this
+                                   'author': origin.creation_info.author,
+                                   'cCatalog': None,
+                                   'contributor': None,
+                                   'contributorId': None,
+                                   'magType': magnitude.magnitude_type,
+                                   'magnitude': magnitude.mag,
+                                   'magAuthor': magnitude.creation_info.author,
+                                   'eventLocationName': event.event_descriptions[0].text},
+                                  index=[0])
+                dataframes.append(df)
+                
+            # Concatenate into the events dataframe
+            events = pd.concat(dataframes, ignore_index=True)    
+
+        else:
+            # Read from FDSN web services
+            # TODO:  Need to make sure irisseismic.getEvent uses any FDSN site
+            try:
+                events = irisseismic.getEvent(starttime=_starttime,
+                                              endtime=_endtime,
+                                              minmag=minmag,
+                                              maxmag=maxmag,
+                                              magtype=magtype,
+                                              mindepth=mindepth,
+                                              maxdepth=maxdepth)
+
+            except Exception as e:
+                err_msg = "The event_url: '%s' returns an error: %s." % (self.event_url, e)
+                raise(e)
+
+
+
 
         if events.shape[0] == 0:
             return None # TODO:  raise an exception

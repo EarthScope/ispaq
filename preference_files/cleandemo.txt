@@ -38,26 +38,46 @@ SNCLs:
   sncls_1: US.O*.*.LHZ
   sncls_2: U*.*.*.??Z
   US_LHZ: US.*.*.LHZ
-  IU_ANMO: IU.ANMO.*.*
+  IU_ANMO: IU.ANMO.*.*kkkk
   IU_ANMO_VM1: IU.ANMO..VM1 # "No data found" on 2010-02-26
   spikes: IU.RAO.10.BH? # --starttime "2013-01-03"
   bad_sncl: US.OXF..BOP # does not exist
   bad_good: US.OXF..BOP, US.OXF.*.BH?
   
-  # File patterns for local miniseed files
-  
-  test_data: II.KAPI.00.BHZ
+  # To use local data, files must be of the form Net.Stat.Local.Cha_~
+  # and must be found in the directory specified in dataselect_url below.
+
+  # Test for local data
+  test_large_quake: IU.ANMO.00.BHZ
+  test_large_gaps: II.KAPI.00.BHZ
+  test_many_spikes: IU.RAO.10.BHZ
+  test_small_quake_w_gaps: US.OXF..BHZ
 
 
 
 # Data access (typically FDSN web service providers) --------------------------
+#
+# FDSN service providers may be specified by using one of the following names:
+#
+#   BGR, EMSC, ETH, GEONET, GFZ, INGV, IPGP, IRIS, ISC, KOERI,
+#   LMU, NCEDC, NIEP, ODC, ORFEUS, RESIF, SCEDC, USGS, USP
+#
+# To use local data you must instead specify local paths:
+# 
+#  * dataselect_url = path of directory containing miniseed files
+#  * event_url = path of QUAKEML file
+#  * station_url = path of StationXML file
+#
+# NOTE: Directory names should not match FDSN provider names.
 
 Data_access:
 
-  dataselect_url: IRIS #NCEDC
-  event_url: IRIS #NCEDC
-  station_url: IRIS #NCEDC
+  dataselect_url: IRIS
+  event_url: IRIS
+  station_url: IRIS
   
-  # Test override with local files
-  #dataselect_url: test_data/large_gaps.mseed
-  #      sstation_url: test_data/large_gaps_station.xml
+  # Test (override) for local data
+  #dataselect_url: test_data
+  #event_url: test_data/2010-02-27_event.xml
+  #station_url: test_data/IU.ANMO.00.BHZ_station.xml
+  
