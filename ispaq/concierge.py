@@ -56,29 +56,43 @@ class Concierge(object):
                                   self.user_request.requested_sncl_set, 
                                   self.requested_starttime.date)
         self.output_file_base = os.getcwd() + '/' + file_base
-
-        # TODO:  Should test for name (i.e. "IRIS"), full url or local file
         
-        # Add event clients and URLs
-        if user_request.event_url in URL_MAPPINGS.keys():
-            self.event_client = Client(user_request.event_url)
-            self.event_url = URL_MAPPINGS[user_request.event_url]
-        else:
-            print("TODO:  deal with non-URL_MAPPING event_url")
-
-        # Add station clients and URLs 
-        if user_request.station_url in URL_MAPPINGS.keys():
-            self.station_client = Client(user_request.station_url)
-            self.station_url = URL_MAPPINGS[user_request.station_url]
-        else:
-            print("TODO:  deal with non-URL_MAPPING station_url")
-
-        # Add dataselect clients and URLs 
+        # Add dataselect clients and URLs or reference a local file
         if user_request.dataselect_url in URL_MAPPINGS.keys():
-            self.dataselect_client = Client(user_request.dataselect_url)
+            # Get data from FDSN dataselect service
             self.dataselect_url = URL_MAPPINGS[user_request.dataselect_url]
+            self.dataselect_client = Client(user_request.dataselect_url)
+        elif os.path.exists(os.path.abspath(user_request.dataselect_url)):
+            # Get data from local miniseed files
+            self.dataselect_url = os.path.abspath(user_request.dataselect_url)
+            self.dataselect_client = None
         else:
-            print("TODO:  deal with non-URL_MAPPING dataselect_url")
+            err_msg = "The preference file dataselect_url: '%s' is not valid." % user_request.dataselect_url
+            raise ValueError(err_msg)
+
+        # Add event clients and URLs or reference a local file
+        if user_request.event_url in URL_MAPPINGS.keys():
+            self.event_url = URL_MAPPINGS[user_request.event_url]
+            self.event_client = Client(user_request.event_url)
+        elif os.path.exists(os.path.abspath(user_request.event_url)):
+            # Get data from local QUAKEML files
+            self.event_url = os.path.abspath(user_request.event_url)
+            self.event_client = None
+        else:
+            err_msg = "The preference file event_url: '%s' is not valid." % user_request.event_url
+            raise ValueError(err_msg)
+
+        # Add station clients and URLs or reference a local file
+        if user_request.station_url in URL_MAPPINGS.keys():
+            self.station_url = URL_MAPPINGS[user_request.station_url]
+            self.station_client = Client(user_request.station_url)
+        elif os.path.exists(os.path.abspath(user_request.station_url)):
+            # Get data from local StationXML files
+            self.station_url = os.path.abspath(user_request.station_url)
+            self.station_client = None
+        else:
+            err_msg = "The preference file station_url: '%s' is not valid." % user_request.station_url
+            raise ValueError(err_msg)
 
 
 
@@ -217,7 +231,17 @@ class Concierge(object):
             except Exception as e:
                 print('\n*** WARNING in Concierge.get_availability():  No sncls matching %s found at %s ***\n' % (sncl_pattern, self.station_url))
                 continue
-    
+
+
+            # TODO:  Need to figure out file naming conventions and whether users with local files will want to reference multiple
+            # TODO:  StationXML files per invocation. And how many SNCLs will there be per StationXML? Will they want to specify
+            # TODO:  SNCLs to filter what is specified in the StationXML?
+            # TODO:
+            # TODO:  Lots of questions before implementing the very simple python code to get to this point:
+            # TODO:    if self.station_client is None:
+            # TODO:      sncl_inventory = obspy.read_inventory(self.station_url)
+            
+            
             # Walk through the Inventory object
             for n in sncl_inventory.networks:
                 for s in n.stations:
