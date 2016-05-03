@@ -58,7 +58,7 @@ def SNR_metrics(concierge, verbose=False):
 
     for (index, event) in events.iterrows():
 
-        if verbose: print('Calculating SNR metrics for magnitude %3.1f event: %s' % (event.magnitude, event.eventLocationName))
+        if verbose: print('\t%03d SNR metrics for magnitude %3.1f event: %s' % (index, event.magnitude, event.eventLocationName))
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
@@ -119,7 +119,7 @@ def SNR_metrics(concierge, verbose=False):
             # NOTE:  Exapand the window by an extra second to guarantee that 
             # NOTE:  windowStart < tr.stats.starttime and windowEnd > tr.stats.endtime
             try:
-                r_stream = irisseismic.R_getSNCL(concierge.dataselect_url, av.snclId, windowStart-1, windowEnd+1)
+                r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, windowStart-1, windowEnd+1)
             except Exception as e:
                 if verbose: print('\n*** Unable to obtain data for %s from %s ***\n' % (av.snclId, concierge.dataselect_url))
                 # TODO:  Create appropriate empty dataframe

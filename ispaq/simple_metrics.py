@@ -56,7 +56,7 @@ def simple_metrics(concierge, verbose=False):
 
         # NOTE:  Use the requested starttime, not just what is available
         try:
-            r_stream = irisseismic.R_getSNCL(concierge.dataselect_url, av.snclId, concierge.requested_starttime, concierge.requested_endtime)
+            r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel)
         except Exception as e:
             if verbose: print('\n*** Unable to obtain data for %s from %s ***\n%s\n' % (av.snclId, concierge.dataselect_url, e))
             df = pd.DataFrame({'metricName': 'percent_available',

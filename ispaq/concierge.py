@@ -63,7 +63,7 @@ class Concierge(object):
         if user_request.dataselect_url in URL_MAPPINGS.keys():
             # Get data from FDSN dataselect service
             self.dataselect_url = URL_MAPPINGS[user_request.dataselect_url]
-            self.dataselect_client = Client(user_request.dataselect_url)
+            self.dataselect_client = Client(user_request.dataselect_url) # TODO:  For now we are using irisseismic.R_getDataselect()
         elif os.path.exists(os.path.abspath(user_request.dataselect_url)):
             # Get data from local miniseed files
             self.dataselect_url = os.path.abspath(user_request.dataselect_url)
@@ -292,6 +292,77 @@ class Concierge(object):
         else:
             return result
     
+
+    def get_dataselect(self,
+                       network=None, station=None, location=None, channel=None,
+                       starttime=None, endtime=None):
+        """
+        Returns an R Stream that can be passed to metrics calculation methods.
+
+        All arguments are required except for starttime and endtime. These arguments
+        may be specified but will default to the time information found in the
+        `user_request` used to generate a FDSN webservices request for MINIseed data.
+
+        :type network: str
+        :param network: Select one or more network codes. Can be SEED network
+            codes or data center defined codes. Multiple codes are
+            comma-separated.
+        :type station: str
+        :param station: Select one or more SEED station codes. Multiple codes
+            are comma-separated.
+        :type location: str
+        :param location: Select one or more SEED location identifiers. Multiple
+            identifiers are comma-separated. As a special case ``"--"`` (two
+            dashes) will be translated to a string of two space characters to
+            match blank location IDs.
+        :type channel: str
+        :param channel: Select one or more SEED channel codes. Multiple codes
+            are comma-separated.
+        :type starttime: :class:`~obspy.core.utcdatetime.UTCDateTime`
+        :param starttime: Limit to metadata epochs starting on or after the
+            specified start time.
+        :type endtime: :class:`~obspy.core.utcdatetime.UTCDateTime`
+        :param endtime: Limit to metadata epochs ending on or before the
+            specified end time.
+        """
+
+
+        # Allow arguments to override UserRequest parameters
+        if starttime is None:
+            _starttime = self.requested_starttime
+        else:
+            _starttime = starttime
+        if endtime is None:
+            _endtime = self.requested_endtime
+        else:
+            _endtime = endtime
+
+        if self.dataselect_client is None:
+            # TODO:  Read local MINIseed file and convert to R_Stream
+            #
+            #try:
+                #sncl_inventory = obspy.read_inventory(self.station_url)
+            #except Exception as e:
+                #err_msg = "The StationXML file: '%s' is not valid." % self.station_url
+                #raise ValueError(err_msg)
+            #debug_breakpoint = True
+            print("TODO:  read miniSEED from local file.")
+        
+        else:
+            # Read from FDSN web services
+            try:
+                r_stream = irisseismic.R_getDataselect(self.dataselect_url, network, station, location, channel, _starttime, _endtime)
+            except Exception as e:
+                print('\n*** WARNING in Concierge.get_dataselect():  No data returned for %s.%s.%s.%s ***\n' % (network, station, location, channel))
+                pass
+
+           
+        # TODO:  Need to test for valid R_Stream.
+        if False:              
+            return None # TODO:  raise an exception
+        else:
+            return r_stream
+
 
     def get_event(self,
                   starttime=None, endtime=None,

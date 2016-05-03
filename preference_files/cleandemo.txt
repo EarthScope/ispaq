@@ -39,7 +39,7 @@ SNCLs:
   sncls_2: U*.*.*.??Z
   US_LHZ: US.*.*.LHZ
   IU_ANMO: IU.ANMO.*.*
-  IU_ANMO_00_BHZ: IU.ANMO.00.BHZ
+  IU.ANMO.00.BH?: IU.ANMO.00.BH?
   IU_ANMO_VM1: IU.ANMO..VM1 # "No data found" on 2010-02-26
   spikes: IU.RAO.10.BH? # --starttime "2013-01-03"
   bad_sncl: US.OXF..BOP # does not exist
