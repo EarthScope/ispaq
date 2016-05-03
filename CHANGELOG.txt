@@ -1,3 +1,6 @@
+0.4.1:
+ * skipping unused portions of business logic
+
 0.4.0:
  * first version on github
  * end-to-end functionality for 'simple' and 'SNR' metrics
