@@ -51,6 +51,7 @@ class Concierge(object):
         self.metric_names = user_request.metrics
         self.sncl_patterns = user_request.sncls
         self.function_by_logic = user_request.function_by_logic
+        self.logic_types = user_request.function_by_logic.keys()
         
         # Output information
         file_base = '%s_%s_%s' % (self.user_request.requested_metric_set,

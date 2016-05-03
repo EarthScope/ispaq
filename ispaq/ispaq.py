@@ -87,32 +87,34 @@ def main():
 
     #     Generate Simple Metrics     ------------------------------------------
 
-    try:
-        simple_df = simple_metrics(concierge, verbose=args.verbose)
+    if 'simple' in concierge.logic_types:
         try:
-            filename = concierge.output_file_base + "__simpleMetrics.csv"
-            print('\nWriting simple metrics to %s.\n' % filename)
-            simple_df = utils.format_simple_df(simple_df, sigfigs=6)
-            simple_df.to_csv(filename)
+            simple_df = simple_metrics(concierge, verbose=args.verbose)
+            try:
+                filename = concierge.output_file_base + "__simpleMetrics.csv"
+                print('\nWriting simple metrics to %s.\n' % filename)
+                simple_df = utils.format_simple_df(simple_df, sigfigs=6)
+                simple_df.to_csv(filename)
+            except Exception as e:
+                print('Exception to dump to a file: %s' % e)
         except Exception as e:
-            print('Exception to dump to a file: %s' % e)
-    except Exception as e:
-        print(str(e))
+            print(str(e))
 
 
     # Generate SNR Metrics -----------------------------------------------------
 
-    try:
-        SNR_df = SNR_metrics(concierge, verbose=True)
+    if 'SNR' in concierge.logic_types:
         try:
-            filename = concierge.output_file_base + "__SNRMetrics.csv"
-            print('\nWriting SNR metrics to %s.\n' % filename)
-            SNR_df = utils.format_simple_df(SNR_df, sigfigs=6)
-            SNR_df.to_csv(filename)
+            SNR_df = SNR_metrics(concierge, verbose=True)
+            try:
+                filename = concierge.output_file_base + "__SNRMetrics.csv"
+                print('\nWriting SNR metrics to %s.\n' % filename)
+                SNR_df = utils.format_simple_df(SNR_df, sigfigs=6)
+                SNR_df.to_csv(filename)
+            except Exception as e:
+                print('Exception to dump to a file: %s' % e)
         except Exception as e:
-            print('Exception to dump to a file: %s' % e)
-    except Exception as e:
-        print(str(e))
+            print(str(e))
 
 
 #    # Generate [increasingly complex/time-consuming metrics] -------------------
