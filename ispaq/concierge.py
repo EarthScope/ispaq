@@ -338,15 +338,20 @@ class Concierge(object):
             _endtime = endtime
 
         if self.dataselect_client is None:
-            # TODO:  Read local MINIseed file and convert to R_Stream
-            #
-            #try:
-                #sncl_inventory = obspy.read_inventory(self.station_url)
-            #except Exception as e:
-                #err_msg = "The StationXML file: '%s' is not valid." % self.station_url
-                #raise ValueError(err_msg)
-            #debug_breakpoint = True
-            print("TODO:  read miniSEED from local file.")
+            # Read local MINIseed file and convert to R_Stream
+            filename = '%s.%s.%s.%s.%s.M' % (network, station, location, channel, _starttime.strftime('%Y.%j'))
+            filepath = self.dataselect_url + '/' + filename
+            if os.path.exists(filepath):
+                try:
+                    py_stream = obspy.read(filepath)
+                    py_stream = py_stream.slice(_starttime, _endtime)
+                    r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime)
+                except Exception as e:
+                    print('%s' % (e))
+                    # TODO:  Raise an exception?
+            else:
+                print('*** WARNING in Concierge.get_dataselect():  File not found: %s' % (filepath))
+            debug_breakpoint = True
         
         else:
             # Read from FDSN web services
@@ -354,10 +359,10 @@ class Concierge(object):
                 r_stream = irisseismic.R_getDataselect(self.dataselect_url, network, station, location, channel, _starttime, _endtime)
             except Exception as e:
                 print('\n*** WARNING in Concierge.get_dataselect():  No data returned for %s.%s.%s.%s ***\n' % (network, station, location, channel))
-                pass
+                pass # TODO:  Raise an exception?
 
            
-        # TODO:  Need to test for valid R_Stream.
+        # TODO:  Do we need to test for valid R_Stream.
         if False:              
             return None # TODO:  raise an exception
         else:

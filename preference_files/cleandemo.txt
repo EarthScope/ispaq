@@ -77,8 +77,10 @@ Data_access:
   event_url: IRIS
   station_url: IRIS
   
-  # Test (override) for local data
-  #dataselect_url: test_data
-  #event_url: test_data/2010-02-27_event.xml
-  #station_url: test_data/IU.ANMO.00.BHZ_station.xml
+  # Overrides for tests
+  
+  # Test for local data IU.ANMO.00.BHZ.2010.58.M
+  dataselect_url: test_data
+  event_url: test_data/2010-02-27_event.xml
+  station_url: test_data/IU.ANMO.00.BHZ_station.xml
   
