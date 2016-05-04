@@ -1,3 +1,8 @@
+0.4.2:
+ * now using the logging module
+ * successfully using local miniseed data
+ * added Concierge.get_dataselect() method
+
 0.4.1:
  * skipping unused portions of business logic
 
