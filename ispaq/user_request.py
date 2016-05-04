@@ -51,7 +51,7 @@ class UserRequest(object):
     def __init__(self,
                  args = None,
                  json_representation=None, dummy=False,
-                 verbose=False):
+                 logger=None):
         """
         Creates a UserRequest object.
 
@@ -172,8 +172,7 @@ class UserRequest(object):
 
             #     Find required metric functions     --------------------------
 
-            if verbose:
-                print('Validating preferred metrics...')
+            logger.debug('Validating preferred metrics ...')
 
             # Obtain a dictionary from ispaq.irismustangmetrics of the following form:
             # {metric_function_1: <various metadata including list of metrics>}
@@ -204,7 +203,7 @@ class UserRequest(object):
             # Warn of invalid metrics
             invalid_metrics = set(self.metrics).difference(valid_metrics)
             if len(invalid_metrics):
-                print('The following invalid metric names were ignored: ' + str(invalid_metrics))
+                logger.info('The following invalid metric names were ignored: ' + str(invalid_metrics))
             
             # Now reconstruct the reorganized function_by_logic dictionary with only 
             # user requested logic types, functions and metrics.

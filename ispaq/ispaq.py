@@ -4,12 +4,14 @@
 """ispaq.ispaq: provides entry point main()."""
 
 
-__version__ = "0.4.1"
+__version__ = "0.4.2"
 
 
-import sys
-import os
 import argparse
+import datetime
+import logging
+import os
+import sys
 
 from concierge import Concierge
 from user_request import UserRequest
@@ -21,8 +23,6 @@ from simple_metrics import simple_metrics
 from SNR_metrics import SNR_metrics
 
 def main():
-    ###print("Executing ispaq version %s." % __version__)
-    ###print("List of argument strings: %s" % sys.argv[1:])
 
     # Parse arguments ----------------------------------------------------------
     
@@ -41,8 +41,9 @@ def main():
                         type=argparse.FileType('r'), help='location of preference file')
     parser.add_argument('-O', '--output-loc', default='.',
                         help='location to output ')
-    parser.add_argument('--verbose', action='store_true', default=False,
-                        help='print out detailed progress information')
+    parser.add_argument('--log-level', action='store', default='DEBUG',
+                        choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],
+                        help='log level printed to console')
 
     # TODO:  additional configurable elements like sigfigs should be in the preferences file
     # parser.add_argument('--sigfigs', type=check_negative, default=6,
@@ -50,7 +51,28 @@ def main():
 
     args = parser.parse_args(sys.argv[1:])
     
-    print(args)
+    # Set up logging -----------------------------------------------------------
+    
+    # Full DEBUG level logging goes to TRANSCRIPT.txt
+    # Console logging level is set by the '--log-level' argument
+    
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    
+    fh = logging.FileHandler('TRANSCRIPT.txt', mode='w')
+    fh.setLevel(logging.DEBUG)
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
+    
+    ch = logging.StreamHandler()
+    ch.setLevel(getattr(logging, args.log_level))
+    ch.setFormatter(formatter) 
+    logger.addHandler(ch)
+
+
+    logger.debug('Running ISPAQ version %s on %s' % (__version__, datetime.datetime.now().strftime('%c')))
 
 
     #     Create UserRequest object     ---------------------------------------
@@ -60,8 +82,9 @@ def main():
     # of properties that capture the totality of what the user wants in a single
     # invocation of the ISPAQ top level script.
 
+    logger.debug('Creating UserRequest ...')
     try:
-        user_request = UserRequest(args, verbose=args.verbose)
+        user_request = UserRequest(args, logger=logger)
     except Exception as e:
         if str(e) == "Not really an error.":
             pass
@@ -76,60 +99,64 @@ def main():
     # be written as clearly as possible without having to know about the intricacies
     # of ObsPy.
   
+    logger.debug('Creating Concierge ...')
     try:
-        concierge = Concierge(user_request, verbose=args.verbose)
+        concierge = Concierge(user_request, logger=logger)
     except Exception as e:
-        if str(e) == "Not really an error.":
-            pass
-        else:
-            raise
+        logger.critical(e)
+        raise
 
 
     #     Generate Simple Metrics     ------------------------------------------
 
     if 'simple' in concierge.logic_types:
+        logger.debug('Creating simple metrics ...')
         try:
-            simple_df = simple_metrics(concierge, verbose=args.verbose)
+            simple_df = simple_metrics(concierge)
             try:
-                filename = concierge.output_file_base + "__simpleMetrics.csv"
-                print('\nWriting simple metrics to %s.\n' % filename)
+                filepath = concierge.output_file_base + "__simpleMetrics.csv"
+                logger.info('Writing simple metrics to %s.\n' % os.path.basename(filepath))
                 simple_df = utils.format_simple_df(simple_df, sigfigs=6)
-                simple_df.to_csv(filename)
+                simple_df.to_csv(filepath)
             except Exception as e:
-                print('Exception to dump to a file: %s' % e)
+                logger.error(e)
         except Exception as e:
-            print(str(e))
+            logger.error(e)
 
 
     # Generate SNR Metrics -----------------------------------------------------
 
     if 'SNR' in concierge.logic_types:
+        logger.debug('Creating SNR metrics ...')
         try:
-            SNR_df = SNR_metrics(concierge, verbose=True)
+            SNR_df = SNR_metrics(concierge)
             try:
-                filename = concierge.output_file_base + "__SNRMetrics.csv"
-                print('\nWriting SNR metrics to %s.\n' % filename)
+                filepath = concierge.output_file_base + "__SNRMetrics.csv"
+                logger.info('Writing SNR metrics to %s.\n' % os.path.basename(filepath))
                 SNR_df = utils.format_simple_df(SNR_df, sigfigs=6)
-                SNR_df.to_csv(filename)
+                SNR_df.to_csv(filepath)
             except Exception as e:
-                print('Exception to dump to a file: %s' % e)
+                logger.error(e)
         except Exception as e:
-            print(str(e))
+            logger.error(e)
 
 
-#    # Generate [increasingly complex/time-consuming metrics] -------------------
-#
-#    #try:
-#      #complex_output = ispaq.business_logic.complex_metrics(concierge)
-#      #try:
-#          ## Dump output to a file
-#      #except:
-#          ##
-#    #except:
-#          ##
-#    
-#        
-#    # Cleanup ------------------------------------------------------------------
-#
-#if __name__ == "__main__":
-#    main()
+    #    # Generate [increasingly complex/time-consuming metrics] -------------------
+    #
+    #    #try:
+    #      #complex_output = ispaq.business_logic.complex_metrics(concierge)
+    #      #try:
+    #          ## Dump output to a file
+    #      #except:
+    #          ##
+    #    #except:
+    #          ##
+
+
+    logger.info('ALL FINISHED!')
+
+
+# ------------------------------------------------------------------------------
+
+if __name__ == "__main__":
+    main()

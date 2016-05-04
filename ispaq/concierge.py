@@ -36,14 +36,15 @@ class Concierge(object):
 
     TODO:  include doctest examples
     """
-    def __init__(self, user_request, verbose=False):
+    def __init__(self, user_request, logger=None):
         """
         Initializes the ISPAQ data access expediter.
 
         See :mod:`ispaq.concierge` for all parameters.
         """
-        # Keep the entire UserRequest
+        # Keep the entire UserRequest and logger
         self.user_request = user_request
+        self.logger = logger
         
         # Copy important UserRequest properties to the Concierge for smpler access
         self.requested_starttime = user_request.requested_starttime
@@ -63,13 +64,14 @@ class Concierge(object):
         if user_request.dataselect_url in URL_MAPPINGS.keys():
             # Get data from FDSN dataselect service
             self.dataselect_url = URL_MAPPINGS[user_request.dataselect_url]
-            self.dataselect_client = Client(user_request.dataselect_url) # TODO:  For now we are using irisseismic.R_getDataselect()
+            self.dataselect_client = Client(user_request.dataselect_url)
         elif os.path.exists(os.path.abspath(user_request.dataselect_url)):
             # Get data from local miniseed files
             self.dataselect_url = os.path.abspath(user_request.dataselect_url)
             self.dataselect_client = None
         else:
             err_msg = "The preference file dataselect_url: '%s' is not valid." % user_request.dataselect_url
+            self.logger.error(err_msg)
             raise ValueError(err_msg)
 
         # Add event clients and URLs or reference a local file
@@ -82,6 +84,7 @@ class Concierge(object):
             self.event_client = None
         else:
             err_msg = "The preference file event_url: '%s' is not valid." % user_request.event_url
+            self.logger.error(err_msg)
             raise ValueError(err_msg)
 
         # Add station clients and URLs or reference a local file
@@ -94,6 +97,7 @@ class Concierge(object):
             self.station_client = None
         else:
             err_msg = "The preference file station_url: '%s' is not valid." % user_request.station_url
+            self.logger.error(err_msg)
             raise ValueError(err_msg)
 
 
@@ -225,6 +229,7 @@ class Concierge(object):
                     sncl_inventory = obspy.read_inventory(self.station_url)
                 except Exception as e:
                     err_msg = "The StationXML file: '%s' is not valid." % self.station_url
+                    self.logger.error(err_msg)                    
                     raise ValueError(err_msg)
                 debug_breakpoint = True
             
@@ -243,7 +248,8 @@ class Concierge(object):
                                                                       minradius=minradius, maxradius=maxradius,                                                                
                                                                       level="channel")
                 except Exception as e:
-                    print('\n*** WARNING in Concierge.get_availability():  No sncls matching %s found at %s ***\n' % (sncl_pattern, self.station_url))
+                    err_msg = "No sncls matching %s found at %s" % (sncl_pattern, self.station_url)
+                    self.logger.warning(err_msg)
                     continue
 
 
@@ -285,7 +291,10 @@ class Concierge(object):
                             
         # END of sncl_patterns
         
-        result = pd.concat(dataframes, ignore_index=True)    
+        result = pd.concat(dataframes, ignore_index=True)
+        
+        # TODO:  Maybe the concierge should remember this dataframe for cases like SNR which have get_availability() inside
+        # TODO:  of a get_event() loop.
            
         if result.shape[0] == 0:              
             return None # TODO:  raise an exception
@@ -347,10 +356,11 @@ class Concierge(object):
                     py_stream = py_stream.slice(_starttime, _endtime)
                     r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime)
                 except Exception as e:
-                    print('%s' % (e))
-                    # TODO:  Raise an exception?
+                    self.logger.error(e)
+                    raise
+                
             else:
-                print('*** WARNING in Concierge.get_dataselect():  File not found: %s' % (filepath))
+                self.logger.warning('File not found: %s' % (filepath))
             debug_breakpoint = True
         
         else:
@@ -358,8 +368,8 @@ class Concierge(object):
             try:
                 r_stream = irisseismic.R_getDataselect(self.dataselect_url, network, station, location, channel, _starttime, _endtime)
             except Exception as e:
-                print('\n*** WARNING in Concierge.get_dataselect():  No data returned for %s.%s.%s.%s ***\n' % (network, station, location, channel))
-                pass # TODO:  Raise an exception?
+                self.logger.warning('No data returned for %s.%s.%s.%s' % (network, station, location, channel))
+                pass
 
            
         # TODO:  Do we need to test for valid R_Stream.
@@ -459,6 +469,7 @@ class Concierge(object):
                 event_catalog = obspy.read_events(self.event_url)
             except Exception as e:
                 err_msg = "The StationXML file: '%s' is not valid." % self.station_url
+                self.logger.error(err_msg)
                 raise ValueError(err_msg)
             
             # events.columns
@@ -505,6 +516,7 @@ class Concierge(object):
 
             except Exception as e:
                 err_msg = "The event_url: '%s' returns an error: %s." % (self.event_url, e)
+                self.logger.error(err_msg)
                 raise(e)
 
 

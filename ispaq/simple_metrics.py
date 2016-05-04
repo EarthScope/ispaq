@@ -18,7 +18,7 @@ import irisseismic
 import irismustangmetrics
 
 
-def simple_metrics(concierge, verbose=False):
+def simple_metrics(concierge):
     """
     Generate *simple* metrics.
 
@@ -32,6 +32,8 @@ def simple_metrics(concierge, verbose=False):
 
     TODO:  doctest examples
     """
+    # Get the logger from the concierge
+    logger = concierge.logger
     
     # Container for all of the metrics dataframes generated
     dataframes = []
@@ -50,7 +52,7 @@ def simple_metrics(concierge, verbose=False):
     # Loop over rows of the availability dataframe
     for (index, av) in availability.iterrows():
                 
-        if verbose: print('Calculating simple metrics for ' + av.snclId)
+        logger.info('Calculating simple metrics for ' + av.snclId)
 
         # Get the data ----------------------------------------------
 
@@ -58,7 +60,7 @@ def simple_metrics(concierge, verbose=False):
         try:
             r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel)
         except Exception as e:
-            if verbose: print('\n*** Unable to obtain data for %s from %s ***\n%s\n' % (av.snclId, concierge.dataselect_url, e))
+            logger.warning('Unable to obtain data for %s: %s' % (av.snclId, concierge.dataselect_url, e))
             df = pd.DataFrame({'metricName': 'percent_available',
                                'value': 0,
                                'snclq': av.snclId + '.M',
@@ -77,7 +79,7 @@ def simple_metrics(concierge, verbose=False):
                 df = irismustangmetrics.apply_simple_metric(r_stream, 'gaps')
                 dataframes.append(df)
             except Exception as e:
-                if verbose: print('\n*** ERROR in "gaps" metric calculation for %s ***\n%s\n' % (av.snclId, e))
+                logger.error('ERROR in "gaps" metric calculation for %s: %s' % (av.snclId, e))
                 
                 
         # Run the State-of-Health metric -----------------------------
@@ -87,7 +89,7 @@ def simple_metrics(concierge, verbose=False):
                 df = irismustangmetrics.apply_simple_metric(r_stream, 'stateOfHealth')
                 dataframes.append(df)
             except Exception as e:
-                if verbose: print('\n*** ERROR in "stateOfHealth" metric calculation for %s ***\n%s\n' % (av.snclId, e))
+                logger.error('ERROR in "stateOfHealth" metric calculation for %s: %s' % (av.snclId, e))
                             
             
         # Run the Basic Stats metric ---------------------------------
@@ -97,7 +99,7 @@ def simple_metrics(concierge, verbose=False):
                 df = irismustangmetrics.apply_simple_metric(r_stream, 'basicStats')
                 dataframes.append(df)
             except Exception as e:
-                if verbose: print('\n*** ERROR in "basicStats" metric calculation for %s ***\n%s\n' % (av.snclId, e))
+                logger.error('ERROR in "basicStats" metric calculation for %s: %s' % (av.snclId, e))
                             
        
         # Run the STALTA metric --------------------------------------
@@ -119,7 +121,7 @@ def simple_metrics(concierge, verbose=False):
                     df = irismustangmetrics.apply_simple_metric(r_stream, 'STALTA', staSecs=3, ltaSecs=30, increment=increment, algorithm='classic_LR')
                     dataframes.append(df)
                 except Exception as e:
-                    if verbose: print('\n*** ERROR in "STALTA" metric calculation for %s ***\n%s\n' % (av.snclId, e))
+                    logger.error('ERROR in "STALTA" metric calculation for %s: %s' % (av.snclId, e))
             
             
         # Run the Spikes metric --------------------------------------
@@ -141,7 +143,7 @@ def simple_metrics(concierge, verbose=False):
                 df = irismustangmetrics.apply_simple_metric(r_stream, 'spikes', windowSize, thresholdMin, selectivity)
                 dataframes.append(df)
             except Exception as e:
-                if verbose: print('\n*** ERROR in "spikes" metric calculation for %s ***\n%s\n' % (av.snclId, e))            
+                logger.error('ERROR in "spikes" metric calculation for %s: %s' % (av.snclId, e))            
                 
 
     # Concatenate and filter dataframes before returning -----------------------

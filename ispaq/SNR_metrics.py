@@ -19,7 +19,7 @@ import irisseismic
 import irismustangmetrics
 
 
-def SNR_metrics(concierge, verbose=False):
+def SNR_metrics(concierge):
     """
     Generate *SNR* metrics.
 
@@ -33,7 +33,9 @@ def SNR_metrics(concierge, verbose=False):
 
     TODO:  doctest examples
     """
-    
+    # Get the logger from the concierge
+    logger = concierge.logger
+        
     # Default parameters from IRISMustangUtils::generateMetrics_SNR
     minmag = 5.5
     maxradius = 180
@@ -44,7 +46,7 @@ def SNR_metrics(concierge, verbose=False):
         
     # Sanity checkc
     if events.shape[0] == 0:
-        print('No events found for SNR metrics.')
+        logger.info('No events found for SNR metrics.')
         return None
         
     # Container for all of the metrics dataframes generated
@@ -54,15 +56,15 @@ def SNR_metrics(concierge, verbose=False):
     ## Loop through each event.
     #############################################################
 
-    if verbose: print('Calculating SNR metrics for %d events.' % events.shape[0])
+    logger.info('Calculating SNR metrics for %d events.' % events.shape[0])
 
     for (index, event) in events.iterrows():
 
-        if verbose: print('\t%03d SNR metrics for magnitude %3.1f event: %s' % (index, event.magnitude, event.eventLocationName))
+        logger.debug('\t%03d Magnitude %3.1f event: %s' % (index, event.magnitude, event.eventLocationName))
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
-            # TODO:  Print message if verbose ???
+            # TODO:  Print message ???
             continue
     
         # Sanity check
@@ -80,12 +82,12 @@ def SNR_metrics(concierge, verbose=False):
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=0, maxradius=maxradius)
         except Exception as e:
-            # TODO:  Print message if verbose ???
+            # TODO:  Print message ???
             continue
                     
         # Sanity check   that some SNCLs exist
         if availability.shape[0] == 0:
-            # TODO:  print message if verbose ???
+            # TODO:  print message ???
             continue
     
     
@@ -102,7 +104,7 @@ def SNR_metrics(concierge, verbose=False):
                 tt = irisseismic.getTraveltime(event.latitude, event.longitude, event.depth, 
                                                av.latitude, av.longitude)
             except Exception as e:
-                # TODO:  print message if verbose ???
+                # TODO:  print message ???
                 continue
         
             # get P arrival or first arrival
@@ -121,7 +123,7 @@ def SNR_metrics(concierge, verbose=False):
             try:
                 r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, windowStart-1, windowEnd+1)
             except Exception as e:
-                if verbose: print('\n*** Unable to obtain data for %s from %s ***\n' % (av.snclId, concierge.dataselect_url))
+                logger.warning('Unable to obtain data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
                 # TODO:  Create appropriate empty dataframe
                 df = pd.DataFrame({'metricName': 'SNR',
                                    'value': 0,
@@ -135,12 +137,12 @@ def SNR_metrics(concierge, verbose=False):
 
             # Run the SNR metric
             if len(r_stream.do_slot('traces')) > 1:
-                if verbose: print('\n*** skipping %s becuase it has gaps ***\n' % (av.snclId)) 
+                logger.info('skipping %s becuase it has gaps' % (av.snclId)) 
                 continue
             
             else:
                 if (utils.get_slot(r_stream, 'starttime') > windowStart) or (utils.get_slot(r_stream,'endtime') < windowEnd):
-                    if verbose: print('\n*** skipping %s becuase it is missing data in the SNR window ***\n' % (av.snclId)) 
+                    logger.info('skipping %s becuase it is missing data in the SNR window' % (av.snclId)) 
                     continue
                 else:
                     if function_meta.has_key('SNR'):
@@ -148,7 +150,7 @@ def SNR_metrics(concierge, verbose=False):
                             df = irismustangmetrics.apply_simple_metric(r_stream, 'SNR', algorithm="splitWindow", windowSecs=windowSecs)
                             dataframes.append(df)
                         except Exception as e:
-                            if verbose: print('\n*** ERROR in "SNR" metric calculation for %s ***\n' % (av.snclId))
+                            ilogger.error('\n*** ERROR in "SNR" metric calculation for %s: %s' % (av.snclId, e))
                     
                 
 
