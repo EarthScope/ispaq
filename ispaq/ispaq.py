@@ -101,7 +101,7 @@ def main():
   
     logger.debug('Creating Concierge ...')
     try:
-        concierge = Concierge(user_request, logger=logger)
+        concierge = Concierge(user_request=user_request, logger=logger)
     except Exception as e:
         logger.critical(e)
         raise

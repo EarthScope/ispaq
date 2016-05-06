@@ -36,7 +36,7 @@ class Concierge(object):
 
     TODO:  include doctest examples
     """
-    def __init__(self, user_request, logger=None):
+    def __init__(self, user_request=None, logger=None):
         """
         Initializes the ISPAQ data access expediter.
 
