@@ -327,26 +327,42 @@ _R_getUnavailability = robjects.r('IRISSeismic::getUnavailability')   #
 #     Python wrappers for R get~ webservice functions     ---------------------
 
 
-def getAvailability(client_url="http://service.iris.edu", sncl=None, starttime=None, endtime=None,
+def getAvailability(client_url="http://service.iris.edu",
+                    network=None, station=None, location=None, channel=None,
+                    starttime=None, endtime=None, includerestricted=False,
                     latitude=None, longitude=None,
                     minradius=None, maxradius=None):
     """
     Returns a pandas dataframe with channel metadata.
-    :param sncl: SNCL (e.g. "US.OXF..BHZ")
+    :param network: sncl network (string)
+    :param station: sncl station (string)
+    :param location: sncl location (string)
+    :param channel: sncl channel (string)
     :param starttime: ObsPy UTCDateTime object.
     :param endtime: ObsPy UTCDateTime object.
+    :param includerestricted: TODO
     :param latitude: Optional latitude used when specifying a location and radius.
     :param longitude: Optional longitude used when specifying a location and radius.
     :param minradius: Optional minimum radius used when specifying a location and radius.
     :param maxradius: Optional maximum radius used when specifying a location and radius.
     :return: pandas dataframe of channel metadata.
+
+    .. rubric:: Example
+
+    >>> df = getAvailability("http://service.iris.edu", 'US', 'OXF', '', '', UTCDateTime("2012-06-21"), UTCDateTime("2012-06-28"))
+    >>> df.shape
+    (15, 18)
+    >>> df.scale  #doctest: +ELLIPSIS
+    1     629145000.0
+    2     629145000.0
+    ...
     """
     cmd = 'new("IrisClient", site="' + client_url + '")'
     r_client = robjects.r(cmd)
-    (network, station, location, channel) = sncl.split('.')
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    includerestricted = rinterface.MissingArg  # NOTE:  IRIS DMC restricted datasets are not supported
+    if rinterface.MissingArg:
+        includerestricted = rinterface.MissingArg  # NOTE:  IRIS DMC restricted datasets are not supported
     (latitude, longitude, minradius, maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
     
     # Call the function and return a pandas dataframe with the results
@@ -359,28 +375,43 @@ def getAvailability(client_url="http://service.iris.edu", sncl=None, starttime=N
     df.endtime = df.endtime.apply(UTCDateTime)
     
     return df
-    
-    
-def getChannel(client_url="http://service.iris.edu", sncl=None, starttime=None, endtime=None,
-               latitude=None, longitude=None,
-               minradius=None, maxradius=None):
+
+def getChannel(client_url="http://service.iris.edu",
+                network=None, station=None, location=None, channel=None,
+                starttime=None, endtime=None, includerestricted=False,
+                latitude=None, longitude=None,
+                minradius=None, maxradius=None):
     """
     Returns a pandas dataframe with channel metadata.
-    :param sncl: SNCL (e.g. "US.OXF..BHZ")
+    :param network: sncl network (string)
+    :param station: sncl station (string)
+    :param location: sncl location (string)
+    :param channel: sncl channel (string)
     :param starttime: ObsPy UTCDateTime object.
     :param endtime: ObsPy UTCDateTime object.
+    :param includerestricted: TODO
     :param latitude: Optional latitude used when specifying a location and radius.
     :param longitude: Optional longitude used when specifying a location and radius.
     :param minradius: Optional minimum radius used when specifying a location and radius.
     :param maxradius: Optional maximum radius used when specifying a location and radius.
     :return: pandas dataframe of channel metadata.
+
+    .. rubric:: Example
+
+    >>> df = getChannel("http://service.iris.edu", 'US', 'OXF', '', '', UTCDateTime("2012-06-21"), UTCDateTime("2012-06-28"))
+    >>> df.shape
+    (18, 18)
+    >>> df.scale  #doctest: +ELLIPSIS
+    1     629145000.0
+    2     629145000.0
+    ...
     """
     cmd = 'new("IrisClient", site="' + client_url + '")'
     r_client = robjects.r(cmd)
-    (network, station, location, channel) = sncl.split('.')
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    includerestricted = rinterface.MissingArg # NOTE:  IRIS DMC restricted datasets are not supported
+    if rinterface.MissingArg:
+        includerestricted = rinterface.MissingArg  # NOTE:  IRIS DMC restricted datasets are not supported
     (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
     
     # Call the function and return a pandas dataframe with the results
@@ -396,7 +427,7 @@ def getChannel(client_url="http://service.iris.edu", sncl=None, starttime=None, 
 
 def R_getDataselect(client_url="http://service.iris.edu",
                     network=None, station=None, location=None, channel=None,
-                    starttime=None, endtime=None, quality=None):
+                    starttime=None, endtime=None, quality="B", ignoreEpoch=False):
     """
     Obtain an R Stream using the IRISSeismic::getSNCL function.
     :param client_url: FDSN web services site URL
@@ -407,19 +438,18 @@ def R_getDataselect(client_url="http://service.iris.edu",
     :param starttime: ObsPy UTCDateTime object.
     :param endtime: ObsPy UTCDateTime object.
     :return: R Stream object
+    :return: pandas dataframe of channel metadata.
     """
     cmd = 'new("IrisClient", site="' + client_url + '")'
     r_client = robjects.r(cmd)
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    if quality is None:
-        quality = rinterface.MissingArg
         
     # Call the function and return an R Stream
-    r_stream = _R_getDataselect(r_client, network, station, location, channel, starttime, endtime, quality)
+    r_stream = _R_getDataselect(r_client, network, station, location, channel, starttime, endtime, quality, ignoreEpoch)
     return r_stream
 
-    
+
 def getDistaz(latitude, longitude, staLatitude, staLongitude):
     """
     Returns a pandas dataframe with great circle distance data from the IRIS DMC distaz webservice.
@@ -428,6 +458,13 @@ def getDistaz(latitude, longitude, staLatitude, staLongitude):
     :param staLatitude: Latitude of seismic station.
     :param staLongitude: Longitude of seismic station.
     :return: pandas dataframe with a single row containing ``azimuth, backAzimuth, distance``.
+
+    .. rubric:: Example
+
+    >>> df = getDistaz(-146, 45, 10, 10)
+    >>> df
+         azimuth  backAzimuth  distance
+    1  241.57595     47.88017  39.97257
     """
     r_client = robjects.r('new("IrisClient")')
     
@@ -437,12 +474,16 @@ def getDistaz(latitude, longitude, staLatitude, staLongitude):
     return df
     
 
-def getEvalresp(sncl, time,
-                minfreq=None, maxfreq=None,
+def getEvalresp(client_url="http://service.iris.edu",
+                network=None, station=None, location=None, channel=None,
+                time=None, minfreq=None, maxfreq=None,
                 nfreq=None, units=None, output="fap"):
     """
     Returns a pandas dataframe with cinstrument response data from the IRIS DMC evalresp webservice.
-    :param sncl: SNCL (e.g. "US.OXF..BHZ")
+    :param network: sncl network (string)
+    :param station: sncl station (string)
+    :param location: sncl location (string)
+    :param channel: sncl channel (string)
     :param time: ObsPy UTCDateTime object specifying the time at which the response is evaluated.
     :param minfreq: Optional minimum frequency at which the response is evaluated.
     :param maxfreq: Optional maximum frequency at which the response is evaluated.
@@ -451,8 +492,8 @@ def getEvalresp(sncl, time,
     :param output: Output type ['fap'|'cs'].
     :return: pandas dataframe of response metadata.
     """
-    r_client = robjects.r('new("IrisClient")')
-    (network, station, location, channel) = sncl.split('.')
+    cmd = 'new("IrisClient", site="' + client_url + '")'
+    r_client = robjects.r(cmd)
     time = R_POSIXct(time)
     (minfreq, maxfreq, nfreq, units, output) = _R_args(minfreq, maxfreq, nfreq, units, output)
     
@@ -502,14 +543,20 @@ def getEvent(client_url="http://service.iris.edu", starttime=None, endtime=None,
     return df
         
     
-def getNetwork(client_url="http://service.iris.edu", sncl=None, starttime=None, endtime=None,
+def getNetwork(client_url="http://service.iris.edu",
+               network=None, station=None, location=None, channel=None,
+               starttime=None, endtime=None, includerestricted=None,
                latitude=None, longitude=None,
                minradius=None, maxradius=None):
     """
     Returns a pandas dataframe with network metadata.
-    :param sncl: SNCL (e.g. "US.OXF..BHZ")
+    :param network: sncl network (string)
+    :param station: sncl station (string)
+    :param location: sncl location (string)
+    :param channel: sncl channel (string)
     :param starttime: ObsPy UTCDateTime object.
     :param endtime: ObsPy UTCDateTime object.
+    :param includerestricted: TOOD
     :param latitude: Optional latitude used when specifying a location and radius.
     :param longitude: Optional longitude used when specifying a location and radius.
     :param minradius: Optional minimum radius used when specifying a location and radius.
@@ -518,10 +565,10 @@ def getNetwork(client_url="http://service.iris.edu", sncl=None, starttime=None, 
     """
     cmd = 'new("IrisClient", site="' + client_url + '")'
     r_client = robjects.r(cmd)
-    (network, station, location, channel) = sncl.split('.')
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    includerestricted = rinterface.MissingArg # NOTE:  IRIS DMC restricted datasets are not supported
+    if rinterface.MissingArg:
+        includerestricted = rinterface.MissingArg  # NOTE:  IRIS DMC restricted datasets are not supported
     (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
     
     # Call the function and return a pandas dataframe with the results
@@ -536,7 +583,7 @@ def getNetwork(client_url="http://service.iris.edu", sncl=None, starttime=None, 
     
     
 def R_getSNCL(client_url="http://service.iris.edu", sncl=None, starttime=None, endtime=None,
-              quality=None):
+              quality="B"):
     """
     Obtain an R Stream using the IRISSeismic::getSNCL function.
     :param client_url: FDSN web services site URL
@@ -557,14 +604,20 @@ def R_getSNCL(client_url="http://service.iris.edu", sncl=None, starttime=None, e
     return r_stream
     
     
-def getStation(client_url="http://service.iris.edu", sncl=None, starttime=None, endtime=None,
+def getStation(client_url="http://service.iris.edu",
+               network=None, station=None, location=None, channel=None,
+               starttime=None, endtime=None, includerestricted=None,
                latitude=None, longitude=None,
                minradius=None, maxradius=None):
     """
     Returns a pandas dataframe with station metadata.
-    :param sncl: SNCL (e.g. "US.OXF..BHZ")
+    :param network: sncl network (string)
+    :param station: sncl station (string)
+    :param location: sncl location (string)
+    :param channel: sncl channel (string)
     :param starttime: ObsPy UTCDateTime object.
     :param endtime: ObsPy UTCDateTime object.
+    :param includerestricted: TODO
     :param latitude: Optional latitude used when specifying a location and radius.
     :param longitude: Optional longitude used when specifying a location and radius.
     :param minradius: Optional minimum radius used when specifying a location and radius.
@@ -573,10 +626,10 @@ def getStation(client_url="http://service.iris.edu", sncl=None, starttime=None, 
     """
     cmd = 'new("IrisClient", site="' + client_url + '")'
     r_client = robjects.r(cmd)
-    (network, station, location, channel) = sncl.split('.')
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    includerestricted = rinterface.MissingArg # NOTE:  IRIS DMC restricted datasets are not supported
+    if rinterface.MissingArg:
+        includerestricted = rinterface.MissingArg  # NOTE:  IRIS DMC restricted datasets are not supported
     (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
     
     # Call the function and return a pandas dataframe with the results
@@ -607,14 +660,20 @@ def getTraveltime(latitude, longitude, depth, staLatitude, staLongitude):
     return df
     
     
-def getUnavailability(client_url="http://service.iris.edu", sncl=None, starttime=None, endtime=None,
-                      latitude=None, longitude=None,
-                      minradius=None, maxradius=None):
+def getUnavailability(client_url="http://service.iris.edu",
+               network=None, station=None, location=None, channel=None,
+               starttime=None, endtime=None, includerestricted=None,
+               latitude=None, longitude=None,
+               minradius=None, maxradius=None):
     """
     Returns a pandas dataframe with channel metadata for non-available channels.
-    :param sncl: SNCL (e.g. "US.OXF..BHZ")
+    :param network: sncl network (string)
+    :param station: sncl station (string)
+    :param location: sncl location (string)
+    :param channel: sncl channel (string)
     :param starttime: ObsPy UTCDateTime object.
     :param endtime: ObsPy UTCDateTime object.
+    :param includerestricted: TODO
     :param latitude: Optional latitude used when specifying a location and radius.
     :param longitude: Optional longitude used when specifying a location and radius.
     :param minradius: Optional minimum radius used when specifying a location and radius.
@@ -623,10 +682,10 @@ def getUnavailability(client_url="http://service.iris.edu", sncl=None, starttime
     """
     cmd = 'new("IrisClient", site="' + client_url + '")'
     r_client = robjects.r(cmd)
-    (network, station, location, channel) = sncl.split('.')
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    includerestricted = rinterface.MissingArg # NOTE:  IRIS DMC restricted datasets are not supported
+    if rinterface.MissingArg:
+        includerestricted = rinterface.MissingArg  # NOTE:  IRIS DMC restricted datasets are not supported
     (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
     
     # Call the function and return a pandas dataframe with the results
