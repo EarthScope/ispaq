@@ -361,8 +361,6 @@ def getAvailability(client_url="http://service.iris.edu",
     r_client = robjects.r(cmd)
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    if rinterface.MissingArg:
-        includerestricted = rinterface.MissingArg  # NOTE:  IRIS DMC restricted datasets are not supported
     (latitude, longitude, minradius, maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
     
     # Call the function and return a pandas dataframe with the results
@@ -410,8 +408,6 @@ def getChannel(client_url="http://service.iris.edu",
     r_client = robjects.r(cmd)
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    if rinterface.MissingArg:
-        includerestricted = rinterface.MissingArg  # NOTE:  IRIS DMC restricted datasets are not supported
     (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
     
     # Call the function and return a pandas dataframe with the results
@@ -567,8 +563,6 @@ def getNetwork(client_url="http://service.iris.edu",
     r_client = robjects.r(cmd)
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    if rinterface.MissingArg:
-        includerestricted = rinterface.MissingArg  # NOTE:  IRIS DMC restricted datasets are not supported
     (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
     
     # Call the function and return a pandas dataframe with the results
@@ -596,8 +590,6 @@ def R_getSNCL(client_url="http://service.iris.edu", sncl=None, starttime=None, e
     r_client = robjects.r(cmd)
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    if quality is None:
-        quality = rinterface.MissingArg
         
     # Call the function and return a pandas dataframe with the results
     r_stream = _R_getSNCL(r_client, sncl, starttime, endtime, quality)
@@ -628,8 +620,6 @@ def getStation(client_url="http://service.iris.edu",
     r_client = robjects.r(cmd)
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    if rinterface.MissingArg:
-        includerestricted = rinterface.MissingArg  # NOTE:  IRIS DMC restricted datasets are not supported
     (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
     
     # Call the function and return a pandas dataframe with the results
@@ -684,8 +674,6 @@ def getUnavailability(client_url="http://service.iris.edu",
     r_client = robjects.r(cmd)
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    if rinterface.MissingArg:
-        includerestricted = rinterface.MissingArg  # NOTE:  IRIS DMC restricted datasets are not supported
     (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
     
     # Call the function and return a pandas dataframe with the results
