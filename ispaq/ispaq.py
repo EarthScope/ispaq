@@ -21,6 +21,7 @@ import utils
 
 from simple_metrics import simple_metrics
 from SNR_metrics import SNR_metrics
+from PSD_metrics import PSD_metrics
 
 def main():
 
@@ -135,6 +136,23 @@ def main():
                 logger.info('Writing SNR metrics to %s.\n' % os.path.basename(filepath))
                 SNR_df = utils.format_simple_df(SNR_df, sigfigs=6)
                 SNR_df.to_csv(filepath)
+            except Exception as e:
+                logger.error(e)
+        except Exception as e:
+            logger.error(e)
+
+
+    # Generate PSD Metrics -----------------------------------------------------
+
+    if 'PSD' in concierge.logic_types:
+        logger.debug('Creating PSD metrics ...')
+        try:
+            PSD_df = PSD_metrics(concierge)
+            try:
+                filepath = concierge.output_file_base + "__PSDMetrics.csv"
+                logger.info('Writing PSD metrics to %s.\n' % os.path.basename(filepath))
+                PSD_df = utils.format_simple_df(PSD_df, sigfigs=6)
+                PSD_df.to_csv(filepath)
             except Exception as e:
                 logger.error(e)
         except Exception as e:

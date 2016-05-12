@@ -34,7 +34,9 @@ from rpy2 import rinterface
 from rpy2.robjects import pandas2ri
 
 # R options
-robjects.r('options(digits.secs=6)')      # print out fractional seconds
+# NOTE:  The evalresp webservice requires integer seconds.
+# NOTE:  digits.secs=6 breaks calls to getEvalresp and hence any of the PSD stuff
+###robjects.r('options(digits.secs=6)')      # print out fractional seconds
 
 
 ###   R functions called internally     ----------------------------------------
@@ -50,7 +52,7 @@ _R_metricList2DF = robjects.r('IRISMustangMetrics::metricList2DF')
 def _R_getMetricFunctionMetdata():
     """
     This function returns a dictionary with the following information:
-     * name -- char
+     * name -- char, (Name of R function to be run)
      * streamCount -- int, (number of streams on input)
      * outputType -- char, [SingleValue | MultipleValue | MultipleTime | Spectrum | Other?]
      * fullDay -- logical
@@ -108,8 +110,7 @@ def _R_getMetricFunctionMetdata():
                         "digital_filter_charging",
                         "suspect_time_tag",
                         "timing_quality"]
-            },
-        
+            },        
         'STALTA': {
             'streamCount': 1,
             'outputType': 'SingleValue',
@@ -136,6 +137,18 @@ def _R_getMetricFunctionMetdata():
             'extraAttributes': None,
             'businessLogic': 'SNR',
             'metrics': ['sample_snr']
+        },
+        'PSD': {
+            'streamCount': 1,
+            'outputType': 'PSD',
+            'fullDay': True,
+            'speed': 'slow',
+            'extraAttributes': None,
+            'businessLogic': 'PSD',
+            'metrics': ['pct_above_nhnm',
+                        'pct_below_nlnm',
+                        'dead_channel_exp',
+                        'dead_channel_lin']
         }
     }
     return(functiondict)
@@ -167,6 +180,34 @@ def apply_simple_metric(r_stream, metric_function_name, *args, **kwargs):
     df.endtime = df.endtime.apply(UTCDateTime)
     return df
 
+
+#     Functions for PSDMetrics     ---------------------------------------------
+
+
+# TODO:  rename "apply_simple_metric" to "apply_single_value_metric"
+def apply_PSD_metric(r_stream, *args, **kwargs):
+    """"
+    Invoke the PSDMetric and convert the R dataframe result into
+    a Pandas dataframe.
+    :param r_stream: an r_stream object
+    :param metric_function_name: the name of the set of metrics
+    :return:
+    """
+    function = 'IRISMustangMetrics::PSDMetric'
+    R_function = robjects.r(function)
+    r_listOfLists = R_function(r_stream, *args, **kwargs)  # args and kwargs shouldn't be needed in theory
+    r_metriclist = r_listOfLists[0]
+    r_dataframe = _R_metricList2DF(r_metriclist)
+    df = pandas2ri.ri2py(r_dataframe)
+    
+    # Convert columns from R POSIXct to pyton UTCDateTime
+    df.starttime = df.starttime.apply(UTCDateTime)
+    df.endtime = df.endtime.apply(UTCDateTime)
+    
+    # TODO:  What to do about the spectra
+    r_spectralist = r_listOfLists[1]
+    
+    return df
 
 # -----------------------------------------------------------------------------
 

@@ -16,6 +16,7 @@ Metrics:
   STALTA: max_stalta
   spikes: num_spikes
   SNR: sample_snr
+  PSD: pct_above_nhnm, pct_below_nlnm, dead_channel_exp, dead_channel_lin
   
   # ----- Custom combinations -----
   metrics_1: sample_rms, num_gaps, percent_availability
@@ -77,7 +78,7 @@ Data_access:
   event_url: IRIS
   station_url: IRIS
   
-  # Overrides for tests
+  # Overrides for testing:
   
   # Test for local data IU.ANMO.00.BHZ.2010.58.M
   #dataselect_url: test_data

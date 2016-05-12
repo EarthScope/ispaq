@@ -23,7 +23,9 @@ from rpy2 import rinterface
 from rpy2.robjects import pandas2ri
 
 # R options
-robjects.r('options(digits.secs=6)')                   # have R functions print out fractional seconds
+# NOTE:  The evalresp webservice requires integer seconds.
+# NOTE:  digits.secs=6 breaks calls to getEvalresp and hence any of the PSD stuff
+###robjects.r('options(digits.secs=6)')                   # have R functions print out fractional seconds
 
 
 #     R functions called internally     ----------------------------------------
@@ -278,7 +280,7 @@ def _R_args(*args):
     return tuple(r_args)
 
     
-def _R_radiusArgs(latitude, longitude, minradius, maxradius):
+def _R_stationExtraArgs(includerestricted, latitude, longitude, minradius, maxradius):
     """
     Validate location-radius arguments.
     
@@ -289,6 +291,9 @@ def _R_radiusArgs(latitude, longitude, minradius, maxradius):
     Several webservices support location-radius arguments.
 
     """
+    if includerestricted is None: 
+        includerestricted = rinterface.MissingArg 
+        
     if any([latitude,longitude,minradius,maxradius]):
         if all([latitude,longitude]) and any([minradius,maxradius]):
             # TODO:  Could add domain validation of values at this point
@@ -296,11 +301,11 @@ def _R_radiusArgs(latitude, longitude, minradius, maxradius):
                 minradius = rinterface.MissingArg
             elif maxradius is None:
                 maxradius = rinterface.MissingArg
-            return (latitude, longitude, minradius, maxradius)
+            return (includerestricted, latitude, longitude, minradius, maxradius)
         else:
             raise ValueError("One of longitude, latitude or a radius is missing")
     else:
-        return (rinterface.MissingArg, rinterface.MissingArg, rinterface.MissingArg, rinterface.MissingArg)
+        return (includerestricted, rinterface.MissingArg, rinterface.MissingArg, rinterface.MissingArg, rinterface.MissingArg)
 
 
 #     R functions called internally     ---------------------------------------
@@ -329,7 +334,7 @@ _R_getUnavailability = robjects.r('IRISSeismic::getUnavailability')   #
 
 def getAvailability(client_url="http://service.iris.edu",
                     network=None, station=None, location=None, channel=None,
-                    starttime=None, endtime=None, includerestricted=False,
+                    starttime=None, endtime=None, includerestricted=None,
                     latitude=None, longitude=None,
                     minradius=None, maxradius=None):
     """
@@ -353,22 +358,22 @@ def getAvailability(client_url="http://service.iris.edu",
     >>> df.shape
     (15, 18)
     >>> df.scale  #doctest: +ELLIPSIS
-    1     629145000.0
-    2     629145000.0
+    1     629145000
+    2     629145000
     ...
     """
     cmd = 'new("IrisClient", site="' + client_url + '")'
     r_client = robjects.r(cmd)
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    (latitude, longitude, minradius, maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
+    (includerestricted, latitude, longitude, minradius, maxradius) = _R_stationExtraArgs(includerestricted, latitude, longitude, minradius, maxradius)
     
     # Call the function and return a pandas dataframe with the results
     r_df = _R_getAvailability(r_client, network, station, location, channel, starttime, endtime, includerestricted,
                               latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
     
-    # Convert columns from R POSIXct to pyton UTCDateTime
+    # Convert columns from R POSIXct to python UTCDateTime
     df.starttime = df.starttime.apply(UTCDateTime)
     df.endtime = df.endtime.apply(UTCDateTime)
     
@@ -400,21 +405,23 @@ def getChannel(client_url="http://service.iris.edu",
     >>> df.shape
     (18, 18)
     >>> df.scale  #doctest: +ELLIPSIS
-    1     629145000.0
-    2     629145000.0
+    1     629145000
+    2     629145000
     ...
     """
-    cmd = 'new("IrisClient", site="' + client_url + '")'
+    cmd = 'new("IrisClient", site="' + client_url + '", debug=TRUE)'
     r_client = robjects.r(cmd)
+
+    # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
+    (includerestricted, latitude,longitude,minradius,maxradius) = _R_stationExtraArgs(includerestricted, latitude, longitude, minradius, maxradius)
     
     # Call the function and return a pandas dataframe with the results
     r_df = _R_getChannel(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
     
-    # Convert columns from R POSIXct to pyton UTCDateTime
+    # Convert columns from R POSIXct to python UTCDateTime
     df.starttime = df.starttime.apply(UTCDateTime)
     df.endtime = df.endtime.apply(UTCDateTime)
     
@@ -438,6 +445,8 @@ def R_getDataselect(client_url="http://service.iris.edu",
     """
     cmd = 'new("IrisClient", site="' + client_url + '")'
     r_client = robjects.r(cmd)
+    
+    # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
         
@@ -490,6 +499,8 @@ def getEvalresp(client_url="http://service.iris.edu",
     """
     cmd = 'new("IrisClient", site="' + client_url + '")'
     r_client = robjects.r(cmd)
+    
+    # Convert python arguments to R equivalents
     time = R_POSIXct(time)
     (minfreq, maxfreq, nfreq, units, output) = _R_args(minfreq, maxfreq, nfreq, units, output)
     
@@ -525,6 +536,8 @@ def getEvent(client_url="http://service.iris.edu", starttime=None, endtime=None,
     """
     cmd = 'new("IrisClient", site="' + client_url + '")'
     r_client = robjects.r(cmd)
+    
+    # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
     (minmag, maxmag, magtype, mindepth, maxdepth) = _R_args(minmag, maxmag, magtype, mindepth, maxdepth)
@@ -533,7 +546,7 @@ def getEvent(client_url="http://service.iris.edu", starttime=None, endtime=None,
     r_df = _R_getEvent(r_client, starttime, endtime, minmag, maxmag, magtype, mindepth, maxdepth)
     df = pandas2ri.ri2py(r_df)
     
-    # Convert columns from R POSIXct to pyton UTCDateTime
+    # Convert columns from R POSIXct to python UTCDateTime
     df.time = df.time.apply(UTCDateTime)
      
     return df
@@ -561,15 +574,17 @@ def getNetwork(client_url="http://service.iris.edu",
     """
     cmd = 'new("IrisClient", site="' + client_url + '")'
     r_client = robjects.r(cmd)
+
+    # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
+    (includerestricted, latitude,longitude,minradius,maxradius) = _R_stationExtraArgs(includerestricted, latitude, longitude, minradius, maxradius)
     
     # Call the function and return a pandas dataframe with the results
     r_df = _R_getNetwork(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
     
-    # Convert columns from R POSIXct to pyton UTCDateTime
+    # Convert columns from R POSIXct to python UTCDateTime
     df.starttime = df.starttime.apply(UTCDateTime)
     df.endtime = df.endtime.apply(UTCDateTime)
     
@@ -588,6 +603,8 @@ def R_getSNCL(client_url="http://service.iris.edu", sncl=None, starttime=None, e
     """
     cmd = 'new("IrisClient", site="' + client_url + '")'
     r_client = robjects.r(cmd)
+
+    # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
         
@@ -618,15 +635,17 @@ def getStation(client_url="http://service.iris.edu",
     """
     cmd = 'new("IrisClient", site="' + client_url + '")'
     r_client = robjects.r(cmd)
+
+    # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
+    (includerestricted, latitude,longitude,minradius,maxradius) = _R_stationExtraArgs(includerestricted, latitude, longitude, minradius, maxradius)
     
     # Call the function and return a pandas dataframe with the results
     r_df = _R_getStation(r_client, network, station, location, channel, starttime, endtime, includerestricted, latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
     
-    # Convert columns from R POSIXct to pyton UTCDateTime
+    # Convert columns from R POSIXct to python UTCDateTime
     df.starttime = df.starttime.apply(UTCDateTime)
     df.endtime = df.endtime.apply(UTCDateTime)
     
@@ -672,17 +691,19 @@ def getUnavailability(client_url="http://service.iris.edu",
     """
     cmd = 'new("IrisClient", site="' + client_url + '")'
     r_client = robjects.r(cmd)
+    
+    # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    (latitude,longitude,minradius,maxradius) = _R_radiusArgs(latitude, longitude, minradius, maxradius)
-    
+    (includerestricted, latitude,longitude,minradius,maxradius) = _R_stationExtraArgs(includerestricted, latitude, longitude, minradius, maxradius)    
+
     # Call the function and return a pandas dataframe with the results
     r_df = _R_getUnavailability(r_client, network, station, location, channel,
                                 starttime, endtime, includerestricted,
                                 latitude, longitude, minradius, maxradius)
     df = pandas2ri.ri2py(r_df)
     
-    # Convert columns from R POSIXct to pyton UTCDateTime
+    # Convert columns from R POSIXct to python UTCDateTime
     df.starttime = df.starttime.apply(UTCDateTime)
     df.endtime = df.endtime.apply(UTCDateTime)
     
