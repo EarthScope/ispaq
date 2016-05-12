@@ -71,6 +71,7 @@ target/
 
 # ISPAQ output files
 *.csv
+TRANSCRIPT.txt
 
 # WingIDE files
 *.wpr

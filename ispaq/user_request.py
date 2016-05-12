@@ -163,6 +163,7 @@ class UserRequest(object):
                     elif currentSection == 'data_access':
                         data_access[name] = values[0]
 
+            # TODO:  try-except KeyError
             self.metrics = metric_sets[self.requested_metric_set]
             self.sncls = sncl_sets[self.requested_sncl_set]
 
