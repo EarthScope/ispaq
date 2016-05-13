@@ -374,7 +374,7 @@ class Concierge(object):
                 r_stream = irisseismic.R_getDataselect(self.dataselect_url, network, station, location, channel, _starttime, _endtime)
             except Exception as e:
                 self.logger.warning('No data returned for %s.%s.%s.%s' % (network, station, location, channel))
-                pass
+                raise
 
            
         # TODO:  Do we need to test for valid R_Stream.
@@ -522,7 +522,7 @@ class Concierge(object):
             except Exception as e:
                 err_msg = "The event_url: '%s' returns an error: %s." % (self.event_url, e)
                 self.logger.error(err_msg)
-                raise(e)
+                raise
 
 
 

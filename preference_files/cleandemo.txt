@@ -91,7 +91,7 @@ Data_Access:
 
 Preferences:
 
-  csv_output_dir: /Users/jonathancallahan/ISPAQ_csv    # directory to contain generated metrics .csv files
+  csv_output_dir: .    # directory to contain generated metrics .csv files
   plot_output_dir: .   # directory to contain generated plots
   sigfigs: 6           # significant figures used to output metric values
 

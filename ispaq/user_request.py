@@ -190,11 +190,11 @@ class UserRequest(object):
             #     Add individual preferences     ------------------------------
             
             if preferences.has_key('plot_output_dir'):
-                self.plot_output_dir = os.path.abspath(preferences['plot_output_dir'])
+                self.plot_output_dir = os.path.abspath(os.path.expanduser(preferences['plot_output_dir']))
             else:
                 self.plot_output_dir = os.path.abspath('.')
             if preferences.has_key('csv_output_dir'):
-                self.csv_output_dir = os.path.abspath(preferences['csv_output_dir'])
+                self.csv_output_dir = os.path.abspath(os.path.expanduser(preferences['csv_output_dir']))
             else:
                 self.csv_output_dir = os.path.abspath('.')
             if preferences.has_key('sigfigs'):

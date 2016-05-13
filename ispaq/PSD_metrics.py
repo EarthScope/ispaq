@@ -58,7 +58,7 @@ def PSD_metrics(concierge):
         try:
             r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel)
         except Exception as e:
-            logger.warning('Unable to obtain data for %s: %s' % (av.snclId, concierge.dataselect_url, e))
+            logger.warning('Unable to obtain data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
             # TODO:  Add empty dataframe ???
             #df = pd.DataFrame({'metricName': 'percent_available',
                                #'value': 0,
@@ -79,7 +79,7 @@ def PSD_metrics(concierge):
                 df = irismustangmetrics.apply_PSD_metric(r_stream)
                 dataframes.append(df)
             except Exception as e:
-                logger.error('ERROR in "PSD" metric calculation for %s: %s' % (av.snclId, e))
+                logger.error('"PSD" metric calculation failed for %s: %s' % (av.snclId, e))
                 
         # Run the PSD plot ------------------------------------------
 
@@ -93,7 +93,7 @@ def PSD_metrics(concierge):
                 status = irismustangmetrics.open_png_file(filepath)
                 status = irismustangmetrics.apply_PSD_plot(r_stream)
             except Exception as e:
-                logger.error('ERROR in "PSD" plot generation for %s: %s' % (av.snclId, e))
+                logger.error('"PSD" plot generation failed for %s: %s' % (av.snclId, e))
                     
 
     # Concatenate and filter dataframes before returning -----------------------

@@ -60,7 +60,7 @@ def simple_metrics(concierge):
         try:
             r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel)
         except Exception as e:
-            logger.warning('Unable to obtain data for %s: %s' % (av.snclId, concierge.dataselect_url, e))
+            logger.warning('Unable to obtain data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
             df = pd.DataFrame({'metricName': 'percent_available',
                                'value': 0,
                                'snclq': av.snclId + '.M',
@@ -79,7 +79,7 @@ def simple_metrics(concierge):
                 df = irismustangmetrics.apply_simple_metric(r_stream, 'gaps')
                 dataframes.append(df)
             except Exception as e:
-                logger.error('ERROR in "gaps" metric calculation for %s: %s' % (av.snclId, e))
+                logger.error('"gaps" metric calculation failed for %s: %s' % (av.snclId, e))
                 
                 
         # Run the State-of-Health metric -----------------------------
@@ -99,7 +99,7 @@ def simple_metrics(concierge):
                 df = irismustangmetrics.apply_simple_metric(r_stream, 'basicStats')
                 dataframes.append(df)
             except Exception as e:
-                logger.error('ERROR in "basicStats" metric calculation for %s: %s' % (av.snclId, e))
+                logger.error('"basicStats" metric calculation failed for %s: %s' % (av.snclId, e))
                             
        
         # Run the STALTA metric --------------------------------------
@@ -121,7 +121,7 @@ def simple_metrics(concierge):
                     df = irismustangmetrics.apply_simple_metric(r_stream, 'STALTA', staSecs=3, ltaSecs=30, increment=increment, algorithm='classic_LR')
                     dataframes.append(df)
                 except Exception as e:
-                    logger.error('ERROR in "STALTA" metric calculation for %s: %s' % (av.snclId, e))
+                    logger.error('"STALTA" metric calculation failed for for %s: %s' % (av.snclId, e))
             
             
         # Run the Spikes metric --------------------------------------
@@ -143,7 +143,7 @@ def simple_metrics(concierge):
                 df = irismustangmetrics.apply_simple_metric(r_stream, 'spikes', windowSize, thresholdMin, selectivity)
                 dataframes.append(df)
             except Exception as e:
-                logger.error('ERROR in "spikes" metric calculation for %s: %s' % (av.snclId, e))            
+                logger.error('"spikes" metric calculation failed for %s: %s' % (av.snclId, e))            
                 
 
     # Concatenate and filter dataframes before returning -----------------------

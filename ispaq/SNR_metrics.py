@@ -64,11 +64,12 @@ def SNR_metrics(concierge):
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
-            # TODO:  Print message ???
+            logger.debug('\t\tskipping because of missing longitude or latitude')
             continue
     
         # Sanity check
         if pd.isnull(event.depth):
+            logger.debug('\t\tskipping because of missing depth')
             continue        
         
         # Get the data availability around this event
@@ -82,12 +83,12 @@ def SNR_metrics(concierge):
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=0, maxradius=maxradius)
         except Exception as e:
-            # TODO:  Print message ???
+            logger.error('\t\tskipping because get_availability failed: %s' % (e))
             continue
                     
         # Sanity check   that some SNCLs exist
         if availability.shape[0] == 0:
-            # TODO:  print message ???
+            logger.debug('\t\tskipping because no SNCLs are available')
             continue
     
     
@@ -104,7 +105,7 @@ def SNR_metrics(concierge):
                 tt = irisseismic.getTraveltime(event.latitude, event.longitude, event.depth, 
                                                av.latitude, av.longitude)
             except Exception as e:
-                # TODO:  print message ???
+                logger.error('\t\tskipping because getTravelTime failed: %s' % (e))
                 continue
         
             # get P arrival or first arrival
@@ -150,7 +151,7 @@ def SNR_metrics(concierge):
                             df = irismustangmetrics.apply_simple_metric(r_stream, 'SNR', algorithm="splitWindow", windowSecs=windowSecs)
                             dataframes.append(df)
                         except Exception as e:
-                            ilogger.error('\n*** ERROR in "SNR" metric calculation for %s: %s' % (av.snclId, e))
+                            logger.error('"SNR" metric calculation failed for %s: %s' % (av.snclId, e))
                     
                 
 
