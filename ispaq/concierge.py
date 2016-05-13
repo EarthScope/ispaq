@@ -54,11 +54,16 @@ class Concierge(object):
         self.function_by_logic = user_request.function_by_logic
         self.logic_types = user_request.function_by_logic.keys()
         
+        # Individual elements from the Preferences: section of the preferences file
+        self.csv_output_dir = user_request.csv_output_dir
+        self.plot_output_dir = user_request.plot_output_dir
+        self.sigfigs = user_request.sigfigs
+        
         # Output information
         file_base = '%s_%s_%s' % (self.user_request.requested_metric_set,
                                   self.user_request.requested_sncl_set, 
                                   self.requested_starttime.date)
-        self.output_file_base = os.getcwd() + '/' + file_base
+        self.output_file_base = self.csv_output_dir + '/' + file_base
         
         # Add dataselect clients and URLs or reference a local file
         if user_request.dataselect_url in URL_MAPPINGS.keys():

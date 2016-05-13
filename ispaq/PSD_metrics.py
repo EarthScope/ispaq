@@ -89,7 +89,7 @@ def PSD_metrics(concierge):
                 # TODO:  Use concierge to determine where to put the plots?
                 starttime = utils.get_slot(r_stream, 'starttime')
                 filename = '%s.%s_PDF.png' % (av.snclId, starttime.strftime('%Y.%j'))
-                filepath = os.getcwd() + '/' + filename
+                filepath = concierge.plot_output_dir + '/' + filename
                 status = irismustangmetrics.open_png_file(filepath)
                 status = irismustangmetrics.apply_PSD_plot(r_stream)
             except Exception as e:

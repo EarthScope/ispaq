@@ -12,6 +12,27 @@ import pandas as pd
 
 from obspy import UTCDateTime
 
+def write_simple_df(df, filepath, sigfigs=6):
+    """
+    Write a pretty dataframe with appropriate significant figures to a .csv file.
+    :param df: Dataframe of simpleMetrics.
+    :param filepath: File to be created.
+    :param sigfigs: Number of significant figures to use.
+    :return: status
+    """
+    # Get pretty values
+    pretty_df = format_simple_df(df, sigfigs=sigfigs)
+    # Reorder columns, putting non-standard columns at the end and omitting 'qualityFlag'
+    columns = ['snclq','starttime','endtime','metricName','value']
+    original_columns = pretty_df.columns
+    extra_columns = list( set(original_columns).difference(set(columns)) )
+    extra_columns.remove('qualityFlag')
+    columns.extend(extra_columns)
+    # Write out .csv file
+    pretty_df[columns].to_csv(filepath, index=False)
+    
+    # No return value
+
 
 def format_simple_df(df, sigfigs=6):
     """
@@ -39,8 +60,8 @@ def format_simple_df(df, sigfigs=6):
     if 'qualityFlag' in df.columns:
         df.qualityFlag = df.qualityFlag.astype(int)
 
-    return df
-    
+    return df   
+
     
 def get_slot(r_object, prop):
     """

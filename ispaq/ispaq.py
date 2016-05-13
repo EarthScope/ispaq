@@ -40,15 +40,9 @@ def main():
                         help='Network.Station.Location.Channel identifier (e.g. US.OXF..BHZ)')
     parser.add_argument('-P', '--preferences-file', default=os.path.expanduser('./preference_files/cleandemo.txt'),
                         type=argparse.FileType('r'), help='location of preference file')
-    parser.add_argument('-O', '--output-loc', default='.',
-                        help='location to output ')
     parser.add_argument('--log-level', action='store', default='DEBUG',
                         choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],
                         help='log level printed to console')
-
-    # TODO:  additional configurable elements like sigfigs should be in the preferences file
-    # parser.add_argument('--sigfigs', type=check_negative, default=6,
-    #                     help='number of significant figures to round metrics to')
 
     args = parser.parse_args(sys.argv[1:])
     
@@ -113,12 +107,11 @@ def main():
     if 'simple' in concierge.logic_types:
         logger.debug('Inside simple business logic ...')
         try:
-            simple_df = simple_metrics(concierge)
+            df = simple_metrics(concierge)
             try:
                 filepath = concierge.output_file_base + "__simpleMetrics.csv"
                 logger.info('Writing simple metrics to %s.\n' % os.path.basename(filepath))
-                simple_df = utils.format_simple_df(simple_df, sigfigs=6)
-                simple_df.to_csv(filepath)
+                utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
             except Exception as e:
                 logger.error(e)
         except Exception as e:
@@ -130,12 +123,11 @@ def main():
     if 'SNR' in concierge.logic_types:
         logger.debug('Inside SNR business logic ...')
         try:
-            SNR_df = SNR_metrics(concierge)
+            df = SNR_metrics(concierge)
             try:
                 filepath = concierge.output_file_base + "__SNRMetrics.csv"
                 logger.info('Writing SNR metrics to %s.\n' % os.path.basename(filepath))
-                SNR_df = utils.format_simple_df(SNR_df, sigfigs=6)
-                SNR_df.to_csv(filepath)
+                utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
             except Exception as e:
                 logger.error(e)
         except Exception as e:
@@ -147,12 +139,11 @@ def main():
     if 'PSD' in concierge.logic_types:
         logger.debug('Inside PSD business logic ...')
         try:
-            PSD_df = PSD_metrics(concierge)
+            df = PSD_metrics(concierge)
             try:
                 filepath = concierge.output_file_base + "__PSDMetrics.csv"
                 logger.info('Writing PSD metrics to %s.\n' % os.path.basename(filepath))
-                PSD_df = utils.format_simple_df(PSD_df, sigfigs=6)
-                PSD_df.to_csv(filepath)
+                utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
             except Exception as e:
                 logger.error(e)
         except Exception as e:

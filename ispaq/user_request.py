@@ -90,6 +90,9 @@ class UserRequest(object):
                                                                 'outputType': 'SingleValue',
                                                                 'speed': 'fast',
                                                                 'streamCount': 1}}}
+            self.preferences = {'plot_output_dir': '.',
+                                'csv_output_dir': '.',
+                                'sigfigs': 6}
 
         #     Initialize from JSON     ----------------------------------------
 
@@ -135,7 +138,7 @@ class UserRequest(object):
             #     Load preferences from file      -----------------------------
 
             # Metric and SNCL information from the preferences file
-            metric_sets, sncl_sets, data_access = {}, {}, {}
+            metric_sets, sncl_sets, data_access, preferences = {}, {}, {}, {}
             currentSection = None
             for line in args.preferences_file:  # parse file
                 line = line.split('#')[0].strip()  # remove comments
@@ -145,6 +148,8 @@ class UserRequest(object):
                     currentSection = 'sncl'
                 elif line.lower() == "data_access:":
                     currentSection = 'data_access'
+                elif line.lower() == "preferences:":
+                    currentSection = 'preferences'
                 elif currentSection is not None:  # line following header
                     entry = line.split(':')
                     if len(entry) <= 1:  # empty line
@@ -162,14 +167,41 @@ class UserRequest(object):
                         sncl_sets[name] = values
                     elif currentSection == 'data_access':
                         data_access[name] = values[0]
+                    elif currentSection == 'preferences':
+                        preferences[name] = values[0]
 
             # TODO:  try-except KeyError
-            self.metrics = metric_sets[self.requested_metric_set]
-            self.sncls = sncl_sets[self.requested_sncl_set]
+            try:
+                self.metrics = metric_sets[self.requested_metric_set]
+            except KeyError as e:
+                logger.critical('Invalid metric_set name: %s' % (e))
+                raise SystemExit
+            try:
+                self.sncls = sncl_sets[self.requested_sncl_set]
+            except KeyError as e:
+                logger.critical('Invalid sncl_set name: %s' % (e))
+                raise SystemExit
 
             self.dataselect_url = data_access['dataselect_url']
             self.event_url = data_access['event_url']
             self.station_url = data_access['station_url']
+
+
+            #     Add individual preferences     ------------------------------
+            
+            if preferences.has_key('plot_output_dir'):
+                self.plot_output_dir = os.path.abspath(preferences['plot_output_dir'])
+            else:
+                self.plot_output_dir = os.path.abspath('.')
+            if preferences.has_key('csv_output_dir'):
+                self.csv_output_dir = os.path.abspath(preferences['csv_output_dir'])
+            else:
+                self.csv_output_dir = os.path.abspath('.')
+            if preferences.has_key('sigfigs'):
+                self.sigfigs = preferences['sigfigs']
+            else:
+                self.sigfigs = 6
+
 
             #     Find required metric functions     --------------------------
 

@@ -1,11 +1,11 @@
 # text to the right of `#` are comments and are ignored by the parser
 
-# User defined sets of metrics ------------------------------------------------
-
 # Dates for testing:
 #
 # 2010-02-27 -- large quake
 
+
+# User defined sets of metrics ------------------------------------------------
 
 Metrics:
 
@@ -73,7 +73,7 @@ SNCLs:
 #
 # NOTE: Directory names should not match FDSN provider names.
 
-Data_access:
+Data_Access:
 
   dataselect_url: IRIS
   event_url: IRIS
@@ -86,3 +86,12 @@ Data_access:
   #event_url: test_data/2010-02-27_event.xml
   #station_url: test_data/IU.ANMO.00.BHZ_station.xml
   
+
+# User defined preferences ----------------------------------------------------
+
+Preferences:
+
+  csv_output_dir: /Users/jonathancallahan/ISPAQ_csv    # directory to contain generated metrics .csv files
+  plot_output_dir: .   # directory to contain generated plots
+  sigfigs: 6           # significant figures used to output metric values
+

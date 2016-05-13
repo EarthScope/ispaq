@@ -114,5 +114,5 @@ enter the top level directory and type:
 
 In this same directory you can test the installation with:
 
-```ispaq -M metrics_1 -S sncls_1 --starttime=2010-04-20 --verbose```
+```ispaq -M metrics_1 -S sncls_1 --starttime=2010-04-20 --log-level DEBUG```
 
