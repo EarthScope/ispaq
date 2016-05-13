@@ -1,3 +1,8 @@
+0.5.0
+ * psd metric and pdf plots now working
+ * additional doctests in irisseismic module
+ * updated irisseismic function signatures to match R package signatures
+
 0.4.2:
  * now using the logging module
  * successfully using local miniseed data
