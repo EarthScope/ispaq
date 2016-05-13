@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Python module containing wrappers for the IRISMustangMetrics R package.
@@ -23,12 +22,12 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from future.builtins import *  # NOQA
 
+from obspy.core import UTCDateTime
+
 import numpy as np
 import pandas as pd
 
-from obspy.core import UTCDateTime
-
-## Connect to R through the rpy2 module
+# Connect to R through the rpy2 module
 from rpy2 import robjects
 from rpy2 import rinterface
 from rpy2.robjects import pandas2ri
@@ -47,6 +46,10 @@ from rpy2.robjects import pandas2ri
 
 # IRISMustangMetrics helper functions
 _R_metricList2DF = robjects.r('IRISMustangMetrics::metricList2DF')
+
+# IRISSeismic functions needed for generating PSD plots
+_R_psdList = robjects.r('IRISSeismic::psdList')
+_R_psdPlot = robjects.r('IRISSeismic::psdPlot')
 
 
 def _R_getMetricFunctionMetdata():
@@ -149,6 +152,15 @@ def _R_getMetricFunctionMetdata():
                         'pct_below_nlnm',
                         'dead_channel_exp',
                         'dead_channel_lin']
+        },
+        'PSDPlot': {
+            'streamCount': 1,
+            'outputType': 'plot',
+            'fullDay': True,
+            'speed': 'slow',
+            'extraAttributes': None,
+            'businessLogic': 'PSD',
+            'metrics': ['pdf_plot']
         }
     }
     return(functiondict)
@@ -184,13 +196,11 @@ def apply_simple_metric(r_stream, metric_function_name, *args, **kwargs):
 #     Functions for PSDMetrics     ---------------------------------------------
 
 
-# TODO:  rename "apply_simple_metric" to "apply_single_value_metric"
 def apply_PSD_metric(r_stream, *args, **kwargs):
     """"
     Invoke the PSDMetric and convert the R dataframe result into
     a Pandas dataframe.
     :param r_stream: an r_stream object
-    :param metric_function_name: the name of the set of metrics
     :return:
     """
     function = 'IRISMustangMetrics::PSDMetric'
@@ -208,6 +218,35 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
     r_spectralist = r_listOfLists[1]
     
     return df
+
+
+def apply_PSD_plot(r_stream):
+    """"
+    Create a PSD plot which will be written to a .png file
+    opened 'png' file.
+    :param r_stream: an r_stream object
+    :return:
+    """
+    r_psdList = _R_psdList(r_stream)
+    _R_psdPlot(r_psdList, style='pdf')
+    
+    return True
+
+
+#     Utility functions     ----------------------------------------------------
+
+
+def open_png_file(filepath, *args, **kwargs):
+    """"
+    Open a file with R, presumably for subsequent plotting.
+    :param filepath absolute path of the file
+    :return:
+    """
+    R_function = robjects.r('grDevices::png')
+    result = R_function(filepath, *args, **kwargs)
+    
+    return result
+
 
 # -----------------------------------------------------------------------------
 

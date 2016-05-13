@@ -111,7 +111,7 @@ def main():
     #     Generate Simple Metrics     ------------------------------------------
 
     if 'simple' in concierge.logic_types:
-        logger.debug('Creating simple metrics ...')
+        logger.debug('Inside simple business logic ...')
         try:
             simple_df = simple_metrics(concierge)
             try:
@@ -128,7 +128,7 @@ def main():
     # Generate SNR Metrics -----------------------------------------------------
 
     if 'SNR' in concierge.logic_types:
-        logger.debug('Creating SNR metrics ...')
+        logger.debug('Inside SNR business logic ...')
         try:
             SNR_df = SNR_metrics(concierge)
             try:
@@ -145,7 +145,7 @@ def main():
     # Generate PSD Metrics -----------------------------------------------------
 
     if 'PSD' in concierge.logic_types:
-        logger.debug('Creating PSD metrics ...')
+        logger.debug('Inside PSD business logic ...')
         try:
             PSD_df = PSD_metrics(concierge)
             try:

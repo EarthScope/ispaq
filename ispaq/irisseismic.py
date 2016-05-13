@@ -42,7 +42,21 @@ _R_list = robjects.r('base::list')                     # for creation of the hea
 
 # from IRISSeismic
 _R_initialize = robjects.r('IRISSeismic::initialize')  # initialization of various objects
-_R_getSNCL = robjects.r('IRISSeismic::getSNCL')        # to obtain an R_Stream object from IRIS DMC
+
+# All webservice functions from IRISSeismic
+_R_getAvailability = robjects.r('IRISSeismic::getAvailability')       #
+_R_getChannel = robjects.r('IRISSeismic::getChannel')                 #
+_R_getDataselect = robjects.r('IRISSeismic::getDataselect')           #
+_R_getDistaz = robjects.r('IRISSeismic::getDistaz')                   #
+_R_getEvalresp = robjects.r('IRISSeismic::getEvalresp')               #
+_R_getEvent = robjects.r('IRISSeismic::getEvent')                     #
+_R_getNetwork = robjects.r('IRISSeismic::getNetwork')                 #
+_R_getRotation = robjects.r('IRISSeismic::getRotation')               # TODO:  This returns 3 Streams
+_R_getSNCL = robjects.r('IRISSeismic::getSNCL')                       #
+_R_getStation = robjects.r('IRISSeismic::getStation')                 #
+_R_getTraveltime = robjects.r('IRISSeismic::getTraveltime')           #
+_R_getUnavailability = robjects.r('IRISSeismic::getUnavailability')   #
+
 
 
 #     Python --> R conversion functions    -------------------------------------
@@ -308,27 +322,6 @@ def _R_stationExtraArgs(includerestricted, latitude, longitude, minradius, maxra
         return (includerestricted, rinterface.MissingArg, rinterface.MissingArg, rinterface.MissingArg, rinterface.MissingArg)
 
 
-#     R functions called internally     ---------------------------------------
-
-
-# NOTE:  These functions behave exactly the same as the R versions and require
-# NOTE:  R-compatible objects as arguments.
-
-# All webservice functions from IRISSeismic
-_R_getAvailability = robjects.r('IRISSeismic::getAvailability')       #
-_R_getChannel = robjects.r('IRISSeismic::getChannel')                 #
-_R_getDataselect = robjects.r('IRISSeismic::getDataselect')           #
-_R_getDistaz = robjects.r('IRISSeismic::getDistaz')                   #
-_R_getEvalresp = robjects.r('IRISSeismic::getEvalresp')               #
-_R_getEvent = robjects.r('IRISSeismic::getEvent')                     #
-_R_getNetwork = robjects.r('IRISSeismic::getNetwork')                 #
-_R_getRotation = robjects.r('IRISSeismic::getRotation')               # TODO:  This returns 3 Streams
-_R_getSNCL = robjects.r('IRISSeismic::getSNCL')                       #
-_R_getStation = robjects.r('IRISSeismic::getStation')                 #
-_R_getTraveltime = robjects.r('IRISSeismic::getTraveltime')           #
-_R_getUnavailability = robjects.r('IRISSeismic::getUnavailability')   #
-
-
 #     Python wrappers for R get~ webservice functions     ---------------------
 
 
@@ -432,7 +425,7 @@ def R_getDataselect(client_url="http://service.iris.edu",
                     network=None, station=None, location=None, channel=None,
                     starttime=None, endtime=None, quality="B", ignoreEpoch=False):
     """
-    Obtain an R Stream using the IRISSeismic::getSNCL function.
+    Obtain an R Stream using the IRISSeismic::getDataselect function.
     :param client_url: FDSN web services site URL
     :param network: sncl network (string)
     :param station: sncl station (string)

@@ -47,7 +47,7 @@ def simple_metrics(concierge):
     availability = concierge.get_availability()
 
     # function metadata dictionary
-    simple_function_meta = concierge.function_by_logic['simple']
+    function_metadata = concierge.function_by_logic['simple']
     
     # Loop over rows of the availability dataframe
     for (index, av) in availability.iterrows():
@@ -74,7 +74,7 @@ def simple_metrics(concierge):
 
         # Run the Gaps metric ----------------------------------------
 
-        if simple_function_meta.has_key('gaps'):
+        if function_metadata.has_key('gaps'):
             try:
                 df = irismustangmetrics.apply_simple_metric(r_stream, 'gaps')
                 dataframes.append(df)
@@ -84,7 +84,7 @@ def simple_metrics(concierge):
                 
         # Run the State-of-Health metric -----------------------------
 
-        if simple_function_meta.has_key('stateOfHealth'):
+        if function_metadata.has_key('stateOfHealth'):
             try:
                 df = irismustangmetrics.apply_simple_metric(r_stream, 'stateOfHealth')
                 dataframes.append(df)
@@ -94,7 +94,7 @@ def simple_metrics(concierge):
             
         # Run the Basic Stats metric ---------------------------------
 
-        if simple_function_meta.has_key('basicStats'):
+        if function_metadata.has_key('basicStats'):
             try:
                 df = irismustangmetrics.apply_simple_metric(r_stream, 'basicStats')
                 dataframes.append(df)
@@ -110,7 +110,7 @@ def simple_metrics(concierge):
         # NOTE:  An increment that translates to 0.2-0.5 secs seems to be a good compromise
         # NOTE:  between performance and accuracy.
     
-        if simple_function_meta.has_key('STALTA'):
+        if function_metadata.has_key('STALTA'):
             
             # Limit this metric to BH. and HH. channels
             if av.channel.startswith('BH') or av.channel.startswith('HH'):
@@ -128,7 +128,7 @@ def simple_metrics(concierge):
 
         # NOTE:  Appropriate values for spikesMetric arguments are determined empirically
             
-        if simple_function_meta.has_key('spikes'):
+        if function_metadata.has_key('spikes'):
        
             windowSize = 41
             thresholdMin = 7

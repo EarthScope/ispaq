@@ -94,7 +94,7 @@ def SNR_metrics(concierge):
         # ----- All available SNCLs -------------------------------------------------
 
         # function metadata dictionary
-        function_meta = concierge.function_by_logic['SNR']
+        function_metadata = concierge.function_by_logic['SNR']
     
         # Loop over rows of the availability dataframe
         for (index, av) in availability.iterrows():
@@ -145,7 +145,7 @@ def SNR_metrics(concierge):
                     logger.info('skipping %s becuase it is missing data in the SNR window' % (av.snclId)) 
                     continue
                 else:
-                    if function_meta.has_key('SNR'):
+                    if function_metadata.has_key('SNR'):
                         try:
                             df = irismustangmetrics.apply_simple_metric(r_stream, 'SNR', algorithm="splitWindow", windowSecs=windowSecs)
                             dataframes.append(df)
