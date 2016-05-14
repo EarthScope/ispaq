@@ -489,6 +489,13 @@ def getEvalresp(client_url="http://service.iris.edu",
     :param units: Optional code specifying unit conversion.
     :param output: Output type ['fap'|'cs'].
     :return: pandas dataframe of response metadata.
+
+    .. rubric:: Example
+
+    >>> df = getDistaz(-146, 45, 10, 10)
+    >>> df
+         azimuth  backAzimuth  distance
+    1  241.57595     47.88017  39.97257
     """
     cmd = 'new("IrisClient", site="' + client_url + '")'
     r_client = robjects.r(cmd)

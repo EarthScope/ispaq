@@ -18,6 +18,7 @@ Metrics:
   SNR: sample_snr
   PSD: pct_above_nhnm, pct_below_nlnm, dead_channel_exp, dead_channel_lin
   PDF: pdf_plot
+  transfer: transfer_function
   
   # ----- Custom combinations -----
   metrics_1: sample_rms, num_gaps, percent_availability
@@ -26,6 +27,7 @@ Metrics:
   metrics_4: sample_mean, num_gaps, max_stalta, num_spikes, sample_snr
   MyContinuityMetrics: num_gaps, num_overlaps, num_spikes
   MyStats: sample_max, sample_mean, sample_median, sample_rms
+  debugMetrics: transfer_function
   
 
 

@@ -161,6 +161,15 @@ def _R_getMetricFunctionMetdata():
             'extraAttributes': None,
             'businessLogic': 'PSD',
             'metrics': ['pdf_plot']
+        },
+        'transferFunction': {
+            'streamCount': 2,
+            'outputType': 'SingleValue',
+            'fullDay': True,
+            'speed': 'medium',
+            'extraAttributes': ['gain_ratio', 'phase_diff', 'ms_coherence'],
+            'businessLogic': 'transferFunction',
+            'metrics': ['transfer_function']
         }
     }
     return(functiondict)
