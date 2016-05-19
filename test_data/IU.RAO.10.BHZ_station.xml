@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.0" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:iris="http://www.fdsn.org/xml/station/1/iris">
+ <Source>IRIS-DMC</Source>
+ <Sender>IRIS-DMC</Sender>
+ <Module>IRIS WEB SERVICE: fdsnws-station | version: 1.1.20</Module>
+ <ModuleURI>http://service.iris.edu/fdsnws/station/1/query?net=IU&amp;sta=RAO&amp;loc=10&amp;cha=BHZ&amp;starttime=2013-01-03&amp;endtime=2013-01-04&amp;level=channel</ModuleURI>
+ <Created>2016-04-29T23:23:11</Created>
+ <Network code="IU" startDate="1988-01-01T00:00:00" endDate="2500-12-31T23:59:59" restrictedStatus="open">
+  <Description>Global Seismograph Network (GSN - IRIS/USGS)</Description>
+  <TotalNumberStations>269</TotalNumberStations>
+  <SelectedNumberStations>1</SelectedNumberStations>
+  <Station code="RAO" startDate="2009-08-09T00:00:00" endDate="2013-05-17T21:00:00" restrictedStatus="open" iris:alternateNetworkCodes="_STS-1,_GSN-BROADBAND,.SPACIFIC,_FDSN-ALL,_REALTIME,.UNRESTRICTED,_GSN">
+   <Latitude>-29.245</Latitude>
+   <Longitude>-177.929</Longitude>
+   <Elevation>60.0</Elevation>
+   <Site>
+    <Name>Raoul, Kermadec Islands</Name>
+   </Site>
+   <CreationDate>2004-07-18T00:00:00</CreationDate>
+   <TotalNumberChannels>18</TotalNumberChannels>
+   <SelectedNumberChannels>1</SelectedNumberChannels>
+   <Channel code="BHZ" endDate="2013-05-17T21:00:00" locationCode="10" restrictedStatus="open" startDate="2009-08-09T00:00:00">
+    <Latitude>-29.245</Latitude>
+    <Longitude>-177.929</Longitude>
+    <Elevation>59.5</Elevation>
+    <Depth>0.5</Depth>
+    <Azimuth>0.0</Azimuth>
+    <Dip>-90.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>0.0</ClockDrift>
+    <Sensor>
+     <Description>Streckeisen STS-2 High-gain</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>8.3886E9</Value>
+      <Frequency>0.02</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+  </Station>
+ </Network>
+</FDSNStationXML>

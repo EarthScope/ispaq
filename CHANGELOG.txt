@@ -1,0 +1,22 @@
+0.5.1
+ * improvements to logger messages
+ * additional "Preferences:" section in the preferences file
+ * configurable output directories and sigfigs
+
+0.5.0
+ * psd metric and pdf plots now working
+ * additional doctests in irisseismic module
+ * updated irisseismic function signatures to match R package signatures
+
+0.4.2:
+ * now using the logging module
+ * successfully using local miniseed data
+ * added Concierge.get_dataselect() method
+
+0.4.1:
+ * skipping unused portions of business logic
+
+0.4.0:
+ * first version on github
+ * end-to-end functionality for 'simple' and 'SNR' metrics
+

@@ -1,18 +1,34 @@
-from setuptools import setup, find_packages
-from pip import main as pip
-
-setup(name='ISPAQ',
-      version='0.0.1',
-      description='',
-      author='Mazama Science',
-      author_email='info@mazamascience.com',
-      url='http://mazamascience.com/',
-      license='GNU GENERAL PUBLIC LICENSE',
-      packages=find_packages(exclude=['', 'debug']), 
-      # Installs in backwards order of the list
-      install_requires=['rpy2>=2.7.8', 'future', 'pandas', 'numpy', 'argparse'],
-      )
+# -*- coding: utf-8 -*-
 
 
-# Because obspy didn't like being installed directly after numpy
-pip(['install', 'obspy'])
+"""setup.py: setuptools control."""
+
+
+import re
+from setuptools import setup
+
+
+version = re.search(
+    '^__version__\s*=\s*"(.*)"',
+    open('ispaq/ispaq.py').read(),
+    re.M
+    ).group(1)
+
+
+with open("README.md", "rb") as f:
+    long_descr = f.read().decode("utf-8")
+
+
+setup(
+    name = "cmdline-ispaq",
+    packages = ["ispaq"],
+    entry_points = {
+        "console_scripts": ['ispaq = ispaq.ispaq:main']
+        },
+    version = version,
+    description = "IRIS System for Portable Assessment of Quality (ISPAQ)",
+    long_description = long_descr,
+    author = "Jonathan Callahan",
+    author_email = "jonathan@mazamascience.com",
+    url = "http://github.com/mazamascience/ispaq",
+    )
