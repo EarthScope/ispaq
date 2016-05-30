@@ -178,10 +178,9 @@ def function_metadata():
     return _R_getMetricFunctionMetdata()
 
 
-#     Functions for SingleValueMetrics     ------------------------------------
+#     Functions that return SingleValueMetrics     -----------------------------
 
 
-# TODO:  rename "apply_simple_metric" to "apply_single_value_metric"
 def apply_simple_metric(r_stream, metric_function_name, *args, **kwargs):
     """"
     Invoke a named "simple" R metric and convert the R dataframe result into
@@ -202,8 +201,29 @@ def apply_simple_metric(r_stream, metric_function_name, *args, **kwargs):
     return df
 
 
-#     Functions for PSDMetrics     ---------------------------------------------
+def apply_correlation_metric(r_stream1, r_stream2, metric_function_name, *args, **kwargs):
+    """"
+    Invoke a named "correlation" R metric and convert the R dataframe result into
+    a Pandas dataframe.
+    :param r_stream1: an r_stream object
+    :param r_stream2: an r_stream object
+    :param metric_function_name: the name of the set of metrics
+    :return:
+    """
+    function = 'IRISMustangMetrics::' + metric_function_name + 'Metric'
+    R_function = robjects.r(function)
+    r_metriclist = R_function(r_stream1, r_stream2, *args, **kwargs)  # args and kwargs shouldn't be needed in theory
+    r_dataframe = _R_metricList2DF(r_metriclist)
+    df = pandas2ri.ri2py(r_dataframe)
+    
+    # Convert columns from R POSIXct to pyton UTCDateTime
+    df.starttime = df.starttime.apply(UTCDateTime)
+    df.endtime = df.endtime.apply(UTCDateTime)
+    return df
 
+
+
+#     Functions for PSDMetrics     ---------------------------------------------
 
 def apply_PSD_metric(r_stream, *args, **kwargs):
     """"
