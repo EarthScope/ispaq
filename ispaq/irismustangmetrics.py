@@ -166,10 +166,28 @@ def _R_getMetricFunctionMetdata():
             'streamCount': 2,
             'outputType': 'SingleValue',
             'fullDay': True,
-            'speed': 'medium',
+            'speed': 'show',
             'extraAttributes': ['gain_ratio', 'phase_diff', 'ms_coherence'],
             'businessLogic': 'transferFunction',
             'metrics': ['transfer_function']
+        },
+        'crossTalk': {
+            'streamCount': 2,
+            'outputType': 'SingleValue',
+            'fullDay': False,
+            'speed': 'medium',
+            'extraAttributes': [],
+            'businessLogic': 'crossTalk',
+            'metrics': ['cross_talk']
+        },
+        'crossCorrelation': {
+            'streamCount': 2,
+            'outputType': 'SingleValue',
+            'fullDay': False,
+            'speed': 'medium',
+            'extraAttributes': [],
+            'businessLogic': 'crossCorrelation',
+            'metrics': ['cross_correlation']
         }
     }
     return(functiondict)

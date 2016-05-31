@@ -57,6 +57,7 @@ _R_getStation = robjects.r('IRISSeismic::getStation')                 #
 _R_getTraveltime = robjects.r('IRISSeismic::getTraveltime')           #
 _R_getUnavailability = robjects.r('IRISSeismic::getUnavailability')   #
 
+# additional functions
 
 
 #     Python --> R conversion functions    -------------------------------------
@@ -708,6 +709,17 @@ def getUnavailability(client_url="http://service.iris.edu",
     df.endtime = df.endtime.apply(UTCDateTime)
     
     return df
+
+
+#     Python wrappers for R non-webservice functions     -----------------------
+
+# surfaceDistance is needed in crossCorrelation_metrics.py
+def surfaceDistance(lat1, lon1, lat2, lon2):
+    R_function = robjects.r('IRISSeismic::surfaceDistance')
+    r_result = R_function(R_float(lat1), R_float(lon1), R_float(lat2), R_float(lon2))
+    result = pandas2ri.ri2py(r_result)
+    
+    return(result)
 
 
 # ------------------------------------------------------------------------------

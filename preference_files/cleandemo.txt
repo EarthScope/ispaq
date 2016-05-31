@@ -19,6 +19,8 @@ Metrics:
   PSD: pct_above_nhnm, pct_below_nlnm, dead_channel_exp, dead_channel_lin
   PDF: pdf_plot
   transfer: transfer_function
+  crossTalk: cross_talk
+  crossCorrelation: cross_correlation
   
   # ----- Custom combinations -----
   metrics_1: sample_rms, num_gaps, percent_availability
@@ -43,7 +45,9 @@ SNCLs:
   sncls_2: U*.*.*.??Z
   US_LHZ: US.*.*.LHZ
   IU_ANMO: IU.ANMO.*.*
+  IU.ANMO.00.BHZ: IU.ANMO.00.BHZ
   IU.ANMO.00.BH?: IU.ANMO.00.BH?
+  IU.ANMO.*.BH?: IU.ANMO.00.BH?
   IU_ANMO_VM1: IU.ANMO..VM1 # "No data found" on 2010-02-26
   spikes: IU.RAO.10.BH? # --starttime "2013-01-03"
   bad_sncl: US.OXF..BOP # does not exist
