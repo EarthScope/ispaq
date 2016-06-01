@@ -26,6 +26,7 @@ from SNR_metrics import SNR_metrics
 from PSD_metrics import PSD_metrics
 from transferFunction_metrics import transferFunction_metrics
 from crossTalk_metrics import crossTalk_metrics
+from pressureCorrelation_metrics import pressureCorrelation_metrics
 from crossCorrelation_metrics import crossCorrelation_metrics
 
 def main():
@@ -160,7 +161,6 @@ def main():
     if 'transferFunction' in concierge.logic_types:
         logger.debug('Inside transferFunction business logic ...')
         try:
-
             df = transferFunction_metrics(concierge)
             try:
                 filepath = concierge.output_file_base + "__transferMetrics.csv"
@@ -178,11 +178,26 @@ def main():
     if 'crossTalk' in concierge.logic_types:
         logger.debug('Inside crossTalk business logic ...')
         try:
-
             df = crossTalk_metrics(concierge)
             try:
                 filepath = concierge.output_file_base + "__crossTalkMetrics.csv"
                 logger.info('Writing crossTalk metrics to %s.\n' % os.path.basename(filepath))
+                utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
+            except Exception as e:
+                logger.error(e)
+        except Exception as e:
+            logger.error(e)
+        
+
+    # Generate Pressure Correlation Metrics ----------------------------------------------
+
+    if 'pressureCorrelation' in concierge.logic_types:
+        logger.debug('Inside pressureCorrelation business logic ...')
+        try:
+            df = pressureCorrelation_metrics(concierge)
+            try:
+                filepath = concierge.output_file_base + "__pressureCorrelationMetrics.csv"
+                logger.info('Writing pressureCorrelation metrics to %s.\n' % os.path.basename(filepath))
                 utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
             except Exception as e:
                 logger.error(e)
@@ -195,7 +210,6 @@ def main():
     if 'crossCorrelation' in concierge.logic_types:
         logger.debug('Inside crossCorrelation business logic ...')
         try:
-
             df = crossCorrelation_metrics(concierge)
             try:
                 filepath = concierge.output_file_base + "__crossCorrelationMetrics.csv"

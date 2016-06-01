@@ -38,6 +38,10 @@
 #
 # 2013-09-21 -- II.B*.00.*
 #
+# pressureCorrelation
+#
+# 2013-05-02 -- IU.A*.*.L*
+#
 # crossCorrelation
 #
 # 2011-06-01 -- IU.FURI.00.BHZ -- Mary's example #1
@@ -61,6 +65,7 @@ Metrics:
   PDF: pdf_plot
   ###transfer: transfer_function
   crossTalk: cross_talk
+  pressureCorrelation: pressure_effects
   crossCorrelation: polarity_check, timing_drift
   
   # ----- Custom combinations -----
@@ -101,6 +106,7 @@ SNCLs:
   PSD: IU.GRFO..BH?
   transfer: II.PALK.*.*, II.NIL.*.*
   crossTalk: II.B*.00.*
+  pressureCorrelation: IU.A*.*.L*
   crossCorrelation: II.E*.00.B??
   
   

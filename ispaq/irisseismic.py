@@ -730,6 +730,14 @@ def multiplyBy(x, y):
     
     return(r_stream)
 
+# multiplyBy is needed in crossCorrelation_metrics.py
+def mergeTraces(r_stream):
+    R_function = robjects.r('IRISSeismic::mergeTraces')
+    r_stream = R_function(r_stream)
+    
+    return(r_stream)
+
+
 # butter is needed in crossCorrelation_metrics.py
 def butter(x, y):
     R_function = robjects.r('signal::butter')

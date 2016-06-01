@@ -182,6 +182,15 @@ def _R_getMetricFunctionMetdata():
             'businessLogic': 'crossTalk',
             'metrics': ['cross_talk']
         },
+        'pressureCorrelation': {
+            'streamCount': 2,
+            'outputType': 'SingleValue',
+            'fullDay': False,
+            'speed': 'fast',
+            'extraAttributes': [],
+            'businessLogic': 'pressureCorrelation',
+            'metrics': ['pressure_effects']
+        },
         'crossCorrelation': {
             'streamCount': 2,
             'outputType': 'SingleValue',
