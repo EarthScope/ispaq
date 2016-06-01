@@ -61,7 +61,7 @@ Metrics:
   PDF: pdf_plot
   ###transfer: transfer_function
   crossTalk: cross_talk
-  crossCorrelation: cross_correlation
+  crossCorrelation: polarity_check, timing_drift
   
   # ----- Custom combinations -----
   metrics_1: sample_rms, num_gaps, percent_availability

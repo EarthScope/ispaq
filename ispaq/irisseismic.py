@@ -730,6 +730,13 @@ def multiplyBy(x, y):
     
     return(r_stream)
 
+# butter is needed in crossCorrelation_metrics.py
+def butter(x, y):
+    R_function = robjects.r('signal::butter')
+    r_filter = R_function(R_float(x), R_float(y))
+    
+    return(r_filter)
+
 
 
 # ------------------------------------------------------------------------------

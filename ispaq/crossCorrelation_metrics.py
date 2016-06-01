@@ -124,7 +124,10 @@ def crossCorrelation_metrics(concierge):
             try:
                 r_stream1 = concierge.get_dataselect(av1.network, av1.station, av1.location, av1.channel, windowStart, windowEnd)
             except Exception as e:
-                logger.warning('unable to obtain data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
+                if str(e).lower().find('no data') > -1:
+                    logger.debug('No data for %s' % (av1.snclId))
+                else:
+                    logger.debug('No data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
                 continue
             
             # No metric calculation possible if SNCL has more than one trace
@@ -193,71 +196,63 @@ def crossCorrelation_metrics(concierge):
                 logger.debug('skipping SNCL because no nearby SNCLs are compatible')
                 continue
             else:
-                avCompatible = availability2[mask]
+                avCompatible = availability2[mask].reset_index()
                 # To find the closest SNCL -- order rows by distance and take the first row
-                ###avCompatible['dist'] = irisseismic.surfaceDistance(av1.latitude, av1.longitude, avCompatible.latitude, avCompatible.longitude)
-                ###avCompatible = avCompatible.sort('dist', ascending=False)
-                #avCompatible <- avCompatible[order(avCompatible$dist),]
+                avCompatible['dist'] = pd.Series(irisseismic.surfaceDistance(av1.latitude, av1.longitude, avCompatible.latitude, avCompatible.longitude))
+                avCompatible = avCompatible.sort_values('dist', ascending=True)
                 
-                debug_point = 1
-
             # ----- Compatible SNCLs found.  Find the closest one with data ------------
 
             #for (index2 in seq(nrow(avCompatible))) {
+            for (index2, av2) in avCompatible.iterrows():
+                
+                debug_point = 1
 
-                #av2 <- avCompatible[index2,]
+                # Get data in a window centered on the event's arrival at station #2
+                try:
+                    tt = irisseismic.getTraveltime(event.latitude, event.longitude, event.depth, 
+                                                   av2.latitude, av2.longitude)
+                except Exception as e:
+                    logger.error('skipping because getTravelTime failed: %s' % (e))
+                    continue
+                
+                windowStart = event.time + min(tt.travelTime) - windowSecs/2.0
+                windowEnd = event.time + min(tt.travelTime) + windowSecs/2.0
 
-                ## Get data in a window centered on the event's arrival at station #2
-                #result <- try( tt <- IRISSeismic::getTraveltime(iris, event$latitude, event$longitude, event$depth, av2$latitude, av2$longitude),
-                               #silent=TRUE )
+                try:
+                    r_stream2 = concierge.get_dataselect(av2.network, av2.station, av2.location, av2.channel, windowStart, windowEnd)
+                except Exception as e:
+                    if str(e).lower().find('no data') > -1:
+                        logger.debug('No data for %s' % (av2.snclId))
+                    else:
+                        logger.debug('No data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
+                    continue
+                
+                # NOTE:  This check is missing from IRISMustangUtils/R/generateMetrics_crossCorrelation.R
+                # No metric calculation possible if SNCL has more than one trace
+                if len(utils.get_slot(r_stream2, 'traces')) > 1 :
+                    logger.debug('skipping %s because it has more than one trace' % (av2.snclId))
+                    continue
+                else:
+                    # Found everything we need so end the loop
+                    break
 
-                #profilePoint("getTraveltime","seconds to get traveltime data")
+            # ----- Second SNCL found.  Now on to calculate cross-correlation ----------
 
-                ## Skip to the next SNCL if any error was encountered
-                #if ( class(result)[1] == "try-error" ) {
-                    #setProcessExitCode( MCRErrorMessage(geterrmessage(), "TRAVELTIME", av2$snclId) )
-                    #next
-                #}
+            # Choose low-pass filtering
+            r_filter = irisseismic.butter(defaultFilterArgs[0],defaultFilterArgs[1])
 
-                #windowStart <- event$time + min(tt$travelTime) - windowSecs/2
-                #windowEnd <- event$time + min(tt$travelTime) + windowSecs/2
+            # Calculate the cross-correlation metrics and append them to the list
+            try:
+                df = irismustangmetrics.apply_correlation_metric(r_stream1, r_stream2, 'crossCorrelation', maxLagSecs, r_filter)
+                dataframes.append(df)
+            except Exception as e:
+                logger.error('"crossCorrelation" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+            
 
-                #result <- try( st2 <- IRISSeismic::getDataselect(iris,av2$network,av2$station,av2$location,av2$channel,windowStart,windowEnd),
-                               #silent=TRUE )
+        # END of SNCL loop
 
-                #profilePoint("getDataselect","seconds to get waveform data")
-
-                #if (class(result)[1] == "try-error" ) {      
-                    #setProcessExitCode( MCRErrorMessage(geterrmessage(), "DATASELECT", av2$snclId) )
-                    #next
-                    #} else {
-                        ## Found everything we need, so end the loop
-                #break
-                #}
-
-            #}
-
-            ## ----- Second SNCL found.  Now on to calculate cross-correlation ----------
-
-            ## Choose low-pass filtering
-            #filter <- signal::butter(defaultFilterArgs[1],defaultFilterArgs[2])
-
-            ## Calculate the cross-correlation metrics and append them to the list
-            #result <- try( tempList <- IRISMustangMetrics::crossCorrelationMetric(st1, st2, maxLagSecs, filter),
-                           #silent=TRUE )
-
-            #profilePoint("metricCalculation","seconds to calculate crossCorrelationMetric")
-
-            #if (class(result)[1] == "try-error" ) {
-                #setProcessExitCode( MCRWarning(geterrmessage()) )
-                #next
-                #} else {
-                    #metricList <- append(metricList,tempList)
-                #}
-
-        #} # END of SNCL loop
-
-    #} # END of event loop
+    # END of event loop
 
 
 

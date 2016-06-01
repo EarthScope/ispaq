@@ -189,7 +189,7 @@ def _R_getMetricFunctionMetdata():
             'speed': 'slow',
             'extraAttributes': [],
             'businessLogic': 'crossCorrelation',
-            'metrics': ['cross_correlation']
+            'metrics': ['polarity_check','timing_drift']
         }
     }
     return(functiondict)
