@@ -60,6 +60,7 @@ _R_getUnavailability = robjects.r('IRISSeismic::getUnavailability')   #
 # additional functions
 
 
+
 #     Python --> R conversion functions    -------------------------------------
 
 
@@ -424,7 +425,8 @@ def getChannel(client_url="http://service.iris.edu",
 
 def R_getDataselect(client_url="http://service.iris.edu",
                     network=None, station=None, location=None, channel=None,
-                    starttime=None, endtime=None, quality="B", ignoreEpoch=False):
+                    starttime=None, endtime=None, quality="B",
+                    inclusiveEnd=True, ignoreEpoch=False):
     """
     Obtain an R Stream using the IRISSeismic::getDataselect function.
     :param client_url: FDSN web services site URL
@@ -445,7 +447,7 @@ def R_getDataselect(client_url="http://service.iris.edu",
     endtime = R_POSIXct(endtime)
         
     # Call the function and return an R Stream
-    r_stream = _R_getDataselect(r_client, network, station, location, channel, starttime, endtime, quality, ignoreEpoch)
+    r_stream = _R_getDataselect(r_client, network, station, location, channel, starttime, endtime, quality, inclusiveEnd, ignoreEpoch)
     return r_stream
 
 
@@ -720,6 +722,14 @@ def surfaceDistance(lat1, lon1, lat2, lon2):
     result = pandas2ri.ri2py(r_result)
     
     return(result)
+
+# multiplyBy is needed in crossCorrelation_metrics.py
+def multiplyBy(x, y):
+    R_function = robjects.r('IRISSeismic::multiplyBy')
+    r_stream = R_function(x, R_float(y))
+    
+    return(r_stream)
+
 
 
 # ------------------------------------------------------------------------------

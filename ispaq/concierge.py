@@ -309,7 +309,8 @@ class Concierge(object):
 
     def get_dataselect(self,
                        network=None, station=None, location=None, channel=None,
-                       starttime=None, endtime=None):
+                       starttime=None, endtime=None, quality="B",
+                       inclusiveEnd=True, ignoreEpoch=False):
         """
         Returns an R Stream that can be passed to metrics calculation methods.
 
@@ -371,7 +372,7 @@ class Concierge(object):
         else:
             # Read from FDSN web services
             try:
-                r_stream = irisseismic.R_getDataselect(self.dataselect_url, network, station, location, channel, _starttime, _endtime)
+                r_stream = irisseismic.R_getDataselect(self.dataselect_url, network, station, location, channel, _starttime, _endtime, quality, inclusiveEnd, ignoreEpoch)
             except Exception as e:
                 self.logger.warning('No data returned for %s.%s.%s.%s' % (network, station, location, channel))
                 raise

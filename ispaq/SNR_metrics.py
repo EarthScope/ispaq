@@ -122,7 +122,7 @@ def SNR_metrics(concierge):
             # NOTE:  Exapand the window by an extra second to guarantee that 
             # NOTE:  windowStart < tr.stats.starttime and windowEnd > tr.stats.endtime
             try:
-                r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, windowStart-1, windowEnd+1)
+                r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, windowStart-1, windowEnd+1, inclusiveEnd=False)
             except Exception as e:
                 logger.warning('Unable to obtain data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
                 # TODO:  Create appropriate empty dataframe

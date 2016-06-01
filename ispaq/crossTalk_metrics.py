@@ -123,7 +123,7 @@ def crossTalk_metrics(concierge):
             for (index2, av) in availabilitySub.iterrows():
                             
                 try:
-                    r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, halfHourStart-1, halfHourEnd+1)
+                    r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, halfHourStart-1, halfHourEnd+1, inclusiveEnd=False)
                 except Exception as e:
                     logger.debug('unable to obtain data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
                     continue

@@ -132,6 +132,11 @@ def crossCorrelation_metrics(concierge):
                 logger.debug('skipping %s because it has more than one trace' % (av.snclId))
                 continue
 
+            # If metadata indicates reversed polarity (dip>0), invert the amplitudes (met 2016/03/03)
+            if av1.channel[2] == 'Z' and av1.dip > 0:
+                r_stream1 = irisseismic.multiplyBy(r_stream1, -1.0)
+
+
             # ----- Now query again to find ANY SNCL near the SNCL of interest ---------
 
             # Create the regex for all appropriate channels to match for channel 2
@@ -162,6 +167,11 @@ def crossCorrelation_metrics(concierge):
             # Not this station
             stationMask = availability2.station != av1.station
 
+            # Sample rate compatibility, sample rates must be  multiples of each other  (assumes sample rate >= 1, pracma::rem requires integer values)
+            a = availability2.samplerate.apply(lambda x: int(x))
+            b = pd.Series(np.full(len(a),int(av1.samplerate)))
+            sampleRateMask = (a >= np.ones(len(a))) & ( (a % b == 0) | (b % a == 0) )
+
             # Channel compatibility
             if av1.channel[2] == 'Z':
                 # For Z channels, any matching channel is compatible
@@ -177,7 +187,7 @@ def crossCorrelation_metrics(concierge):
                 channelMask = chMask & nonZMask & azimuthMask
                 
             # Bitwise AND to get the final mask
-            mask = stationMask & channelMask
+            mask = stationMask & channelMask & sampleRateMask
 
             if not any(mask):
                 logger.debug('skipping SNCL because no nearby SNCLs are compatible')

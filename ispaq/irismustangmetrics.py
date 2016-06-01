@@ -76,7 +76,8 @@ def _R_getMetricFunctionMetdata():
                         'sample_median',
                         'sample_mean',
                         'sample_max',
-                        'sample_rms']
+                        'sample_rms',
+                        'sample_unique']
             },
         'gaps': {
             'streamCount': 1,
@@ -118,7 +119,7 @@ def _R_getMetricFunctionMetdata():
             'streamCount': 1,
             'outputType': 'SingleValue',
             'fullDay': True,
-            'speed': 'slow',
+            'speed': 'fast',
             'extraAttributes': None,
             'businessLogic': 'simple',
             'metrics': ['max_stalta']
@@ -136,7 +137,7 @@ def _R_getMetricFunctionMetdata():
             'streamCount': 1,
             'outputType': 'SingleValue',
             'fullDay': False,
-            'speed': 'fast',
+            'speed': 'slow',
             'extraAttributes': None,
             'businessLogic': 'SNR',
             'metrics': ['sample_snr']
@@ -151,7 +152,8 @@ def _R_getMetricFunctionMetdata():
             'metrics': ['pct_above_nhnm',
                         'pct_below_nlnm',
                         'dead_channel_exp',
-                        'dead_channel_lin']
+                        'dead_channel_lin',
+                        'dead_channel_gsn']
         },
         'PSDPlot': {
             'streamCount': 1,
@@ -166,7 +168,7 @@ def _R_getMetricFunctionMetdata():
             'streamCount': 2,
             'outputType': 'SingleValue',
             'fullDay': True,
-            'speed': 'show',
+            'speed': 'slow',
             'extraAttributes': ['gain_ratio', 'phase_diff', 'ms_coherence'],
             'businessLogic': 'transferFunction',
             'metrics': ['transfer_function']
@@ -175,7 +177,7 @@ def _R_getMetricFunctionMetdata():
             'streamCount': 2,
             'outputType': 'SingleValue',
             'fullDay': False,
-            'speed': 'medium',
+            'speed': 'fast',
             'extraAttributes': [],
             'businessLogic': 'crossTalk',
             'metrics': ['cross_talk']
@@ -184,7 +186,7 @@ def _R_getMetricFunctionMetdata():
             'streamCount': 2,
             'outputType': 'SingleValue',
             'fullDay': False,
-            'speed': 'medium',
+            'speed': 'slow',
             'extraAttributes': [],
             'businessLogic': 'crossCorrelation',
             'metrics': ['cross_correlation']
