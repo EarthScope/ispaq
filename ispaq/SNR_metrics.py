@@ -1,5 +1,5 @@
 """
-ISPAQ Business Logic for SMR Metrics.
+ISPAQ Business Logic for SNR Metrics.
 
 :copyright:
     Mazama Science
@@ -44,8 +44,8 @@ def SNR_metrics(concierge):
     # Get the seismic events in this time period
     events = concierge.get_event(minmag=minmag)
         
-    # Sanity checkc
-    if events.shape[0] == 0:
+    # Sanity checck
+    if events is None or events.shape[0] == 0:
         logger.info('No events found for SNR metrics.')
         return None
         
@@ -86,7 +86,7 @@ def SNR_metrics(concierge):
             logger.error('\t\tskipping because get_availability failed: %s' % (e))
             continue
                     
-        # Sanity check   that some SNCLs exist
+        # Sanity check that some SNCLs exist
         if availability.shape[0] == 0:
             logger.debug('\t\tskipping because no SNCLs are available')
             continue
@@ -122,7 +122,7 @@ def SNR_metrics(concierge):
             # NOTE:  Exapand the window by an extra second to guarantee that 
             # NOTE:  windowStart < tr.stats.starttime and windowEnd > tr.stats.endtime
             try:
-                r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, windowStart-1, windowEnd+1)
+                r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, windowStart-1, windowEnd+1, inclusiveEnd=False)
             except Exception as e:
                 logger.warning('Unable to obtain data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
                 # TODO:  Create appropriate empty dataframe

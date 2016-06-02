@@ -3,6 +3,51 @@
 # Dates for testing:
 #
 # 2010-02-27 -- large quake
+#
+# Gaps
+#
+# 2013-01-05 II.KAPI.00.BHZ -- large gaps (check gaps)
+#
+# Spikes
+#
+# 2013-01-03 -- IU.RAO.10.BH?  -- lots of spikes (check num_spikes)
+# 2013-01-03 -- IM.TX31..BH?   -- one big spiky glitch (check num_spikes)
+# 2013-01-03 -- IU.ANMO.00.BH? -- no spikes (check num_spikes)
+#
+# STALTA
+#
+# 2010-02-27 -- IU.ANMO.00.BHZ -- large quake (check STALTA)
+# 2002-04-20 -- US.OXF..BHZ    -- 40Hz signal for a small NY quake in 4 traces (check STALTA)
+# 2013-06-02 -- IU.GUMO.00.*   -- day of M6.2 quake (check STALTA)
+#
+# SNR
+#
+# 2013-06-02 -- IU.GUMO.00.BHZ   -- day of M6.2 quake (check SNR)
+#
+# PSD
+#
+# 2011-05-18 -- IU.GRFO..BH? -- Test 1 of dead channel detection
+# 2011-06-02 -- IU.GRFO..BH? -- Test 2 of dead channel detection
+#
+# transfer
+#
+# 2012-10-03 -- II.PALK.*.* -- channels with problems (transfer_function coherence is very close to 1.0 but gain ratio is not)
+# 2012-10-03 -- II.NIL.*.* -- channels with problems (transfer_function coherence is very close to 1.0 but gain ratio is not)
+#
+# crossTalk
+#
+# 2013-09-21 -- II.B*.00.*
+#
+# pressureCorrelation
+#
+# 2013-05-02 -- IU.A*.*.L*
+#
+# crossCorrelation
+#
+# 2011-06-01 -- IU.FURI.00.BHZ -- Mary's example #1
+# 2011-01-01 -- II.E*.00.B?? -- Mary's example #3
+
+
 
 
 # User defined sets of metrics ------------------------------------------------
@@ -10,15 +55,18 @@
 Metrics:
 
   # ----- Default combinations -----
-  basicStats: sample_min, sample_median, sample_mean, sample_max, sample_rms
+  basicStats: sample_min, sample_median, sample_mean, sample_max, sample_rms, sample_unique
   gaps: num_gaps, max_gap, num_overlaps, max_overlap, percent_availability
-  stateOfHealth: calibration_signal, timing_correction, event_begin, event_end, vent_in_progress, clock_locked, amplifier_saturation, digitizer_clipping, spikes, glitches, missing_padded_data, telemetry_sync_error, digital_filter_charging, suspect_time_tag, timing_quality
+  stateOfHealth: calibration_signal, timing_correction, event_begin, event_end, event_in_progress, clock_locked, amplifier_saturation, digitizer_clipping, spikes, glitches, missing_padded_data, telemetry_sync_error, digital_filter_charging, suspect_time_tag, timing_quality
   STALTA: max_stalta
   spikes: num_spikes
   SNR: sample_snr
-  PSD: pct_above_nhnm, pct_below_nlnm, dead_channel_exp, dead_channel_lin
+  PSD: pct_above_nhnm, pct_below_nlnm, dead_channel_exp, dead_channel_lin, dead_channel_gsn
   PDF: pdf_plot
-  transfer: transfer_function
+  ###transfer: transfer_function
+  crossTalk: cross_talk
+  pressureCorrelation: pressure_effects
+  crossCorrelation: polarity_check, timing_drift
   
   # ----- Custom combinations -----
   metrics_1: sample_rms, num_gaps, percent_availability
@@ -43,9 +91,25 @@ SNCLs:
   sncls_2: U*.*.*.??Z
   US_LHZ: US.*.*.LHZ
   IU_ANMO: IU.ANMO.*.*
+  IU.ANMO.00.BHZ: IU.ANMO.00.BHZ
   IU.ANMO.00.BH?: IU.ANMO.00.BH?
+  IU.ANMO.*.BH?: IU.ANMO.00.BH?
   IU_ANMO_VM1: IU.ANMO..VM1 # "No data found" on 2010-02-26
-  spikes: IU.RAO.10.BH? # --starttime "2013-01-03"
+  
+  # For testing default combinations of metrics
+  basicStats: IU.ANMO.00.BH?
+  gaps: II.KAPI.00.BH?
+  stateOfHealth: IU.ANMO.00.BH?
+  spikes: IU.RAO.10.BH?, IM.TX31..BH?
+  STALTA: IU.ANMO.00.BHZ, US.OXF..BHZ, IU.GUMO.00.*
+  SNR: IU.GUMO.00.BHZ
+  PSD: IU.GRFO..BH?
+  transfer: II.PALK.*.*, II.NIL.*.*
+  crossTalk: II.B*.00.*
+  pressureCorrelation: IU.A*.*.L*
+  crossCorrelation: II.E*.00.B??
+  
+  
   bad_sncl: US.OXF..BOP # does not exist
   bad_good: US.OXF..BOP, US.OXF.*.BH?
   

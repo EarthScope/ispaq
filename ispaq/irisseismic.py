@@ -57,6 +57,8 @@ _R_getStation = robjects.r('IRISSeismic::getStation')                 #
 _R_getTraveltime = robjects.r('IRISSeismic::getTraveltime')           #
 _R_getUnavailability = robjects.r('IRISSeismic::getUnavailability')   #
 
+# additional functions
+
 
 
 #     Python --> R conversion functions    -------------------------------------
@@ -423,7 +425,8 @@ def getChannel(client_url="http://service.iris.edu",
 
 def R_getDataselect(client_url="http://service.iris.edu",
                     network=None, station=None, location=None, channel=None,
-                    starttime=None, endtime=None, quality="B", ignoreEpoch=False):
+                    starttime=None, endtime=None, quality="B",
+                    inclusiveEnd=True, ignoreEpoch=False):
     """
     Obtain an R Stream using the IRISSeismic::getDataselect function.
     :param client_url: FDSN web services site URL
@@ -444,7 +447,7 @@ def R_getDataselect(client_url="http://service.iris.edu",
     endtime = R_POSIXct(endtime)
         
     # Call the function and return an R Stream
-    r_stream = _R_getDataselect(r_client, network, station, location, channel, starttime, endtime, quality, ignoreEpoch)
+    r_stream = _R_getDataselect(r_client, network, station, location, channel, starttime, endtime, quality, inclusiveEnd, ignoreEpoch)
     return r_stream
 
 
@@ -708,6 +711,40 @@ def getUnavailability(client_url="http://service.iris.edu",
     df.endtime = df.endtime.apply(UTCDateTime)
     
     return df
+
+
+#     Python wrappers for R non-webservice functions     -----------------------
+
+# surfaceDistance is needed in crossCorrelation_metrics.py
+def surfaceDistance(lat1, lon1, lat2, lon2):
+    R_function = robjects.r('IRISSeismic::surfaceDistance')
+    r_result = R_function(R_float(lat1), R_float(lon1), R_float(lat2), R_float(lon2))
+    result = pandas2ri.ri2py(r_result)
+    
+    return(result)
+
+# multiplyBy is needed in crossCorrelation_metrics.py
+def multiplyBy(x, y):
+    R_function = robjects.r('IRISSeismic::multiplyBy')
+    r_stream = R_function(x, R_float(y))
+    
+    return(r_stream)
+
+# multiplyBy is needed in crossCorrelation_metrics.py
+def mergeTraces(r_stream):
+    R_function = robjects.r('IRISSeismic::mergeTraces')
+    r_stream = R_function(r_stream)
+    
+    return(r_stream)
+
+
+# butter is needed in crossCorrelation_metrics.py
+def butter(x, y):
+    R_function = robjects.r('signal::butter')
+    r_filter = R_function(R_float(x), R_float(y))
+    
+    return(r_filter)
+
 
 
 # ------------------------------------------------------------------------------

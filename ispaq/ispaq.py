@@ -6,23 +6,28 @@
 
 __version__ = "0.5.1"
 
-
+# Basic modules
 import argparse
 import datetime
 import logging
 import os
 import sys
 
+# ISPAQ modules
 from concierge import Concierge
 from user_request import UserRequest
 import irisseismic
 import irismustangmetrics
 import utils
 
+# Specific ISPAQ business logic
 from simple_metrics import simple_metrics
 from SNR_metrics import SNR_metrics
 from PSD_metrics import PSD_metrics
 from transferFunction_metrics import transferFunction_metrics
+from crossTalk_metrics import crossTalk_metrics
+from pressureCorrelation_metrics import pressureCorrelation_metrics
+from crossCorrelation_metrics import crossCorrelation_metrics
 
 def main():
 
@@ -150,17 +155,16 @@ def main():
         except Exception as e:
             logger.error(e)
 
-    # Generate transfer Metrics -----------------------------------------------------
+
+    # Generate Transfer Function Metrics ---------------------------------------
 
     if 'transferFunction' in concierge.logic_types:
-        logger.debug('Inside transfer business logic ...')
+        logger.debug('Inside transferFunction business logic ...')
         try:
-
             df = transferFunction_metrics(concierge)
             try:
                 filepath = concierge.output_file_base + "__transferMetrics.csv"
-                logger.info(
-                    'Writing transfer metrics to %s.\n' % os.path.basename(filepath))
+                logger.info('Writing transfer metrics to %s.\n' % os.path.basename(filepath))
                 utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
             except Exception as e:
                 logger.error(e)
@@ -168,17 +172,54 @@ def main():
             logger.error(e)
 
 
-    #    # Generate [increasingly complex/time-consuming metrics] -------------------
-    #
-    #    #try:
-    #      #complex_output = ispaq.business_logic.complex_metrics(concierge)
-    #      #try:
-    #          ## Dump output to a file
-    #      #except:
-    #          ##
-    #    #except:
-    #          ##
 
+    # Generate Cross Talk Metrics ----------------------------------------------
+
+    if 'crossTalk' in concierge.logic_types:
+        logger.debug('Inside crossTalk business logic ...')
+        try:
+            df = crossTalk_metrics(concierge)
+            try:
+                filepath = concierge.output_file_base + "__crossTalkMetrics.csv"
+                logger.info('Writing crossTalk metrics to %s.\n' % os.path.basename(filepath))
+                utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
+            except Exception as e:
+                logger.error(e)
+        except Exception as e:
+            logger.error(e)
+        
+
+    # Generate Pressure Correlation Metrics ----------------------------------------------
+
+    if 'pressureCorrelation' in concierge.logic_types:
+        logger.debug('Inside pressureCorrelation business logic ...')
+        try:
+            df = pressureCorrelation_metrics(concierge)
+            try:
+                filepath = concierge.output_file_base + "__pressureCorrelationMetrics.csv"
+                logger.info('Writing pressureCorrelation metrics to %s.\n' % os.path.basename(filepath))
+                utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
+            except Exception as e:
+                logger.error(e)
+        except Exception as e:
+            logger.error(e)
+        
+
+    # Generate Cross Correlation Metrics ---------------------------------------
+
+    if 'crossCorrelation' in concierge.logic_types:
+        logger.debug('Inside crossCorrelation business logic ...')
+        try:
+            df = crossCorrelation_metrics(concierge)
+            try:
+                filepath = concierge.output_file_base + "__crossCorrelationMetrics.csv"
+                logger.info('Writing crossCorrelation metrics to %s.\n' % os.path.basename(filepath))
+                utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
+            except Exception as e:
+                logger.error(e)
+        except Exception as e:
+            logger.error(e)
+                
 
     logger.info('ALL FINISHED!')
 

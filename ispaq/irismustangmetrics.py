@@ -76,7 +76,8 @@ def _R_getMetricFunctionMetdata():
                         'sample_median',
                         'sample_mean',
                         'sample_max',
-                        'sample_rms']
+                        'sample_rms',
+                        'sample_unique']
             },
         'gaps': {
             'streamCount': 1,
@@ -118,7 +119,7 @@ def _R_getMetricFunctionMetdata():
             'streamCount': 1,
             'outputType': 'SingleValue',
             'fullDay': True,
-            'speed': 'slow',
+            'speed': 'fast',
             'extraAttributes': None,
             'businessLogic': 'simple',
             'metrics': ['max_stalta']
@@ -136,7 +137,7 @@ def _R_getMetricFunctionMetdata():
             'streamCount': 1,
             'outputType': 'SingleValue',
             'fullDay': False,
-            'speed': 'fast',
+            'speed': 'slow',
             'extraAttributes': None,
             'businessLogic': 'SNR',
             'metrics': ['sample_snr']
@@ -151,7 +152,8 @@ def _R_getMetricFunctionMetdata():
             'metrics': ['pct_above_nhnm',
                         'pct_below_nlnm',
                         'dead_channel_exp',
-                        'dead_channel_lin']
+                        'dead_channel_lin',
+                        'dead_channel_gsn']
         },
         'PSDPlot': {
             'streamCount': 1,
@@ -166,10 +168,37 @@ def _R_getMetricFunctionMetdata():
             'streamCount': 2,
             'outputType': 'SingleValue',
             'fullDay': True,
-            'speed': 'medium',
+            'speed': 'slow',
             'extraAttributes': ['gain_ratio', 'phase_diff', 'ms_coherence'],
             'businessLogic': 'transferFunction',
             'metrics': ['transfer_function']
+        },
+        'crossTalk': {
+            'streamCount': 2,
+            'outputType': 'SingleValue',
+            'fullDay': False,
+            'speed': 'fast',
+            'extraAttributes': [],
+            'businessLogic': 'crossTalk',
+            'metrics': ['cross_talk']
+        },
+        'pressureCorrelation': {
+            'streamCount': 2,
+            'outputType': 'SingleValue',
+            'fullDay': False,
+            'speed': 'fast',
+            'extraAttributes': [],
+            'businessLogic': 'pressureCorrelation',
+            'metrics': ['pressure_effects']
+        },
+        'crossCorrelation': {
+            'streamCount': 2,
+            'outputType': 'SingleValue',
+            'fullDay': False,
+            'speed': 'slow',
+            'extraAttributes': [],
+            'businessLogic': 'crossCorrelation',
+            'metrics': ['polarity_check','timing_drift']
         }
     }
     return(functiondict)
@@ -178,10 +207,9 @@ def function_metadata():
     return _R_getMetricFunctionMetdata()
 
 
-#     Functions for SingleValueMetrics     ------------------------------------
+#     Functions that return SingleValueMetrics     -----------------------------
 
 
-# TODO:  rename "apply_simple_metric" to "apply_single_value_metric"
 def apply_simple_metric(r_stream, metric_function_name, *args, **kwargs):
     """"
     Invoke a named "simple" R metric and convert the R dataframe result into
@@ -202,8 +230,29 @@ def apply_simple_metric(r_stream, metric_function_name, *args, **kwargs):
     return df
 
 
-#     Functions for PSDMetrics     ---------------------------------------------
+def apply_correlation_metric(r_stream1, r_stream2, metric_function_name, *args, **kwargs):
+    """"
+    Invoke a named "correlation" R metric and convert the R dataframe result into
+    a Pandas dataframe.
+    :param r_stream1: an r_stream object
+    :param r_stream2: an r_stream object
+    :param metric_function_name: the name of the set of metrics
+    :return:
+    """
+    function = 'IRISMustangMetrics::' + metric_function_name + 'Metric'
+    R_function = robjects.r(function)
+    r_metriclist = R_function(r_stream1, r_stream2, *args, **kwargs)  # args and kwargs shouldn't be needed in theory
+    r_dataframe = _R_metricList2DF(r_metriclist)
+    df = pandas2ri.ri2py(r_dataframe)
+    
+    # Convert columns from R POSIXct to pyton UTCDateTime
+    df.starttime = df.starttime.apply(UTCDateTime)
+    df.endtime = df.endtime.apply(UTCDateTime)
+    return df
 
+
+
+#     Functions for PSDMetrics     ---------------------------------------------
 
 def apply_PSD_metric(r_stream, *args, **kwargs):
     """"
