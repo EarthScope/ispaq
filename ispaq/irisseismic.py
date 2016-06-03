@@ -35,10 +35,12 @@ from rpy2.robjects import pandas2ri
 # NOTE:  R-compatible objects as arguments.
 
 # from base
-_R_as_integer = robjects.r('base::as.integer')         # for conversion of python integers to R integer vectors
-_R_as_POSIXct = robjects.r('base::as.POSIXct')         # for conversion of ISO datestrings to R POSIXct
-_R_vector = robjects.r('base::vector')                 # for creation of a the list of Traces used in R_Trace
-_R_list = robjects.r('base::list')                     # for creation of the headerList used in R_Trace
+_R_assign = robjects.r('base::assign')                 # assign a name to an object
+_R_get = robjects.r('base::get')                       # get an object from a name
+_R_as_integer = robjects.r('base::as.integer')         # conversion of python integers to R integer vectors
+_R_as_POSIXct = robjects.r('base::as.POSIXct')         # conversion of ISO datestrings to R POSIXct
+_R_vector = robjects.r('base::vector')                 # creation of a the list of Traces used in R_Trace
+_R_list = robjects.r('base::list')                     # creation of the headerList used in R_Trace
 
 # from IRISSeismic
 _R_initialize = robjects.r('IRISSeismic::initialize')  # initialization of various objects
@@ -58,7 +60,6 @@ _R_getTraveltime = robjects.r('IRISSeismic::getTraveltime')           #
 _R_getUnavailability = robjects.r('IRISSeismic::getUnavailability')   #
 
 # additional functions
-
 
 
 #     Python --> R conversion functions    -------------------------------------
@@ -737,7 +738,6 @@ def mergeTraces(r_stream):
     
     return(r_stream)
 
-
 # butter is needed in crossCorrelation_metrics.py
 def butter(x, y):
     R_function = robjects.r('signal::butter')
@@ -745,6 +745,59 @@ def butter(x, y):
     
     return(r_filter)
 
+# trim_taper_filter is needed in orientationCheck_metrics.py
+def trim_taper_filter(stN, stE, stZ, max_length, taper, filterArgs):
+    """
+    This function captures some of the functionality from generateMetrics_orientationCheck.R
+    that involves direct manipulation of individual slots in Stream objects.
+    This requires some R knowledge and rpy2 trickery that doesn't belong in the 
+    business logic python code.
+    """
+    
+    # Assign names in R
+    _R_assign('stN',stN)
+    _R_assign('stE',stE)
+    _R_assign('stZ',stZ)
+    
+    # Adjust length
+    robjects.r('stN@traces[[1]]@data <- stN@traces[[1]]@data[1:%d]' % (max_length))
+    robjects.r('stE@traces[[1]]@data <- stE@traces[[1]]@data[1:%d]' % (max_length))
+    robjects.r('stZ@traces[[1]]@data <- stZ@traces[[1]]@data[1:%d]' % (max_length))
+    robjects.r('stN@traces[[1]]@stats@npts = as.integer(%d)' % (max_length))
+    robjects.r('stE@traces[[1]]@stats@npts = as.integer(%d)' % (max_length))
+    robjects.r('stZ@traces[[1]]@stats@npts = as.integer(%d)' % (max_length))
+    
+    # taper and filter traces
+    robjects.r('N <- IRISSeismic::DDT(stN@traces[[1]],TRUE,TRUE,%s)' % (taper))
+    robjects.r('E <- IRISSeismic::DDT(stE@traces[[1]],TRUE,TRUE,%s)' % (taper))
+    robjects.r('Z <- IRISSeismic::DDT(stZ@traces[[1]],TRUE,TRUE,%s)' % (taper))
+
+    robjects.r('N <- IRISSeismic::butterworth(N,%s,%s,%s)' % (filterArgs[0],filterArgs[1],filterArgs[2]))
+    robjects.r('E <- IRISSeismic::butterworth(E,%s,%s,%s)' % (filterArgs[0],filterArgs[1],filterArgs[2]))
+    robjects.r('Z <- IRISSeismic::butterworth(Z,%s,%s,%s)' % (filterArgs[0],filterArgs[1],filterArgs[2]))
+
+    # Now put modified traces back into the Streams so that they can be rotated
+    robjects.r('stN@traces[[1]] <- N')
+    robjects.r('stE@traces[[1]] <- E')
+    robjects.r('stZ@traces[[1]] <- Z')
+
+    # Hilbert tansform of Z channel
+    HZ = robjects.r('IRISSeismic::hilbert(Z)')
+
+    # Get R objects back into python memory space
+    stN = _R_get('stN')
+    stE = _R_get('stE')
+    stZ = _R_get('stZ')
+    
+    return(stN, stE, stZ, HZ)
+
+
+# rotate2D is needed in orientationCheck_metrics.py
+def rotate2D(st1, st2, angle):
+    R_function = robjects.r('IRISSeismic::rotate2D')
+    r_list = R_function(st1, st2, angle)
+    
+    return(r_filter)
 
 
 # ------------------------------------------------------------------------------

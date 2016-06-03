@@ -199,6 +199,15 @@ def _R_getMetricFunctionMetdata():
             'extraAttributes': [],
             'businessLogic': 'crossCorrelation',
             'metrics': ['polarity_check','timing_drift']
+        #},
+        #'orientationCheck': {
+            #'streamCount': 2,
+            #'outputType': 'SingleValue',
+            #'fullDay': False,
+            #'speed': 'slow',
+            #'extraAttributes': [],
+            #'businessLogic': 'orientationCheck',
+            #'metrics': ['orientation_check']
         }
     }
     return(functiondict)

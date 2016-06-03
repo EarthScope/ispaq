@@ -46,6 +46,12 @@
 #
 # 2011-06-01 -- IU.FURI.00.BHZ -- Mary's example #1
 # 2011-01-01 -- II.E*.00.B?? -- Mary's example #3
+#
+# orientationCheck
+#
+# 2009-02-18 -- ZU.NZ19.*.* -- Stachnik paper
+
+
 
 
 
@@ -67,6 +73,7 @@ Metrics:
   crossTalk: cross_talk
   pressureCorrelation: pressure_effects
   crossCorrelation: polarity_check, timing_drift
+  ###orientationCheck: orientation_check
   
   # ----- Custom combinations -----
   metrics_1: sample_rms, num_gaps, percent_availability
@@ -108,6 +115,7 @@ SNCLs:
   crossTalk: II.B*.00.*
   pressureCorrelation: IU.A*.*.L*
   crossCorrelation: II.E*.00.B??
+  ###orientationCheck: ZU.NZ19.*.*
   
   
   bad_sncl: US.OXF..BOP # does not exist

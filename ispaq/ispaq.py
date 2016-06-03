@@ -28,6 +28,7 @@ from transferFunction_metrics import transferFunction_metrics
 from crossTalk_metrics import crossTalk_metrics
 from pressureCorrelation_metrics import pressureCorrelation_metrics
 from crossCorrelation_metrics import crossCorrelation_metrics
+from orientationCheck_metrics import orientationCheck_metrics
 
 def main():
 
@@ -220,6 +221,22 @@ def main():
         except Exception as e:
             logger.error(e)
                 
+
+    ## Generate Orientation Check Metrics ---------------------------------------
+
+    #if 'orientationCheck' in concierge.logic_types:
+        #logger.debug('Inside orientationCheck business logic ...')
+        #try:
+            #df = orientationCheck_metrics(concierge)
+            #try:
+                #filepath = concierge.output_file_base + "__orientationCheckMetrics.csv"
+                #logger.info('Writing orientationCheck metrics to %s.\n' % os.path.basename(filepath))
+                #utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
+            #except Exception as e:
+                #logger.error(e)
+        #except Exception as e:
+            #logger.error(e)
+                        
 
     logger.info('ALL FINISHED!')
 
