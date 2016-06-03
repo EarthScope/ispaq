@@ -90,8 +90,7 @@ def PSD_metrics(concierge):
                 starttime = utils.get_slot(r_stream, 'starttime')
                 filename = '%s.%s_PDF.png' % (av.snclId, starttime.strftime('%Y.%j'))
                 filepath = concierge.plot_output_dir + '/' + filename
-                status = irismustangmetrics.open_png_file(filepath)
-                status = irismustangmetrics.apply_PSD_plot(r_stream)
+                status = irismustangmetrics.apply_PSD_plot(r_stream, filepath)
             except Exception as e:
                 logger.error('"PSD" plot generation failed for %s: %s' % (av.snclId, e))
                     

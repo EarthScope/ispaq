@@ -47,10 +47,6 @@ from rpy2.robjects import pandas2ri
 # IRISMustangMetrics helper functions
 _R_metricList2DF = robjects.r('IRISMustangMetrics::metricList2DF')
 
-# IRISSeismic functions needed for generating PSD plots
-_R_psdList = robjects.r('IRISSeismic::psdList')
-_R_psdPlot = robjects.r('IRISSeismic::psdPlot')
-
 
 def _R_getMetricFunctionMetdata():
     """
@@ -270,8 +266,7 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
     :param r_stream: an r_stream object
     :return:
     """
-    function = 'IRISMustangMetrics::PSDMetric'
-    R_function = robjects.r(function)
+    R_function = robjects.r('IRISMustangMetrics::PSDMetric')
     r_listOfLists = R_function(r_stream, *args, **kwargs)  # args and kwargs shouldn't be needed in theory
     r_metriclist = r_listOfLists[0]
     r_dataframe = _R_metricList2DF(r_metriclist)
@@ -287,32 +282,20 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
     return df
 
 
-def apply_PSD_plot(r_stream):
+def apply_PSD_plot(r_stream, filepath):
     """"
     Create a PSD plot which will be written to a .png file
     opened 'png' file.
     :param r_stream: an r_stream object
     :return:
     """
-    r_psdList = _R_psdList(r_stream)
-    _R_psdPlot(r_psdList, style='pdf')
-    
+    result = robjects.r('grDevices::png')(filepath)
+    r_psdList = robjects.r('IRISSeismic::psdList')(r_stream)    
+    result = robjects.r('IRISSeismic::psdPlot')(r_psdList, style='pdf')
+    result = robjects.r('grDevices::dev.off')()
+
     return True
 
-
-#     Utility functions     ----------------------------------------------------
-
-
-def open_png_file(filepath, *args, **kwargs):
-    """"
-    Open a file with R, presumably for subsequent plotting.
-    :param filepath absolute path of the file
-    :return:
-    """
-    R_function = robjects.r('grDevices::png')
-    result = R_function(filepath, *args, **kwargs)
-    
-    return result
 
 
 # -----------------------------------------------------------------------------
