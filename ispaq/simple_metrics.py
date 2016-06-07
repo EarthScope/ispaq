@@ -11,6 +11,7 @@ from obspy import UTCDateTime
 from obspy.clients.fdsn import Client
 
 import math
+import numpy as np
 import pandas as pd
 
 import utils
@@ -60,7 +61,10 @@ def simple_metrics(concierge):
         try:
             r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel)
         except Exception as e:
-            logger.warning('Unable to obtain data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
+            if str(e).lower().find('no data') > -1:
+                logger.debug('No data for %s' % (av.snclId))
+            else:
+                logger.debug('No data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
             df = pd.DataFrame({'metricName': 'percent_available',
                                'value': 0,
                                'snclq': av.snclId + '.M',
@@ -70,7 +74,6 @@ def simple_metrics(concierge):
                               index=[0]) 
             dataframes.append(df)
             continue
-
 
         # Run the Gaps metric ----------------------------------------
 

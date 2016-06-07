@@ -12,10 +12,11 @@ from __future__ import (absolute_import, division, print_function,
 from future.builtins import *  # NOQA
 from future.types import newint
 
+from obspy import UTCDateTime
+
+import math
 import numpy as np
 import pandas as pd
-
-from obspy import UTCDateTime
 
 # Connect to R through the rpy2 module
 from rpy2 import robjects
@@ -476,8 +477,7 @@ def getDistaz(latitude, longitude, staLatitude, staLongitude):
     return df
     
 
-def getEvalresp(client_url="http://service.iris.edu",
-                network=None, station=None, location=None, channel=None,
+def getEvalresp(network=None, station=None, location=None, channel=None,
                 time=None, minfreq=None, maxfreq=None,
                 nfreq=None, units=None, output="fap"):
     """
@@ -501,8 +501,7 @@ def getEvalresp(client_url="http://service.iris.edu",
          azimuth  backAzimuth  distance
     1  241.57595     47.88017  39.97257
     """
-    cmd = 'new("IrisClient", site="' + client_url + '")'
-    r_client = robjects.r(cmd)
+    r_client = robjects.r('new("IrisClient")')
     
     # Convert python arguments to R equivalents
     time = R_POSIXct(time)
@@ -801,6 +800,7 @@ def rotate2D(st1, st2, angle):
 
 
 # ------------------------------------------------------------------------------
+
 
 
 if __name__ == '__main__':

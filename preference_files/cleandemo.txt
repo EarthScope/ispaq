@@ -31,8 +31,7 @@
 #
 # transfer
 #
-# 2012-10-03 -- II.PALK.*.* -- channels with problems (transfer_function coherence is very close to 1.0 but gain ratio is not)
-# 2012-10-03 -- II.NIL.*.* -- channels with problems (transfer_function coherence is very close to 1.0 but gain ratio is not)
+# 2012-10-03 -- II.PALK.*.*, II.NIL.*.* -- channels with problems (transfer_function coherence is very close to 1.0 but gain ratio is not)
 #
 # crossTalk
 #
@@ -69,7 +68,7 @@ Metrics:
   SNR: sample_snr
   PSD: pct_above_nhnm, pct_below_nlnm, dead_channel_exp, dead_channel_lin, dead_channel_gsn
   PDF: pdf_plot
-  ###transfer: transfer_function
+  transfer: transfer_function
   crossTalk: cross_talk
   pressureCorrelation: pressure_effects
   crossCorrelation: polarity_check, timing_drift
