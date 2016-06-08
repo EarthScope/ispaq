@@ -110,7 +110,8 @@ SNCLs:
   STALTA: IU.ANMO.00.BHZ, US.OXF..BHZ, IU.GUMO.00.*
   SNR: IU.GUMO.00.BHZ
   PSD: IU.GRFO..BH?
-  transfer: II.PALK.*.*, II.NIL.*.*
+  transfer: II.PALK.*.*
+  transfer2: II.NIL.*.*
   crossTalk: II.B*.00.*
   pressureCorrelation: IU.A*.*.L*
   crossCorrelation: II.E*.00.B??

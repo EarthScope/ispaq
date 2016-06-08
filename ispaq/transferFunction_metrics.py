@@ -21,6 +21,84 @@ import irismustangmetrics
 import itertools # for combintations
 
 
+# ------------------------------------------------------------------------------
+#      BEGIN Utility Function
+#
+
+def getTransferFunctionSpectra(st, sampling_rate):
+    # This function returns an evalresp fap response for trace st using sampling_rate 
+    # to determine frequency limits
+
+    # Min and Max frequencies for evalresp will be those used for the cross spectral binning
+    alignFreq = 0.1
+
+    if (sampling_rate <= 1):
+        loFreq = 0.001
+    elif (sampling_rate > 1 and sampling_rate < 10):
+        loFreq = 0.0025
+    else:
+        loFreq = 0.005
+
+    # No need to exceed the Nyquist frequency after decimation
+    hiFreq = 0.5 * sampling_rate
+
+    log2_alignFreq = math.log(alignFreq,2)
+    log2_loFreq = math.log(loFreq,2)
+    log2_hiFreq = math.log(hiFreq,2)
+    
+    if alignFreq >= hiFreq:
+        octaves = []
+        octave = log2_alignFreq
+        while octave >= log2_loFreq:
+            if octave <= log2_hiFreq:
+                octaves.append(octave)
+            octave -= 0.125
+        octaves = pd.Series(octaves).sort_values().reset_index(drop=True)
+            
+    else:
+        octaves = []
+        octave = log2_alignFreq
+        loOctaves = []
+        while octave >= log2_loFreq:
+            loOctaves.append(octave)
+            octave -= 0.125
+        loOctaves = pd.Series(loOctaves)
+            
+            
+        octave = log2_alignFreq
+        hiOctaves = []
+        while octave <= log2_hiFreq:
+            hiOctaves.append(octave)
+            octave += 0.125
+        hiOctaves = pd.Series(hiOctaves)
+            
+        octaves = loOctaves.append(hiOctaves).drop_duplicates().sort_values().reset_index(drop=True)
+        
+    binFreq = pow(2,octaves)
+
+    # Argurments for evalresp
+    minfreq = min(binFreq)
+    maxfreq = max(binFreq)
+    nfreq = len(binFreq)
+    units = 'def'
+    output = 'fap'
+
+    network = utils.get_slot(st,'network')
+    station = utils.get_slot(st,'station')
+    location = utils.get_slot(st,'location')
+    channel = utils.get_slot(st,'channel')
+    starttime = utils.get_slot(st,'starttime')
+    
+    evalResp = irisseismic.getEvalresp(network, station, location, channel, starttime,
+                                       minfreq, maxfreq, nfreq, units, output)
+
+    return(evalResp)
+
+#
+#      END Utility Function
+# ------------------------------------------------------------------------------
+
+
 def transferFunction_metrics(concierge):
     """
     Generate *transfer* metrics.
@@ -35,6 +113,7 @@ def transferFunction_metrics(concierge):
 
     TODO:  doctest examples
     """
+    
     # Get the logger from the concierge
     logger = concierge.logger
 
@@ -44,6 +123,15 @@ def transferFunction_metrics(concierge):
     # ----- All available SNCLs -------------------------------------------------
     
     availability = concierge.get_availability()
+    
+    # Remove long-period channels (see http://www.fdsn.org/seed_manual/SEEDManual_V2.4_Appendix-A.pdf)
+    pattern = '[VURPTQAO]'
+    bandCode = availability.channel.str[0]
+    longPeriodMask = bandCode.str.contains(pattern)
+    availability = availability[~longPeriodMask].reset_index(drop=True)
+    
+    # Remove LOG and ACE text channels
+    availability = availability[(availability.channel != 'LOG') & (availability.channel != 'ACE')].reset_index(drop=True)
 
     # function metadata dictionary
     function_metadata = concierge.function_by_logic['transferFunction']
@@ -51,16 +139,12 @@ def transferFunction_metrics(concierge):
     # Get unique network-station pairs
     networkStationPairs = availability.network + '.' + availability.station
     networkStationPairs = networkStationPairs.drop_duplicates().sort_values().reset_index(drop=True)
-    #networkStationPairs <- sort(unique(stringr::str_extract(availability$snclId,"[A-Z0-9]+\\.[A-Z0-9_]+")))
     
     for networkStation in networkStationPairs:
   
         # Subset the availability dataframe to contain only results for this networkStation
         (network,station) = networkStation.split('.')
         stationAvailability = availability[(availability.network == network) & (availability.station == station)].reset_index(drop=True)
-        
-        # Remove LOG and ACE text channels
-        stationAvailability = stationAvailability[(stationAvailability.channel != 'LOG') & (stationAvailability.channel != 'ACE')].reset_index(drop=True)
         
         ##################################################################
         # Loop through all channels by dip looking for multiple locations.
@@ -130,8 +214,8 @@ def transferFunction_metrics(concierge):
                     sampling_rate = min(utils.get_slot(Zst1,'sampling_rate'), utils.get_slot(Zst2,'sampling_rate'))
                 
                     # Get primary (1), secondary (2) and orthogonal secondary spectra     
-                    Zevalresp1 = irisseismic.getTransferFunctionSpectra(Zst1,sampling_rate)
-                    Zevalresp2 = irisseismic.getTransferFunctionSpectra(Zst2,sampling_rate)          
+                    Zevalresp1 = getTransferFunctionSpectra(Zst1,sampling_rate)
+                    Zevalresp2 = getTransferFunctionSpectra(Zst2,sampling_rate)          
                 
                     # Run the transferFunction metric ----------------------------------------
             
@@ -152,10 +236,9 @@ def transferFunction_metrics(concierge):
                 # we will first rotate secondary channels to match primary channels.
         
                 # Bail if there are only two horizontal channels
-                # TODO:  uncomment this sanity check
-                #if channelAvailability.shape[0] <= 2:
-                    #logger.debug('skipping %s because there are no other channels for comparison' % (channelAvailability.snclId[0]))
-                    #continue
+                if channelAvailability.shape[0] <= 2:
+                    logger.debug('skipping %s because there are no other channels for comparison' % (channelAvailability.snclId[0]))
+                    continue
                  
                 # Convert snclId into a snclPrefix that excludes the last character
                 # Matching scnlPrefixes should be orthogonal Y and X channel pairs
@@ -272,13 +355,9 @@ def transferFunction_metrics(concierge):
                 # First Y channels, then X
                 for i in range(2):
         
-                    debug_point = 1
-                    
                     if matrixListNotToRotate[i].shape[0] != 0:
-                    #if ( nrow(matrixListNotToRotate[[i]]) != 0 ) {
         
                         for j in range(matrixListNotToRotate[i].shape[0]):
-                        #for ( j in seq(nrow(matrixListNotToRotate[[i]])) ) {
         
                             av1 = availabilityList[i].iloc[int(matrixListNotToRotate[i].iloc[j,0]),]
                             av2 = availabilityList[i].iloc[int(matrixListNotToRotate[i].iloc[j,1]),]
@@ -289,7 +368,7 @@ def transferFunction_metrics(concierge):
                             if ( (av1.location == av2.location) and (av1.channel[:-1] == av2.channel[:-1]) ):
                                 continue
         
-                            ## Get primary (1) and secondary (2) traces
+                            # Get primary (1) and secondary (2) traces
                             try:
                                 st1 = concierge.get_dataselect(av1.network, av1.station, av1.location, av1.channel, inclusiveEnd=False)
                             except Exception as e:
@@ -318,13 +397,14 @@ def transferFunction_metrics(concierge):
                             logger.info('Calculating transferFunction metrics for %s:%s' % (av1.snclId, av2.snclId))
                             try:
                                 df = irismustangmetrics.apply_transferFunction_metric(st1, st2, evalresp1, evalresp2)
-                                # By default, this metrics returns value="N". Convert this to NaN
-                                df.value = np.NaN
-                                dataframes.append(df)
                             except Exception as e:
                                 logger.error('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+                                continue
                             
-        
+                            # By default, this metrics returns value="N". Convert this to NaN
+                            df.value = np.NaN
+                            dataframes.append(df)
+
                         # END for rows (pairs) in matrix
         
                     # END if matrix has rows
@@ -334,35 +414,80 @@ def transferFunction_metrics(concierge):
         
         
                 ## Get traces, spectra and transfer functions for horizontal channels that DO need rotating
+                for i in range(2):
                 #for (i in 1:length(matrixListToRotate)) {
         
+                    if matrixListToRotate[i].shape[0] != 0:
                     #if ( nrow(matrixListToRotate[[i]]) != 0 ) {
         
+                        for j in range(matrixListToRotate[i].shape[0]):
                         #for ( j in seq(nrow(matrixListToRotate[[i]])) ) {
-        
+             
+                            av1 = availabilityList[i].iloc[int(matrixListToRotate[i].iloc[j,0]),]   # Primary trace for Y (i=1) or X (i=2)
+                            av2 = availabilityList[i].iloc[int(matrixListToRotate[i].iloc[j,1]),]   # Secondary trace for Y (i=1) or X (i=2)
                             #av1 <- availabilityList[[i]][matrixListToRotate[[i]][j,1],]   # Primary trace for Y (i=1) or X (i=2)
                             #av2 <- availabilityList[[i]][matrixListToRotate[[i]][j,2],]   # Secondary trace for Y (i=1) or X (i=2)
         
-                            ## We don't want to compare 2 sample rates from the same instrument.
-                            ## We'll define the same instrument as one where the location code 
-                            ## and last 2 characters of the channel code match.
+                            # We don't want to compare 2 sample rates from the same instrument.
+                            # We'll define the same instrument as one where the location code 
+                            # and last 2 characters of the channel code match.
+                            if ( (av1.location == av2.location) and (av1.channel[:-1] == av2.channel[:-1]) ):
+                                continue
                             #if ( (av1$location == av2$location) && (substring(av1$channel,2) == substring(av2$channel,2) ) ) { next }
         
-                            ## Orthogonal mate of av2 - we assume they will have matching snclPrefixes
+                            # Orthogonal mate of av2 - we assume they will have matching snclPrefixes
+                            if i == 0:
+                                av3 = availabilityList[i+1][availabilityList[i+1].snclPrefix == av2.snclPrefix]
+                            else:
+                                av3 = availabilityList[i-1][availabilityList[i-1].snclPrefix == av2.snclPrefix]
+                                
+                                
                             #if (i == 1) {
                                 #av3 = subset(availabilityList[[i+1]], grepl(av2$snclPrefix,snclPrefix))
                                 #} else {
                                     #av3 = subset(availabilityList[[i-1]], grepl(av2$snclPrefix,snclPrefix))
                                 #}  
         
-                            ## We need to have exactly 1 orthogonal trace for rotation
+                            # We need to have exactly 1 orthogonal trace for rotation
+                            if av3.shape[0] != 1:
+                                continue
+                            else:
+                                av3 = av3.iloc[0,] # convert from DataFrame to Series
                             #if (nrow(av3) != 1) {
                                 #next
                             #}
         
+                            rotAngle = matrixListToRotate[i].iloc[j,2]
                             #rotAngle <- matrixListToRotate[[i]][j,3]
         
-                            ## Get primary (1), secondary (2), and secondary orthogonal traces
+                            # Get primary (1), secondary (2), and secondary orthogonal traces
+                            try:
+                                st1 = concierge.get_dataselect(av1.network, av1.station, av1.location, av1.channel, inclusiveEnd=False)
+                            except Exception as e:
+                                if str(e).lower().find('no data') > -1:
+                                    logger.debug('No data for %s' % (av1.snclId))
+                                else:
+                                    logger.debug('No data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
+                                continue
+        
+                            try:
+                                st2 = concierge.get_dataselect(av2.network, av2.station, av2.location, av2.channel, inclusiveEnd=False)
+                            except Exception as e:
+                                if str(e).lower().find('no data') > -1:
+                                    logger.debug('No data for %s' % (av2.snclId))
+                                else:
+                                    logger.debug('No data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
+                                continue
+                             
+                            try:
+                                st3 = concierge.get_dataselect(av3.network, av3.station, av3.location, av3.channel, inclusiveEnd=False)
+                            except Exception as e:
+                                if str(e).lower().find('no data') > -1:
+                                    logger.debug('No data for %s' % (av3.snclId))
+                                else:
+                                    logger.debug('No data for %s from %s: %s' % (av3.snclId, concierge.dataselect_url, e))
+                                continue
+                             
                             #result <- try( st1 <- IRISSeismic::getDataselect(iris, av1$network, av1$station, av1$location, av1$channel, starttime, endtime, inclusiveEnd=FALSE),
                                            #silent=TRUE )
         
@@ -387,14 +512,30 @@ def transferFunction_metrics(concierge):
                                 #next
                             #}
         
+                            sampling_rate = min( utils.get_slot(st1, 'sampling_rate'), utils.get_slot(st2, 'sampling_rate') )
                             #sampling_rate <- min(st1@traces[[1]]@stats@sampling_rate, st2@traces[[1]]@stats@sampling_rate)
         
-                            ## Get primary (1), secondary (2) and orthogonal secondary spectra     
+                            # Get primary (1), secondary (2) and orthogonal secondary spectra 
+                            evalresp1 = getTransferFunctionSpectra(st1, sampling_rate)
+                            evalresp2 = getTransferFunctionSpectra(st2, sampling_rate)          
+                            evalresp3 = getTransferFunctionSpectra(st3, sampling_rate)                                      
                             #evalresp1 <- getTransferFunctionSpectra(st1,sampling_rate)
                             #evalresp2 <- getTransferFunctionSpectra(st2,sampling_rate)          
                             #evalresp3 <- getTransferFunctionSpectra(st3,sampling_rate)
         
-                            ## Determine which secondary trace is Y vs. X
+                            # Determine which secondary trace is Y vs. X
+                            if av2.cartAxis == "Y":
+                                Yst2 = st2
+                                Xst2 = st3
+                                Yevalresp2 = evalresp2
+                                Xevalresp2 = evalresp3
+                            elif av2.cartAxis == "X":
+                                Yst2 = st3
+                                Xst2 = st2
+                                Yevalresp2 = evalresp3
+                                Xevalresp2 = evalresp2
+                            else:
+                                continue
                             #if (av2$cartAxis == "Y") {
                                 #Yst2 <- st2
                                 #Xst2 <- st3
@@ -409,7 +550,16 @@ def transferFunction_metrics(concierge):
                                         #next
                                     #}
         
-                            ## Rotate the secondary traces
+                            # Rotate the secondary traces
+                            try:
+                                traceRotList = irisseismic.rotate2D(Yst2, Xst2, rotAngle)
+                            except Exception as e:
+                                if str(e).lower().find('no data') > -1:
+                                    logger.debug('No data for %s' % (Zav1.snclId))
+                                else:
+                                    logger.debug('No data for %s from %s: %s' % (Zav1.snclId, concierge.dataselect_url, e))
+                                continue
+                            
                             #traceRotList <- list()          
                             #result <- try(traceRotList <- IRISSeismic::rotate2D(Yst2,Xst2,rotAngle), silent=TRUE)
         
@@ -418,21 +568,52 @@ def transferFunction_metrics(concierge):
                                 #next
                             #}
         
+                            RYst = traceRotList[0]
+                            RXst = traceRotList[1]
                             #RYst2 <- traceRotList[[1]]
                             #RXst2 <- traceRotList[[2]]
         
-                            ## Rotate the secondary spectra
+                            # Rotate the secondary spectra
+                            radians = rotAngle * math.pi/180.0
                             #radians <- rotAngle * pi/180
         
+                            RYevalresp2 = Yevalresp2
+                            RXevalresp2 = Xevalresp2
                             #RYevalresp2 <- Yevalresp2
                             #RXevalresp2 <- Xevalresp2
         
-                            ## sin**2(rotAngle) + cos**2(rotAngle) = 1
+                            # sin**2(rotAngle) + cos**2(rotAngle) = 1
+                            RYevalresp2.amp = (math.cos(radians))**2 * Yevalresp2.amp + (math.sin(radians))**2 * Xevalresp2.amp
+                            RXevalresp2.amp = (-1.0 * math.sin(radians))**2 * Yevalresp2.amp + (math.cos(radians))**2 * Xevalresp2.amp
                             #RYevalresp2$amp <-  (cos(radians))^2 * Yevalresp2$amp + (sin(radians))^2 * Xevalresp2$amp
                             #RXevalresp2$amp <- (-sin(radians))^2 * Yevalresp2$amp + (cos(radians))^2 * Xevalresp2$amp
         
-                            ## Determine whether primary trace was X or Y
-                            ## Calculate the metric and append it to the current list
+                            # Determine whether primary trace was X or Y
+                            if av1.cartAxis == "Y":
+                                logger.info('Calculating transferFunction metrics for %s:%s' % (av1.snclId, av2.snclId))
+                                try:
+                                    df = irismustangmetrics.apply_transferFunction_metric(st1, st2, evalresp1, evalresp2)
+                                except Exception as e:
+                                    logger.error('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+                                    continue
+                                
+                                # By default, this metrics returns value="N". Convert this to NaN
+                                df.value = np.NaN
+                                dataframes.append(df)
+                                
+                            elif av1.cartAxis == "X":
+                                logger.info('Calculating transferFunction metrics for %s:%s' % (av1.snclId, av2.snclId))
+                                try:
+                                    df = irismustangmetrics.apply_transferFunction_metric(st1, st2, evalresp1, evalresp2)
+                                except Exception as e:
+                                    logger.error('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+                                    continue
+                                
+                                # By default, this metrics returns value="N". Convert this to NaN
+                                df.value = np.NaN
+                                dataframes.append(df)
+                                
+                                
                             #if (av1$cartAxis == "Y") {
                                 #result <- try( tempList <- transferFunctionMetric(st1,RYst2,evalresp1,RYevalresp2),
                                                #silent=TRUE )
@@ -457,223 +638,158 @@ def transferFunction_metrics(concierge):
                                     #} 
                                 #}
         
-                            #} # END of for location pairs in matrix
+                        # END of for location pairs in matrix
         
-                        #} # END if matrix has rows
+                    # END if matrix has rows
         
-                    #} # END for lists of pairs we DO rotate
+                # END for lists of pairs we DO rotate
         
-            #} else {
-        
-                ## Write warning if dip are neither vertical nor horizontal.
-                ## They would require 3D rotation that isn't available here.
+            else:
+
+                # Write warning if dip are neither vertical nor horizontal.
+                # They would require 3D rotation that isn't available here.
+                logger.debug('skipping %s -- dip %f  requires 3D rotation' % (channelAvailability.snclId.iloc[i], channelAvailability.dip.iloc[i]))
                 #for (i in seq(nrow(channelAvailability))) {
                     #setProcessExitCode( MCRWarning(paste("transfer function skipping",channelAvailability[i,]$snclId, "- dip",channelAvailability[i,]$dip,"requires 3D rotation", ": start=",starttime, " end=",endtime)) )
                 #}
         
-            #} # END of if dip = ...
-
-
-# ------------------------------------------------------------------------------
-#      Utility Functions
-# ------------------------------------------------------------------------------
-
-
-# getTransferFunctionSpectra is needed in transferFunction_metrics.py
-def getTransferFunctionSpectra(st, sampling_rate):
-    # This function returns an evalresp fap response for trace st using sampling_rate 
-    # to determine frequency limits
-
-    # Min and Max frequencies for evalresp will be those used for the cross spectral binning
-    alignFreq = 0.1
-
-    if (sampling_rate <= 1):
-        loFreq = 0.001
-    elif (sampling_rate > 1 and sampling_rate < 10):
-        loFreq = 0.0025
-    else:
-        loFreq = 0.005
-
-    # No need to exceed the Nyquist frequency after decimation
-    hiFreq = 0.5 * sampling_rate
-
-    log2_alignFreq = math.log(alignFreq,2)
-    log2_loFreq = math.log(loFreq,2)
-    log2_hiFreq = math.log(hiFreq,2)
-    
-    if alignFreq >= hiFreq:
-        octaves = []
-        octave = log2_alignFreq
-        while octave >= log2_loFreq:
-            if octave <= log2_hiFreq:
-                octaves.append(octave)
-            octave -= 0.125
-            octaves = pd.Series(octaves).sort_values().reset_index(drop=True)
+            # END of if dip = ...
             
-    else:
-        octaves = []
-        octave = log2_alignFreq
-        loOctaves = []
-        while octave >= log2_loFreq:
-            loOctaves.append(octave)
-            octave -= 0.125
-        loOctaves = pd.Series(loOctaves)
-            
-            
-        octave = log2_alignFreq
-        hiOctaves = []
-        while octave <= log2_hiFreq:
-            hiOctaves.append(octave)
-            octave += 0.125
-        hiOctaves = pd.Series(hiOctaves)
-            
-        octaves = loOctaves.append(hiOctaves).drop_duplicates().sort_values().reset_index(drop=True)
+        # END for dips
+          
+    # END for stations    
         
-    binFreq = pow(2,octaves)
-
-    # Argurments for evalresp
-    minfreq = min(binFreq)
-    maxfreq = max(binFreq)
-    nfreq = len(binFreq)
-    units = 'def'
-    output = 'fap'
-
-    network = utils.get_slot(st,'network')
-    station = utils.get_slot(st,'station')
-    location = utils.get_slot(st,'location')
-    channel = utils.get_slot(st,'channel')
-    starttime = utils.get_slot(st,'starttime')
-    
-    evalResp = irisseismic.getEvalresp(network, station, location, channel, starttime,
-                                       minfreq, maxfreq, nfreq, units, output)
-
-    return(evalResp)
-
-
-
-
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-
-def OLD_transferFunction_metrics(concierge):
-    """
-    Generate *transfer* metrics.
-
-    :type concierge: :class:`~ispaq.concierge.Concierge`
-    :param concierge: Data access expiditer.
-
-    :rtype: pandas dataframe
-    :return: Dataframe of simple metrics.
-
-    .. rubric:: Example
-
-    TODO:  doctest examples
-    """
-    # Get the logger from the concierge
-    logger = concierge.logger
-
-    # Container for all of the metrics dataframes generated
-    dataframes = []
-
-    # ----- All available SNCLs -------------------------------------------------
-    
-    availability = concierge.get_availability()
-
-    # function metadata dictionary
-    function_metadata = concierge.function_by_logic['transferFunction']
-
-    # Find the locations associated with seismic channels
-    channels = sorted(set(availability.channel))
-    
-    ############################################################
-    # Loop through all channels looking for multiple locations.
-    ############################################################
-
-    for channel in channels:
-        
-        channelAvailability = availability[availability.channel == channel]
-        
-        # Bail if there is only one location
-        if channelAvailability.shape[0] == 1:
-            continue
-        
-        # NOTE:  channelAvailability is a dataframe with one row per location for the current SN.L
-        # NOTE:  Now we use itertools.combinations to generate all combinations of locations of rows.
-        
-        rowMatrix = []
-        for combo in itertools.combinations(range(channelAvailability.shape[0]), 2):
-            rowMatrix.append(combo)
-        
-        # Convert to a numpy matrix for total agreement with original R code
-        rowMatrix = np.matrix(rowMatrix)
-              
-        ############################################################
-        # Loop through all location pairs for this channel
-        ############################################################
-
-        for i in range(rowMatrix.shape[0]):
-            
-            av1 = channelAvailability.iloc[rowMatrix[i,0],]
-            av2 = channelAvailability.iloc[rowMatrix[i,1],]
-        
-            # Only continue if azimuths are within 5 degrees of eachother
-            azimuthAngle = abs(av1.azimuth - av2.azimuth) * math.pi/180.0
-            maxAzimuthAngle = 5.0 * math.pi/180.0
-            if (math.cos(azimuthAngle) < math.cos(maxAzimuthAngle)):
-                logger.debug('\tskipping %s:%s because azimuths differ by more than 5 degrees' % (av1.snclId, av2.snclId))
-                continue
-        
-            # Only continue if dips are within 5 degrees of eachother
-            dipAngle = abs(av1.dip - av2.dip) * math.pi/180.0
-            maxDipAngle = 5.0 * math.pi/180.0
-            if (math.cos(dipAngle) < math.cos(maxDipAngle)):
-                logger.debug('\tskipping %s:%s because dips differ by more than 5 degrees' % (av1.snclId, av2.snclId))
-                continue
-        
-            # Channels OK so proceed
-        
-            try:
-                r_stream1 = concierge.get_dataselect(av1.network, av1.station, av1.location, av1.channel)
-            except Exception as e:
-                logger.warning('\tunable to obtain data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
-                continue
-            
-            try:
-                r_stream2 = concierge.get_dataselect(av2.network, av2.station, av2.location, av2.channel)
-            except Exception as e:
-                logger.warning('\tunable to obtain data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
-                continue
-            
-            
-            # Run the transferFunction metric ----------------------------------------
-    
-            logger.info('Calculating transferFunction metrics for %s:%s' % (av1.snclId, av2.snclId))
-            try:
-                df = irismustangmetrics.apply_correlation_metric(r_stream1, r_stream2, 'transferFunction')
-                # By default, this metrics returns value="N". Convert this to NaN
-                df.value = np.NaN
-                dataframes.append(df)
-            except Exception as e:
-                logger.error('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
-                
-        
-        # END of location-pairs loop
-        
-        
-    # END of channel loop
-            
-
-    # Create a boolean mask for filtering the dataframe
-    def valid_metric(x):
-        return x in concierge.metric_names
 
     result = pd.concat(dataframes, ignore_index=True)
-    mask = result.metricName.apply(valid_metric)
-    result = result[(mask)]
     result.reset_index(drop=True, inplace=True)
 
     return(result)
+
+
+
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+
+#def OLD_transferFunction_metrics(concierge):
+    #"""
+    #Generate *transfer* metrics.
+
+    #:type concierge: :class:`~ispaq.concierge.Concierge`
+    #:param concierge: Data access expiditer.
+
+    #:rtype: pandas dataframe
+    #:return: Dataframe of simple metrics.
+
+    #.. rubric:: Example
+
+    #TODO:  doctest examples
+    #"""
+    ## Get the logger from the concierge
+    #logger = concierge.logger
+
+    ## Container for all of the metrics dataframes generated
+    #dataframes = []
+
+    ## ----- All available SNCLs -------------------------------------------------
+    
+    #availability = concierge.get_availability()
+
+    ## function metadata dictionary
+    #function_metadata = concierge.function_by_logic['transferFunction']
+
+    ## Find the locations associated with seismic channels
+    #channels = sorted(set(availability.channel))
+    
+    #############################################################
+    ## Loop through all channels looking for multiple locations.
+    #############################################################
+
+    #for channel in channels:
+        
+        #channelAvailability = availability[availability.channel == channel]
+        
+        ## Bail if there is only one location
+        #if channelAvailability.shape[0] == 1:
+            #continue
+        
+        ## NOTE:  channelAvailability is a dataframe with one row per location for the current SN.L
+        ## NOTE:  Now we use itertools.combinations to generate all combinations of locations of rows.
+        
+        #rowMatrix = []
+        #for combo in itertools.combinations(range(channelAvailability.shape[0]), 2):
+            #rowMatrix.append(combo)
+        
+        ## Convert to a numpy matrix for total agreement with original R code
+        #rowMatrix = np.matrix(rowMatrix)
+              
+        #############################################################
+        ## Loop through all location pairs for this channel
+        #############################################################
+
+        #for i in range(rowMatrix.shape[0]):
+            
+            #av1 = channelAvailability.iloc[rowMatrix[i,0],]
+            #av2 = channelAvailability.iloc[rowMatrix[i,1],]
+        
+            ## Only continue if azimuths are within 5 degrees of eachother
+            #azimuthAngle = abs(av1.azimuth - av2.azimuth) * math.pi/180.0
+            #maxAzimuthAngle = 5.0 * math.pi/180.0
+            #if (math.cos(azimuthAngle) < math.cos(maxAzimuthAngle)):
+                #logger.debug('\tskipping %s:%s because azimuths differ by more than 5 degrees' % (av1.snclId, av2.snclId))
+                #continue
+        
+            ## Only continue if dips are within 5 degrees of eachother
+            #dipAngle = abs(av1.dip - av2.dip) * math.pi/180.0
+            #maxDipAngle = 5.0 * math.pi/180.0
+            #if (math.cos(dipAngle) < math.cos(maxDipAngle)):
+                #logger.debug('\tskipping %s:%s because dips differ by more than 5 degrees' % (av1.snclId, av2.snclId))
+                #continue
+        
+            ## Channels OK so proceed
+        
+            #try:
+                #r_stream1 = concierge.get_dataselect(av1.network, av1.station, av1.location, av1.channel)
+            #except Exception as e:
+                #logger.warning('\tunable to obtain data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
+                #continue
+            
+            #try:
+                #r_stream2 = concierge.get_dataselect(av2.network, av2.station, av2.location, av2.channel)
+            #except Exception as e:
+                #logger.warning('\tunable to obtain data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
+                #continue
+            
+            
+            ## Run the transferFunction metric ----------------------------------------
+    
+            #logger.info('Calculating transferFunction metrics for %s:%s' % (av1.snclId, av2.snclId))
+            #try:
+                #df = irismustangmetrics.apply_correlation_metric(r_stream1, r_stream2, 'transferFunction')
+                ## By default, this metrics returns value="N". Convert this to NaN
+                #df.value = np.NaN
+                #dataframes.append(df)
+            #except Exception as e:
+                #logger.error('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+                
+        
+        ## END of location-pairs loop
+        
+        
+    ## END of channel loop
+            
+
+    ## Create a boolean mask for filtering the dataframe
+    #def valid_metric(x):
+        #return x in concierge.metric_names
+
+    #result = pd.concat(dataframes, ignore_index=True)
+    #mask = result.metricName.apply(valid_metric)
+    #result = result[(mask)]
+    #result.reset_index(drop=True, inplace=True)
+
+    #return(result)
 
 
 # ------------------------------------------------------------------------------

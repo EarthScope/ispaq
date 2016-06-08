@@ -796,7 +796,11 @@ def rotate2D(st1, st2, angle):
     R_function = robjects.r('IRISSeismic::rotate2D')
     r_list = R_function(st1, st2, angle)
     
-    return(r_filter)
+    returnList = []
+    returnList.append(r_list[0])
+    returnList.append(r_list[1])
+    
+    return(returnList)
 
 
 # ------------------------------------------------------------------------------
