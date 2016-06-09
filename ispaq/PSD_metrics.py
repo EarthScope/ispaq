@@ -53,9 +53,13 @@ def PSD_metrics(concierge):
     # function metadata dictionary
     function_metadata = concierge.function_by_logic['PSD']
     
+    logger.info('Calculating PSD metrics for %d SNCLs.' % (availability.shape[0]))
+    
     # Loop over rows of the availability dataframe
     for (index, av) in availability.iterrows():
                 
+        logger.info('%03d Calculating PSD metrics for %s' % (index, av.snclId))
+
         # Get the data ----------------------------------------------
 
         # NOTE:  Use the requested starttime, not just what is available
@@ -81,7 +85,6 @@ def PSD_metrics(concierge):
         # Run the PSD metric ----------------------------------------
 
         if function_metadata.has_key('PSD'):
-            logger.info('Calculating PSD metrics for ' + av.snclId)
             try:
                 df = irismustangmetrics.apply_PSD_metric(r_stream)
                 dataframes.append(df)
@@ -91,7 +94,6 @@ def PSD_metrics(concierge):
         # Run the PSD plot ------------------------------------------
 
         if function_metadata.has_key('PSDPlot'):
-            logger.info('Generating PDF plot for ' + av.snclId)
             try:  
                 # TODO:  Use concierge to determine where to put the plots?
                 starttime = utils.get_slot(r_stream, 'starttime')

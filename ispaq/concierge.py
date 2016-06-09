@@ -373,8 +373,7 @@ class Concierge(object):
             # Read from FDSN web services
             try:
                 r_stream = irisseismic.R_getDataselect(self.dataselect_url, network, station, location, channel, _starttime, _endtime, quality, inclusiveEnd, ignoreEpoch)
-            except Exception as e:
-                self.logger.warning('No data for %s.%s.%s.%s' % (network, station, location, channel))
+            except:
                 raise
 
            

@@ -60,7 +60,7 @@ def pressureCorrelation_metrics(concierge):
     # Loop over rows of the availability dataframe
     for (pIndex, pAv) in pressureAvailability.iterrows():
         
-        logger.debug('Working on %s' % (pAv.snclId))
+        logger.info(' %03d Pressure channel %s' % (pIndex, pAv.snclId))
         
         # Get the data ----------------------------------------------
 
@@ -131,6 +131,7 @@ def pressureCorrelation_metrics(concierge):
                     logger.debug("%s" % (e))
                     continue
                 
+                logger.debug('Calculating pressureCorrelation metrics for %s:%s' % (pAv.snclId, lAv.snclId))
                 try:
                     df = irismustangmetrics.apply_correlation_metric(r_pStream, r_stream, 'correlation')
                     dataframes.append(df)

@@ -53,10 +53,12 @@ def simple_metrics(concierge):
     # function metadata dictionary
     function_metadata = concierge.function_by_logic['simple']
     
+    logger.info('Calculating simple metrics for %d SNCLs.' % (availability.shape[0]))
+    
     # Loop over rows of the availability dataframe
     for (index, av) in availability.iterrows():
                 
-        logger.info('Calculating simple metrics for ' + av.snclId)
+        logger.info('%03d Calculating simple metrics for %s' % (index, av.snclId))
 
         # Get the data ----------------------------------------------
 

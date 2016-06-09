@@ -64,7 +64,7 @@ def crossTalk_metrics(concierge):
 
     for (index, event) in events.iterrows():
 
-        logger.debug('%03d Magnitude %3.1f event: %s' % (index, event.magnitude, event.eventLocationName))
+        logger.info('%03d Magnitude %3.1f event: %s' % (index, event.magnitude, event.eventLocationName))
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
@@ -154,7 +154,7 @@ def crossTalk_metrics(concierge):
             # At this point, each stream in streamList has only one trace
             # and can now be used in the correlation metric.
             
-            logger.debug('Calculating correlation metrics for %d streams.' % (len(streamList)))
+            logger.debug('Calculating crossTalk metrics for %d streams.' % (len(streamList)))
             
             # 1-2
             try:

@@ -59,11 +59,11 @@ def SNR_metrics(concierge):
     ## Loop through each event.
     #############################################################
 
-    logger.info('Calculating SNR metrics for %d events.' % events.shape[0])
+    logger.info('Calculating SNR metrics for %d events.' % (events.shape[0]))
 
     for (index, event) in events.iterrows():
 
-        logger.debug('%03d Magnitude %3.1f event: %s' % (index, event.magnitude, event.eventLocationName))
+        logger.info('%03d Magnitude %3.1f event: %s' % (index, event.magnitude, event.eventLocationName))
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
@@ -93,6 +93,8 @@ def SNR_metrics(concierge):
         if availability.shape[0] == 0:
             logger.debug('Skipping because no SNCLs are available')
             continue
+        
+        logger.debug('%d SNCLs available for this event' % (availability.shape[0]))        
     
     
         # ----- All available SNCLs -------------------------------------------------
@@ -152,12 +154,12 @@ def SNR_metrics(concierge):
                     logger.debug('Skipping %s becuase it is missing data in the SNR window' % (av.snclId)) 
                     continue
                 else:
-                    if function_metadata.has_key('SNR'):
-                        try:
-                            df = irismustangmetrics.apply_simple_metric(r_stream, 'SNR', algorithm="splitWindow", windowSecs=windowSecs)
-                            dataframes.append(df)
-                        except Exception as e:
-                            logger.debug('"SNR" metric calculation failed for %s: %s' % (av.snclId, e))
+                    logger.debug('Calculating SNR metrics for %s' % (av.snclId))
+                    try:
+                        df = irismustangmetrics.apply_simple_metric(r_stream, 'SNR', algorithm="splitWindow", windowSecs=windowSecs)
+                        dataframes.append(df)
+                    except Exception as e:
+                        logger.debug('"SNR" metric calculation failed for %s: %s' % (av.snclId, e))
                     
                 
 

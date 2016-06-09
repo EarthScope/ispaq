@@ -149,6 +149,8 @@ def transferFunction_metrics(concierge):
         (network,station) = networkStation.split('.')
         stationAvailability = availability[(availability.network == network) & (availability.station == station)].reset_index(drop=True)
         
+        logger.info('Network-Station pair %s.%s has %d channels' % (network, station, stationAvailability.shape[0]))
+        
         ##################################################################
         # Loop through all channels by dip looking for multiple locations.
         ##################################################################
@@ -157,6 +159,8 @@ def transferFunction_metrics(concierge):
         dips = stationAvailability.dip.abs().drop_duplicates().sort_values().reset_index(drop=True)
     
         for dip in dips:
+    
+            logger.info('Working on dip %f' % (dip))
     
             # Find channels with the current dip
             channelAvailability = stationAvailability[abs(stationAvailability.dip) == dip].reset_index(drop=True)
@@ -499,10 +503,7 @@ def transferFunction_metrics(concierge):
                             try:
                                 traceRotList = irisseismic.rotate2D(Yst2, Xst2, rotAngle)
                             except Exception as e:
-                                if str(e).lower().find('no data') > -1:
-                                    logger.debug('No data for %s' % (Zav1.snclId))
-                                else:
-                                    logger.debug('No data for %s from %s: %s' % (Zav1.snclId, concierge.dataselect_url, e))
+                                logger.debug('Trace rotation failed: %s' % (e))
                                 continue
                             
                             RYst = traceRotList[0]

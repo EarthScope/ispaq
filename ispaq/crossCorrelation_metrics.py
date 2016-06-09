@@ -70,7 +70,7 @@ def crossCorrelation_metrics(concierge):
 
     for (index, event) in events.iterrows():
 
-        logger.debug('%03d Magnitude %3.1f event: %s' % (index, event.magnitude, event.eventLocationName))
+        logger.info('%03d Magnitude %3.1f event: %s' % (index, event.magnitude, event.eventLocationName))
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
@@ -246,6 +246,7 @@ def crossCorrelation_metrics(concierge):
             r_filter = irisseismic.butter(defaultFilterArgs[0],defaultFilterArgs[1])
 
             # Calculate the cross-correlation metrics and append them to the list
+            logger.debug('Calculating crossCorrelation metrics for %s:%s' % (av1.snclId, av2.snclId))
             try:
                 df = irismustangmetrics.apply_correlation_metric(r_stream1, r_stream2, 'crossCorrelation', maxLagSecs, r_filter)
                 dataframes.append(df)

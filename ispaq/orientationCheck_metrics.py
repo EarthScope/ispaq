@@ -69,7 +69,7 @@ def orientationCheck_metrics(concierge):
 
     for (index, event) in events.iterrows():
 
-        logger.debug('%03d Magnitude %3.1f event: %s' % (index, event.magnitude, event.eventLocationName))
+        logger.info('%03d Magnitude %3.1f event: %s' % (index, event.magnitude, event.eventLocationName))
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):

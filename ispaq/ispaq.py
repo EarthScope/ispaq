@@ -49,7 +49,7 @@ def main():
                         help='Network.Station.Location.Channel identifier (e.g. US.OXF..BHZ)')
     parser.add_argument('-P', '--preferences-file', default=os.path.expanduser('./preference_files/cleandemo.txt'),
                         type=argparse.FileType('r'), help='location of preference file')
-    parser.add_argument('--log-level', action='store', default='DEBUG',
+    parser.add_argument('--log-level', action='store', default='INFO',
                         choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],
                         help='log level printed to console')
 

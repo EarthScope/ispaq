@@ -23,8 +23,15 @@ from rpy2 import rinterface
 from rpy2.robjects import pandas2ri
 
 
-#     R functions called internally     ----------------------------------------
+#     R Initialization     -----------------------------------------------------
 
+# Global R options are set here
+
+# Do now show error messages generated inside of the R packages
+robjects.r('options(show.error.messages=FALSE)')
+
+
+#     R functions called internally     ----------------------------------------
 
 # NOTE:  These functions behave exactly the same as the R versions and require
 # NOTE:  R-compatible objects as arguments.
@@ -442,6 +449,7 @@ def R_getDataselect(client_url="http://service.iris.edu",
         
     # Call the function and return an R Stream
     r_stream = _R_getDataselect(r_client, network, station, location, channel, starttime, endtime, quality, inclusiveEnd, ignoreEpoch)
+    
     return r_stream
 
 
