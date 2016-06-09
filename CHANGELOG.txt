@@ -1,3 +1,7 @@
+0.7.1
+ * improved logging
+ * don't show error messages from R
+
 0.7.0
  * new transferFunction_metric
  * regularized logging
