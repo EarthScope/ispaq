@@ -8,9 +8,11 @@ ISPAQ Data Access Expediter.
     (http://www.gnu.org/copyleft/lesser.html)
 """
 
-from obspy import UTCDateTime
+from __future__ import (absolute_import, division, print_function)
 
 import pandas as pd
+
+from obspy import UTCDateTime
 
 
 def write_simple_df(df, filepath, sigfigs=6):

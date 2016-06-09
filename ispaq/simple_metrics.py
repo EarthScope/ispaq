@@ -7,16 +7,19 @@ ISPAQ Business Logic for Simple Metrics.
     GNU Lesser General Public License, Version 3
     (http://www.gnu.org/copyleft/lesser.html)
 """
-from obspy import UTCDateTime
-from obspy.clients.fdsn import Client
+
+from __future__ import (absolute_import, division, print_function)
 
 import math
 import numpy as np
 import pandas as pd
 
-import utils
-import irisseismic
-import irismustangmetrics
+from obspy import UTCDateTime
+from obspy.clients.fdsn import Client
+
+from . import utils
+from . import irisseismic
+from . import irismustangmetrics
 
 
 def simple_metrics(concierge):
@@ -82,7 +85,7 @@ def simple_metrics(concierge):
                 df = irismustangmetrics.apply_simple_metric(r_stream, 'gaps')
                 dataframes.append(df)
             except Exception as e:
-                logger.error('"gaps" metric calculation failed for %s: %s' % (av.snclId, e))
+                logger.debug('"gaps" metric calculation failed for %s: %s' % (av.snclId, e))
                 
                 
         # Run the State-of-Health metric -----------------------------
@@ -92,7 +95,7 @@ def simple_metrics(concierge):
                 df = irismustangmetrics.apply_simple_metric(r_stream, 'stateOfHealth')
                 dataframes.append(df)
             except Exception as e:
-                logger.error('ERROR in "stateOfHealth" metric calculation for %s: %s' % (av.snclId, e))
+                logger.debug('"stateOfHealth" metric calculation failed for %s: %s' % (av.snclId, e))
                             
             
         # Run the Basic Stats metric ---------------------------------
@@ -102,7 +105,7 @@ def simple_metrics(concierge):
                 df = irismustangmetrics.apply_simple_metric(r_stream, 'basicStats')
                 dataframes.append(df)
             except Exception as e:
-                logger.error('"basicStats" metric calculation failed for %s: %s' % (av.snclId, e))
+                logger.debug('"basicStats" metric calculation failed for %s: %s' % (av.snclId, e))
                             
        
         # Run the STALTA metric --------------------------------------
@@ -118,13 +121,13 @@ def simple_metrics(concierge):
             # Limit this metric to BH. and HH. channels
             if av.channel.startswith('BH') or av.channel.startswith('HH'):
                 sampling_rate = utils.get_slot(r_stream, 'sampling_rate')
-                increment = math.ceil(sampling_rate/2)
+                increment = math.ceil(sampling_rate/2.0)
                 
                 try:
                     df = irismustangmetrics.apply_simple_metric(r_stream, 'STALTA', staSecs=3, ltaSecs=30, increment=increment, algorithm='classic_LR')
                     dataframes.append(df)
                 except Exception as e:
-                    logger.error('"STALTA" metric calculation failed for for %s: %s' % (av.snclId, e))
+                    logger.debug('"STALTA" metric calculation failed for for %s: %s' % (av.snclId, e))
             
             
         # Run the Spikes metric --------------------------------------
@@ -142,7 +145,7 @@ def simple_metrics(concierge):
                     df = irismustangmetrics.apply_simple_metric(r_stream, 'spikes', windowSize, thresholdMin, fixedThreshold=True)
                     dataframes.append(df)
                 except Exception as e:
-                    logger.error('"spikes" metric calculation failed for %s: %s' % (av.snclId, e))            
+                    logger.debug('"spikes" metric calculation failed for %s: %s' % (av.snclId, e))            
                 
 
     # Concatenate and filter dataframes before returning -----------------------

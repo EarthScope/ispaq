@@ -7,26 +7,20 @@ Python module containing wrappers for the IRISSeismic R package.
     GNU Lesser General Public License, Version 3
     (http://www.gnu.org/copyleft/lesser.html)
 """
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-from future.builtins import *  # NOQA
-from future.types import newint
 
-from obspy import UTCDateTime
+from __future__ import (absolute_import, division, print_function)
+from future.types import newint
 
 import math
 import numpy as np
 import pandas as pd
 
+from obspy import UTCDateTime
+
 # Connect to R through the rpy2 module
 from rpy2 import robjects
 from rpy2 import rinterface
 from rpy2.robjects import pandas2ri
-
-# R options
-# NOTE:  The evalresp webservice requires integer seconds.
-# NOTE:  digits.secs=6 breaks calls to getEvalresp and hence any of the PSD stuff
-###robjects.r('options(digits.secs=6)')                   # have R functions print out fractional seconds
 
 
 #     R functions called internally     ----------------------------------------
@@ -36,12 +30,12 @@ from rpy2.robjects import pandas2ri
 # NOTE:  R-compatible objects as arguments.
 
 # from base
-_R_assign = robjects.r('base::assign')                 # assign a name to an object
-_R_get = robjects.r('base::get')                       # get an object from a name
-_R_as_integer = robjects.r('base::as.integer')         # conversion of python integers to R integer vectors
-_R_as_POSIXct = robjects.r('base::as.POSIXct')         # conversion of ISO datestrings to R POSIXct
-_R_vector = robjects.r('base::vector')                 # creation of a the list of Traces used in R_Trace
-_R_list = robjects.r('base::list')                     # creation of the headerList used in R_Trace
+_R_assign = robjects.r('base::assign')                                # assign a name to an object
+_R_get = robjects.r('base::get')                                      # get an object from a name
+_R_as_integer = robjects.r('base::as.integer')                        # conversion of python integers to R integer vectors
+_R_as_POSIXct = robjects.r('base::as.POSIXct')                        # conversion of ISO datestrings to R POSIXct
+_R_vector = robjects.r('base::vector')                                # creation of a the list of Traces used in R_Trace
+_R_list = robjects.r('base::list')                                    # creation of the headerList used in R_Trace
 
 # from IRISSeismic
 _R_initialize = robjects.r('IRISSeismic::initialize')  # initialization of various objects
@@ -59,8 +53,6 @@ _R_getSNCL = robjects.r('IRISSeismic::getSNCL')                       #
 _R_getStation = robjects.r('IRISSeismic::getStation')                 #
 _R_getTraveltime = robjects.r('IRISSeismic::getTraveltime')           #
 _R_getUnavailability = robjects.r('IRISSeismic::getUnavailability')   #
-
-# additional functions
 
 
 #     Python --> R conversion functions    -------------------------------------
@@ -143,8 +135,8 @@ def R_POSIXct(x):
            
     .. rubric:: Example
     
-    >>> print(R_POSIXct(UTCDateTime("2010-11-12 13:14:15.1617")))
-    [1] "2010-11-12 13:14:15.1617 GMT"
+    >>> print(R_POSIXct(UTCDateTime("2010-11-12 13:14:15")))
+    [1] "2010-11-12 13:14:15 GMT"
     <BLANKLINE>
     >>> print(R_POSIXct(None))
     [1] NA
@@ -377,10 +369,10 @@ def getAvailability(client_url="http://service.iris.edu",
     return df
 
 def getChannel(client_url="http://service.iris.edu",
-                network=None, station=None, location=None, channel=None,
-                starttime=None, endtime=None, includerestricted=False,
-                latitude=None, longitude=None,
-                minradius=None, maxradius=None):
+               network=None, station=None, location=None, channel=None,
+               starttime=None, endtime=None, includerestricted=False,
+               latitude=None, longitude=None,
+               minradius=None, maxradius=None):
     """
     Returns a pandas dataframe with channel metadata.
     :param network: sncl network (string)
@@ -406,7 +398,7 @@ def getChannel(client_url="http://service.iris.edu",
     2     629145000
     ...
     """
-    cmd = 'new("IrisClient", site="' + client_url + '", debug=TRUE)'
+    cmd = 'new("IrisClient", site="' + client_url + '")'
     r_client = robjects.r(cmd)
 
     # Convert python arguments to R equivalents
@@ -730,7 +722,7 @@ def multiplyBy(x, y):
     
     return(r_stream)
 
-# multiplyBy is needed in crossCorrelation_metrics.py
+# mergeTraces is needed in pressureCorrelation_metrics.py
 def mergeTraces(r_stream):
     R_function = robjects.r('IRISSeismic::mergeTraces')
     r_stream = R_function(r_stream)

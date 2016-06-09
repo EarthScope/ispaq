@@ -7,15 +7,19 @@ ISPAQ Business Logic for Simple Metrics.
     GNU Lesser General Public License, Version 3
     (http://www.gnu.org/copyleft/lesser.html)
 """
+
+from __future__ import (absolute_import, division, print_function)
+
+import math
+import numpy as np
+import pandas as pd
+
 from obspy import UTCDateTime
 from obspy.clients.fdsn import Client
 
-import os
-import pandas as pd
-
-import utils
-import irisseismic
-import irismustangmetrics
+from . import utils
+from . import irisseismic
+from . import irismustangmetrics
 
 
 def pressureCorrelation_metrics(concierge):
@@ -131,7 +135,7 @@ def pressureCorrelation_metrics(concierge):
                     df = irismustangmetrics.apply_correlation_metric(r_pStream, r_stream, 'correlation')
                     dataframes.append(df)
                 except Exception as e:
-                    logger.error('"pressure_effects" metric calculation failed for %s:%s: %s' % (pAv.snclId, lAv.snclId, e))              
+                    logger.debug('"pressure_effects" metric calculation failed for %s:%s: %s' % (pAv.snclId, lAv.snclId, e))              
     
             # End of locationAvailability loop
     

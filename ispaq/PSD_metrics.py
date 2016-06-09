@@ -7,15 +7,19 @@ ISPAQ Business Logic for Simple Metrics.
     GNU Lesser General Public License, Version 3
     (http://www.gnu.org/copyleft/lesser.html)
 """
+
+from __future__ import (absolute_import, division, print_function)
+
+import math
+import numpy as np
+import pandas as pd
+
 from obspy import UTCDateTime
 from obspy.clients.fdsn import Client
 
-import os
-import pandas as pd
-
-import utils
-import irisseismic
-import irismustangmetrics
+from . import utils
+from . import irisseismic
+from . import irismustangmetrics
 
 
 def PSD_metrics(concierge):
@@ -58,7 +62,10 @@ def PSD_metrics(concierge):
         try:
             r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel)
         except Exception as e:
-            logger.warning('Unable to obtain data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
+            if str(e).lower().find('no data') > -1:
+                logger.debug('No data for %s' % (av.snclId))
+            else:
+                logger.warning('No data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
             # TODO:  Add empty dataframe ???
             #df = pd.DataFrame({'metricName': 'percent_available',
                                #'value': 0,
@@ -79,7 +86,7 @@ def PSD_metrics(concierge):
                 df = irismustangmetrics.apply_PSD_metric(r_stream)
                 dataframes.append(df)
             except Exception as e:
-                logger.error('"PSD" metric calculation failed for %s: %s' % (av.snclId, e))
+                logger.debug('"PSD" metric calculation failed for %s: %s' % (av.snclId, e))
                 
         # Run the PSD plot ------------------------------------------
 
@@ -92,7 +99,7 @@ def PSD_metrics(concierge):
                 filepath = concierge.plot_output_dir + '/' + filename
                 status = irismustangmetrics.apply_PSD_plot(r_stream, filepath)
             except Exception as e:
-                logger.error('"PSD" plot generation failed for %s: %s' % (av.snclId, e))
+                logger.debug('"PSD" plot generation failed for %s: %s' % (av.snclId, e))
                     
 
     # Concatenate and filter dataframes before returning -----------------------

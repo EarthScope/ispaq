@@ -18,28 +18,22 @@ Functions in the IRISMustangMetrics R package provide this metadata so that
 functions can be called programmatically from python without the user having
 to know anything about the particular metric function they are calling.
 """
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-from future.builtins import *  # NOQA
 
-from obspy.core import UTCDateTime
+from __future__ import (absolute_import, division, print_function)
 
 import math
 import numpy as np
 import pandas as pd
+
+from obspy.core import UTCDateTime
 
 # Connect to R through the rpy2 module
 from rpy2 import robjects
 from rpy2 import rinterface
 from rpy2.robjects import pandas2ri
 
-# R options
-# NOTE:  The evalresp webservice requires integer seconds.
-# NOTE:  digits.secs=6 breaks calls to getEvalresp and hence any of the PSD stuff
-###robjects.r('options(digits.secs=6)')      # print out fractional seconds
 
-
-###   R functions called internally     ----------------------------------------
+#   R functions called internally     ------------------------------------------
 
 
 # NOTE:  These functions behave exactly the same as the R versions and require
@@ -161,15 +155,6 @@ def _R_getMetricFunctionMetdata():
             'businessLogic': 'PSD',
             'metrics': ['pdf_plot']
         },
-        'transferFunction': {
-            'streamCount': 2,
-            'outputType': 'SingleValue',
-            'fullDay': True,
-            'speed': 'slow',
-            'extraAttributes': ['gain_ratio', 'phase_diff', 'ms_coherence'],
-            'businessLogic': 'transferFunction',
-            'metrics': ['transfer_function']
-        },
         'crossTalk': {
             'streamCount': 2,
             'outputType': 'SingleValue',
@@ -205,6 +190,15 @@ def _R_getMetricFunctionMetdata():
             #'extraAttributes': [],
             #'businessLogic': 'orientationCheck',
             #'metrics': ['orientation_check']
+        },
+        'transferFunction': {
+            'streamCount': 2,
+            'outputType': 'SingleValue',
+            'fullDay': True,
+            'speed': 'slow',
+            'extraAttributes': ['gain_ratio', 'phase_diff', 'ms_coherence'],
+            'businessLogic': 'transferFunction',
+            'metrics': ['transfer_function']
         }
     }
     return(functiondict)
@@ -284,7 +278,6 @@ def apply_transferFunction_metric(r_stream1, r_stream2, evalresp1, evalresp2):
     df.starttime = df.starttime.apply(UTCDateTime)
     df.endtime = df.endtime.apply(UTCDateTime)
     return df
-
 
 
 #     Functions for PSDMetrics     ---------------------------------------------

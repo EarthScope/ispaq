@@ -29,10 +29,6 @@
 # 2011-05-18 -- IU.GRFO..BH? -- Test 1 of dead channel detection
 # 2011-06-02 -- IU.GRFO..BH? -- Test 2 of dead channel detection
 #
-# transfer
-#
-# 2012-10-03 -- II.PALK.*.*, II.NIL.*.* -- channels with problems (transfer_function coherence is very close to 1.0 but gain ratio is not)
-#
 # crossTalk
 #
 # 2013-09-21 -- II.B*.00.*
@@ -49,9 +45,10 @@
 # orientationCheck
 #
 # 2009-02-18 -- ZU.NZ19.*.* -- Stachnik paper
-
-
-
+#
+# transferFunction
+#
+# 2012-10-03 -- II.PALK.*.*, II.NIL.*.* -- channels with problems (transfer_function coherence is very close to 1.0 but gain ratio is not)
 
 
 
@@ -68,11 +65,11 @@ Metrics:
   SNR: sample_snr
   PSD: pct_above_nhnm, pct_below_nlnm, dead_channel_exp, dead_channel_lin, dead_channel_gsn
   PDF: pdf_plot
-  transfer: transfer_function
   crossTalk: cross_talk
   pressureCorrelation: pressure_effects
   crossCorrelation: polarity_check, timing_drift
   ###orientationCheck: orientation_check
+  transferFunction: transfer_function
   
   # ----- Custom combinations -----
   metrics_1: sample_rms, num_gaps, percent_availability
@@ -81,7 +78,6 @@ Metrics:
   metrics_4: sample_mean, num_gaps, max_stalta, num_spikes, sample_snr
   MyContinuityMetrics: num_gaps, num_overlaps, num_spikes
   MyStats: sample_max, sample_mean, sample_median, sample_rms
-  debugMetrics: transfer_function
   
 
 
@@ -110,12 +106,12 @@ SNCLs:
   STALTA: IU.ANMO.00.BHZ, US.OXF..BHZ, IU.GUMO.00.*
   SNR: IU.GUMO.00.BHZ
   PSD: IU.GRFO..BH?
-  transfer: II.PALK.*.*
-  transfer2: II.NIL.*.*
+  PDF: IU.GRFO..BH?
   crossTalk: II.B*.00.*
   pressureCorrelation: IU.A*.*.L*
   crossCorrelation: II.E*.00.B??
   ###orientationCheck: ZU.NZ19.*.*
+  transferFunction: II.PALK.*.*
   
   
   bad_sncl: US.OXF..BOP # does not exist
@@ -159,6 +155,7 @@ Data_Access:
   #dataselect_url: test_data
   #event_url: test_data/2010-02-27_event.xml
   #station_url: test_data/IU.ANMO.00.BHZ_station.xml
+  
   
 
 # User defined preferences ----------------------------------------------------

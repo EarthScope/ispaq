@@ -3,32 +3,34 @@
 
 """ispaq.ispaq: provides entry point main()."""
 
-
-__version__ = "0.6.1"
+from __future__ import (absolute_import, division, print_function)
 
 # Basic modules
+import os
+import sys
 import argparse
 import datetime
 import logging
-import os
-import sys
 
 # ISPAQ modules
-from concierge import Concierge
-from user_request import UserRequest
-import irisseismic
-import irismustangmetrics
-import utils
+from .user_request import UserRequest
+from .concierge import Concierge
+from . import irisseismic
+from . import irismustangmetrics
+from . import utils
 
 # Specific ISPAQ business logic
-from simple_metrics import simple_metrics
-from SNR_metrics import SNR_metrics
-from PSD_metrics import PSD_metrics
-from transferFunction_metrics import transferFunction_metrics
-from crossTalk_metrics import crossTalk_metrics
-from pressureCorrelation_metrics import pressureCorrelation_metrics
-from crossCorrelation_metrics import crossCorrelation_metrics
-from orientationCheck_metrics import orientationCheck_metrics
+from .simple_metrics import simple_metrics
+from .SNR_metrics import SNR_metrics
+from .PSD_metrics import PSD_metrics
+from .crossTalk_metrics import crossTalk_metrics
+from .pressureCorrelation_metrics import pressureCorrelation_metrics
+from .crossCorrelation_metrics import crossCorrelation_metrics
+from .orientationCheck_metrics import orientationCheck_metrics
+from .transferFunction_metrics import transferFunction_metrics
+
+__version__ = "0.7.0"
+
 
 def main():
 
@@ -53,8 +55,9 @@ def main():
 
     args = parser.parse_args(sys.argv[1:])
     
-    # Set up logging -----------------------------------------------------------
     
+    # Set up logging -----------------------------------------------------------
+    #
     # Full DEBUG level logging goes to TRANSCRIPT.txt
     # Console logging level is set by the '--log-level' argument
     
@@ -73,8 +76,7 @@ def main():
     ch.setFormatter(formatter) 
     logger.addHandler(ch)
 
-
-    logger.debug('Running ISPAQ version %s on %s' % (__version__, datetime.datetime.now().strftime('%c')))
+    logger.info('Running ISPAQ version %s on %s\n' % (__version__, datetime.datetime.now().strftime('%c')))
 
 
     #     Create UserRequest object     ---------------------------------------
@@ -88,10 +90,9 @@ def main():
     try:
         user_request = UserRequest(args, logger=logger)
     except Exception as e:
-        if str(e) == "Not really an error.":
-            pass
-        else:
-            raise
+        logger.critical(e)
+        raise
+
 
     #     Create Concierge (aka Expediter)     ---------------------------------
     #
@@ -157,23 +158,6 @@ def main():
             logger.error(e)
 
 
-    # Generate Transfer Function Metrics ---------------------------------------
-
-    if 'transferFunction' in concierge.logic_types:
-        logger.debug('Inside transferFunction business logic ...')
-        try:
-            df = transferFunction_metrics(concierge)
-            try:
-                filepath = concierge.output_file_base + "__transferMetrics.csv"
-                logger.info('Writing transfer metrics to %s.\n' % os.path.basename(filepath))
-                utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
-            except Exception as e:
-                logger.error(e)
-        except Exception as e:
-            logger.error(e)
-
-
-
     # Generate Cross Talk Metrics ----------------------------------------------
 
     if 'crossTalk' in concierge.logic_types:
@@ -222,7 +206,7 @@ def main():
             logger.error(e)
                 
 
-    ## Generate Orientation Check Metrics ---------------------------------------
+    # Generate Orientation Check Metrics ---------------------------------------
 
     #if 'orientationCheck' in concierge.logic_types:
         #logger.debug('Inside orientationCheck business logic ...')
@@ -237,6 +221,22 @@ def main():
         #except Exception as e:
             #logger.error(e)
                         
+                        
+    # Generate Transfer Function Metrics ---------------------------------------
+
+    if 'transferFunction' in concierge.logic_types:
+        logger.debug('Inside transferFunction business logic ...')
+        try:
+            df = transferFunction_metrics(concierge)
+            try:
+                filepath = concierge.output_file_base + "__transferMetrics.csv"
+                logger.info('Writing transfer metrics to %s.\n' % os.path.basename(filepath))
+                utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
+            except Exception as e:
+                logger.error(e)
+        except Exception as e:
+            logger.error(e)
+
 
     logger.info('ALL FINISHED!')
 

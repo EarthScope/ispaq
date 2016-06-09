@@ -8,17 +8,20 @@ ISPAQ Data Access Expediter.
     (http://www.gnu.org/copyleft/lesser.html)
 """
 
+from __future__ import (absolute_import, division, print_function)
+
 import os
 import re
+
 import pandas as pd
 
 import obspy
 from obspy.clients.fdsn import Client
 from obspy.clients.fdsn.header import URL_MAPPINGS
 
-from user_request import UserRequest
-
-import irisseismic
+# ISPAQ modules
+from .user_request import UserRequest
+from . import irisseismic
 
 
 class Concierge(object):
@@ -227,16 +230,23 @@ class Concierge(object):
             else:
                 _channel = channel
 
+
+            # TODO:  Need to figure out file naming conventions and whether users with local files will want to reference multiple
+            # TODO:  StationXML files per invocation. And how many SNCLs will there be per StationXML? Will they want to specify
+            # TODO:  SNCLs to filter what is specified in the StationXML?
+            # TODO:
+            # TODO:  Lots of questions before implementing the very simple python code to get to this point:
+            # TODO:    if self.station_client is None:
+            # TODO:      sncl_inventory = obspy.read_inventory(self.station_url)
+
             if self.station_client is None:
                 # Read local StationXML file
-                #
                 try:
                     sncl_inventory = obspy.read_inventory(self.station_url)
                 except Exception as e:
                     err_msg = "The StationXML file: '%s' is not valid." % self.station_url
                     self.logger.error(err_msg)                    
                     raise ValueError(err_msg)
-                debug_breakpoint = True
             
             else:
                 # Read from FDSN web services
@@ -258,15 +268,6 @@ class Concierge(object):
                     continue
 
 
-            # TODO:  Need to figure out file naming conventions and whether users with local files will want to reference multiple
-            # TODO:  StationXML files per invocation. And how many SNCLs will there be per StationXML? Will they want to specify
-            # TODO:  SNCLs to filter what is specified in the StationXML?
-            # TODO:
-            # TODO:  Lots of questions before implementing the very simple python code to get to this point:
-            # TODO:    if self.station_client is None:
-            # TODO:      sncl_inventory = obspy.read_inventory(self.station_url)
-            
-            
             # Walk through the Inventory object
             for n in sncl_inventory.networks:
                 for s in n.stations:
@@ -341,7 +342,6 @@ class Concierge(object):
             specified end time.
         """
 
-
         # Allow arguments to override UserRequest parameters
         if starttime is None:
             _starttime = self.requested_starttime
@@ -374,7 +374,7 @@ class Concierge(object):
             try:
                 r_stream = irisseismic.R_getDataselect(self.dataselect_url, network, station, location, channel, _starttime, _endtime, quality, inclusiveEnd, ignoreEpoch)
             except Exception as e:
-                self.logger.warning('No data returned for %s.%s.%s.%s' % (network, station, location, channel))
+                self.logger.warning('No data for %s.%s.%s.%s' % (network, station, location, channel))
                 raise
 
            
@@ -524,8 +524,6 @@ class Concierge(object):
                 err_msg = "The event_url: '%s' returns an error: %s." % (self.event_url, e)
                 self.logger.error(err_msg)
                 raise
-
-
 
 
         if events.shape[0] == 0:

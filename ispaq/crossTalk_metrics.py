@@ -7,16 +7,19 @@ ISPAQ Business Logic for Cross-Talk Metrics.
     GNU Lesser General Public License, Version 3
     (http://www.gnu.org/copyleft/lesser.html)
 """
-from obspy import UTCDateTime
-from obspy.clients.fdsn import Client
+
+from __future__ import (absolute_import, division, print_function)
 
 import math
 import numpy as np
 import pandas as pd
 
-import utils
-import irisseismic
-import irismustangmetrics
+from obspy import UTCDateTime
+from obspy.clients.fdsn import Client
+
+from . import utils
+from . import irisseismic
+from . import irismustangmetrics
 
 
 def crossTalk_metrics(concierge):
@@ -65,12 +68,12 @@ def crossTalk_metrics(concierge):
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
-            logger.debug('skipping event because of missing longitude or latitude')
+            logger.debug('Skipping event because of missing longitude or latitude')
             continue
     
         # Sanity check
         if pd.isnull(event.depth):
-            logger.debug('skipping event because of missing depth')
+            logger.debug('Skipping event because of missing depth')
             continue        
         
         # Get the data availability around this event
@@ -84,12 +87,12 @@ def crossTalk_metrics(concierge):
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=0, maxradius=maxradius)
         except Exception as e:
-            logger.error('skipping event because get_availability failed: %s' % (e))
+            logger.debug('Skipping event because get_availability failed: %s' % (e))
             continue
                     
         # Sanity check that some SNCLs exist
         if availability.shape[0] == 0:
-            logger.debug('skipping event because no SNCLs are available')
+            logger.debug('Skipping event because no SNCLs are available')
             continue
     
         # Channel types (as opposed to orientation) will contain only the first two characters
@@ -105,12 +108,12 @@ def crossTalk_metrics(concierge):
 
         for sn_lId in sorted(list(set(sn_lIds))):
 
-            logger.debug('working on SN.L %s' % (sn_lId))
+            logger.debug('Working on SN.L %s' % (sn_lId))
 
             availabilitySub = availability[availability.sn_lId == sn_lId]
             
             if availabilitySub.shape[0] == 1:
-                logger.debug('skipping %s because there is only a single channel at this SN.L' % (sn_lId))
+                logger.debug('Skipping %s because there is only a single channel at this SN.L' % (sn_lId))
                 continue
 
             # Get the data --------------------------------------
@@ -125,22 +128,25 @@ def crossTalk_metrics(concierge):
                 try:
                     r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, halfHourStart-1, halfHourEnd+1, inclusiveEnd=False)
                 except Exception as e:
-                    logger.debug('unable to obtain data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
+                    if str(e).lower().find('no data') > -1:
+                        logger.debug('No data for %s' % (av.snclId))
+                    else:
+                        logger.debug('No data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
                     continue
                 
                 
                 if len(utils.get_slot(r_stream, 'traces')) > 1 :
-                    logger.debug('skipping %s because it has more than one trace' % (av.snclId))
+                    logger.debug('Skipping %s because it has more than one trace' % (av.snclId))
                     continue
                 else:
                     streamList.append(r_stream)
                     
             if len(streamList) == 0:
-                logger.debug('skipping %s because it has no data' % (sn_lId))
+                logger.debug('Skipping %s because it has no data' % (sn_lId))
                 continue
                 
             if len(streamList) == 1:
-                logger.debug('skipping %s because it only has data for one channel' % (sn_lId))
+                logger.debug('Skipping %s because it only has data for one channel' % (sn_lId))
                 continue   
 
             # Run the correlation metrics -----------------------
@@ -155,7 +161,7 @@ def crossTalk_metrics(concierge):
                 df = irismustangmetrics.apply_correlation_metric(streamList[0], streamList[1], 'correlation')
                 dataframes.append(df)
             except Exception as e:
-                logger.error('"crossTalk" metric calculation failed for %s: %s' % (av.snclId, e))
+                logger.debug('"crossTalk" metric calculation failed for %s: %s' % (av.snclId, e))
             
             if len(streamList) == 3:
 
@@ -164,14 +170,14 @@ def crossTalk_metrics(concierge):
                     df = irismustangmetrics.apply_correlation_metric(streamList[0], streamList[2], 'correlation')
                     dataframes.append(df)
                 except Exception as e:
-                    logger.error('"crossTalk" metric calculation failed for %s: %s' % (av.snclId, e))
+                    logger.debug('"crossTalk" metric calculation failed for %s: %s' % (av.snclId, e))
                 
                 # 2-3
                 try:
                     df = irismustangmetrics.apply_correlation_metric(streamList[1], streamList[2], 'correlation')
                     dataframes.append(df)
                 except Exception as e:
-                    logger.error('"crossTalk" metric calculation failed for %s: %s' % (av.snclId, e))
+                    logger.debug('"crossTalk" metric calculation failed for %s: %s' % (av.snclId, e))
                     
 
         # End of sn.lId loop

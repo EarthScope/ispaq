@@ -1,3 +1,8 @@
+0.7.0
+ * new transferFunction_metric
+ * regularized logging
+ * __future__ imports
+
 0.6.0
  * improved PDF plotting code
  * partially complete orientationCheck metric

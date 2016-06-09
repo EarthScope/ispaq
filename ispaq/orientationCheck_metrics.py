@@ -7,16 +7,19 @@ ISPAQ Business Logic for Orientation Check Metrics.
     GNU Lesser General Public License, Version 3
     (http://www.gnu.org/copyleft/lesser.html)
 """
-from obspy import UTCDateTime
-from obspy.clients.fdsn import Client
+
+from __future__ import (absolute_import, division, print_function)
 
 import math
 import numpy as np
 import pandas as pd
 
-import utils
-import irisseismic
-import irismustangmetrics
+from obspy import UTCDateTime
+from obspy.clients.fdsn import Client
+
+from . import utils
+from . import irisseismic
+from . import irismustangmetrics
 
 
 def orientationCheck_metrics(concierge):
@@ -70,12 +73,12 @@ def orientationCheck_metrics(concierge):
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
-            logger.debug('skipping event because of missing longitude or latitude')
+            logger.debug('Skipping event because of missing longitude or latitude')
             continue
     
         # Sanity check
         if pd.isnull(event.depth):
-            logger.debug('skipping event because of missing depth')
+            logger.debug('Skipping event because of missing depth')
             continue        
         
         # Get the data availability around this event
@@ -89,12 +92,12 @@ def orientationCheck_metrics(concierge):
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=eventMinradius, maxradius=eventMaxradius)
         except Exception as e:
-            logger.error('skipping event because get_availability failed: %s' % (e))
+            logger.debug('skipping event because get_availability failed: %s' % (e))
             continue
                     
         # Sanity check that some SNCLs exist
         if availability.shape[0] == 0:
-            logger.debug('skipping event because no SNCLs are available')
+            logger.debug('Skipping event because no SNCLs are available')
             continue
     
         ############################################################
@@ -114,12 +117,12 @@ def orientationCheck_metrics(concierge):
 
         for sn_lId in sorted(list(set(sn_lIds))):
 
-            logger.debug('working on SN.L %s' % (sn_lId))
+            logger.debug('Working on SN.L %s' % (sn_lId))
 
             sn_lAvailability = availability[availability.sn_lId == sn_lId]
             
             if sn_lAvailability.shape[0] != 3:
-                logger.debug('skipping %s because there is only %d channels were found at this SN.L' % (sn_lId, sn_lAvailability.shape[0]))
+                logger.debug('Skipping %s because there is only %d channels were found at this SN.L' % (sn_lId, sn_lAvailability.shape[0]))
                 continue
 
             # Determine N, E and Z channels
@@ -184,7 +187,7 @@ def orientationCheck_metrics(concierge):
                 stZ = irisseismic.multiplyBy(stZ,-1)
         
             if len(utils.get_slot(stN,'traces')) > 1 or len(utils.get_slot(stE,'traces')) > 1 or len(utils.get_slot(stZ,'traces')) > 1:
-                logger.debug('skipping %s becuase it has gaps' % (sn_lId)) 
+                logger.debug('Skipping %s becuase it has gaps' % (sn_lId)) 
                 continue
         
             # complain if sample lengths differ by more than 1 sample

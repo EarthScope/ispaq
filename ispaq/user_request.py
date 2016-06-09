@@ -7,16 +7,20 @@ ISPAQ Preferences Loader and Container.
     GNU Lesser General Public License, Version 3
     (http://www.gnu.org/copyleft/lesser.html)
 """
+
+from __future__ import (absolute_import, division, print_function)
+
 import os
 import json
 
-# Use UTCDateTime internally for all times
 from obspy import UTCDateTime
 
 # The metricslist function returns a dictionary information on "metric sets",
 # "business logic" and "metric names".
 # TODO:  metricslist should be a function in the R irisMustangMetrics package.
-import irismustangmetrics
+
+# ISPAQ modules
+from . import irismustangmetrics
 
 
 class UserRequest(object):
@@ -27,7 +31,7 @@ class UserRequest(object):
     invocation of the ISPAQ top level script.
 
     After processing the preferences file, the list of internal properties
-    will include:
+    will include at least:
      * requested_starttime -- ISO 8601 formatted start time for each seismic signal
      * requested_endtime -- ISO 8601 formatted end time for each seismic signal
      * requested_metric_set -- alias for a list of metrics in the preferences file
@@ -67,7 +71,7 @@ class UserRequest(object):
         self.args = args
 
         #     Initialize a dummy object     -----------------------------------
-
+        
         if dummy:
             # Information coming in from the command line
             self.requested_starttime = UTCDateTime("2002-04-20")
@@ -95,7 +99,7 @@ class UserRequest(object):
                                 'sigfigs': 6}
 
         #     Initialize from JSON     ----------------------------------------
-
+        
         elif json_representation is not None:
             # Load json dictionary from file (or string)
             try:
@@ -134,7 +138,6 @@ class UserRequest(object):
             self.requested_metric_set = args.metrics
             self.requested_sncl_set = args.sncls
 
-
             #     Load preferences from file      -----------------------------
 
             # Metric and SNCL information from the preferences file
@@ -170,7 +173,7 @@ class UserRequest(object):
                     elif currentSection == 'preferences':
                         preferences[name] = values[0]
 
-            # TODO:  try-except KeyError
+            # Check for invalid arguments
             try:
                 self.metrics = metric_sets[self.requested_metric_set]
             except KeyError as e:
@@ -267,10 +270,10 @@ class UserRequest(object):
         >>> u = UserRequest(dummy=True)
         >>> output = u.json_dump()
         >>> output #doctest: +ELLIPSIS
-        '{"dataselect_url": "IRIS", "event_url": "IRIS", "function_by_logic": {"simple": {"basicStats":...'
+        '{"args": null, "dataselect_url": "IRIS", "event_url": "IRIS", "function_by_logic": {"simple": {"basicStats":...'
         >>> s = UserRequest(json_representation=output)
         >>> s.json_dump() #doctest: +ELLIPSIS
-        '{"dataselect_url": "IRIS", "event_url": "IRIS", "function_by_logic": {"simple": {"basicStats":...'
+        '{"args": null, "dataselect_url": "IRIS", "event_url": "IRIS", "function_by_logic": {"simple": {"basicStats":...'
         """
 
         if pretty:
