@@ -17,7 +17,6 @@ import pandas as pd
 
 from obspy import UTCDateTime
 
-# Connect to R through the rpy2 module
 from rpy2 import robjects
 from rpy2 import rinterface
 from rpy2.robjects import pandas2ri

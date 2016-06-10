@@ -17,7 +17,6 @@ import numpy as np
 import pandas as pd
 
 from obspy import UTCDateTime
-from obspy.clients.fdsn import Client
 
 from . import utils
 from . import irisseismic
@@ -66,7 +65,6 @@ def getTransferFunctionSpectra(st, sampling_rate):
             loOctaves.append(octave)
             octave -= 0.125
         loOctaves = pd.Series(loOctaves)
-            
             
         octave = log2_alignFreq
         hiOctaves = []
@@ -228,7 +226,7 @@ def transferFunction_metrics(concierge):
             
                     logger.debug('Calculating transferFunction metrics for %s:%s' % (Zav1.snclId, Zav2.snclId))
                     try:
-                        df = irismustangmetrics.apply_correlation_metric(r_stream1, r_stream2, 'transferFunction', Zevalresp1, Zevalresp2)
+                        df = irismustangmetrics.apply_correlation_metric(Zst1, Zst2, 'transferFunction', Zevalresp1, Zevalresp2)
                         # By default, this metrics returns value="N". Convert this to NaN
                         df.value = np.NaN
                         dataframes.append(df)
@@ -297,7 +295,7 @@ def transferFunction_metrics(concierge):
                     # Metadata errors can cause cases like this
                     if xyAvailability.shape[0] >= 3:
                         for i in range(xyAvailability.shape[0]):
-                            axList.append("D")
+                            axisList.append("D")
 
                     # END if 3 or more rows
         
@@ -334,7 +332,7 @@ def transferFunction_metrics(concierge):
                 for i in range(XrowMatrix.shape[0]):
                     azDiff = XchannelAvailability.azimuth[XrowMatrix.iloc[i,0]] - XchannelAvailability.azimuth[XrowMatrix.iloc[i,1]]
                     if (azDiff < 0):
-                        azDiff <- azDiff + 360
+                        azDiff = azDiff + 360
                     azDiffList.append(azDiff)
                     
                 XrowMatrix['azDiff'] = azDiffList                   
@@ -343,7 +341,7 @@ def transferFunction_metrics(concierge):
                 for i in range(YrowMatrix.shape[0]):
                     azDiff = YchannelAvailability.azimuth[YrowMatrix.iloc[i,0]] - YchannelAvailability.azimuth[YrowMatrix.iloc[i,1]]
                     if (azDiff < 0):
-                        azDiff <- azDiff + 360
+                        azDiff = azDiff + 360
                     azDiffList.append(azDiff)
                     
                 YrowMatrix['azDiff'] = azDiffList   
@@ -408,7 +406,7 @@ def transferFunction_metrics(concierge):
                                 logger.debug('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
                                 continue
                             
-                            # By default, this metrics returns value="N". Convert this to NaN
+                            # By default, this metric returns value="N". Convert this to NaN
                             df.value = np.NaN
                             dataframes.append(df)
 
@@ -420,7 +418,7 @@ def transferFunction_metrics(concierge):
         
         
         
-                ## Get traces, spectra and transfer functions for horizontal channels that DO need rotating
+                # Get traces, spectra and transfer functions for horizontal channels that DO need rotating
                 for i in range(2):
         
                     if matrixListToRotate[i].shape[0] != 0:
@@ -523,7 +521,7 @@ def transferFunction_metrics(concierge):
                             if av1.cartAxis == "Y":
                                 logger.debug('Calculating transferFunction metrics for %s:%s' % (av1.snclId, av2.snclId))
                                 try:
-                                    df = irismustangmetrics.apply_transferFunction_metric(st1, st2, evalresp1, evalresp2)
+                                    df = irismustangmetrics.apply_transferFunction_metric(st1, RYst2, evalresp1, RYevalresp2)
                                 except Exception as e:
                                     logger.debug('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
                                     continue
@@ -535,7 +533,7 @@ def transferFunction_metrics(concierge):
                             elif av1.cartAxis == "X":
                                 logger.debug('Calculating transferFunction metrics for %s:%s' % (av1.snclId, av2.snclId))
                                 try:
-                                    df = irismustangmetrics.apply_transferFunction_metric(st1, st2, evalresp1, evalresp2)
+                                    df = irismustangmetrics.apply_transferFunction_metric(st1, RXst2, evalresp1, RXevalresp2)
                                 except Exception as e:
                                     logger.debug('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
                                     continue

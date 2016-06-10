@@ -79,6 +79,9 @@ Metrics:
   MyContinuityMetrics: num_gaps, num_overlaps, num_spikes
   MyStats: sample_max, sample_mean, sample_median, sample_rms
   
+  # ----- Compare with R -----
+  # test_simple:  # 2012-01-14
+  test_simple: num_gaps, max_gap, num_overlaps, max_overlap, percent_availability, sample_min, sample_median, sample_mean, sample_max, sample_rms, sample_unique, max_stalta, num_spikes
 
 
 # User defined sets of SNCLs --------------------------------------------------
@@ -113,6 +116,13 @@ SNCLs:
   ###orientationCheck: ZU.NZ19.*.*
   transferFunction: II.PALK.*.*
   
+  # ----- Compare with R -----
+  test_simple: CN.LGNH.*.HHZ
+  test_SNR: IU.ANMO.*.BH?
+  test_crossTalk: US.OXF.BH? # 2002-04-20
+  test_crossCorrelation: IU.ANMO.00.BH? # 2010-02-27
+  test_pressureCorrelation: IU.ANMO.00.LH? # 2013-05-01
+  test_transferFunction: CI.PASC.*.* # 2013-05-01
   
   bad_sncl: US.OXF..BOP # does not exist
   bad_good: US.OXF..BOP, US.OXF.*.BH?

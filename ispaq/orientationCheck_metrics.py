@@ -15,7 +15,6 @@ import numpy as np
 import pandas as pd
 
 from obspy import UTCDateTime
-from obspy.clients.fdsn import Client
 
 from . import utils
 from . import irisseismic
