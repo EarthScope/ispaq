@@ -208,18 +208,18 @@ def main():
 
     # Generate Orientation Check Metrics ---------------------------------------
 
-    #if 'orientationCheck' in concierge.logic_types:
-        #logger.debug('Inside orientationCheck business logic ...')
-        #try:
-            #df = orientationCheck_metrics(concierge)
-            #try:
-                #filepath = concierge.output_file_base + "__orientationCheckMetrics.csv"
-                #logger.info('Writing orientationCheck metrics to %s.\n' % os.path.basename(filepath))
-                #utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
-            #except Exception as e:
-                #logger.error(e)
-        #except Exception as e:
-            #logger.error(e)
+    if 'orientationCheck' in concierge.logic_types:
+        logger.debug('Inside orientationCheck business logic ...')
+        try:
+            df = orientationCheck_metrics(concierge)
+            try:
+                filepath = concierge.output_file_base + "__orientationCheckMetrics.csv"
+                logger.info('Writing orientationCheck metrics to %s.\n' % os.path.basename(filepath))
+                utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
+            except Exception as e:
+                logger.error(e)
+        except Exception as e:
+            logger.error(e)
                         
                         
     # Generate Transfer Function Metrics ---------------------------------------

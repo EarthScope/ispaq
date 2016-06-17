@@ -225,90 +225,121 @@ def orientationCheck_metrics(concierge):
             # Prefill Szz as it doesn't depend on the angle
             HZ_data = pd.Series(utils.get_slot(HZ,'data'))
             SzzValue = sum(HZ_data * HZ_data)
-            Szz = [SzzValue] * 360
-            Szr = [np.nan] * 360
-            Srr = [np.nan] * 360
+            Szz = pd.Series([SzzValue] * 360)
+            Szr = pd.Series([np.nan] * 360)
+            Srr = pd.Series([np.nan] * 360)
 
             # Calculate correlations as a function of angle
-            rotateOK = True
             for angle in range(1,360,degreeIncrement):
                 
-                debug_point = 1
+                if angle % 10 == 0:
+                    logger.debug('rotate2D angle = %d' % angle)
+                    
+                try:
+                    stR = irisseismic.rotate2D(stN, stE, angle)[0]               
+                    R_data = pd.Series(utils.get_slot(stR,'data'))
+                    Srr[angle] = sum(R_data * R_data)
+                    Szr[angle] = sum(HZ_data * R_data)
+                except Exception as e:
+                    logger.debug('skipping angle: %s' % (e.message))
+                    continue
                 
-                # TODO: STOP DEVELOPMENT HERE
-                # TODO:
-                # TODO:  rotate2D is throwing errors about "object 'tr1' not found"
-                # TODO:
-                
-                bop = irisseismic.rotate2D(stN, stE, angle)
-                
-                #result <- try(stR <- IRISSeismic::rotate2D(stN,stE,angle)[[1]], silent=TRUE)
-                #if (class(result)[1] == "try-error") {
-                    #setProcessExitCode( MCRWarning(paste("orientation_check skipping", sn.lId, "rotate2D returned an error. start=",halfHourStart,"end=", halfHourEnd)) )
-                    #rotateOK <- FALSE
-                #break
-                #}
-                #R <- stR@traces[[1]]
-                #Srr[angle] <- sum( R@data *  R@data)
-                #Szr[angle] <- sum(HZ@data *  R@data)
-            #}
-            #if (!rotateOK) {
-                ## an error in the loop means we skip this SNL, go to next in loop
-                #next
-            #}
-        
-            ## Normalized correlation coefficients
-            #Czr <- Szr / sqrt(Szz*Srr)
-            #C_zr <- Szr / Szz
-        
+            # Normalized correlation coefficients
+            Czr = Szr / (Szz*Srr).pow(.5)
+            C_zr = Szr / Szz
+            
+            maxCzr = Czr.max(skipna=True)
+            maxC_zr = C_zr.max(skipna=True)
             #maxCzr <- max(Czr,na.rm=TRUE)
             #maxC_zr <- max(C_zr,na.rm=TRUE)
         
+            angleAtMaxCzr = int( list(Czr[Czr == maxCzr].index)[0] )
+            angleAtMaxC_zr = int( list(C_zr[C_zr == maxC_zr].index)[0] )
             #angleAtMaxCzr <- which(Czr == maxCzr)
             #angleAtMaxC_zr <- which(C_zr == maxC_zr)
         
+            azimuthR = angleAtMaxC_zr % 360
+            azimuthT = (azimuthR + 90) % 360
             #azimuthR <- angleAtMaxC_zr %% 360
             #azimuthT <- (azimuthR + 90) %% 360
 
+            #         Find the orientation X with the maximum C*zr and:
+            #             report empirical X, X+90, 
+            #             report metadata azimuths for horizontal channels
+            #             report Czr & C*zr 
+            #             report start and end of data window
+            #
+            #
+            # REC Feb 2014 -- change the attribute names based on Mary Templeton's recommendations
+            #              -- also add an event magnitude attribute
+            # azimuth_R
+            # backAzimuth
+            # azimuth_Y_obs        (= backAzimuth - azimuth_R)
+            # azimuth_X_obs        (= azimuth_Y_obs + 90)
+            # azimuth_Y_meta       (azimuth_N renamed)
+            # azimuth_X_meta       (azimuth_E renamed)
+            # max_Czr
+            # max_C_zr
+            # magnitude
+        
+
+            azimuth_Y_obs = (float(distaz.backAzimuth) - azimuthR) % 360
+            azimuth_X_obs = (azimuth_Y_obs + 90.0) % 360
+            #azimuth_Y_obs <- (distaz$backAzimuth - azimuthR) %% 360
+            #azimuth_X_obs <- (azimuth_Y_obs + 90.0) %% 360
+        
+            attributeName = ["azimuth_R","backAzimuth","azimuth_Y_obs","azimuth_X_obs","azimuth_Y_meta","azimuth_X_meta","max_Czr","max_C_zr","magnitude"]
+            attributeValueString = [str(azimuthR),
+                                    str(float(distaz.backAzimuth)),
+                                    str(azimuth_Y_obs),
+                                    str(azimuth_X_obs),
+                                    str(Channel_1.azimuth),
+                                    str(Channel_2.azimuth),
+                                    str(maxCzr),
+                                    str(maxC_zr),
+                                    str(event.magnitude)]
+            #attributeName <- c("azimuth_R","backAzimuth","azimuth_Y_obs","azimuth_X_obs","azimuth_Y_meta","azimuth_X_meta","max_Czr","max_C_zr","magnitude")
+            #attributeValueString <- c(format(azimuthR),
+                                      #format(distaz$backAzimuth),
+                                      #format(azimuth_Y_obs),
+                                      #format(azimuth_X_obs),
+                                      #format(Channel_1$azimuth),
+                                      #format(Channel_2$azimuth),
+                                      #format(maxCzr),
+                                      #format(maxC_zr),
+                                      #format(event$magnitude))
+
+            # Create metric
+            df = irisseismic.singleValueMetric(utils.get_slot(stZ, 'id'), windowStart, windowEnd,
+                                               'orientation_check', np.nan,
+                                               attributeName, attributeValueString)
+            #m1 <- methods::new("SingleValueMetric", snclq=Z@id, starttime=windowStart, endtime=windowEnd, 
+                               #metricName="orientation_check", value=as.numeric(NA),
+                               #attributeName=attributeName, attributeValueString=attributeValueString)
+        
+            #profilePoint("metricCalculation","seconds to calculate orientationCheckMetric")
+        
+            ## TODO:  Fix the root cause of this hack.    
+            ## REC Feb 2014 -- remove value=NULL default attribute by left shifting attribute list by one into the value slot
+            #attrLen <- length(m1@attributeName)
+            #m1@valueName = m1@attributeName[1]
+            #m1@valueString = m1@attributeValueString[1]
+            #m1@attributeName <- m1@attributeName[2:attrLen]
+            #m1@attributeValueString <- m1@attributeValueString[2:attrLen]
+            #metricList[[metricListIndex]] <- m1
+            #metricListIndex <- metricListIndex + 1
+            ##       tempList <- c(m1)   # is this necessary?
+            ##       attrLen <- length(tempList[[1]]@attributeName)
+            ##       tempList[[1]]@valueName = tempList[[1]]@attributeName[1]
+            ##       tempList[[1]]@valueString = tempList[[1]]@attributeValueString[1]
+            ##       tempList[[1]]@attributeName <- tempList[[1]]@attributeName[2:attrLen]
+            ##       tempList[[1]]@attributeValueString <- tempList[[1]]@attributeValueString[2:attrLen]
+            ##       metricList <- append(metricList,tempList)
             
             
-            # Now back to code 
-            
-            debug_point = 1
-
-
-            #Szr <- vector("numeric",360)
-            #Szz <- vector("numeric",360)
-            #Srr <- vector("numeric",360)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     # Concatenate and filter dataframes before returning -----------------------
     
-    # Create a boolean mask for filtering the dataframe
-    def valid_metric(x):
-        return x in concierge.metric_names
-        
     result = pd.concat(dataframes, ignore_index=True)    
-    mask = result.metricName.apply(valid_metric)
-    result = result[(mask)]
     result.reset_index(drop=True, inplace=True)
     
     return(result)

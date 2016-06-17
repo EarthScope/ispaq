@@ -132,6 +132,15 @@ def R_float(x):
     return robjects.vectors.FloatVector(x)
 
 
+def R_character(x):
+    """
+    Creates an R character vector from a list of python strings.
+    :param x: Python string.
+    :return: R character vector.                
+    """
+    return robjects.vectors.StrVector(x)
+
+
 def R_POSIXct(x):
     """
     Creates an R POSIXct vector from a python '~obspy.core.utcdatetime.UTCDateTime'
@@ -800,6 +809,25 @@ def rotate2D(st1, st2, angle):
     returnList.append(r_list[1])
     
     return(returnList)
+
+# singleValueMetric is needed in orientationCheck_metrics.py
+def singleValueMetric(snclq, starttime, endtime, metricName, value, attributeName, attributeValues):
+    # Convert python arguments to R equivalents
+    starttime = R_POSIXct(starttime)
+    endtime = R_POSIXct(endtime)
+    quality_flag = -9
+    quality_flagString = '-9'
+    attributeName = R_character(attributeName)
+    attributeValueString = R_character(attributeValueString)
+    
+    R_function = robjects.r('methods::new')
+    r_metric = R_function("SingleValueMetric", snclq, starttime, endtime, metricName,
+                          value, value, valueString, attributeName, attributeValueString)
+
+    r_metricList = _R_list(r_metric)
+    df = pandas2ri.ri2py(r_dataframe)
+
+    return(df)
 
 
 # ------------------------------------------------------------------------------

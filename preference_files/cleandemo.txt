@@ -68,7 +68,7 @@ Metrics:
   crossTalk: cross_talk
   pressureCorrelation: pressure_effects
   crossCorrelation: polarity_check, timing_drift
-  ###orientationCheck: orientation_check
+  orientationCheck: orientation_check
   transferFunction: transfer_function
   
   # ----- Custom combinations -----
@@ -113,7 +113,7 @@ SNCLs:
   crossTalk: II.B*.00.*
   pressureCorrelation: IU.A*.*.L*
   crossCorrelation: II.E*.00.B??
-  ###orientationCheck: ZU.NZ19.*.*
+  orientationCheck: ZU.NZ19.*.*
   transferFunction: II.PALK.*.*
   
   # ----- Compare with R -----
