@@ -7,15 +7,18 @@ ISPAQ Business Logic for Simple Metrics.
     GNU Lesser General Public License, Version 3
     (http://www.gnu.org/copyleft/lesser.html)
 """
-from obspy import UTCDateTime
-from obspy.clients.fdsn import Client
 
-import os
+from __future__ import (absolute_import, division, print_function)
+
+import math
+import numpy as np
 import pandas as pd
 
-import utils
-import irisseismic
-import irismustangmetrics
+from obspy import UTCDateTime
+
+from . import utils
+from . import irisseismic
+from . import irismustangmetrics
 
 
 def PSD_metrics(concierge):
@@ -49,16 +52,23 @@ def PSD_metrics(concierge):
     # function metadata dictionary
     function_metadata = concierge.function_by_logic['PSD']
     
+    logger.info('Calculating PSD metrics for %d SNCLs.' % (availability.shape[0]))
+    
     # Loop over rows of the availability dataframe
     for (index, av) in availability.iterrows():
                 
+        logger.info('%03d Calculating PSD metrics for %s' % (index, av.snclId))
+
         # Get the data ----------------------------------------------
 
         # NOTE:  Use the requested starttime, not just what is available
         try:
             r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel)
         except Exception as e:
-            logger.warning('Unable to obtain data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
+            if str(e).lower().find('no data') > -1:
+                logger.debug('No data for %s' % (av.snclId))
+            else:
+                logger.warning('No data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
             # TODO:  Add empty dataframe ???
             #df = pd.DataFrame({'metricName': 'percent_available',
                                #'value': 0,
@@ -74,26 +84,23 @@ def PSD_metrics(concierge):
         # Run the PSD metric ----------------------------------------
 
         if function_metadata.has_key('PSD'):
-            logger.info('Calculating PSD metrics for ' + av.snclId)
             try:
                 df = irismustangmetrics.apply_PSD_metric(r_stream)
                 dataframes.append(df)
             except Exception as e:
-                logger.error('"PSD" metric calculation failed for %s: %s' % (av.snclId, e))
+                logger.debug('"PSD" metric calculation failed for %s: %s' % (av.snclId, e))
                 
         # Run the PSD plot ------------------------------------------
 
         if function_metadata.has_key('PSDPlot'):
-            logger.info('Generating PDF plot for ' + av.snclId)
             try:  
                 # TODO:  Use concierge to determine where to put the plots?
                 starttime = utils.get_slot(r_stream, 'starttime')
                 filename = '%s.%s_PDF.png' % (av.snclId, starttime.strftime('%Y.%j'))
                 filepath = concierge.plot_output_dir + '/' + filename
-                status = irismustangmetrics.open_png_file(filepath)
-                status = irismustangmetrics.apply_PSD_plot(r_stream)
+                status = irismustangmetrics.apply_PSD_plot(r_stream, filepath)
             except Exception as e:
-                logger.error('"PSD" plot generation failed for %s: %s' % (av.snclId, e))
+                logger.debug('"PSD" plot generation failed for %s: %s' % (av.snclId, e))
                     
 
     # Concatenate and filter dataframes before returning -----------------------

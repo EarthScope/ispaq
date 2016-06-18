@@ -4,6 +4,7 @@
 
 """Convenience wrapper for running ispaq directly from source tree."""
 
+from __future__ import (absolute_import, division, print_function)
 
 from ispaq.ispaq import main
 

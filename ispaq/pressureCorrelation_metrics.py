@@ -7,15 +7,18 @@ ISPAQ Business Logic for Simple Metrics.
     GNU Lesser General Public License, Version 3
     (http://www.gnu.org/copyleft/lesser.html)
 """
-from obspy import UTCDateTime
-from obspy.clients.fdsn import Client
 
-import os
+from __future__ import (absolute_import, division, print_function)
+
+import math
+import numpy as np
 import pandas as pd
 
-import utils
-import irisseismic
-import irismustangmetrics
+from obspy import UTCDateTime
+
+from . import utils
+from . import irisseismic
+from . import irismustangmetrics
 
 
 def pressureCorrelation_metrics(concierge):
@@ -56,7 +59,7 @@ def pressureCorrelation_metrics(concierge):
     # Loop over rows of the availability dataframe
     for (pIndex, pAv) in pressureAvailability.iterrows():
         
-        logger.debug('Working on %s' % (pAv.snclId))
+        logger.info(' %03d Pressure channel %s' % (pIndex, pAv.snclId))
         
         # Get the data ----------------------------------------------
 
@@ -127,11 +130,12 @@ def pressureCorrelation_metrics(concierge):
                     logger.debug("%s" % (e))
                     continue
                 
+                logger.debug('Calculating pressureCorrelation metrics for %s:%s' % (pAv.snclId, lAv.snclId))
                 try:
                     df = irismustangmetrics.apply_correlation_metric(r_pStream, r_stream, 'correlation')
                     dataframes.append(df)
                 except Exception as e:
-                    logger.error('"pressure_effects" metric calculation failed for %s:%s: %s' % (pAv.snclId, lAv.snclId, e))              
+                    logger.debug('"pressure_effects" metric calculation failed for %s:%s: %s' % (pAv.snclId, lAv.snclId, e))              
     
             # End of locationAvailability loop
     

@@ -18,27 +18,21 @@ Functions in the IRISMustangMetrics R package provide this metadata so that
 functions can be called programmatically from python without the user having
 to know anything about the particular metric function they are calling.
 """
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-from future.builtins import *  # NOQA
 
-from obspy.core import UTCDateTime
+from __future__ import (absolute_import, division, print_function)
 
+import math
 import numpy as np
 import pandas as pd
 
-# Connect to R through the rpy2 module
+from obspy.core import UTCDateTime
+
 from rpy2 import robjects
 from rpy2 import rinterface
 from rpy2.robjects import pandas2ri
 
-# R options
-# NOTE:  The evalresp webservice requires integer seconds.
-# NOTE:  digits.secs=6 breaks calls to getEvalresp and hence any of the PSD stuff
-###robjects.r('options(digits.secs=6)')      # print out fractional seconds
 
-
-###   R functions called internally     ----------------------------------------
+#   R functions called internally     ------------------------------------------
 
 
 # NOTE:  These functions behave exactly the same as the R versions and require
@@ -46,10 +40,6 @@ from rpy2.robjects import pandas2ri
 
 # IRISMustangMetrics helper functions
 _R_metricList2DF = robjects.r('IRISMustangMetrics::metricList2DF')
-
-# IRISSeismic functions needed for generating PSD plots
-_R_psdList = robjects.r('IRISSeismic::psdList')
-_R_psdPlot = robjects.r('IRISSeismic::psdPlot')
 
 
 def _R_getMetricFunctionMetdata():
@@ -164,15 +154,6 @@ def _R_getMetricFunctionMetdata():
             'businessLogic': 'PSD',
             'metrics': ['pdf_plot']
         },
-        'transferFunction': {
-            'streamCount': 2,
-            'outputType': 'SingleValue',
-            'fullDay': True,
-            'speed': 'slow',
-            'extraAttributes': ['gain_ratio', 'phase_diff', 'ms_coherence'],
-            'businessLogic': 'transferFunction',
-            'metrics': ['transfer_function']
-        },
         'crossTalk': {
             'streamCount': 2,
             'outputType': 'SingleValue',
@@ -199,6 +180,24 @@ def _R_getMetricFunctionMetdata():
             'extraAttributes': [],
             'businessLogic': 'crossCorrelation',
             'metrics': ['polarity_check','timing_drift']
+        },
+        'orientationCheck': {
+            'streamCount': 2,
+            'outputType': 'SingleValue',
+            'fullDay': False,
+            'speed': 'slow',
+            'extraAttributes': [],
+            'businessLogic': 'orientationCheck',
+            'metrics': ['orientation_check']
+        },
+        'transferFunction': {
+            'streamCount': 2,
+            'outputType': 'SingleValue',
+            'fullDay': True,
+            'speed': 'slow',
+            'extraAttributes': ['gain_ratio', 'phase_diff', 'ms_coherence'],
+            'businessLogic': 'transferFunction',
+            'metrics': ['transfer_function']
         }
     }
     return(functiondict)
@@ -251,6 +250,34 @@ def apply_correlation_metric(r_stream1, r_stream2, metric_function_name, *args, 
     return df
 
 
+def apply_transferFunction_metric(r_stream1, r_stream2, evalresp1, evalresp2):
+    """"
+    Invoke a named "correlation" R metric and convert the R dataframe result into
+    a Pandas dataframe.
+    :param r_stream1: an r_stream object
+    :param r_stream2: an r_stream object
+    :param metric_function_name: the name of the set of metrics
+    :return:
+    """
+    R_function = robjects.r('IRISMustangMetrics::transferFunctionMetric')
+    
+    # NOTE:  Conversion of dataframes only works if you activate but we don't want conversion
+    # NOTE:  to always be automatic so we deactivate() after we're done converting.
+    pandas2ri.activate()
+    r_evalresp1 = pandas2ri.py2ri(evalresp1)
+    r_evalresp2 = pandas2ri.py2ri(evalresp2)
+    pandas2ri.deactivate()
+    
+    # Calculate the metric
+    r_metriclist = R_function(r_stream1, r_stream2, r_evalresp1, r_evalresp2)
+    r_dataframe = _R_metricList2DF(r_metriclist)
+    df = pandas2ri.ri2py(r_dataframe)
+    
+    # Convert columns from R POSIXct to pyton UTCDateTime
+    df.starttime = df.starttime.apply(UTCDateTime)
+    df.endtime = df.endtime.apply(UTCDateTime)
+    return df
+
 
 #     Functions for PSDMetrics     ---------------------------------------------
 
@@ -261,8 +288,7 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
     :param r_stream: an r_stream object
     :return:
     """
-    function = 'IRISMustangMetrics::PSDMetric'
-    R_function = robjects.r(function)
+    R_function = robjects.r('IRISMustangMetrics::PSDMetric')
     r_listOfLists = R_function(r_stream, *args, **kwargs)  # args and kwargs shouldn't be needed in theory
     r_metriclist = r_listOfLists[0]
     r_dataframe = _R_metricList2DF(r_metriclist)
@@ -278,32 +304,20 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
     return df
 
 
-def apply_PSD_plot(r_stream):
+def apply_PSD_plot(r_stream, filepath):
     """"
     Create a PSD plot which will be written to a .png file
     opened 'png' file.
     :param r_stream: an r_stream object
     :return:
     """
-    r_psdList = _R_psdList(r_stream)
-    _R_psdPlot(r_psdList, style='pdf')
-    
+    result = robjects.r('grDevices::png')(filepath)
+    r_psdList = robjects.r('IRISSeismic::psdList')(r_stream)    
+    result = robjects.r('IRISSeismic::psdPlot')(r_psdList, style='pdf')
+    result = robjects.r('grDevices::dev.off')()
+
     return True
 
-
-#     Utility functions     ----------------------------------------------------
-
-
-def open_png_file(filepath, *args, **kwargs):
-    """"
-    Open a file with R, presumably for subsequent plotting.
-    :param filepath absolute path of the file
-    :return:
-    """
-    R_function = robjects.r('grDevices::png')
-    result = R_function(filepath, *args, **kwargs)
-    
-    return result
 
 
 # -----------------------------------------------------------------------------

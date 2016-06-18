@@ -7,16 +7,18 @@ ISPAQ Business Logic for Cross-Correlation Metrics.
     GNU Lesser General Public License, Version 3
     (http://www.gnu.org/copyleft/lesser.html)
 """
-from obspy import UTCDateTime
-from obspy.clients.fdsn import Client
+
+from __future__ import (absolute_import, division, print_function)
 
 import math
 import numpy as np
 import pandas as pd
 
-import utils
-import irisseismic
-import irismustangmetrics
+from obspy import UTCDateTime
+
+from . import utils
+from . import irisseismic
+from . import irismustangmetrics
 
 
 def crossCorrelation_metrics(concierge):
@@ -67,16 +69,16 @@ def crossCorrelation_metrics(concierge):
 
     for (index, event) in events.iterrows():
 
-        logger.debug('%03d Magnitude %3.1f event: %s' % (index, event.magnitude, event.eventLocationName))
+        logger.info('%03d Magnitude %3.1f event: %s' % (index, event.magnitude, event.eventLocationName))
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
-            logger.debug('skipping event because of missing longitude or latitude')
+            logger.debug('Skipping event because of missing longitude or latitude')
             continue
     
         # Sanity check
         if pd.isnull(event.depth):
-            logger.debug('skipping event because of missing depth')
+            logger.debug('Skipping event because of missing depth')
             continue        
         
         # Get the data availability around this event
@@ -90,12 +92,12 @@ def crossCorrelation_metrics(concierge):
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=eventMinradius, maxradius=eventMaxradius)
         except Exception as e:
-            logger.error('skipping event because get_availability failed: %s' % (e))
+            logger.debug('Skipping event because get_availability failed: %s' % (e))
             continue
                     
         # Sanity check that some SNCLs exist
         if availability.shape[0] == 0:
-            logger.debug('skipping event because no SNCLs are available')
+            logger.debug('Skipping event because no SNCLs are available')
             continue
     
         # ----- All available SNCLs -------------------------------------------------
@@ -115,7 +117,7 @@ def crossCorrelation_metrics(concierge):
                 tt = irisseismic.getTraveltime(event.latitude, event.longitude, event.depth, 
                                                av1.latitude, av1.longitude)
             except Exception as e:
-                logger.error('skipping because getTravelTime failed: %s' % (e))
+                logger.debug('Skipping because getTravelTime failed: %s' % (e))
                 continue
              
             windowStart = event.time + min(tt.travelTime) - windowSecs/2.0
@@ -132,7 +134,7 @@ def crossCorrelation_metrics(concierge):
             
             # No metric calculation possible if SNCL has more than one trace
             if len(utils.get_slot(r_stream1, 'traces')) > 1 :
-                logger.debug('skipping %s because it has more than one trace' % (av.snclId))
+                logger.debug('Skipping %s because it has more than one trace' % (av.snclId))
                 continue
 
             # If metadata indicates reversed polarity (dip>0), invert the amplitudes (met 2016/03/03)
@@ -155,12 +157,12 @@ def crossCorrelation_metrics(concierge):
                                                            longitude=av1.longitude, latitude=av1.latitude,
                                                            minradius=snclMinradius, maxradius=snclMaxradius)
             except Exception as e:
-                logger.error('skipping SNCL because get_availability failed: %s' % (e))
+                logger.debug('Skipping SNCL because get_availability failed: %s' % (e))
                 continue
 
             # Sanity check that some SNCLs exist
             if availability2.shape[0] == 0:
-                logger.debug('skipping SNCL because no nearby SNCLs are available')
+                logger.debug('Skipping SNCL because no nearby SNCLs are available')
                 continue
 
             logger.debug('Found %d nearby SNCLs' % (availability2.shape[0]))
@@ -193,7 +195,7 @@ def crossCorrelation_metrics(concierge):
             mask = stationMask & channelMask & sampleRateMask
 
             if not any(mask):
-                logger.debug('skipping SNCL because no nearby SNCLs are compatible')
+                logger.debug('Skipping SNCL because no nearby SNCLs are compatible')
                 continue
             else:
                 avCompatible = availability2[mask].reset_index()
@@ -213,7 +215,7 @@ def crossCorrelation_metrics(concierge):
                     tt = irisseismic.getTraveltime(event.latitude, event.longitude, event.depth, 
                                                    av2.latitude, av2.longitude)
                 except Exception as e:
-                    logger.error('skipping because getTravelTime failed: %s' % (e))
+                    logger.debug('Skipping because getTravelTime failed: %s' % (e))
                     continue
                 
                 windowStart = event.time + min(tt.travelTime) - windowSecs/2.0
@@ -231,7 +233,7 @@ def crossCorrelation_metrics(concierge):
                 # NOTE:  This check is missing from IRISMustangUtils/R/generateMetrics_crossCorrelation.R
                 # No metric calculation possible if SNCL has more than one trace
                 if len(utils.get_slot(r_stream2, 'traces')) > 1 :
-                    logger.debug('skipping %s because it has more than one trace' % (av2.snclId))
+                    logger.debug('Skipping %s because it has more than one trace' % (av2.snclId))
                     continue
                 else:
                     # Found everything we need so end the loop
@@ -243,11 +245,12 @@ def crossCorrelation_metrics(concierge):
             r_filter = irisseismic.butter(defaultFilterArgs[0],defaultFilterArgs[1])
 
             # Calculate the cross-correlation metrics and append them to the list
+            logger.debug('Calculating crossCorrelation metrics for %s:%s' % (av1.snclId, av2.snclId))
             try:
                 df = irismustangmetrics.apply_correlation_metric(r_stream1, r_stream2, 'crossCorrelation', maxLagSecs, r_filter)
                 dataframes.append(df)
             except Exception as e:
-                logger.error('"crossCorrelation" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+                logger.debug('"crossCorrelation" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
             
 
         # END of SNCL loop

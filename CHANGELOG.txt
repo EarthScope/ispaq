@@ -1,3 +1,21 @@
+0.7.1
+ * improved logging
+ * don't show error messages from R
+
+0.7.0
+ * new transferFunction_metric
+ * regularized logging
+ * __future__ imports
+
+0.6.0
+ * improved PDF plotting code
+ * partially complete orientationCheck metric
+ * added pressureCorrelation_metrics
+ * updated to work with latest R packages
+ * added crossCorrelation metric
+ * added crossTalk metric
+ * added transfer_function metric (old version -- needs update)
+
 0.5.1
  * improvements to logger messages
  * additional "Preferences:" section in the preferences file

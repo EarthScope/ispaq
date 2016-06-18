@@ -29,11 +29,6 @@
 # 2011-05-18 -- IU.GRFO..BH? -- Test 1 of dead channel detection
 # 2011-06-02 -- IU.GRFO..BH? -- Test 2 of dead channel detection
 #
-# transfer
-#
-# 2012-10-03 -- II.PALK.*.* -- channels with problems (transfer_function coherence is very close to 1.0 but gain ratio is not)
-# 2012-10-03 -- II.NIL.*.* -- channels with problems (transfer_function coherence is very close to 1.0 but gain ratio is not)
-#
 # crossTalk
 #
 # 2013-09-21 -- II.B*.00.*
@@ -46,7 +41,14 @@
 #
 # 2011-06-01 -- IU.FURI.00.BHZ -- Mary's example #1
 # 2011-01-01 -- II.E*.00.B?? -- Mary's example #3
-
+#
+# orientationCheck
+#
+# 2009-02-18 -- ZU.NZ19.*.* -- Stachnik paper
+#
+# transferFunction
+#
+# 2012-10-03 -- II.PALK.*.*, II.NIL.*.* -- channels with problems (transfer_function coherence is very close to 1.0 but gain ratio is not)
 
 
 
@@ -63,10 +65,11 @@ Metrics:
   SNR: sample_snr
   PSD: pct_above_nhnm, pct_below_nlnm, dead_channel_exp, dead_channel_lin, dead_channel_gsn
   PDF: pdf_plot
-  ###transfer: transfer_function
   crossTalk: cross_talk
   pressureCorrelation: pressure_effects
   crossCorrelation: polarity_check, timing_drift
+  orientationCheck: orientation_check
+  transferFunction: transfer_function
   
   # ----- Custom combinations -----
   metrics_1: sample_rms, num_gaps, percent_availability
@@ -75,8 +78,10 @@ Metrics:
   metrics_4: sample_mean, num_gaps, max_stalta, num_spikes, sample_snr
   MyContinuityMetrics: num_gaps, num_overlaps, num_spikes
   MyStats: sample_max, sample_mean, sample_median, sample_rms
-  debugMetrics: transfer_function
   
+  # ----- Compare with R -----
+  # test_simple:  # 2012-01-14
+  test_simple: num_gaps, max_gap, num_overlaps, max_overlap, percent_availability, sample_min, sample_median, sample_mean, sample_max, sample_rms, sample_unique, max_stalta, num_spikes
 
 
 # User defined sets of SNCLs --------------------------------------------------
@@ -104,11 +109,20 @@ SNCLs:
   STALTA: IU.ANMO.00.BHZ, US.OXF..BHZ, IU.GUMO.00.*
   SNR: IU.GUMO.00.BHZ
   PSD: IU.GRFO..BH?
-  transfer: II.PALK.*.*, II.NIL.*.*
+  PDF: IU.GRFO..BH?
   crossTalk: II.B*.00.*
   pressureCorrelation: IU.A*.*.L*
   crossCorrelation: II.E*.00.B??
+  orientationCheck: ZU.NZ19.*.*
+  transferFunction: II.PALK.*.*
   
+  # ----- Compare with R -----
+  test_simple: CN.LGNH.*.HHZ
+  test_SNR: IU.ANMO.*.BH?
+  test_crossTalk: US.OXF.BH? # 2002-04-20
+  test_crossCorrelation: IU.ANMO.00.BH? # 2010-02-27
+  test_pressureCorrelation: IU.ANMO.00.LH? # 2013-05-01
+  test_transferFunction: CI.PASC.*.* # 2013-05-01
   
   bad_sncl: US.OXF..BOP # does not exist
   bad_good: US.OXF..BOP, US.OXF.*.BH?
@@ -151,6 +165,7 @@ Data_Access:
   #dataselect_url: test_data
   #event_url: test_data/2010-02-27_event.xml
   #station_url: test_data/IU.ANMO.00.BHZ_station.xml
+  
   
 
 # User defined preferences ----------------------------------------------------
