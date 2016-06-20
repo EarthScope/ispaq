@@ -29,7 +29,7 @@ from .crossCorrelation_metrics import crossCorrelation_metrics
 from .orientationCheck_metrics import orientationCheck_metrics
 from .transferFunction_metrics import transferFunction_metrics
 
-__version__ = "0.7.1"
+__version__ = "0.7.2"
 
 
 def main():
@@ -52,6 +52,8 @@ def main():
     parser.add_argument('--log-level', action='store', default='INFO',
                         choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],
                         help='log level printed to console')
+    parser.add_argument('-A', '--append', action='store_true', default=True,
+                        help='append to TRANSCRIPT file rather than overwriting')
 
     args = parser.parse_args(sys.argv[1:])
     
@@ -66,7 +68,11 @@ def main():
     
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     
-    fh = logging.FileHandler('TRANSCRIPT.txt', mode='w')
+    if args.append:
+        fh = logging.FileHandler('TRANSCRIPT.txt', mode='a')
+    else:
+        fh = logging.FileHandler('TRANSCRIPT.txt', mode='w')
+
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(formatter)
     logger.addHandler(fh)

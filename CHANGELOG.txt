@@ -1,3 +1,6 @@
+0.7.2
+ * -A option to append to TRANSCRIPT.txt instead of rewriting
+
 0.7.1
  * improved logging
  * don't show error messages from R
