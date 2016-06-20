@@ -103,6 +103,7 @@ pip install numpy
 pip install obspy
 pip install pandas
 pip install rpy2
+pip install logging
 ```
 
 ## Installing and Running ispaq from Source
