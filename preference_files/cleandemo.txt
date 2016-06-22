@@ -154,6 +154,7 @@ SNCLs:
 # NOTE: Directory names should not match FDSN provider names.
 
 Data_Access:
+  # TODO:  These should all be available as command line flags that override what's in here.
 
   dataselect_url: IRIS
   event_url: IRIS
