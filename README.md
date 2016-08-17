@@ -36,7 +36,52 @@ is included in the CRAN repository, ISPAQ would learn about it automatically and
 enable the execution of the new metric algorithm on a local set of data. R provides 
 facilities for this update detection.
 
-## Installing Python Prerequisites
+## Installation via Anaconda
+
+[Anaconda](https://www.continuum.io/why-anaconda) is quickly becoming the *defacto*
+package manager for scientific applications written python or R. The following instructions
+assume that you have installed [Miniconda](http://conda.pydata.org/miniconda.html) for
+your system.
+
+We will use conda to simplify installation and ensure that all dependencies
+are installed with compatible verions.
+
+## Set up a virutal environment for ispaq.
+
+By setting up a [conda virual environment](http://conda.pydata.org/docs/using/envs.html),
+we assure that our ISPAQ installation is entirely separate from any other installed software.
+
+```
+conda create --name ispaq python=2.7
+source activate ispaq
+```
+
+See what is installed with:
+
+```
+conda list
+```
+
+## Install versioned python and R prerequisites
+
+```
+conda config --add channels conda-forge
+conda install pandas=0.18
+conda install obspy=1.0
+conda install r=3.2
+conda install r-rcurl
+```
+
+## Install R package seismicRoll and prerequisites
+
+```
+Rscript -e "install.packages('Rcpp', repos='http://cran.fhcrc.org')"
+R CMD install 
+```
+
+----
+
+## [DEPRECATED] Installing Python Prerequisites
 
 This python application is best installed by using
 [virtualenv](https://python-packaging-user-guide.readthedocs.org/en/latest/projects/#virtualenv)
