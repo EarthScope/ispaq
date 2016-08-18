@@ -1,4 +1,7 @@
 0.7.2
+ * initial support for Anaconda installation
+
+0.7.2
  * -A option to append to TRANSCRIPT.txt instead of rewriting
 
 0.7.1
