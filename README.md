@@ -54,7 +54,8 @@ we assure that our ISPAQ installation is entirely separate from any other instal
 This method does everything at once.
 
 ```
-conda list --explicit > ispaq-explicit-spec-file.txt
+conda create -n ispaq --file ispaq-explicit-spec-file.txt
+source activate ispaq
 ```
 
 See what is installed in our (ispaq) environment with:
