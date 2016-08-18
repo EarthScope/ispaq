@@ -46,119 +46,64 @@ your system.
 We will use conda to simplify installation and ensure that all dependencies
 are installed with compatible verions.
 
-## Set up a virutal environment for ispaq.
-
 By setting up a [conda virual environment](http://conda.pydata.org/docs/using/envs.html),
 we assure that our ISPAQ installation is entirely separate from any other installed software.
+
+### Alternative 1) Creating an environment from a 'spec' file
+
+This method does everything at once.
+
+```
+conda list --explicit > ispaq-explicit-spec-file.txt
+```
+
+See what is installed in our (ispaq) environment with:
+
+```
+conda list
+...
+```
+
+Now install the IRIS R packages:
+
+```
+R CMD install seismicRoll_1.1.2.tar.gz 
+R CMD install IRISSeismic_1.2.3.tar.gz
+R CMD install IRISMustangMetrics_1.2.4.tar.gz 
+```
+
+### Alternative 2) Creating an environment by hand
+
+This method requires more user intput but lets you see what is being installed.
 
 ```
 conda create --name ispaq python=2.7
 source activate ispaq
+conda install pandas=0.18.1
+conda install -c conda-forge obspy=1.0.2
+conda install -c r r=3.2.2
+conda install -c r r-devtools=1.9.1
+conda install -c r r-rcurl=1.95_4.7
+conda install -c r r-xml=3.98_1.3 
+conda install -c r r-dplyr=0.4.3
+conda install -c r r-tidyr=0.3.1
+conda install -c r r-quadprog=1.5.5
+conda install -c bioconda r-signal=0.7.6
+conda install -c bioconda r-pracma=1.8.8
+conda install -c r rpy2=2.7.0
 ```
 
-See what is installed with:
+See what is installed in our (ispaq) environment with:
 
 ```
 conda list
+...
 ```
 
-## Install versioned python and R prerequisites
+Now install the IRIS R packages:
 
 ```
-conda config --add channels conda-forge
-conda install pandas=0.18
-conda install obspy=1.0
-conda install r=3.2
-conda install r-rcurl
+R CMD install seismicRoll_1.1.2.tar.gz 
+R CMD install IRISSeismic_1.2.3.tar.gz
+R CMD install IRISMustangMetrics_1.2.4.tar.gz 
 ```
-
-## Install R package seismicRoll and prerequisites
-
-```
-Rscript -e "install.packages('Rcpp', repos='http://cran.fhcrc.org')"
-R CMD install 
-```
-
-----
-
-## [DEPRECATED] Installing Python Prerequisites
-
-This python application is best installed by using
-[virtualenv](https://python-packaging-user-guide.readthedocs.org/en/latest/projects/#virtualenv)
-to set up a virtual environment that isolates package dependencies and then using
-[pip](https://python-packaging-user-guide.readthedocs.org/en/latest/projects/#pip)
-to install packages.
-
-The
-[Python Packaging User Guide](https://python-packaging-user-guide.readthedocs.org/en/latest/installing/)
-is the closest thing python has to a *definitive* guide to package creation and installation.
-That site should be consulted if any of the instructions below do not work
-
-### Installing pip
-
-*Copied from [here](https://python-packaging-user-guide.readthedocs.org/en/latest/installing/#install-pip-setuptools-and-wheel):*
-
-If you have Python 2 >=2.7.9 or Python 3 >=3.4 installed from python.org, you will already have pip and setuptools, but will need to upgrade to the latest version:
-
-On Linux or OS X:
-
-```
-pip install -U pip setuptools
-```
-
-### Installing virtualenv
-
-*Copied from [here](https://python-packaging-user-guide.readthedocs.org/en/latest/installing/#optionally-create-a-virtual-environment):*
-
-```
-pip install virtualenv
-```
-
-### Setting up a virtual environment
-
-A virtual environment allows users without super user privileges to set
-up a local environment where python packages will be installed and referenced
-
-To set up a virtual environment for python 2.7 in your home directory type
-the following on OSX:
-
-```
-virtualenv --python=/usr/bin/python2.7 ~/venvpy27
-```
-
-To activate the environment type:
-
-```
-source ~/venvpy27/bin/activate
-```
-
-You can check that your version of python is now coming from this environment 
-with:
-
-```
-which python
-```
-
-### Install python packages
-
-All python prerequisites can be installed with:
-
-```
-pip install numpy
-pip install obspy
-pip install pandas
-pip install rpy2
-pip install logging
-```
-
-## Installing and Running ispaq from Source
-
-If you have downloaded the [ispaq source](https://github.com/mazamascience/ispaq) you can
-enter the top level directory and type:
-
-```python setup.py install```
-
-In this same directory you can test the installation with:
-
-```ispaq -M metrics_1 -S sncls_1 --starttime 2010-04-20 --log-level DEBUG```
-
