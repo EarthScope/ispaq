@@ -70,7 +70,7 @@ Now install the IRIS R packages:
 ```
 R CMD install seismicRoll_1.1.2.tar.gz 
 R CMD install IRISSeismic_1.2.3.tar.gz
-R CMD install IRISMustangMetrics_1.2.4.tar.gz 
+R CMD install IRISMustangMetrics_1.2.5.tar.gz 
 ```
 
 ### Alternative 2) Creating an environment by hand
@@ -106,5 +106,5 @@ Now install the IRIS R packages:
 ```
 R CMD install seismicRoll_1.1.2.tar.gz 
 R CMD install IRISSeismic_1.2.3.tar.gz
-R CMD install IRISMustangMetrics_1.2.4.tar.gz 
+R CMD install IRISMustangMetrics_1.2.5.tar.gz 
 ```

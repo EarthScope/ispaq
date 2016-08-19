@@ -29,7 +29,7 @@ from .crossCorrelation_metrics import crossCorrelation_metrics
 from .orientationCheck_metrics import orientationCheck_metrics
 from .transferFunction_metrics import transferFunction_metrics
 
-__version__ = "0.7.3"
+__version__ = "0.7.4"
 
 
 def main():
