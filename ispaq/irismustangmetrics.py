@@ -24,6 +24,7 @@ from __future__ import (absolute_import, division, print_function)
 import math
 import numpy as np
 import pandas as pd
+import json
 
 from obspy.core import UTCDateTime
 
@@ -40,9 +41,9 @@ from rpy2.robjects import pandas2ri
 
 # IRISMustangMetrics helper functions
 _R_metricList2DF = robjects.r('IRISMustangMetrics::metricList2DF')
+_R_getMetricFunctionMetadata = robjects.r('IRISMustangMetrics::getMetricFunctionMetadata')
 
-
-def _R_getMetricFunctionMetdata():
+def DELETEME_R_getMetricFunctionMetadata():
     """
     This function returns a dictionary with the following information:
      * name -- char, (Name of R function to be run)
@@ -203,7 +204,10 @@ def _R_getMetricFunctionMetdata():
     return(functiondict)
 
 def function_metadata():
-    return _R_getMetricFunctionMetdata()
+    r_json = _R_getMetricFunctionMetadata()
+    py_json = r_json[0]
+    functionMetadata = json.loads(py_json)
+    return functionMetadata
 
 
 #     Functions that return SingleValueMetrics     -----------------------------
