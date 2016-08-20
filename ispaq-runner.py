@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
 
@@ -7,7 +7,6 @@
 from __future__ import (absolute_import, division, print_function)
 
 from ispaq.ispaq import main
-
 
 if __name__ == '__main__':
     main()
