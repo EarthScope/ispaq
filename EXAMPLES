@@ -1,37 +1,37 @@
 # basicStats
-python ispaq-runner.py -M basicStats -S basicStats --starttime 2010-04-20 --log-level INFO -A
+ispaq-runner.py -M basicStats -S basicStats --starttime 2010-04-20 --log-level INFO -A
 
 # gaps
-python ispaq-runner.py -M gaps -S gaps --starttime 2013-01-05 --log-level INFO -A
+ispaq-runner.py -M gaps -S gaps --starttime 2013-01-05 --log-level INFO -A
 
 # Spikes
-python ispaq-runner.py -M spikes -S spikes --starttime 2013-01-03 --log-level INFO -A
+ispaq-runner.py -M spikes -S spikes --starttime 2013-01-03 --log-level INFO -A
 
 # STALTA
-python ispaq-runner.py -M STALTA -S STALTA --starttime 2013-06-02 --log-level INFO -A
+ispaq-runner.py -M STALTA -S STALTA --starttime 2013-06-02 --log-level INFO -A
 
 # SNR
-python ispaq-runner.py -M SNR -S SNR --starttime 2013-06-02 --log-level INFO -A
+ispaq-runner.py -M SNR -S SNR --starttime 2013-06-02 --log-level INFO -A
 
 # PSD
-python ispaq-runner.py -M PSD -S PSD --starttime 2011-05-18 --log-level INFO -A
+ispaq-runner.py -M PSD -S PSD --starttime 2011-05-18 --log-level INFO -A
 
 # PDF
-python ispaq-runner.py -M PDF -S PDF --starttime 2013-06-01 --log-level INFO -A
+ispaq-runner.py -M PDF -S PDF --starttime 2013-06-01 --log-level INFO -A
 
 # crossTalk
-python ispaq-runner.py -M crossTalk -S crossTalk --starttime 2013-09-21 --log-level INFO -A
+ispaq-runner.py -M crossTalk -S crossTalk --starttime 2013-09-21 --log-level INFO -A
 
 # pressureCorrelation
-python ispaq-runner.py -M pressureCorrelation -S pressureCorrelation --starttime 2013-05-02 --log-level INFO -A
+ispaq-runner.py -M pressureCorrelation -S pressureCorrelation --starttime 2013-05-02 --log-level INFO -A
 
 # crossCorrelation
-python ispaq-runner.py -M crossCorrelation -S crossCorrelation --starttime 2011-01-01 --log-level INFO -A
+ispaq-runner.py -M crossCorrelation -S crossCorrelation --starttime 2011-01-01 --log-level INFO -A
 
 # orientationCheck
-python ispaq-runner.py -M orientationCheck -S orientationCheck --starttime 2009-02-18 --log-level INFO -A
+ispaq-runner.py -M orientationCheck -S orientationCheck --starttime 2009-02-18 --log-level INFO -A
 
 # transferFunction
-python ispaq-runner.py -M transferFunction -S transferFunction --starttime 2012-10-03 --log-level INFO -A
+ispaq-runner.py -M transferFunction -S transferFunction --starttime 2012-10-03 --log-level INFO -A
 
 

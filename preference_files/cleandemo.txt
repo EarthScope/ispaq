@@ -50,6 +50,11 @@
 #
 # 2012-10-03 -- II.PALK.*.*, II.NIL.*.* -- channels with problems (transfer_function coherence is very close to 1.0 but gain ratio is not)
 
+# NEW orientationCheck test from Mary templeton:
+# orientationCheckMetrics_exec.R --network=IU --station=BILL --location=00 --starttime=2014-11-16 --endtime=2016-03-01 --debug --nosubmit --xml
+#
+# 2015-11-24 -- IU.BILL.00.* -- Mary Templeton example on a day with events of 7.5 and 7.6 (>= 7.0 required)
+
 
 
 # User defined sets of metrics ------------------------------------------------
@@ -113,7 +118,8 @@ SNCLs:
   crossTalk: II.B*.00.*
   pressureCorrelation: IU.A*.*.L*
   crossCorrelation: II.E*.00.B??
-  orientationCheck: ZU.NZ19.*.*
+  orientationCheck_OLD: ZU.NZ19.*.*
+  orientationCheck: IU.BILL.00.*
   transferFunction: II.PALK.*.*
   
   # ----- Compare with R -----

@@ -39,7 +39,8 @@ def orientationCheck_metrics(concierge):
     logger = concierge.logger
         
     # Default parameters from IRISMustangUtils::generateMetrics_orientationCheck
-    minmag = 6.0 # TODO:  Change back to 7.0 to match R code
+    channelFilter = "[BH]H[12ENZ]"    
+    minmag = 7.0
     maxdepth = 100
     eventMinradius = 0
     eventMaxradius = 180
@@ -94,6 +95,9 @@ def orientationCheck_metrics(concierge):
             logger.debug('skipping event because get_availability failed: %s' % (e))
             continue
                     
+        # Apply the channelFilter
+        availability = availability[availability.channel.str.contains(channelFilter)]      
+
         # Sanity check that some SNCLs exist
         if availability.shape[0] == 0:
             logger.debug('Skipping event because no SNCLs are available')
@@ -120,9 +124,9 @@ def orientationCheck_metrics(concierge):
 
             sn_lAvailability = availability[availability.sn_lId == sn_lId]
             
-            if sn_lAvailability.shape[0] != 3:
-                logger.debug('Skipping %s because there is only %d channels were found at this SN.L' % (sn_lId, sn_lAvailability.shape[0]))
-                continue
+            #if sn_lAvailability.shape[0] != 3:
+            #    logger.debug('Skipping %s because only %d channels were found at this SN.L (3 required)' % (sn_lId, sn_lAvailability.shape[0]))
+            #    continue
 
             # Determine N, E and Z channels
             N_or_1_mask = sn_lAvailability.channel.str.contains('..N') | sn_lAvailability.channel.str.contains('..1')
@@ -152,7 +156,7 @@ def orientationCheck_metrics(concierge):
         
             try:
                 stN = concierge.get_dataselect(Channel_1.network, Channel_1.station, Channel_1.location,Channel_1.channel,
-                                                    windowStart, windowEnd, inclusiveEnd=False)
+                                               windowStart, windowEnd, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
                     logger.debug('No data for %s' % (Channel_1.snclId))
@@ -162,7 +166,7 @@ def orientationCheck_metrics(concierge):
         
             try:
                 stE = concierge.get_dataselect(Channel_2.network, Channel_2.station, Channel_2.location,Channel_2.channel,
-                                                    windowStart, windowEnd, inclusiveEnd=False)
+                                               windowStart, windowEnd, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
                     logger.debug('No data for %s' % (Channel_2.snclId))
@@ -172,7 +176,7 @@ def orientationCheck_metrics(concierge):
         
             try:
                 stZ = concierge.get_dataselect(ZChannel.network, ZChannel.station, ZChannel.location,ZChannel.channel,
-                                                    windowStart, windowEnd, inclusiveEnd=False)
+                                               windowStart, windowEnd, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
                     logger.debug('No data for %s' % (ZChannel.snclId))
@@ -226,23 +230,29 @@ def orientationCheck_metrics(concierge):
             HZ_data = pd.Series(utils.get_slot(HZ,'data'))
             SzzValue = sum(HZ_data * HZ_data)
             Szz = pd.Series([SzzValue] * 360)
-            Szr = pd.Series([np.nan] * 360)
-            Srr = pd.Series([np.nan] * 360)
+            Szr = pd.Series([np.NaN] * 360)
+            Srr = pd.Series([np.NaN] * 360)
 
             # Calculate correlations as a function of angle
+            rotateOK = True
             for angle in range(1,360,degreeIncrement):
                 
                 if angle % 10 == 0:
                     logger.debug('rotate2D angle = %d' % angle)
                     
                 try:
-                    stR = irisseismic.rotate2D(stN, stE, angle)[0]               
-                    R_data = pd.Series(utils.get_slot(stR,'data'))
-                    Srr[angle] = sum(R_data * R_data)
-                    Szr[angle] = sum(HZ_data * R_data)
-                except Exception as e:
-                    logger.debug('skipping angle: %s' % (e.message))
-                    continue
+                    stR = irisseismic.rotate2D(stN, stE, angle)[0]
+                except:
+                    logger.debug('skipping %s: irisseismic.rotate2D failed:  %s' % (sn_lId, e.message))
+                    rotateOK = False
+                    break
+                R_data = pd.Series(utils.get_slot(stR,'data'))
+                Srr[angle] = sum(R_data * R_data)
+                Szr[angle] = sum(HZ_data * R_data)
+                
+            # an error in the loop means we skip this SNL, go to next in loop
+            if not rotateOK:
+                continue
                 
             # Normalized correlation coefficients
             Czr = Szr / (Szz*Srr).pow(.5)
@@ -250,18 +260,12 @@ def orientationCheck_metrics(concierge):
             
             maxCzr = Czr.max(skipna=True)
             maxC_zr = C_zr.max(skipna=True)
-            #maxCzr <- max(Czr,na.rm=TRUE)
-            #maxC_zr <- max(C_zr,na.rm=TRUE)
         
             angleAtMaxCzr = int( list(Czr[Czr == maxCzr].index)[0] )
             angleAtMaxC_zr = int( list(C_zr[C_zr == maxC_zr].index)[0] )
-            #angleAtMaxCzr <- which(Czr == maxCzr)
-            #angleAtMaxC_zr <- which(C_zr == maxC_zr)
         
-            azimuthR = angleAtMaxC_zr % 360
-            azimuthT = (azimuthR + 90) % 360
-            #azimuthR <- angleAtMaxC_zr %% 360
-            #azimuthT <- (azimuthR + 90) %% 360
+            azimuth_R = angleAtMaxC_zr % 360
+            azimuth_T = (azimuth_R + 90) % 360
 
             #         Find the orientation X with the maximum C*zr and:
             #             report empirical X, X+90, 
@@ -282,22 +286,21 @@ def orientationCheck_metrics(concierge):
             # max_C_zr
             # magnitude
         
-
-            azimuth_Y_obs = (float(distaz.backAzimuth) - azimuthR) % 360
+            azimuth_Y_obs = (float(distaz.backAzimuth) - azimuth_R) % 360
             azimuth_X_obs = (azimuth_Y_obs + 90.0) % 360
-            #azimuth_Y_obs <- (distaz$backAzimuth - azimuthR) %% 360
-            #azimuth_X_obs <- (azimuth_Y_obs + 90.0) %% 360
         
             attributeName = ["azimuth_R","backAzimuth","azimuth_Y_obs","azimuth_X_obs","azimuth_Y_meta","azimuth_X_meta","max_Czr","max_C_zr","magnitude"]
-            attributeValueString = [str(azimuthR),
-                                    str(float(distaz.backAzimuth)),
-                                    str(azimuth_Y_obs),
-                                    str(azimuth_X_obs),
-                                    str(Channel_1.azimuth),
-                                    str(Channel_2.azimuth),
-                                    str(maxCzr),
-                                    str(maxC_zr),
-                                    str(event.magnitude)]
+            attributeValues = [azimuth_R, float(distaz.backAzimuth), azimuth_Y_obs, azimuth_X_obs,
+                               float(Channel_1.azimuth), float(Channel_2.azimuth), maxCzr, maxC_zr, float(event.magnitude)]
+            #attributeValueString = [str(azimuthR),
+                                    #str(float(distaz.backAzimuth)),
+                                    #str(azimuth_Y_obs),
+                                    #str(azimuth_X_obs),
+                                    #str(Channel_1.azimuth),
+                                    #str(Channel_2.azimuth),
+                                    #str(maxCzr),
+                                    #str(maxC_zr),
+                                    #str(event.magnitude)]
             #attributeName <- c("azimuth_R","backAzimuth","azimuth_Y_obs","azimuth_X_obs","azimuth_Y_meta","azimuth_X_meta","max_Czr","max_C_zr","magnitude")
             #attributeValueString <- c(format(azimuthR),
                                       #format(distaz$backAzimuth),
@@ -311,14 +314,10 @@ def orientationCheck_metrics(concierge):
 
             # Create metric
             df = irisseismic.singleValueMetric(utils.get_slot(stZ, 'id'), windowStart, windowEnd,
-                                               'orientation_check', np.nan,
-                                               attributeName, attributeValueString)
-            #m1 <- methods::new("SingleValueMetric", snclq=Z@id, starttime=windowStart, endtime=windowEnd, 
-                               #metricName="orientation_check", value=as.numeric(NA),
-                               #attributeName=attributeName, attributeValueString=attributeValueString)
-        
-            #profilePoint("metricCalculation","seconds to calculate orientationCheckMetric")
-        
+                                               'orientation_check', np.NaN,
+                                               attributeName, attributeValues)
+            dataframes.append(df)
+            
             ## TODO:  Fix the root cause of this hack.    
             ## REC Feb 2014 -- remove value=NULL default attribute by left shifting attribute list by one into the value slot
             #attrLen <- length(m1@attributeName)
@@ -334,9 +333,12 @@ def orientationCheck_metrics(concierge):
             ##       tempList[[1]]@valueString = tempList[[1]]@attributeValueString[1]
             ##       tempList[[1]]@attributeName <- tempList[[1]]@attributeName[2:attrLen]
             ##       tempList[[1]]@attributeValueString <- tempList[[1]]@attributeValueString[2:attrLen]
-            ##       metricList <- append(metricList,tempList)
+            ##       metricList <- append(metricList,tempList)       
             
-            
+        # END of sn_lId loop
+
+    # END of event loop
+
     # Concatenate and filter dataframes before returning -----------------------
     
     result = pd.concat(dataframes, ignore_index=True)    

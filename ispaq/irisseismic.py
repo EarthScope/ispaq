@@ -60,6 +60,8 @@ _R_getStation = robjects.r('IRISSeismic::getStation')                 #
 _R_getTraveltime = robjects.r('IRISSeismic::getTraveltime')           #
 _R_getUnavailability = robjects.r('IRISSeismic::getUnavailability')   #
 
+# IRISMustangMetrics helper functions
+_R_metricList2DF = robjects.r('IRISMustangMetrics::metricList2DF')
 
 #     Python --> R conversion functions    -------------------------------------
 
@@ -816,15 +818,18 @@ def singleValueMetric(snclq, starttime, endtime, metricName, value, attributeNam
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
     quality_flag = -9
-    quality_flagString = '-9'
     attributeName = R_character(attributeName)
-    attributeValueString = R_character(attributeValueString)
+    attributeValueString = R_character(attributeValues)
     
     R_function = robjects.r('methods::new')
-    r_metric = R_function("SingleValueMetric", snclq, starttime, endtime, metricName,
-                          value, value, valueString, attributeName, attributeValueString)
+    r_metric = R_function("SingleValueMetric", snclq, starttime, endtime,
+                          metricName, value, quality_flag,
+                          attributeName,
+                          attributeValueString)
+    
 
     r_metricList = _R_list(r_metric)
+    r_dataframe = _R_metricList2DF(r_metricList)
     df = pandas2ri.ri2py(r_dataframe)
 
     return(df)

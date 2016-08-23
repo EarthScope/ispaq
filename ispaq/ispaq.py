@@ -127,9 +127,9 @@ def main():
                 logger.info('Writing simple metrics to %s.\n' % os.path.basename(filepath))
                 utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
             except Exception as e:
-                logger.error(e)
+                logger.exception("Fatal error writing metric results")
         except Exception as e:
-            logger.error(e)
+            logger.exception("Fatal error calculating 'simple' metrics")
 
 
     # Generate SNR Metrics -----------------------------------------------------
@@ -143,9 +143,9 @@ def main():
                 logger.info('Writing SNR metrics to %s.\n' % os.path.basename(filepath))
                 utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
             except Exception as e:
-                logger.error(e)
+                logger.exception("Fatal error writing metric results")
         except Exception as e:
-            logger.error(e)
+            logger.exception("Fatal error calculating 'SNR' metrics")
 
 
     # Generate PSD Metrics -----------------------------------------------------
@@ -159,9 +159,9 @@ def main():
                 logger.info('Writing PSD metrics to %s.\n' % os.path.basename(filepath))
                 utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
             except Exception as e:
-                logger.error(e)
+                logger.exception("Fatal error writing metric results")
         except Exception as e:
-            logger.error(e)
+            logger.exception("Fatal error calculating 'PSD' metrics")
 
 
     # Generate Cross Talk Metrics ----------------------------------------------
@@ -175,9 +175,9 @@ def main():
                 logger.info('Writing crossTalk metrics to %s.\n' % os.path.basename(filepath))
                 utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
             except Exception as e:
-                logger.error(e)
+                logger.exception("Fatal error writing metric results")
         except Exception as e:
-            logger.error(e)
+            logger.exception("Fatal error calculating 'crossTalk' metrics")
         
 
     # Generate Pressure Correlation Metrics ----------------------------------------------
@@ -191,9 +191,9 @@ def main():
                 logger.info('Writing pressureCorrelation metrics to %s.\n' % os.path.basename(filepath))
                 utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
             except Exception as e:
-                logger.error(e)
+                logger.exception("Fatal error writing metric results")
         except Exception as e:
-            logger.error(e)
+            logger.exception("Fatal error calculating 'pressureCorrelation' metrics")
         
 
     # Generate Cross Correlation Metrics ---------------------------------------
@@ -207,9 +207,9 @@ def main():
                 logger.info('Writing crossCorrelation metrics to %s.\n' % os.path.basename(filepath))
                 utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
             except Exception as e:
-                logger.error(e)
+                logger.exception("Fatal error writing metric results")
         except Exception as e:
-            logger.error(e)
+            logger.exception("Fatal error calculating 'crossCorrelation' metrics")
                 
 
     # Generate Orientation Check Metrics ---------------------------------------
@@ -223,9 +223,9 @@ def main():
                 logger.info('Writing orientationCheck metrics to %s.\n' % os.path.basename(filepath))
                 utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
             except Exception as e:
-                logger.error(e)
+                logger.exception("Fatal error writing metric results")
         except Exception as e:
-            logger.error(e)
+            logger.exception("Fatal error calculating 'orientationCheck' metrics")
                         
                         
     # Generate Transfer Function Metrics ---------------------------------------
@@ -239,9 +239,9 @@ def main():
                 logger.info('Writing transfer metrics to %s.\n' % os.path.basename(filepath))
                 utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
             except Exception as e:
-                logger.error(e)
+                logger.exception("Fatal error writing metric results")
         except Exception as e:
-            logger.error(e)
+            logger.exception("Fatal error calculating 'transferFunction' metrics")
 
 
     logger.info('ALL FINISHED!')

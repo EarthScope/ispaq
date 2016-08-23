@@ -85,7 +85,7 @@ def SNR_metrics(concierge):
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=0, maxradius=maxradius)
         except Exception as e:
-            logger.error('Skipping because get_availability failed: %s' % (e))
+            logger.warn('Skipping because get_availability failed: %s' % (e))
             continue
                     
         # Sanity check that some SNCLs exist
@@ -109,7 +109,7 @@ def SNR_metrics(concierge):
                 tt = irisseismic.getTraveltime(event.latitude, event.longitude, event.depth, 
                                                av.latitude, av.longitude)
             except Exception as e:
-                logger.error('Skipping because getTravelTime failed: %s' % (e))
+                logger.warn('Skipping because getTravelTime failed: %s' % (e))
                 continue
         
             # get P arrival or first arrival

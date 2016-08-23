@@ -79,7 +79,7 @@ class Concierge(object):
             self.dataselect_client = None
         else:
             err_msg = "The preference file dataselect_url: '%s' is not valid." % user_request.dataselect_url
-            self.logger.error(err_msg)
+            self.logger.exception(err_msg)
             raise ValueError(err_msg)
 
         # Add event clients and URLs or reference a local file
@@ -92,7 +92,7 @@ class Concierge(object):
             self.event_client = None
         else:
             err_msg = "The preference file event_url: '%s' is not valid." % user_request.event_url
-            self.logger.error(err_msg)
+            self.logger.exception(err_msg)
             raise ValueError(err_msg)
 
         # Add station clients and URLs or reference a local file
@@ -105,7 +105,7 @@ class Concierge(object):
             self.station_client = None
         else:
             err_msg = "The preference file station_url: '%s' is not valid." % user_request.station_url
-            self.logger.error(err_msg)
+            self.logger.exception(err_msg)
             raise ValueError(err_msg)
 
 
@@ -245,7 +245,7 @@ class Concierge(object):
                     sncl_inventory = obspy.read_inventory(self.station_url)
                 except Exception as e:
                     err_msg = "The StationXML file: '%s' is not valid." % self.station_url
-                    self.logger.error(err_msg)                    
+                    self.logger.exception(err_msg)                    
                     raise ValueError(err_msg)
             
             else:
@@ -362,7 +362,7 @@ class Concierge(object):
                     py_stream = py_stream.slice(_starttime, _endtime)
                     r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime)
                 except Exception as e:
-                    self.logger.error(e)
+                    self.logger.exception(e)
                     raise
                 
             else:
@@ -474,7 +474,7 @@ class Concierge(object):
                 event_catalog = obspy.read_events(self.event_url)
             except Exception as e:
                 err_msg = "The StationXML file: '%s' is not valid." % self.station_url
-                self.logger.error(err_msg)
+                self.logger.exception(err_msg)
                 raise ValueError(err_msg)
             
             # events.columns
@@ -521,7 +521,7 @@ class Concierge(object):
 
             except Exception as e:
                 err_msg = "The event_url: '%s' returns an error: %s." % (self.event_url, e)
-                self.logger.error(err_msg)
+                self.logger.exception(err_msg)
                 raise
 
 

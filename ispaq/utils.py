@@ -23,6 +23,10 @@ def write_simple_df(df, filepath, sigfigs=6):
     :param sigfigs: Number of significant figures to use.
     :return: status
     """
+    # Sometimes 'starttime' and 'endtime' get converted from UTCDateTime to float and need to be
+    # converted back. Nothing happens if this column is already of type UTCDateTime.
+    df.starttime = df.starttime.apply(UTCDateTime)
+    df.endtime = df.endtime.apply(UTCDateTime)
     # Get pretty values
     pretty_df = format_simple_df(df, sigfigs=sigfigs)
     # Reorder columns, putting non-standard columns at the end and omitting 'qualityFlag'
@@ -54,8 +58,10 @@ def format_simple_df(df, sigfigs=6):
     df.value = df.value.astype(float)
     df.value = df.value.apply(lambda x: format(x, format_string))
     if 'starttime' in df.columns:
+        df.starttime = df.starttime.apply(UTCDateTime)
         df.starttime = df.starttime.apply(lambda x: x.isoformat())
     if 'endtime' in df.columns:
+        df.endtime = df.endtime.apply(UTCDateTime)
         df.endtime = df.endtime.apply(lambda x: x.isoformat())
     # NOTE:  df.time from SNR metric is already a string, otherwise it is NA
     #if 'time' in df.columns:
