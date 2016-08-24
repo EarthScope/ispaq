@@ -46,7 +46,7 @@ git clone https://github.com/MazamaScience/ispaq.git
 
 Onced finished, ```cd ispaq``` before setting up the Anaconda environment.
 
-## Installation the Anaconda Environment
+## Installing the Anaconda Environment
 
 [Anaconda](https://www.continuum.io/why-anaconda) is quickly becoming the *defacto*
 package manager for scientific applications written python or R. The following instructions
