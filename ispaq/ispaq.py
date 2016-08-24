@@ -12,23 +12,6 @@ import argparse
 import datetime
 import logging
 
-# ISPAQ modules
-from .user_request import UserRequest
-from .concierge import Concierge
-from . import irisseismic
-from . import irismustangmetrics
-from . import utils
-
-# Specific ISPAQ business logic
-from .simple_metrics import simple_metrics
-from .SNR_metrics import SNR_metrics
-from .PSD_metrics import PSD_metrics
-from .crossTalk_metrics import crossTalk_metrics
-from .pressureCorrelation_metrics import pressureCorrelation_metrics
-from .crossCorrelation_metrics import crossCorrelation_metrics
-from .orientationCheck_metrics import orientationCheck_metrics
-from .transferFunction_metrics import transferFunction_metrics
-
 __version__ = "0.7.5"
 
 
@@ -84,6 +67,27 @@ def main():
 
     logger.info('Running ISPAQ version %s on %s\n' % (__version__, datetime.datetime.now().strftime('%c')))
 
+    # Load additional modules --------------------------------------------------
+
+    # These are loaded here so that asking for --verion or --help is bogged down
+    # by the slow-to-load modules that require matplotlib
+
+    # ISPAQ modules
+    from .user_request import UserRequest
+    from .concierge import Concierge
+    from . import irisseismic
+    from . import irismustangmetrics
+    from . import utils
+    
+    # Specific ISPAQ business logic
+    from .simple_metrics import simple_metrics
+    from .SNR_metrics import SNR_metrics
+    from .PSD_metrics import PSD_metrics
+    from .crossTalk_metrics import crossTalk_metrics
+    from .pressureCorrelation_metrics import pressureCorrelation_metrics
+    from .crossCorrelation_metrics import crossCorrelation_metrics
+    from .orientationCheck_metrics import orientationCheck_metrics
+    from .transferFunction_metrics import transferFunction_metrics
 
     # Create UserRequest object ------------------------------------------------
     #
