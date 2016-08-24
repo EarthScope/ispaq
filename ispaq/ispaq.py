@@ -29,7 +29,7 @@ from .crossCorrelation_metrics import crossCorrelation_metrics
 from .orientationCheck_metrics import orientationCheck_metrics
 from .transferFunction_metrics import transferFunction_metrics
 
-__version__ = "0.7.4"
+__version__ = "0.7.5"
 
 
 def main():
@@ -85,7 +85,7 @@ def main():
     logger.info('Running ISPAQ version %s on %s\n' % (__version__, datetime.datetime.now().strftime('%c')))
 
 
-    #     Create UserRequest object     ---------------------------------------
+    # Create UserRequest object ------------------------------------------------
     #
     # The UserRequest class is in charge of parsing arguments issued on the
     # command line, loading and parsing a preferences file, and setting a bunch
@@ -100,7 +100,7 @@ def main():
         raise
 
 
-    #     Create Concierge (aka Expediter)     ---------------------------------
+    # Create Concierge (aka Expediter) -----------------------------------------
     #
     # The Concierge class uses the completely filled out UserRequest and has the
     # job of expediting requests for information that may be made by any of the
@@ -116,7 +116,7 @@ def main():
         raise
 
 
-    #     Generate Simple Metrics     ------------------------------------------
+    # Generate Simple Metrics --------------------------------------------------
 
     if 'simple' in concierge.logic_types:
         logger.debug('Inside simple business logic ...')
@@ -155,6 +155,7 @@ def main():
         try:
             df = PSD_metrics(concierge)
             try:
+                # Write out the metrics
                 filepath = concierge.output_file_base + "__PSDMetrics.csv"
                 logger.info('Writing PSD metrics to %s.\n' % os.path.basename(filepath))
                 utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)

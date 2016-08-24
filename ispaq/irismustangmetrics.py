@@ -302,10 +302,21 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
     df.starttime = df.starttime.apply(UTCDateTime)
     df.endtime = df.endtime.apply(UTCDateTime)
     
-    # TODO:  What to do about the spectra
-    r_spectralist = r_listOfLists[1]
+    # TODO:  What to do about the list of spectraMetrics?
+    # TODO:  We would need a new R_spectrumMetricList2DF function to process this further.
+    ###r_spectrumList = r_listOfLists[1]
     
-    return df
+    # correctedPSD is returned as a dataframe
+    r_correctedPSD = r_listOfLists[2]
+    correctedPSD = pandas2ri.ri2py(r_correctedPSD)
+    # Convert columns from R POSIXct to pyton UTCDateTime
+    correctedPSD.starttime = correctedPSD.starttime.apply(UTCDateTime)
+    correctedPSD.endtime = correctedPSD.endtime.apply(UTCDateTime)
+
+    r_PDF = r_listOfLists[3]
+    PDF = pandas2ri.ri2py(r_PDF)
+    
+    return (df, correctedPSD, PDF)
 
 
 def apply_PSD_plot(r_stream, filepath):

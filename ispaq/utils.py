@@ -72,6 +72,49 @@ def format_simple_df(df, sigfigs=6):
     return df   
 
     
+def write_numeric_df(df, filepath, sigfigs=6):
+    """
+    Write a pretty dataframe with appropriate significant figures to a .csv file.
+    :param df: PSD dataframe.
+    :param filepath: File to be created.
+    :param sigfigs: Number of significant figures to use.
+    :return: status
+    """
+    # Get pretty values
+    pretty_df = format_numeric_df(df, sigfigs=sigfigs)
+    # Write out .csv file
+    pretty_df.to_csv(filepath, index=False)
+    
+    # No return value
+
+
+def format_numeric_df(df, sigfigs=6):
+    """
+    Create a pretty dataframe with appropriate significant figures.
+    :param df: Dataframe with only UTCDateTimes or numeric.
+    :param sigfigs: Number of significant figures to use.
+    :return: Dataframe of simpleMetrics.
+    
+    The following conversions take place:
+    
+    * Round the 'value' column to the specified number of significant figures.
+    * Convert 'starttime' and 'endtime' to python 'date' objects.
+    """
+    format_string = "." + str(sigfigs) + "g"
+    for column in df.columns:
+        if column == 'starttime':
+            df.starttime = df.starttime.apply(UTCDateTime)
+            df.starttime = df.starttime.apply(lambda x: x.isoformat())
+        elif column == 'endtime':
+            df.endtime = df.endtime.apply(UTCDateTime)
+            df.endtime = df.endtime.apply(lambda x: x.isoformat())
+        else:
+            df[column] = df[column].astype(float)
+            df[column] = df[column].apply(lambda x: format(x, format_string))
+            
+    return df   
+
+    
 def get_slot(r_object, prop):
     """
     Return a property from the R_Stream.

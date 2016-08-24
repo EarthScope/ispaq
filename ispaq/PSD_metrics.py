@@ -10,6 +10,8 @@ ISPAQ Business Logic for Simple Metrics.
 
 from __future__ import (absolute_import, division, print_function)
 
+import os
+
 import math
 import numpy as np
 import pandas as pd
@@ -40,6 +42,8 @@ def PSD_metrics(concierge):
     
     # Container for all of the metrics dataframes generated
     dataframes = []
+    correctedPSDs = []
+    PDFs = []
 
     # ----- All UN-available SNCLs ----------------------------------------------
 
@@ -85,10 +89,27 @@ def PSD_metrics(concierge):
 
         if function_metadata.has_key('PSD'):
             try:
-                df = irismustangmetrics.apply_PSD_metric(r_stream)
+                (df, correctedPSD, PDF) = irismustangmetrics.apply_PSD_metric(r_stream)
                 dataframes.append(df)
+                # Write out the corrected PSDs
+                filepath = concierge.output_file_base + "_" + av.snclId + "__correctedPSD.csv"
+                logger.info('Writing corrected PSD to %s.' % os.path.basename(filepath))
+                try:
+                    utils.write_numeric_df(correctedPSD, filepath, sigfigs=concierge.sigfigs)
+                except Exception as e:
+                    logger.error('Unable to write %s: %s' % (filepath, e))
+                    raise
+                # Write out the PDFs
+                filepath = concierge.output_file_base + "_" + av.snclId + "__PDF.csv"
+                logger.info('Writing PDF to %s.' % os.path.basename(filepath))
+                try:
+                    utils.write_numeric_df(PDF, filepath, sigfigs=concierge.sigfigs)  
+                except Exception as e:
+                    logger.error('Unable to write %s: %s' % (filepath, e))
+                    raise
             except Exception as e:
                 logger.debug('"PSD" metric calculation failed for %s: %s' % (av.snclId, e))
+                continue
                 
         # Run the PSD plot ------------------------------------------
 
@@ -112,18 +133,14 @@ def PSD_metrics(concierge):
                            'starttime': concierge.requested_starttime,
                            'endtime': concierge.requested_endtime,
                            'qualityFlag': -9},
-                          index=[0]) 
-    
+                          index=[0])
+        
     if function_metadata.has_key('PSD'):                    
-        # Create a boolean mask for filtering the dataframe
-        def valid_metric(x):
-            return x in concierge.metric_names
-            
+        # Concatenate dataframes before returning ----------------------------------
         result = pd.concat(dataframes, ignore_index=True)    
-        mask = result.metricName.apply(valid_metric)
-        result = result[(mask)]
         result.reset_index(drop=True, inplace=True)
-    
+        
+            
     return(result)
 
 

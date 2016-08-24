@@ -292,54 +292,18 @@ def orientationCheck_metrics(concierge):
             attributeName = ["azimuth_R","backAzimuth","azimuth_Y_obs","azimuth_X_obs","azimuth_Y_meta","azimuth_X_meta","max_Czr","max_C_zr","magnitude"]
             attributeValues = [azimuth_R, float(distaz.backAzimuth), azimuth_Y_obs, azimuth_X_obs,
                                float(Channel_1.azimuth), float(Channel_2.azimuth), maxCzr, maxC_zr, float(event.magnitude)]
-            #attributeValueString = [str(azimuthR),
-                                    #str(float(distaz.backAzimuth)),
-                                    #str(azimuth_Y_obs),
-                                    #str(azimuth_X_obs),
-                                    #str(Channel_1.azimuth),
-                                    #str(Channel_2.azimuth),
-                                    #str(maxCzr),
-                                    #str(maxC_zr),
-                                    #str(event.magnitude)]
-            #attributeName <- c("azimuth_R","backAzimuth","azimuth_Y_obs","azimuth_X_obs","azimuth_Y_meta","azimuth_X_meta","max_Czr","max_C_zr","magnitude")
-            #attributeValueString <- c(format(azimuthR),
-                                      #format(distaz$backAzimuth),
-                                      #format(azimuth_Y_obs),
-                                      #format(azimuth_X_obs),
-                                      #format(Channel_1$azimuth),
-                                      #format(Channel_2$azimuth),
-                                      #format(maxCzr),
-                                      #format(maxC_zr),
-                                      #format(event$magnitude))
 
             # Create metric
             df = irisseismic.singleValueMetric(utils.get_slot(stZ, 'id'), windowStart, windowEnd,
                                                'orientation_check', np.NaN,
                                                attributeName, attributeValues)
             dataframes.append(df)
-            
-            ## TODO:  Fix the root cause of this hack.    
-            ## REC Feb 2014 -- remove value=NULL default attribute by left shifting attribute list by one into the value slot
-            #attrLen <- length(m1@attributeName)
-            #m1@valueName = m1@attributeName[1]
-            #m1@valueString = m1@attributeValueString[1]
-            #m1@attributeName <- m1@attributeName[2:attrLen]
-            #m1@attributeValueString <- m1@attributeValueString[2:attrLen]
-            #metricList[[metricListIndex]] <- m1
-            #metricListIndex <- metricListIndex + 1
-            ##       tempList <- c(m1)   # is this necessary?
-            ##       attrLen <- length(tempList[[1]]@attributeName)
-            ##       tempList[[1]]@valueName = tempList[[1]]@attributeName[1]
-            ##       tempList[[1]]@valueString = tempList[[1]]@attributeValueString[1]
-            ##       tempList[[1]]@attributeName <- tempList[[1]]@attributeName[2:attrLen]
-            ##       tempList[[1]]@attributeValueString <- tempList[[1]]@attributeValueString[2:attrLen]
-            ##       metricList <- append(metricList,tempList)       
-            
+                        
         # END of sn_lId loop
 
     # END of event loop
 
-    # Concatenate and filter dataframes before returning -----------------------
+    # Concatenate dataframes before returning ----------------------------------
     
     result = pd.concat(dataframes, ignore_index=True)    
     result.reset_index(drop=True, inplace=True)
