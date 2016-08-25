@@ -12,7 +12,7 @@ import argparse
 import datetime
 import logging
 
-__version__ = "0.7.5"
+__version__ = "0.7.6"
 
 
 def main():
@@ -22,13 +22,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__.strip())
     parser.add_argument('-V', '--version', action='version',
                         version='%(prog)s ' + __version__)
-    parser.add_argument('--starttime', action='store', required=True,
+    parser.add_argument('--starttime', action='store', required=False,
                         help='starttime in ISO 8601 format')
     parser.add_argument('--endtime', action='store', required=False,
                         help='endtime in ISO 8601 format')
-    parser.add_argument('-M', '--metrics', required=True,
+    parser.add_argument('-M', '--metrics', required=False,
                         help='name of metric to calculate')
-    parser.add_argument('-S', '--sncls', action='store', default=False,
+    parser.add_argument('-S', '--sncls', action='store', required=False,
                         help='Network.Station.Location.Channel identifier (e.g. US.OXF..BHZ)')
     parser.add_argument('-P', '--preferences-file', default=os.path.expanduser('./preference_files/cleandemo.txt'),
                         type=argparse.FileType('r'), help='location of preference file')
@@ -37,12 +37,14 @@ def main():
                         help='log level printed to console')
     parser.add_argument('-A', '--append', action='store_true', default=True,
                         help='append to TRANSCRIPT file rather than overwriting')
+    parser.add_argument('-U', '--update-r', action='store_true', default=False,
+                        help='report on R package updates')
 
     args = parser.parse_args(sys.argv[1:])
     
     
     # Set up logging -----------------------------------------------------------
-    #
+    
     # Full DEBUG level logging goes to TRANSCRIPT.txt
     # Console logging level is set by the '--log-level' argument
     
@@ -67,6 +69,39 @@ def main():
 
     logger.info('Running ISPAQ version %s on %s\n' % (__version__, datetime.datetime.now().strftime('%c')))
 
+
+    # Validate the args --------------------------------------------------------
+    
+    # We can't use required=True in argpase because folks should be able to type only -U
+    
+    if not args.update_r:
+        # start and end times
+        if args.starttime is None:
+            logger.critical('argument -S/--starttime is required')
+            raise SystemExit
+    
+        # metric sets
+        if args.starttime is None:
+            logger.critical('argument -M/--metrics is required')
+            raise SystemExit
+            
+        # sncl sets
+        if args.starttime is None:
+            logger.critical('argument -S/--sncls is required')
+            raise SystemExit
+    
+    
+    # Handle R package upgrades ------------------------------------------------
+    
+    if args.update_r:
+        logger.info('Checking for IRIS R package updates...')
+        from . import updater
+        df = updater.get_IRIS_package_versions(logger)
+        # TODO: Decide on proper behavior and output when updating R packages
+        print('\n%s\n' % df)
+        updater.update_IRIS_packages(logger)
+        sys.exit(0)
+
     # Load additional modules --------------------------------------------------
 
     # These are loaded here so that asking for --verion or --help is bogged down
@@ -88,6 +123,7 @@ def main():
     from .crossCorrelation_metrics import crossCorrelation_metrics
     from .orientationCheck_metrics import orientationCheck_metrics
     from .transferFunction_metrics import transferFunction_metrics
+
 
     # Create UserRequest object ------------------------------------------------
     #
