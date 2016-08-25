@@ -36,7 +36,17 @@ is included in the CRAN repository, ISPAQ would learn about it automatically and
 enable the execution of the new metric algorithm on a local set of data. R provides 
 facilities for this update detection.
 
-## Installation via Anaconda
+## Download the Source Code
+
+You must first have ```git``` installed your system. Once you do, just:
+
+```
+git clone https://github.com/MazamaScience/ispaq.git
+```
+
+Onced finished, ```cd ispaq``` before setting up the Anaconda environment.
+
+## Install the Anaconda Environment
 
 [Anaconda](https://www.continuum.io/why-anaconda) is quickly becoming the *defacto*
 package manager for scientific applications written python or R. The following instructions
