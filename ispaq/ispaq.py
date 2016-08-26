@@ -30,7 +30,7 @@ def main():
                         help='name of metric to calculate')
     parser.add_argument('-S', '--sncls', action='store', required=False,
                         help='Network.Station.Location.Channel identifier (e.g. US.OXF..BHZ)')
-    parser.add_argument('-P', '--preferences-file', default=os.path.expanduser('./preference_files/cleandemo.txt'),
+    parser.add_argument('-P', '--preferences-file', default=os.path.expanduser('./preference_files/default.txt'),
                         type=argparse.FileType('r'), help='location of preference file')
     parser.add_argument('--log-level', action='store', default='INFO',
                         choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],

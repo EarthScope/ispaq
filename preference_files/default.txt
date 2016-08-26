@@ -1,0 +1,99 @@
+# This is the default ISPAQ "preferences file".
+# 
+# Preferences fall into four categories:
+#  * Metrics -- aliases for user defined combinations of metrics
+#  * SNCLs -- aliases for user defined combinations of SNCL patterns
+#  * Data_Access -- FDSN web services or local files
+#  * Preferences -- additional user preferences
+#
+# This file is in a very simple and somewhat forgiving format.  After
+# each category heading, all lines containing a colon will be interpreted
+# as key:value and made made available to ISPAQ.
+#
+# Text to the right of `#` are comments and are ignored by the parser
+
+# Example invocations that use these default preferences:
+#
+#   ispaq-runner.py -M basicStats -S basicStats --starttime 2010-04-20 --log-level INFO -A
+#   ispaq-runner.py -M gaps -S gaps --starttime 2013-01-05 --log-level INFO -A
+#   ispaq-runner.py -M spikes -S spikes --starttime 2013-01-03 --log-level INFO -A
+#   ispaq-runner.py -M STALTA -S STALTA --starttime 2013-06-02 --log-level INFO -A
+#   ispaq-runner.py -M SNR -S SNR --starttime 2013-06-02 --log-level INFO -A
+#   ispaq-runner.py -M PSD -S PSD --starttime 2011-05-18 --log-level INFO -A
+#   ispaq-runner.py -M PDF -S PDF --starttime 2013-06-01 --log-level INFO -A
+#   ispaq-runner.py -M crossTalk -S crossTalk --starttime 2013-09-21 --log-level INFO -A
+#   ispaq-runner.py -M pressureCorrelation -S pressureCorrelation --starttime 2013-05-02 --log-level INFO -A
+#   ispaq-runner.py -M crossCorrelation -S crossCorrelation --starttime 2011-01-01 --log-level INFO -A
+#   ispaq-runner.py -M orientationCheck -S orientationCheck --starttime 2015-11-24 --log-level INFO -A
+#   ispaq-runner.py -M transferFunction -S transferFunction --starttime 2012-10-03 --log-level INFO -A
+
+
+# User defined sets of metrics -------------------------------------------------
+
+Metrics:
+
+  # Default combinations
+  basicStats: sample_min, sample_median, sample_mean, sample_max, sample_rms, sample_unique
+  gaps: num_gaps, max_gap, num_overlaps, max_overlap, percent_availability
+  stateOfHealth: calibration_signal, timing_correction, event_begin, event_end, event_in_progress, clock_locked, amplifier_saturation, digitizer_clipping, spikes, glitches, missing_padded_data, telemetry_sync_error, digital_filter_charging, suspect_time_tag, timing_quality
+  STALTA: max_stalta
+  spikes: num_spikes
+  SNR: sample_snr
+  PSD: pct_above_nhnm, pct_below_nlnm, dead_channel_exp, dead_channel_lin, dead_channel_gsn
+  PDF: pdf_plot
+  crossTalk: cross_talk
+  pressureCorrelation: pressure_effects
+  crossCorrelation: polarity_check, timing_drift
+  orientationCheck: orientation_check
+  transferFunction: transfer_function
+  
+
+# User defined sets of SNCLs ---------------------------------------------------
+
+SNCLs:
+
+  # For testing default combinations of metrics
+  basicStats: IU.ANMO.00.BH?
+  gaps: II.KAPI.00.BH?
+  stateOfHealth: IU.ANMO.00.BH?
+  spikes: IU.RAO.10.BH?, IM.TX31..BH?
+  STALTA: IU.ANMO.00.BHZ, US.OXF..BHZ, IU.GUMO.00.*
+  SNR: IU.GUMO.00.BHZ
+  PSD: IU.GRFO..BH?
+  PDF: IU.GRFO..BH?
+  crossTalk: II.B*.00.*
+  pressureCorrelation: IU.A*.*.L*
+  crossCorrelation: II.E*.00.B??
+  orientationCheck: IU.BILL.00.*, IU.FUIR.00.*
+  transferFunction_OLD: II.PALK.*.*
+  transferFunction: IU.ANMO.*.*
+  
+# Data access (typically FDSN web service providers) ---------------------------
+ 
+# FDSN service providers may be specified by using one of the following names:
+#
+#   BGR, EMSC, ETH, GEONET, GFZ, INGV, IPGP, IRIS, ISC, KOERI,
+#   LMU, NCEDC, NIEP, ODC, ORFEUS, RESIF, SCEDC, USGS, USP
+#
+# To use local data you must instead specify local paths:
+# 
+#  * dataselect_url = directory containing miniseed files
+#  * event_url = path of QUAKEML file
+#  * station_url = path of StationXML file
+#
+# NOTE: Directory names should not match FDSN provider names.
+
+Data_Access:
+  dataselect_url: IRIS
+  event_url: IRIS
+  station_url: IRIS
+  
+
+# Additional user preferences --------------------------------------------------
+
+Preferences:
+  csv_output_dir: .    # directory to contain generated metrics .csv files
+  plot_output_dir: .   # directory to contain generated plots
+  sigfigs: 6           # significant figures used to output metric values
+
+
