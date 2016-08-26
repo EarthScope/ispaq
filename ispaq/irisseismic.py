@@ -330,7 +330,7 @@ def _R_stationExtraArgs(includerestricted, latitude, longitude, minradius, maxra
                 maxradius = rinterface.MissingArg
             return (includerestricted, latitude, longitude, minradius, maxradius)
         else:
-            raise ValueError("One of longitude, latitude or a radius is missing")
+            raise ValueError('One of "longitude", "latitude" or "radius" is missing')
     else:
         return (includerestricted, rinterface.MissingArg, rinterface.MissingArg, rinterface.MissingArg, rinterface.MissingArg)
 

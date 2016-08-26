@@ -1,4 +1,16 @@
-0.7.2
+0.7.6
+ * support for automated IRIS R package updating with "--update-r" flag
+ * channel filters used in all metric business logic
+ * lots more error handling and logging
+
+0.7.5
+ * PSD metrics now save correctedPSDs and PDFs
+
+0.7.4
+ * specificy use of python2.7 in ispaq-runner.py
+ * obtaining metrics function data from R package
+
+0.7.3
  * initial support for Anaconda installation
 
 0.7.2

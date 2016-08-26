@@ -39,6 +39,7 @@ def orientationCheck_metrics(concierge):
     logger = concierge.logger
         
     # Default parameters from IRISMustangUtils::generateMetrics_orientationCheck
+    includeRestricted = False
     channelFilter = "[BH]H[12ENZ]"    
     minmag = 7.0
     maxdepth = 100
@@ -92,7 +93,7 @@ def orientationCheck_metrics(concierge):
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=eventMinradius, maxradius=eventMaxradius)
         except Exception as e:
-            logger.debug('skipping event because get_availability failed: %s' % (e))
+            logger.debug('Skipping event because concierge.get_availability failed: %s' % (e))
             continue
                     
         # Apply the channelFilter

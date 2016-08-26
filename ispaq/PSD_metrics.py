@@ -40,6 +40,10 @@ def PSD_metrics(concierge):
     # Get the logger from the concierge
     logger = concierge.logger
     
+    # Default parameters from IRISMustangUtils::generateMetrics_crossCorrelation or crossCorrelationMetrics_exec.R
+    includeRestricted = False
+    channelFilter = '.*'
+
     # Container for all of the metrics dataframes generated
     dataframes = []
     correctedPSDs = []
@@ -50,8 +54,18 @@ def PSD_metrics(concierge):
     # TODO:  Anything to do here?
 
     # ----- All available SNCLs -------------------------------------------------
-    
-    availability = concierge.get_availability()
+
+    try:
+        availability = concierge.get_availability()
+    except Exception as e:
+        logger.error('Metric calculation failed because concierge.get_availability failed: %s' % (e))
+        return None
+
+    # Apply the channelFilter
+    availability = availability[availability.channel.str.contains(channelFilter)]      
+
+    # Apply the channelFilter
+    availability = availability[availability.channel.str.contains(channelFilter)]      
 
     # function metadata dictionary
     function_metadata = concierge.function_by_logic['PSD']

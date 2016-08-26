@@ -39,6 +39,8 @@ def SNR_metrics(concierge):
     logger = concierge.logger
         
     # Default parameters from IRISMustangUtils::generateMetrics_SNR
+    includeRestricted = False
+    channelFilter = '.*'
     minmag = 5.5
     maxradius = 180
     windowSecs = 60
@@ -85,9 +87,12 @@ def SNR_metrics(concierge):
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=0, maxradius=maxradius)
         except Exception as e:
-            logger.warn('Skipping because get_availability failed: %s' % (e))
+            logger.warn('Skipping event because concierge.get_availability failed: %s' % (e))
             continue
                     
+        # Apply the channelFilter
+        availability = availability[availability.channel.str.contains(channelFilter)]      
+
         # Sanity check that some SNCLs exist
         if availability.shape[0] == 0:
             logger.debug('Skipping because no SNCLs are available')

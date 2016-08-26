@@ -38,6 +38,10 @@ def simple_metrics(concierge):
     # Get the logger from the concierge
     logger = concierge.logger
     
+    # Default parameters from IRISMustangUtils::generateMetrics_simple
+    includeRestricted = False
+    channelFilter = '.*'
+
     # Container for all of the metrics dataframes generated
     dataframes = []
 
@@ -46,8 +50,15 @@ def simple_metrics(concierge):
     # TODO:  Create percent_availability metric with   0% available
 
     # ----- All available SNCLs -------------------------------------------------
-    
-    availability = concierge.get_availability()
+
+    try:
+        availability = concierge.get_availability()
+    except Exception as e:
+        logger.error('Metric calculation failed because concierge.get_availability failed: %s' % (e))
+        return None
+
+    # Apply the channelFilter
+    availability = availability[availability.channel.str.contains(channelFilter)]      
 
     # function metadata dictionary
     function_metadata = concierge.function_by_logic['simple']

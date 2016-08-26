@@ -118,28 +118,23 @@ def transferFunction_metrics(concierge):
     # Get the logger from the concierge
     logger = concierge.logger
 
-    # Default parameters from IRISMustangUtils::generateMetrics_transferFunction
-    # TODO:  What is the proper channelFilter for transferFunction_metrics.py
-    channelFilter = "[BH]H."    
-
+    # Default parameters from IRISMustangUtils::generateMetrics_transferFunction or transferFunctionMetrics_exec.R
+    includeRestricted = False
+    channelFilter = '[FCHBML][HN].' # Mary Templeton email on 2016-08-26
+    
     # Container for all of the metrics dataframes generated
     dataframes = []
 
     # ----- All available SNCLs -------------------------------------------------
     
-    availability = concierge.get_availability()
+    try:
+        availability = concierge.get_availability()
+    except Exception as e:
+        logger.error('Metric calculation failed because concierge.get_availability failed: %s' % (e))
+        return None
     
     # Apply the channelFilter
     availability = availability[availability.channel.str.contains(channelFilter)]      
-
-    ## Remove long-period channels (see http://www.fdsn.org/seed_manual/SEEDManual_V2.4_Appendix-A.pdf)
-    #pattern = '[VURPTQAO]'
-    #bandCode = availability.channel.str[0]
-    #longPeriodMask = bandCode.str.contains(pattern)
-    #availability = availability[~longPeriodMask].reset_index(drop=True)
-    
-    ## Remove LOG and ACE text channels
-    #availability = availability[(availability.channel != 'LOG') & (availability.channel != 'ACE')].reset_index(drop=True)
 
     # function metadata dictionary
     function_metadata = concierge.function_by_logic['transferFunction']

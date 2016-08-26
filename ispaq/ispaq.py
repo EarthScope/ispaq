@@ -45,7 +45,7 @@ def main():
     
     # Set up logging -----------------------------------------------------------
     
-    # Full DEBUG level logging goes to TRANSCRIPT.txt
+    # Full DEBUG level logging goes to ISPAQ_TRANSCRIPT.log
     # Console logging level is set by the '--log-level' argument
     
     logger = logging.getLogger(__name__)
@@ -54,9 +54,9 @@ def main():
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     
     if args.append:
-        fh = logging.FileHandler('TRANSCRIPT.txt', mode='a')
+        fh = logging.FileHandler('ISPAQ_TRANSCRIPT.log', mode='a')
     else:
-        fh = logging.FileHandler('TRANSCRIPT.txt', mode='w')
+        fh = logging.FileHandler('ISPAQ_TRANSCRIPT.log', mode='w')
 
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(formatter)

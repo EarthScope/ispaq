@@ -38,7 +38,9 @@ def crossTalk_metrics(concierge):
     # Get the logger from the concierge
     logger = concierge.logger
         
-    # Default parameters from IRISMustangUtils::generateMetrics_crossTalk
+    # Default parameters from IRISMustangUtils::generateMetrics_crossTalk or crossTalkMetrics_exec.R
+    includeRestricted = False
+    channelFilter = ".*"
     minmag = 5.5
     maxradius = 180
     windowSecs = 60
@@ -86,9 +88,12 @@ def crossTalk_metrics(concierge):
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=0, maxradius=maxradius)
         except Exception as e:
-            logger.debug('Skipping event because get_availability failed: %s' % (e))
+            logger.debug('Skipping event because concierge.get_availability failed: %s' % (e))
             continue
                     
+        # Apply the channelFilter
+        availability = availability[availability.channel.str.contains(channelFilter)]      
+
         # Sanity check that some SNCLs exist
         if availability.shape[0] == 0:
             logger.debug('Skipping event because no SNCLs are available')

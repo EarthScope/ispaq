@@ -42,13 +42,18 @@ def pressureCorrelation_metrics(concierge):
     dataframes = []
 
     # Default parameters from IRISMustangUtils::generateMetrics_crossTalk
-    channelFilter = "LH"
+    includleRestricted = False
+    channelFilter = "LH."
     pressureLocation = "*"
     pressureChannel = "LDO"
 
     # ----- All available SNCLs -------------------------------------------------
-    
-    pressureAvailability = concierge.get_availability(location=pressureLocation, channel=pressureChannel)
+
+    try:
+        pressureAvailability = concierge.get_availability(location=pressureLocation, channel=pressureChannel)
+    except Exception as e:
+        logger.error('Metric calculation failed because concierge.get_availability failed: %s' % (e))
+        return None
     
     if pressureAvailability is None or pressureAvailability.shape[0] == 0:
         logger.info('No pressure channels available')
@@ -81,7 +86,9 @@ def pressureCorrelation_metrics(concierge):
 
         # Get all desired seismic channels for this network-station
         seismicAvailability = concierge.get_availability(pAv.network, pAv.station)
-        seismicAvailability = seismicAvailability[seismicAvailability.channel.str.startswith(channelFilter)]
+        
+        # Apply the channelFilter
+        seismicAvailability = seismicAvailability[seismicAvailability.channel.str.contains(channelFilter)]
         
         if seismicAvailability is None or seismicAvailability.shape[0] == 0:
             logger.debug('No seismic %s channels available' %s (channelFilter))

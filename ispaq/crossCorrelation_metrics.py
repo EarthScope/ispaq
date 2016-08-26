@@ -38,7 +38,9 @@ def crossCorrelation_metrics(concierge):
     # Get the logger from the concierge
     logger = concierge.logger
         
-    # Default parameters from IRISMustangUtils::generateMetrics_crossCorrelation
+    # Default parameters from IRISMustangUtils::generateMetrics_crossCorrelation or crossCorrelationMetrics_exec.R
+    includeRestricted=False
+    channelFilter = "[BH]H[12ENZ]"    
     minmag = 6.5
     eventMinradius = 15
     eventMaxradius = 90
@@ -92,9 +94,12 @@ def crossCorrelation_metrics(concierge):
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=eventMinradius, maxradius=eventMaxradius)
         except Exception as e:
-            logger.debug('Skipping event because get_availability failed: %s' % (e))
+            logger.debug('Skipping event because concierge.get_availability failed: %s' % (e))
             continue
                     
+        # Apply the channelFilter
+        availability = availability[availability.channel.str.contains(channelFilter)]      
+
         # Sanity check that some SNCLs exist
         if availability.shape[0] == 0:
             logger.debug('Skipping event because no SNCLs are available')
