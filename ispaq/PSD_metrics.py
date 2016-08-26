@@ -126,22 +126,25 @@ def PSD_metrics(concierge):
 
     # Concatenate and filter dataframes before returning -----------------------
 
-    # TODO:  Should we always add a dummy dataframe in cases where we only generate plots?
-    result = pd.DataFrame({'metricName': 'DUMMY',
-                           'value': 0,
-                           'snclq': 'NET.STA.LOC.CHA.M',
-                           'starttime': concierge.requested_starttime,
-                           'endtime': concierge.requested_endtime,
-                           'qualityFlag': -9},
-                          index=[0])
-        
-    if function_metadata.has_key('PSD'):                    
-        # Concatenate dataframes before returning ----------------------------------
-        result = pd.concat(dataframes, ignore_index=True)    
-        result.reset_index(drop=True, inplace=True)
-        
+    if len(dataframes) == 0:
+        logger.warn('"PSD" metric calculation generated zero metrics')
+        return None
+    else:
+        # TODO:  Should we always add a dummy dataframe in cases where we only generate plots?
+        result = pd.DataFrame({'metricName': 'DUMMY',
+                               'value': 0,
+                               'snclq': 'NET.STA.LOC.CHA.M',
+                               'starttime': concierge.requested_starttime,
+                               'endtime': concierge.requested_endtime,
+                               'qualityFlag': -9},
+                              index=[0])
             
-    return(result)
+        if function_metadata.has_key('PSD'):                    
+            # Concatenate dataframes before returning ----------------------------------
+            result = pd.concat(dataframes, ignore_index=True)    
+            result.reset_index(drop=True, inplace=True)
+            
+        return(result)
 
 
 # ------------------------------------------------------------------------------

@@ -118,6 +118,10 @@ def transferFunction_metrics(concierge):
     # Get the logger from the concierge
     logger = concierge.logger
 
+    # Default parameters from IRISMustangUtils::generateMetrics_transferFunction
+    # TODO:  What is the proper channelFilter for transferFunction_metrics.py
+    channelFilter = "[BH]H."    
+
     # Container for all of the metrics dataframes generated
     dataframes = []
 
@@ -125,14 +129,17 @@ def transferFunction_metrics(concierge):
     
     availability = concierge.get_availability()
     
-    # Remove long-period channels (see http://www.fdsn.org/seed_manual/SEEDManual_V2.4_Appendix-A.pdf)
-    pattern = '[VURPTQAO]'
-    bandCode = availability.channel.str[0]
-    longPeriodMask = bandCode.str.contains(pattern)
-    availability = availability[~longPeriodMask].reset_index(drop=True)
+    # Apply the channelFilter
+    availability = availability[availability.channel.str.contains(channelFilter)]      
+
+    ## Remove long-period channels (see http://www.fdsn.org/seed_manual/SEEDManual_V2.4_Appendix-A.pdf)
+    #pattern = '[VURPTQAO]'
+    #bandCode = availability.channel.str[0]
+    #longPeriodMask = bandCode.str.contains(pattern)
+    #availability = availability[~longPeriodMask].reset_index(drop=True)
     
-    # Remove LOG and ACE text channels
-    availability = availability[(availability.channel != 'LOG') & (availability.channel != 'ACE')].reset_index(drop=True)
+    ## Remove LOG and ACE text channels
+    #availability = availability[(availability.channel != 'LOG') & (availability.channel != 'ACE')].reset_index(drop=True)
 
     # function metadata dictionary
     function_metadata = concierge.function_by_logic['transferFunction']
@@ -218,9 +225,14 @@ def transferFunction_metrics(concierge):
                     
                     sampling_rate = min(utils.get_slot(Zst1,'sampling_rate'), utils.get_slot(Zst2,'sampling_rate'))
                 
-                    # Get primary (1), secondary (2) and orthogonal secondary spectra     
-                    Zevalresp1 = getTransferFunctionSpectra(Zst1,sampling_rate)
-                    Zevalresp2 = getTransferFunctionSpectra(Zst2,sampling_rate)          
+                    # Get primary (1), secondary (2) and orthogonal secondary spectra 
+                    try:
+                        Zevalresp1 = getTransferFunctionSpectra(Zst1,sampling_rate)
+                        Zevalresp2 = getTransferFunctionSpectra(Zst2,sampling_rate) 
+                    except Exception as e:
+                        logger.debug('"transferFunction_metrics" getTransferFunctionSpectra failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+                        continue
+                    
                 
                     # Run the transferFunction metric ----------------------------------------
             
@@ -394,9 +406,14 @@ def transferFunction_metrics(concierge):
         
                             sampling_rate = min( utils.get_slot(st1, 'sampling_rate'), utils.get_slot(st2, 'sampling_rate') )
         
-                            # Get primary (1), secondary (2) and orthogonal secondary spectra     
-                            evalresp1 = getTransferFunctionSpectra(st1, sampling_rate)
-                            evalresp2 = getTransferFunctionSpectra(st2, sampling_rate)          
+                            # Get primary (1), secondary (2) and orthogonal secondary spectra
+                            try:
+                                evalresp1 = getTransferFunctionSpectra(st1, sampling_rate)
+                                evalresp2 = getTransferFunctionSpectra(st2, sampling_rate)
+                            except Exception as e:
+                                logger.debug('"transferFunction_metrics" getTransferFunctionSpectra failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+                                continue
+                                
         
                             # Calculate the metrics and append them to the current list
                             logger.debug('Calculating transferFunction metrics for %s:%s' % (av1.snclId, av2.snclId))
@@ -479,9 +496,14 @@ def transferFunction_metrics(concierge):
                             sampling_rate = min( utils.get_slot(st1, 'sampling_rate'), utils.get_slot(st2, 'sampling_rate') )
         
                             # Get primary (1), secondary (2) and orthogonal secondary spectra 
-                            evalresp1 = getTransferFunctionSpectra(st1, sampling_rate)
-                            evalresp2 = getTransferFunctionSpectra(st2, sampling_rate)          
-                            evalresp3 = getTransferFunctionSpectra(st3, sampling_rate)                                      
+                            try:
+                                evalresp1 = getTransferFunctionSpectra(st1, sampling_rate)
+                                evalresp2 = getTransferFunctionSpectra(st2, sampling_rate)          
+                                evalresp3 = getTransferFunctionSpectra(st3, sampling_rate)
+                            except Exception as e:
+                                logger.debug('"transferFunction_metrics" getTransferFunctionSpectra failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+                                continue
+                            
         
                             # Determine which secondary trace is Y vs. X
                             if av2.cartAxis == "Y":
@@ -560,11 +582,13 @@ def transferFunction_metrics(concierge):
           
     # END for stations    
         
-
-    result = pd.concat(dataframes, ignore_index=True)
-    result.reset_index(drop=True, inplace=True)
-
-    return(result)
+    if len(dataframes) == 0:
+        logger.warn('"transfer_function" metric calculation generated zero metrics')
+        return None
+    else:
+        result = pd.concat(dataframes, ignore_index=True)
+        result.reset_index(drop=True, inplace=True)
+        return(result)
 
 
 # ------------------------------------------------------------------------------

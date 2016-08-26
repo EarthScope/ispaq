@@ -29,7 +29,7 @@ ispaq-runner.py -M pressureCorrelation -S pressureCorrelation --starttime 2013-0
 ispaq-runner.py -M crossCorrelation -S crossCorrelation --starttime 2011-01-01 --log-level INFO -A
 
 # orientationCheck
-ispaq-runner.py -M orientationCheck -S orientationCheck --starttime 2009-02-18 --log-level INFO -A
+ispaq-runner.py -M orientationCheck -S orientationCheck --starttime 2015-11-24 --log-level INFO -A
 
 # transferFunction
 ispaq-runner.py -M transferFunction -S transferFunction --starttime 2012-10-03 --log-level INFO -A

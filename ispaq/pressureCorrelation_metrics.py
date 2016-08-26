@@ -145,12 +145,15 @@ def pressureCorrelation_metrics(concierge):
 
     # Concatenate and filter dataframes before returning -----------------------
 
-    result = pd.concat(dataframes, ignore_index=True) 
-    # Change metricName to "pressure_effects"
-    result['metricName'] = 'pressure_effects'
-    result.reset_index(drop=True, inplace=True)
-    
-    return(result)
+    if len(dataframes) == 0:
+        logger.warn('"pressure_correlation" metric calculation generated zero metrics')
+        return None
+    else:
+        result = pd.concat(dataframes, ignore_index=True) 
+        # Change metricName to "pressure_effects"
+        result['metricName'] = 'pressure_effects'
+        result.reset_index(drop=True, inplace=True)        
+        return(result)
 
 
 # ------------------------------------------------------------------------------

@@ -305,10 +305,13 @@ def orientationCheck_metrics(concierge):
 
     # Concatenate dataframes before returning ----------------------------------
     
-    result = pd.concat(dataframes, ignore_index=True)    
-    result.reset_index(drop=True, inplace=True)
-    
-    return(result)
+    if len(dataframes) == 0:
+        logger.warn('"orientation_check" metric calculation generated zero metrics')
+        return None
+    else:
+        result = pd.concat(dataframes, ignore_index=True)    
+        result.reset_index(drop=True, inplace=True)
+        return(result)
 
 
 # ------------------------------------------------------------------------------

@@ -453,10 +453,6 @@ class Concierge(object):
          eventId                         time  latitude  longitude  depth author...'
         """
 
-        # Default values from IRISMustangUtils::generateMetrics_SNR
-        maxradius=180
-        windowSecs=60
-
         # Allow arguments to override UserRequest parameters
         if starttime is None:
             _starttime = self.requested_starttime

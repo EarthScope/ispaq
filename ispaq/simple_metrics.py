@@ -155,12 +155,15 @@ def simple_metrics(concierge):
     def valid_metric(x):
         return x in concierge.metric_names
         
-    result = pd.concat(dataframes, ignore_index=True)    
-    mask = result.metricName.apply(valid_metric)
-    result = result[(mask)]
-    result.reset_index(drop=True, inplace=True)
-    
-    return(result)
+    if len(dataframes) == 0:
+        logger.warn('"simple" metric calculation generated zero metrics')
+        return None
+    else:
+        result = pd.concat(dataframes, ignore_index=True)    
+        mask = result.metricName.apply(valid_metric)
+        result = result[(mask)]
+        result.reset_index(drop=True, inplace=True)        
+        return(result)
 
 
 # ------------------------------------------------------------------------------

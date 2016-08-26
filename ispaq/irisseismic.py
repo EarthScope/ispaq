@@ -26,7 +26,7 @@ from rpy2.robjects import pandas2ri
 
 # Global R options are set here
 
-# Do now show error messages generated inside of the R packages
+# Do not show error messages generated inside of the R packages
 robjects.r('options(show.error.messages=FALSE)')
 
 

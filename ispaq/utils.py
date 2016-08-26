@@ -23,6 +23,8 @@ def write_simple_df(df, filepath, sigfigs=6):
     :param sigfigs: Number of significant figures to use.
     :return: status
     """
+    if df is None:
+        raise("Dataframe of simple metrics does not exist.")
     # Sometimes 'starttime' and 'endtime' get converted from UTCDateTime to float and need to be
     # converted back. Nothing happens if this column is already of type UTCDateTime.
     df.starttime = df.starttime.apply(UTCDateTime)
