@@ -1,3 +1,8 @@
+0.7.7
+ * proper initialization of R_stream @endtime from data read from disk
+ * proper initialization of act_, io_ and dq_flags from data read from disk
+ * additional sanity check for 3 channels in orientation_check
+
 0.7.6
  * support for automated IRIS R package updating with "--update-r" flag
  * channel filters used in all metric business logic
