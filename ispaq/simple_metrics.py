@@ -80,14 +80,6 @@ def simple_metrics(concierge):
                 logger.debug('No data for %s' % (av.snclId))
             else:
                 logger.debug('No data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
-            df = pd.DataFrame({'metricName': 'percent_available',
-                               'value': 0,
-                               'snclq': av.snclId + '.M',
-                               'starttime': concierge.requested_starttime,
-                               'endtime': concierge.requested_endtime,
-                               'qualityFlag': -9},
-                              index=[0]) 
-            dataframes.append(df)
             continue
 
         # Run the Gaps metric ----------------------------------------

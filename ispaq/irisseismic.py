@@ -44,7 +44,7 @@ _R_vector = robjects.r('base::vector')                                # creation
 _R_list = robjects.r('base::list')                                    # creation of the headerList used in R_Trace
 
 # from IRISSeismic
-_R_initialize = robjects.r('IRISSeismic::initialize')  # initialization of various objects
+_R_initialize = robjects.r('IRISSeismic::initialize')                 # initialization of various objects
 
 # All webservice functions from IRISSeismic
 _R_getAvailability = robjects.r('IRISSeismic::getAvailability')       #
@@ -212,6 +212,7 @@ def R_TraceHeader(stats):
                            channel=stats.channel,
                            quality=stats.mseed.dataquality,
                            starttime=R_POSIXct(stats.starttime),
+                           endtime=R_POSIXct(stats.endtime),
                            npts=R_integer(stats.npts),
                            sampling_rate=R_float(stats.sampling_rate))
     r_traceHeader = robjects.r('new("TraceHeader")')
@@ -244,7 +245,10 @@ def R_Trace(trace,
     
 def R_Stream(stream,
              requestedStarttime=None,
-             requestedEndtime=None):
+             requestedEndtime=None,
+             act_flags=[0,0,0,0,0,0,0,0],
+             io_flags=[0,0,0,0,0,0,0,0],
+             dq_flags=[0,0,0,0,0,0,0,0]):
     """
     Create an IRISSeismic Stream from and ObsPy Stream object
     :param stream: ObsPy Stream object.
@@ -276,6 +280,9 @@ def R_Stream(stream,
     r_stream = _R_initialize(r_stream,
                              requestedStarttime=R_POSIXct(requestedStarttime),
                              requestedEndtime=R_POSIXct(requestedEndtime),
+                             act_flags=R_integer(act_flags),
+                             io_flags=R_integer(io_flags),
+                             dq_flags=R_integer(dq_flags),
                              traces=r_listOfTraces)
     return(r_stream) 
 

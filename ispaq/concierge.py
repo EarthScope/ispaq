@@ -360,7 +360,13 @@ class Concierge(object):
                 try:
                     py_stream = obspy.read(filepath)
                     py_stream = py_stream.slice(_starttime, _endtime)
-                    r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime)
+                    # NOTE:  ObsPy does not store state-of-health flags with each stream.
+                    # NOTE:  We need to read them in separately from the miniseed file.
+                    flag_dict = obspy.io.mseed.util.get_timing_and_data_quality(filepath)
+                    act_flags = [0,0,0,0,0,0,0,0] # TODO:  Find a way to read act_flags
+                    io_flags = [0,0,0,0,0,0,0,0] # TODO:  Find a way to read io_flags
+                    dq_flags = flag_dict['data_quality_flags']
+                    r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags)
                 except Exception as e:
                     self.logger.exception(e)
                     raise

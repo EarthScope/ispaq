@@ -125,9 +125,9 @@ def orientationCheck_metrics(concierge):
 
             sn_lAvailability = availability[availability.sn_lId == sn_lId]
             
-            #if sn_lAvailability.shape[0] != 3:
-            #    logger.debug('Skipping %s because only %d channels were found at this SN.L (3 required)' % (sn_lId, sn_lAvailability.shape[0]))
-            #    continue
+            if sn_lAvailability.shape[0] != 3:
+                logger.info('Skipping %s because only %d channels were found at this SN.L (3 required)' % (sn_lId, sn_lAvailability.shape[0]))
+                continue
 
             # Determine N, E and Z channels
             N_or_1_mask = sn_lAvailability.channel.str.contains('..N') | sn_lAvailability.channel.str.contains('..1')
@@ -191,7 +191,7 @@ def orientationCheck_metrics(concierge):
                 stZ = irisseismic.multiplyBy(stZ,-1)
         
             if len(utils.get_slot(stN,'traces')) > 1 or len(utils.get_slot(stE,'traces')) > 1 or len(utils.get_slot(stZ,'traces')) > 1:
-                logger.debug('Skipping %s becuase it has gaps' % (sn_lId)) 
+                logger.info('Skipping %s becuase it has gaps' % (sn_lId)) 
                 continue
         
             # complain if sample lengths differ by more than 1 sample

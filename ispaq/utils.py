@@ -10,6 +10,7 @@ ISPAQ Data Access Expediter.
 
 from __future__ import (absolute_import, division, print_function)
 
+import numpy as np
 import pandas as pd
 
 from obspy import UTCDateTime
@@ -55,9 +56,13 @@ def format_simple_df(df, sigfigs=6):
     * Round the 'value' column to the specified number of significant figures.
     * Convert 'starttime' and 'endtime' to python 'date' objects.
     """
-    # TODO:  Why is type(df.value[0]) = 'str' at this point?
-    format_string = "." + str(sigfigs) + "g"
+    # TODO:  Why is type(df.value[0]) = 'str' at this point? Because metrics are always character strings?
+    # First convert 'N' to missing value
+    N_mask = df.value.str.contains('^N$')
+    df.loc[N_mask,'value'] = np.nan
+    # Then conver the rest of the values to float
     df.value = df.value.astype(float)
+    format_string = "." + str(sigfigs) + "g"
     df.value = df.value.apply(lambda x: format(x, format_string))
     if 'starttime' in df.columns:
         df.starttime = df.starttime.apply(UTCDateTime)
