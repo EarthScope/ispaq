@@ -360,6 +360,11 @@ class Concierge(object):
                 try:
                     py_stream = obspy.read(filepath)
                     py_stream = py_stream.slice(_starttime, _endtime)
+                    # NOTE:  ObsPy does not store station metadata with each stream.
+                    # NOTE:  We need to read them in separately from station metadata.
+                    
+                    # TODO:  Add latitude, longitude, elevation, depth, azimuth, dip
+                    
                     # NOTE:  ObsPy does not store state-of-health flags with each stream.
                     # NOTE:  We need to read them in separately from the miniseed file.
                     flag_dict = obspy.io.mseed.util.get_timing_and_data_quality(filepath)
@@ -379,7 +384,7 @@ class Concierge(object):
             # Read from FDSN web services
             try:
                 r_stream = irisseismic.R_getDataselect(self.dataselect_url, network, station, location, channel, _starttime, _endtime, quality, inclusiveEnd, ignoreEpoch)
-            except:
+            except Exception as e:
                 raise
 
            

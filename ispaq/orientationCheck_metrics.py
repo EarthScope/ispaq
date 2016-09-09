@@ -156,7 +156,7 @@ def orientationCheck_metrics(concierge):
             windowEnd = event.time + surfaceTravelTime + windowSecsAfter
         
             try:
-                stN = concierge.get_dataselect(Channel_1.network, Channel_1.station, Channel_1.location,Channel_1.channel,
+                stN = concierge.get_dataselect(Channel_1.network, Channel_1.station, Channel_1.location, Channel_1.channel,
                                                windowStart, windowEnd, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
@@ -166,7 +166,7 @@ def orientationCheck_metrics(concierge):
                 continue
         
             try:
-                stE = concierge.get_dataselect(Channel_2.network, Channel_2.station, Channel_2.location,Channel_2.channel,
+                stE = concierge.get_dataselect(Channel_2.network, Channel_2.station, Channel_2.location, Channel_2.channel,
                                                windowStart, windowEnd, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
@@ -176,7 +176,7 @@ def orientationCheck_metrics(concierge):
                 continue
         
             try:
-                stZ = concierge.get_dataselect(ZChannel.network, ZChannel.station, ZChannel.location,ZChannel.channel,
+                stZ = concierge.get_dataselect(ZChannel.network, ZChannel.station, ZChannel.location, ZChannel.channel,
                                                windowStart, windowEnd, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
@@ -243,7 +243,7 @@ def orientationCheck_metrics(concierge):
                     
                 try:
                     stR = irisseismic.rotate2D(stN, stE, angle)[0]
-                except:
+                except Exception as e:
                     logger.debug('skipping %s: irisseismic.rotate2D failed:  %s' % (sn_lId, e.message))
                     rotateOK = False
                     break

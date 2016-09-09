@@ -42,7 +42,7 @@ def PSD_metrics(concierge):
     
     # Default parameters from IRISMustangUtils::generateMetrics_crossCorrelation or crossCorrelationMetrics_exec.R
     includeRestricted = False
-    channelFilter = '.*'
+    channelFilter = '.H.' # Gillian email on 9/8/16
 
     # Container for all of the metrics dataframes generated
     dataframes = []
@@ -60,9 +60,6 @@ def PSD_metrics(concierge):
     except Exception as e:
         logger.error('Metric calculation failed because concierge.get_availability failed: %s' % (e))
         return None
-
-    # Apply the channelFilter
-    availability = availability[availability.channel.str.contains(channelFilter)]      
 
     # Apply the channelFilter
     availability = availability[availability.channel.str.contains(channelFilter)]      
