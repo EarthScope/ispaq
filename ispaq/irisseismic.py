@@ -200,7 +200,7 @@ def R_list(n):
     return _R_vector("list",n)
 
 
-def R_TraceHeader(stats):
+def R_TraceHeader(stats, latitude, longitude, elevation, depth, azimuth, dip):
     """
     Create an IRISSeismic TraceHeader from and ObsPy Stats object
     :param stats: ObsPy Stats object.
@@ -214,7 +214,13 @@ def R_TraceHeader(stats):
                            starttime=R_POSIXct(stats.starttime),
                            endtime=R_POSIXct(stats.endtime),
                            npts=R_integer(stats.npts),
-                           sampling_rate=R_float(stats.sampling_rate))
+                           sampling_rate=R_float(stats.sampling_rate),
+                           latitude=R_float(latitude),
+                           longitude=R_float(longitude),
+                           elevation=R_float(elevation),
+                           depth=R_float(depth),
+                           azimuth=R_float(azimuth),
+                           dip=R_float(dip))
     r_traceHeader = robjects.r('new("TraceHeader")')
     r_traceHeader = _R_initialize(r_traceHeader, r_headerList)
     return r_traceHeader
@@ -222,8 +228,15 @@ def R_TraceHeader(stats):
 
 def R_Trace(trace,
             sensor="",
-            instrument_sensitivity=1.0,
-            input_units=""):
+            scale=1.0,
+            scalefreq=1.0,
+            scaleunits="",
+            latitude=None,
+            longitude=None,
+            elevation=None,
+            depth=None,
+            azimuth=None,
+            dip=None):
     """
     Create an IRISSeismic Trace from and ObsPy Trace object
     :param trace: ObsPy Trace object.
@@ -235,10 +248,11 @@ def R_Trace(trace,
     r_trace = robjects.r('new("Trace")')
     r_trace = _R_initialize(r_trace,
                            id=trace.id,
-                           stats=R_TraceHeader(trace.stats),
+                           stats=R_TraceHeader(trace.stats, latitude, longitude, elevation, depth, azimuth, dip),
                            Sensor=sensor,
-                           InstrumentSensitivity=R_float(instrument_sensitivity),
-                           InputUnits=input_units,
+                           InstrumentSensitivity=scale, 
+                           SensitivityFrequency=scalefreq,  
+                           InputUnits=scaleunits,
                            data=R_float(trace.data))
     return r_trace
     
@@ -248,7 +262,17 @@ def R_Stream(stream,
              requestedEndtime=None,
              act_flags=[0,0,0,0,0,0,0,0],
              io_flags=[0,0,0,0,0,0,0,0],
-             dq_flags=[0,0,0,0,0,0,0,0]):
+             dq_flags=[0,0,0,0,0,0,0,0],
+             sensor="",
+             scale=1.0,
+             scalefreq=1.0,
+             scaleunits="",
+             latitude=None,
+             longitude=None,
+             elevation=None,
+             depth=None,
+             azimuth=None,
+             dip=None):
     """
     Create an IRISSeismic Stream from and ObsPy Stream object
     :param stream: ObsPy Stream object.
@@ -262,8 +286,6 @@ def R_Stream(stream,
     # TODO:  Should we automatically get channelInfo from R getChannels() as in
     # TODO:  IRISSeismic::getDataselect.IrisClient()?
     
-    # TODO:  What about act_flags, io_flags, dq_flags and timing_qual?
-
     # Handle missing times
     if requestedStarttime is None:
         requestedStarttime = stream.traces[0].stats.starttime
@@ -273,7 +295,7 @@ def R_Stream(stream,
     # Create R list of Trace objects
     r_listOfTraces = R_list(len(stream.traces))
     for i in range(len(stream.traces)):
-        r_listOfTraces[i] = R_Trace(stream.traces[i])
+        r_listOfTraces[i] = R_Trace(stream.traces[i], sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
         
     # Create R Stream object
     r_stream = robjects.r('new("Stream")')

@@ -358,20 +358,35 @@ class Concierge(object):
             filepath = self.dataselect_url + '/' + filename
             if os.path.exists(filepath):
                 try:
+                    # Get the ObsPy version of the stream
                     py_stream = obspy.read(filepath)
                     py_stream = py_stream.slice(_starttime, _endtime)
-                    # NOTE:  ObsPy does not store station metadata with each stream.
-                    # NOTE:  We need to read them in separately from station metadata.
-                    
-                    # TODO:  Add latitude, longitude, elevation, depth, azimuth, dip
-                    
                     # NOTE:  ObsPy does not store state-of-health flags with each stream.
                     # NOTE:  We need to read them in separately from the miniseed file.
                     flag_dict = obspy.io.mseed.util.get_timing_and_data_quality(filepath)
                     act_flags = [0,0,0,0,0,0,0,0] # TODO:  Find a way to read act_flags
                     io_flags = [0,0,0,0,0,0,0,0] # TODO:  Find a way to read io_flags
                     dq_flags = flag_dict['data_quality_flags']
-                    r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags)
+                    # NOTE:  ObsPy does not store station metadata with each trace.
+                    # NOTE:  We need to read them in separately from station metadata.
+                    availability = self.get_availability(network, station, location, channel, _starttime, _endtime)
+                    sensor = availability.instrument[0]
+                    scale = availability.scale[0]
+                    scalefreq = availability.scalefreq[0]
+                    scaleunits = availability.scaleunits[0]
+                    if sensor is None: sensor = ""           # default from IRISSeismic Trace class prototype
+                    if scale is None: scale = 1.0            # default from IRISSeismic Trace class prototype
+                    if scalefreq is None: scalefreq = 1.0    # default from IRISSeismic Trace class prototype
+                    if scaleunits is None: scaleunits = ""   # default from IRISSeismic Trace class prototype
+                    latitude = availability.latitude[0]
+                    longitude = availability.longitude[0]
+                    elevation = availability.elevation[0]
+                    depth = availability.depth[0]
+                    azimuth = availability.azimuth[0]
+                    dip = availability.dip[0]
+                    # Create the IRISSeismic version of the stream
+                    r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags,
+                                                    sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
                 except Exception as e:
                     self.logger.exception(e)
                     raise

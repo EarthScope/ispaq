@@ -221,14 +221,14 @@ SNCLs:
 Data_Access:
   # TODO:  These should all be available as command line flags that override what's in here.
 
-  dataselect_url: IRIS
+  #dataselect_url: IRIS
   event_url: IRIS
   station_url: IRIS
   
   # Overrides for testing:
   
   # Test for local data IU.ANMO.00.BHZ.2010.58.M
-  #dataselect_url: test_data
+  dataselect_url: test_data
   #event_url: test_data/2010-02-27_event.xml
   #station_url: test_data/IU.ANMO.00.BHZ_station.xml
   
