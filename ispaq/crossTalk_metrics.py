@@ -16,6 +16,8 @@ import pandas as pd
 
 from obspy import UTCDateTime
 
+from .concierge import NoAvailableDataError
+
 from . import utils
 from . import irisseismic
 from . import irismustangmetrics
@@ -87,6 +89,9 @@ def crossTalk_metrics(concierge):
             availability = concierge.get_availability(starttime=halfHourStart, endtime=halfHourEnd,
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=0, maxradius=maxradius)
+        except NoAvailableDataError as e:
+            logger.debug('skipping event with no available data')
+            continue
         except Exception as e:
             logger.debug('Skipping event because concierge.get_availability failed: %s' % (e))
             continue

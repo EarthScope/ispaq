@@ -1,5 +1,5 @@
 """
-ISPAQ Data Access Expediter.
+Utility functions for ISPAQ.
 
 :copyright:
     Mazama Science
@@ -15,6 +15,7 @@ import pandas as pd
 
 from obspy import UTCDateTime
 
+# Utility functions ------------------------------------------------------------
 
 def write_simple_df(df, filepath, sigfigs=6):
     """

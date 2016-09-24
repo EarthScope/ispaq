@@ -16,6 +16,8 @@ import pandas as pd
 
 from obspy import UTCDateTime
 
+from .concierge import NoAvailableDataError
+
 from . import utils
 from . import irisseismic
 from . import irismustangmetrics
@@ -53,9 +55,12 @@ def simple_metrics(concierge):
 
     try:
         availability = concierge.get_availability()
+    except NoAvailableDataError as e:
+        raise
     except Exception as e:
-        logger.error('Metric calculation failed because concierge.get_availability failed: %s' % (e))
-        return None
+        logger.debug(e)
+        logger.error('concierge.get_availability() failed with an unknown exception')
+        return NoAvailableDataError
 
     # Apply the channelFilter
     availability = availability[availability.channel.str.contains(channelFilter)]      

@@ -16,6 +16,8 @@ import pandas as pd
 
 from obspy import UTCDateTime
 
+from .concierge import NoAvailableDataError
+
 from . import utils
 from . import irisseismic
 from . import irismustangmetrics
@@ -86,8 +88,12 @@ def SNR_metrics(concierge):
             availability = concierge.get_availability(starttime=halfHourStart, endtime=halfHourEnd,
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=0, maxradius=maxradius)
-        except Exception as e:
-            logger.warn('Skipping event because concierge.get_availability failed: %s' % (e))
+        except NoAvailableDataError as e:
+            logger.debug('skipping event with no available data')
+            continue
+        except Exception as e:            
+            logger.debug('Skipping event because concierge.get_availability failed: %s' % (e))
+            logger.warn('Skipping event because concierge.get_availability() failed with an unknown error')
             continue
                     
         # Apply the channelFilter
@@ -114,7 +120,8 @@ def SNR_metrics(concierge):
                 tt = irisseismic.getTraveltime(event.latitude, event.longitude, event.depth, 
                                                av.latitude, av.longitude)
             except Exception as e:
-                logger.warn('Skipping because getTravelTime failed: %s' % (e))
+                logger.debug('Skipping because getTravelTime failed: %s' % (e))
+                logger.warn('Skipping because getTravelTime failed with an unknown error')
                 continue
         
             # get P arrival or first arrival

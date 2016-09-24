@@ -18,6 +18,8 @@ import pandas as pd
 
 from obspy import UTCDateTime
 
+from .concierge import NoAvailableDataError
+
 from . import utils
 from . import irisseismic
 from . import irismustangmetrics
@@ -57,8 +59,11 @@ def PSD_metrics(concierge):
 
     try:
         availability = concierge.get_availability()
+    except NoAvailableDataError as e:
+        raise
     except Exception as e:
-        logger.error('Metric calculation failed because concierge.get_availability failed: %s' % (e))
+        logger.debug(e)
+        logger.error('concierge.get_availability() failed with an unknown exception')
         return None
 
     # Apply the channelFilter
@@ -80,10 +85,11 @@ def PSD_metrics(concierge):
         try:
             r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel)
         except Exception as e:
+            logger.debug(e)
             if str(e).lower().find('no data') > -1:
                 logger.debug('No data for %s' % (av.snclId))
             else:
-                logger.warning('No data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
+                logger.warning('No data for %s from %s' % (av.snclId, concierge.dataselect_url))
             # TODO:  Add empty dataframe ???
             #df = pd.DataFrame({'metricName': 'percent_available',
                                #'value': 0,
@@ -108,7 +114,8 @@ def PSD_metrics(concierge):
                 try:
                     utils.write_numeric_df(correctedPSD, filepath, sigfigs=concierge.sigfigs)
                 except Exception as e:
-                    logger.error('Unable to write %s: %s' % (filepath, e))
+                    logger.debug(e)
+                    logger.error('Unable to write %s' % (filepath))
                     raise
                 # Write out the PDFs
                 filepath = concierge.output_file_base + "_" + av.snclId + "__PDF.csv"
@@ -116,10 +123,12 @@ def PSD_metrics(concierge):
                 try:
                     utils.write_numeric_df(PDF, filepath, sigfigs=concierge.sigfigs)  
                 except Exception as e:
-                    logger.error('Unable to write %s: %s' % (filepath, e))
+                    logger.debug(e)
+                    logger.error('Unable to write %s' % (filepath))
                     raise
             except Exception as e:
-                logger.debug('"PSD" metric calculation failed for %s: %s' % (av.snclId, e))
+                logger.debug(e)
+                logger.debug('"PSD" metric calculation failed for %s' % (av.snclId))
                 continue
                 
         # Run the PSD plot ------------------------------------------
@@ -132,7 +141,8 @@ def PSD_metrics(concierge):
                 filepath = concierge.plot_output_dir + '/' + filename
                 status = irismustangmetrics.apply_PSD_plot(r_stream, filepath)
             except Exception as e:
-                logger.debug('"PSD" plot generation failed for %s: %s' % (av.snclId, e))
+                logger.debug(e)
+                logger.error('"PSD" plot generation failed for %s' % (av.snclId))
                     
 
     # Concatenate and filter dataframes before returning -----------------------

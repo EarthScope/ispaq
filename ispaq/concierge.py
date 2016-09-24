@@ -12,6 +12,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 import re
+import glob
 
 import pandas as pd
 
@@ -23,6 +24,12 @@ from obspy.clients.fdsn.header import URL_MAPPINGS
 from .user_request import UserRequest
 from . import irisseismic
 
+
+# Custom exceptions
+
+class NoAvailableDataError(Exception):
+    """No matching data are available."""
+    
 
 class Concierge(object):
     """
@@ -73,40 +80,43 @@ class Concierge(object):
             # Get data from FDSN dataselect service
             self.dataselect_url = URL_MAPPINGS[user_request.dataselect_url]
             self.dataselect_client = Client(user_request.dataselect_url)
-        elif os.path.exists(os.path.abspath(user_request.dataselect_url)):
-            # Get data from local miniseed files
-            self.dataselect_url = os.path.abspath(user_request.dataselect_url)
-            self.dataselect_client = None
         else:
-            err_msg = "The preference file dataselect_url: '%s' is not valid." % user_request.dataselect_url
-            self.logger.exception(err_msg)
-            raise ValueError(err_msg)
+            if os.path.exists(os.path.abspath(user_request.dataselect_url)):
+                # Get data from local miniseed files
+                self.dataselect_url = os.path.abspath(user_request.dataselect_url)
+                self.dataselect_client = None
+            else:
+                err_msg = "Cannot find preference file dataselect_url: '%s'" % user_request.dataselect_url
+                self.logger.error(err_msg)
+                raise ValueError(err_msg)
 
         # Add event clients and URLs or reference a local file
         if user_request.event_url in URL_MAPPINGS.keys():
             self.event_url = URL_MAPPINGS[user_request.event_url]
             self.event_client = Client(user_request.event_url)
-        elif os.path.exists(os.path.abspath(user_request.event_url)):
-            # Get data from local QUAKEML files
-            self.event_url = os.path.abspath(user_request.event_url)
-            self.event_client = None
         else:
-            err_msg = "The preference file event_url: '%s' is not valid." % user_request.event_url
-            self.logger.exception(err_msg)
-            raise ValueError(err_msg)
+            if os.path.exists(os.path.abspath(user_request.event_url)):
+                # Get data from local QUAKEML files
+                self.event_url = os.path.abspath(user_request.event_url)
+                self.event_client = None
+            else:
+                err_msg = "Cannot find preference file event_url: '%s'" % user_request.event_url
+                self.logger.error(err_msg)
+                raise ValueError(err_msg)
 
         # Add station clients and URLs or reference a local file
         if user_request.station_url in URL_MAPPINGS.keys():
             self.station_url = URL_MAPPINGS[user_request.station_url]
             self.station_client = Client(user_request.station_url)
-        elif os.path.exists(os.path.abspath(user_request.station_url)):
-            # Get data from local StationXML files
-            self.station_url = os.path.abspath(user_request.station_url)
-            self.station_client = None
         else:
-            err_msg = "The preference file station_url: '%s' is not valid." % user_request.station_url
-            self.logger.exception(err_msg)
-            raise ValueError(err_msg)
+            if os.path.exists(os.path.abspath(user_request.station_url)):
+                # Get data from local StationXML files
+                self.station_url = os.path.abspath(user_request.station_url)
+                self.station_client = None
+            else:
+                err_msg = "Cannot find preference file station_url: '%s'" % user_request.station_url
+                self.logger.error(err_msg)
+                raise ValueError(err_msg)
 
 
 
@@ -231,22 +241,23 @@ class Concierge(object):
                 _channel = channel
 
 
-            # TODO:  Need to figure out file naming conventions and whether users with local files will want to reference multiple
-            # TODO:  StationXML files per invocation. And how many SNCLs will there be per StationXML? Will they want to specify
-            # TODO:  SNCLs to filter what is specified in the StationXML?
-            # TODO:
-            # TODO:  Lots of questions before implementing the very simple python code to get to this point:
-            # TODO:    if self.station_client is None:
-            # TODO:      sncl_inventory = obspy.read_inventory(self.station_url)
-
+            # NOTE:  As currently implemented in v0.7.10, a single local stationXML file is read in multiple
+            # NOTE:  times when multiple patterns are supplied. This will result in duplicate rows when the 
+            # NOTE:  dataframes are concatenated. The most expedient way to deal with this without significant
+            # NOTE:  refactoring is to simple remove duplicate rows in the result dataframe before returning.
+            
             if self.station_client is None:
-                # Read local StationXML file
+                # Read a single, local StationXML file
                 try:
                     sncl_inventory = obspy.read_inventory(self.station_url)
                 except Exception as e:
-                    err_msg = "The StationXML file: '%s' is not valid." % self.station_url
-                    self.logger.exception(err_msg)                    
+                    err_msg = "The StationXML file: '%s' is not valid" % self.station_url
+                    self.logger.debug(e)
+                    self.logger.error(err_msg)   
                     raise ValueError(err_msg)
+                
+                # Filter inventory for this sncl_pattern
+                debugPoint = 1
             
             else:
                 # Read from FDSN web services
@@ -264,48 +275,74 @@ class Concierge(object):
                                                                       level="channel")
                 except Exception as e:
                     err_msg = "No sncls matching %s found at %s" % (sncl_pattern, self.station_url)
+                    self.logger.debug(e)
                     self.logger.warning(err_msg)
                     continue
 
 
+            # NOTE:  We need to do regular expression matching of the SNCL pattern here to support local
+            # NOTE:  StationXML files which may list many files that are not in the request.  FDSN web 
+            # NOTE:  services only return matching SNCLs but this extra check is quick.
+            
+            # Modify FDSN wildcards so they match python regular expressions
+            # NOTE:  We have to ensure that net, sta, loc, cha are <type 'str'> and not <type 'unicode'>
+            network_re = str.replace(str(_network),'*','.*')
+            station_re = str.replace(str(_station),'*','.*')
+            location_re = str.replace(str(_location),'*','.*')
+            channel_re = str.replace(str(_channel),'*','.*')
+            
             # Walk through the Inventory object
             for n in sncl_inventory.networks:
-                for s in n.stations:
-                    for c in s.channels:
-                        # "network"    "station"    "location"   "channel"    "latitude"   "longitude"  "elevation"  "depth"      "azimuth"    "dip"        "instrument"
-                        # "scale"      "scalefreq"  "scaleunits" "samplerate" "starttime"  "endtime"    "snclId"         
-                        df = pd.DataFrame({'network': n.code,
-                                           'station': s.code,
-                                           'location': c.location_code,
-                                           'channel': c.code,
-                                           'latitude': c.latitude,
-                                           'longitude': c.longitude,
-                                           'elevation': c.elevation,
-                                           'depth': c.depth,
-                                           'azimuth': c.azimuth,
-                                           'dip': c.dip,
-                                           'instrument': c.sensor.description,
-                                           'scale': None,          # TODO:  Figure out how to get instrument 'scale'
-                                           'scalefreq': None,      # TODO:  Figure out how to get instrument 'scalefreq'
-                                           'scaleunits': None,     # TODO:  Figure out how to get instrument 'scaleunits'
-                                           'samplerate': c.sample_rate,
-                                           'starttime': c.start_date,
-                                           'endtime': c.end_date,
-                                           'snclId': n.code + "." + s.code + "." + c.location_code + "." + c.code},
-                                          index=[0]) 
-                        dataframes.append(df)
+                if (re.search(network_re, n.code) != None):
+                    for s in n.stations:
+                        if (re.search(station_re, s.code) != None):
+                            for c in s.channels:
+                                if ( (re.search(location_re, c.location_code) != None) and (re.search(channel_re, c.code) != None) ): 
+                                    # "network"    "station"    "location"   "channel"    "latitude"   "longitude"  "elevation"  "depth"      "azimuth"    "dip"        "instrument"
+                                    # "scale"      "scalefreq"  "scaleunits" "samplerate" "starttime"  "endtime"    "snclId"         
+                                    df = pd.DataFrame({'network': n.code,
+                                                       'station': s.code,
+                                                       'location': c.location_code,
+                                                       'channel': c.code,
+                                                       'latitude': c.latitude,
+                                                       'longitude': c.longitude,
+                                                       'elevation': c.elevation,
+                                                       'depth': c.depth,
+                                                       'azimuth': c.azimuth,
+                                                       'dip': c.dip,
+                                                       'instrument': c.sensor.description,
+                                                       'scale': None,          # TODO:  Figure out how to get instrument 'scale'
+                                                       'scalefreq': None,      # TODO:  Figure out how to get instrument 'scalefreq'
+                                                       'scaleunits': None,     # TODO:  Figure out how to get instrument 'scaleunits'
+                                                       'samplerate': c.sample_rate,
+                                                       'starttime': c.start_date,
+                                                       'endtime': c.end_date,
+                                                       'snclId': n.code + "." + s.code + "." + c.location_code + "." + c.code},
+                                                      index=[0])
+                                    
+                                    # NOTE:  See notes above reading of local stationXML
+                                    if ( len(dataframes) == 0 or self.station_client is not None):
+                                        dataframes.append(df)
                             
         # END of sncl_patterns
         
-        result = pd.concat(dataframes, ignore_index=True)
+        if len(dataframes) == 0:
+            err_msg = "No available waveforms matching" + str(self.sncl_patterns)
+            self.logger.info(err_msg)
+            raise NoAvailableDataError(err_msg)
         
-        # TODO:  Maybe the concierge should remember this dataframe for cases like SNR which have get_availability() inside
-        # TODO:  of a get_event() loop.
-           
-        if result.shape[0] == 0:              
-            return None # TODO:  raise an exception
         else:
-            return result
+            result = pd.concat(dataframes, ignore_index=True)
+                
+            # TODO:  Maybe the concierge should remember this dataframe for cases like SNR which have get_availability() inside
+            # TODO:  of a get_event() loop.
+               
+            if result.shape[0] == 0:              
+                err_msg = "No available waveforms matching" + str(self.sncl_patterns)
+                self.logger.info(err_msg)
+                raise NoAvailableDataError(err_msg)
+            else:
+                return result
     
 
     def get_dataselect(self,
@@ -354,9 +391,17 @@ class Concierge(object):
 
         if self.dataselect_client is None:
             # Read local MINIseed file and convert to R_Stream
-            filename = '%s.%s.%s.%s.%s.M' % (network, station, location, channel, _starttime.strftime('%Y.%j'))
-            filepath = self.dataselect_url + '/' + filename
-            if os.path.exists(filepath):
+            filename = '%s.%s.%s.%s.%s' % (network, station, location, channel, _starttime.strftime('%Y.%j'))
+            filepattern = self.dataselect_url + '/' + filename + '*' # Allow for possible quality codes
+            matchingFiles = glob.glob(filepattern)
+            
+            if (len(matchingFiles) == 0):
+                self.logger.info("No files found matching '%s'" % (filepattern))
+                
+            else:
+                filepath = matchingFiles[0]
+                if (len(matchingFiles) > 1):
+                    self.logger.warning("Multiple files found matching" '%s -- using %s' % (filepattern, filepath))
                 try:
                     # Get the ObsPy version of the stream
                     py_stream = obspy.read(filepath)
@@ -388,18 +433,18 @@ class Concierge(object):
                     r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags,
                                                     sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
                 except Exception as e:
-                    self.logger.exception(e)
+                    err_msg = "Error reading in local waveform from %s" % filepath
+                    self.logger.debug(e)
+                    self.logger.error(err_msg)
                     raise
-                
-            else:
-                self.logger.warning('File not found: %s' % (filepath))
-            debug_breakpoint = True
-        
         else:
             # Read from FDSN web services
             try:
                 r_stream = irisseismic.R_getDataselect(self.dataselect_url, network, station, location, channel, _starttime, _endtime, quality, inclusiveEnd, ignoreEpoch)
             except Exception as e:
+                err_msg = "Error reading in waveform from %s webservice" % self.dataselect_client
+                self.logger.debug(e)
+                self.logger.error(err_msg)
                 raise
 
            
@@ -496,7 +541,8 @@ class Concierge(object):
                 event_catalog = obspy.read_events(self.event_url)
             except Exception as e:
                 err_msg = "The StationXML file: '%s' is not valid." % self.station_url
-                self.logger.exception(err_msg)
+                self.logger.debug(e)
+                self.logger.error(err_msg)
                 raise ValueError(err_msg)
             
             # events.columns
@@ -542,8 +588,9 @@ class Concierge(object):
                                               maxdepth=maxdepth)
 
             except Exception as e:
-                err_msg = "The event_url: '%s' returns an error: %s." % (self.event_url, e)
-                self.logger.exception(err_msg)
+                err_msg = "The event_url: '%s' returns an error" % (self.event_url)
+                self.logger.debug(e)
+                self.logger.error(err_msg)
                 raise
 
 
