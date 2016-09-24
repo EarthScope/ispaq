@@ -1,3 +1,16 @@
+0.7.10
+ * SNCL pattern filtering applied to local StationXML metadata
+ * avoid duplicating single local StationXML metadata file when using multiple SNCL patterns
+ * new NoDataAvailableError exception
+ * improved error handling and logging
+ * glob searching for local MSEED files to allow for different (or missing) quality flags
+
+0.7.9
+ * added station metadata to stream objects (required by IRISSeismic::rotate2d() which is used in orientationCheck)
+
+0.7.8
+ * added ".H." channelFilter for PSD metrics
+ 
 0.7.7
  * proper initialization of R_stream @endtime from data read from disk
  * proper initialization of act_, io_ and dq_flags from data read from disk
