@@ -55,7 +55,9 @@ SNCLs:
 
   # For testing default combinations of metrics
   TAbasicStats: TA.*.*.VM?,TA.*.*.LH?,TA.*.*.BH?
-  TA: TA.*.*.BH?, TA.*.*.HH?, TA.*.*.LH?
+  TA: TA.*.*.BH?, TA.*.*.HH?, TA.*.*.LH?, TA.*.*.VM?
+  TABH: TA.*.*.BH?
+  TAtest: TA.*.*.LH?, TA.*.*.VM?
   
 # Data access (typically FDSN web service providers) ---------------------------
  
@@ -73,24 +75,16 @@ SNCLs:
 # NOTE: Directory names should not match FDSN provider names.
 
 Data_Access:
-  ###dataselect_url: /Users/gillian/ispaq/data
-  ###event_url: IRIS
-  ###station_url: /Users/gillian/ispaq/data/TA.109C..BHE.station.xml
-  dataselect_url: /Users/jonathancallahan/Projects/IRIS/ispaq/test_data
+  dataselect_url: ./test_data ###/Users/gillian/ispaq/data
   event_url: IRIS
-  station_url: /Users/jonathancallahan/Projects/IRIS/ispaq/test_data/TA.109C..BHE.station.xml
-
-#/Users/jonathancallahan/Projects/IRIS/ispaq
+  station_url: ./test_data/TA.station.channel.xml ###/Users/gillian/ispaq/data/TA.station.channel.xml
   
 
 # Additional user preferences --------------------------------------------------
 
 Preferences:
-  ###csv_output_dir: /Users/gillian/ispaq/measurements    # directory to contain generated metrics .csv files
-  ###plot_output_dir: /Users/gillian/ispaq/plots   # directory to contain generated plots
-  ###sigfigs: 6           # significant figures used to output metric values
-  csv_output_dir: .    # directory to contain generated metrics .csv files
-  plot_output_dir: .   # directory to contain generated plots
+  csv_output_dir: . ###/Users/gillian/ispaq/measurements    # directory to contain generated metrics .csv files
+  plot_output_dir: . ###/Users/gillian/ispaq/plots   # directory to contain generated plots
   sigfigs: 6           # significant figures used to output metric values
 
 

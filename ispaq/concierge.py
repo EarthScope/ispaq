@@ -75,6 +75,12 @@ class Concierge(object):
                                   self.requested_starttime.date)
         self.output_file_base = self.csv_output_dir + '/' + file_base
         
+        # Availability dataframe is stored if it is read from a local file
+        self.availability = None
+        
+        # Filtered availability dataframe is stored for potential reuse
+        self.filtered_availability = None
+        
         # Add dataselect clients and URLs or reference a local file
         if user_request.dataselect_url in URL_MAPPINGS.keys():
             # Get data from FDSN dataselect service
@@ -207,11 +213,69 @@ class Concierge(object):
         #[u'US.OXF..BHE', u'US.OXF..BHN', u'US.OXF..BHZ']
         """
 
-        # Container for all of the individual SNCL dataframes generated
-        dataframes = []
+        # NOTE:  Building the availability dataframe from a large StationXML is time consuming.
+        # NOTE:  If we are using local station data then we should only do this once.
+        
+        # Special case when using all defaults helps speed up any metrics making mutiple calls to get_availability
+        if (network is None and
+            station is None and
+            location is None and
+            channel is None and
+            starttime is None and
+            endtime is None and
+            self.filtered_availability is not None):
+            return(self.filtered_availability)
+        
+        # Read from a local StationXML file one time only
+        if self.station_client is None:
+            
+            # Only read/parse if we haven't already done so
+            if self.availability is None:
+                try:
+                    self.logger.info("Reading StationXML file %s" % self.station_url)
+                    sncl_inventory = obspy.read_inventory(self.station_url)
+                except Exception as e:
+                    err_msg = "The StationXML file: '%s' is not valid" % self.station_url
+                    self.logger.debug(e)
+                    self.logger.error(err_msg)   
+                    raise ValueError(err_msg)
+                
+                self.logger.debug('Building availability dataframe...')
+                
+                # Set up empty dataframe
+                df = pd.DataFrame(columns=("network", "station", "location", "channel",
+                                           "latitude", "longitude", "elevation", "depth" ,
+                                           "azimuth", "dip", "instrument",
+                                           "scale", "scalefreq", "scaleunits", "samplerate",
+                                           "starttime", "endtime", "snclId"))
+
+                # Walk through the Inventory object
+                for n in sncl_inventory.networks:
+                    for s in n.stations:
+                        for c in s.channels:
+                            snclId = n.code + "." + s.code + "." + c.location_code + "." + c.code
+                            df.loc[len(df)] = [n.code, s.code, c.location_code, c.code,
+                                               c.latitude, c.longitude, c.elevation, c.depth,
+                                               c.azimuth, c.dip, c.sensor.description,
+                                               None,     # TODO:  Figure out how to get instrument 'scale'
+                                               None,     # TODO:  Figure out how to get instrument 'scalefreq'
+                                               None,     # TODO:  Figure out how to get instrument 'scaleunits'
+                                               c.sample_rate,
+                                               c.start_date, c.end_date, snclId]
+
+                # Save this dataframe internally
+                self.logger.debug('Finished creating availability dataframe')
+                self.availability = df
+            
+
+        # Container for all of the individual sncl_pattern dataframes generated
+        sncl_pattern_dataframes = []
+        
+        # Loop through all sncl_patterns ---------------------------------------
         
         for sncl_pattern in self.sncl_patterns:
             
+            # Get "User Reqeust" parameters
             (UR_network, UR_station, UR_location, UR_channel) = sncl_pattern.split('.')
 
             # Allow arguments to override UserRequest parameters
@@ -239,32 +303,17 @@ class Concierge(object):
                 _channel = UR_channel
             else:
                 _channel = channel
+                
+            _sncl_pattern = "%s.%s.%s.%s" % (_network,_station,_location,_channel)
 
-
-            # NOTE:  As currently implemented in v0.7.10, a single local stationXML file is read in multiple
-            # NOTE:  times when multiple patterns are supplied. This will result in duplicate rows when the 
-            # NOTE:  dataframes are concatenated. The most expedient way to deal with this without significant
-            # NOTE:  refactoring is to simple remove duplicate rows in the result dataframe before returning.
+            # Get availability dataframe ---------------------------------------
             
             if self.station_client is None:
-                # Read a single, local StationXML file
-                try:
-                    sncl_inventory = obspy.read_inventory(self.station_url)
-                except Exception as e:
-                    err_msg = "The StationXML file: '%s' is not valid" % self.station_url
-                    self.logger.debug(e)
-                    self.logger.error(err_msg)   
-                    raise ValueError(err_msg)
+                # Use internal dataframe
+                df = self.availability
                 
-                # Filter inventory for this sncl_pattern
-                debugPoint = 1
-            
             else:
                 # Read from FDSN web services
-                #
-                # TODO:  Should use "includeAvailability=true, matchtimeseries=true" if these are supported.
-                # TODO:  But we need to handle cases and reissue without these arguments when they are not supported.
-                # TODO:  Is all this even worth the bother if we skip SNCLs that don't return data?
                 try:
                     sncl_inventory = self.station_client.get_stations(starttime=_starttime, endtime=_endtime,
                                                                       network=_network, station=_station,
@@ -274,75 +323,100 @@ class Concierge(object):
                                                                       minradius=minradius, maxradius=maxradius,                                                                
                                                                       level="channel")
                 except Exception as e:
-                    err_msg = "No sncls matching %s found at %s" % (sncl_pattern, self.station_url)
+                    err_msg = "No sncls matching %s found at %s" % (_sncl_pattern, self.station_url)
                     self.logger.debug(e)
                     self.logger.warning(err_msg)
                     continue
 
 
-            # NOTE:  We need to do regular expression matching of the SNCL pattern here to support local
-            # NOTE:  StationXML files which may list many files that are not in the request.  FDSN web 
-            # NOTE:  services only return matching SNCLs but this extra check is quick.
-            
-            # Modify FDSN wildcards so they match python regular expressions
-            # NOTE:  We have to ensure that net, sta, loc, cha are <type 'str'> and not <type 'unicode'>
-            network_re = str.replace(str(_network),'*','.*')
-            station_re = str.replace(str(_station),'*','.*')
-            location_re = str.replace(str(_location),'*','.*')
-            channel_re = str.replace(str(_channel),'*','.*')
-            
-            # Walk through the Inventory object
-            for n in sncl_inventory.networks:
-                if (re.search(network_re, n.code) != None):
+                self.logger.debug('Building availability dataframe...')
+
+                # Set up empty dataframe
+                df = pd.DataFrame(columns=("network", "station", "location", "channel",
+                                           "latitude", "longitude", "elevation", "depth" ,
+                                           "azimuth", "dip", "instrument",
+                                           "scale", "scalefreq", "scaleunits", "samplerate",
+                                           "starttime", "endtime", "snclId"))
+    
+                # Walk through the Inventory object
+                for n in sncl_inventory.networks:
                     for s in n.stations:
-                        if (re.search(station_re, s.code) != None):
-                            for c in s.channels:
-                                if ( (re.search(location_re, c.location_code) != None) and (re.search(channel_re, c.code) != None) ): 
-                                    # "network"    "station"    "location"   "channel"    "latitude"   "longitude"  "elevation"  "depth"      "azimuth"    "dip"        "instrument"
-                                    # "scale"      "scalefreq"  "scaleunits" "samplerate" "starttime"  "endtime"    "snclId"         
-                                    df = pd.DataFrame({'network': n.code,
-                                                       'station': s.code,
-                                                       'location': c.location_code,
-                                                       'channel': c.code,
-                                                       'latitude': c.latitude,
-                                                       'longitude': c.longitude,
-                                                       'elevation': c.elevation,
-                                                       'depth': c.depth,
-                                                       'azimuth': c.azimuth,
-                                                       'dip': c.dip,
-                                                       'instrument': c.sensor.description,
-                                                       'scale': None,          # TODO:  Figure out how to get instrument 'scale'
-                                                       'scalefreq': None,      # TODO:  Figure out how to get instrument 'scalefreq'
-                                                       'scaleunits': None,     # TODO:  Figure out how to get instrument 'scaleunits'
-                                                       'samplerate': c.sample_rate,
-                                                       'starttime': c.start_date,
-                                                       'endtime': c.end_date,
-                                                       'snclId': n.code + "." + s.code + "." + c.location_code + "." + c.code},
-                                                      index=[0])
-                                    
-                                    # NOTE:  See notes above reading of local stationXML
-                                    if ( len(dataframes) == 0 or self.station_client is not None):
-                                        dataframes.append(df)
+                        for c in s.channels:
+                            snclId = n.code + "." + s.code + "." + c.location_code + "." + c.code
+                            df.loc[len(df)] = [n.code, s.code, c.location_code, c.code,
+                                               c.latitude, c.longitude, c.elevation, c.depth,
+                                               c.azimuth, c.dip, c.sensor.description,
+                                               None,     # TODO:  Figure out how to get instrument 'scale'
+                                               None,     # TODO:  Figure out how to get instrument 'scalefreq'
+                                               None,     # TODO:  Figure out how to get instrument 'scaleunits'
+                                               c.sample_rate,
+                                               c.start_date, c.end_date, snclId]
+            
+            
+            # Subset availability dataframe based on _sncl_pattern -------------
+            
+            # NOTE:  This shouldn't be necessary for dataframes obtained from FDSN
+            # NOTE:  but it's quick so we always do it
+            
+            # Create python regex from _sncl_pattern
+            # NOTE:  Replace '.' first before introducing '.*' or '.'!
+            py_pattern = _sncl_pattern.replace('.','\\.').replace('*','.*').replace('?','.')
+            
+            # Filter dataframe
+            df = df[df.snclId.str.contains(py_pattern)]
+            
+            
+            # Subset based on locally available data ---------------------------
+            
+            if self.dataselect_client is None:
+                filename = '%s.%s.%s.%s.%s' % (_network, _station, _location, _channel, _starttime.strftime('%Y.%j'))
+                filepattern = self.dataselect_url + '/' + filename + '*' # Allow for possible quality codes
+                matching_files = glob.glob(filepattern)
+                if (len(matching_files) == 0):
+                    err_msg = "No local waveforms matching %s" % filepattern
+                    self.logger.debug(err_msg)
+                    continue
+                else:
+                    # Create a mask based on available file names
+                    mask = df.snclId.str.contains("MASK WITH ALL FALSE")
+                    for i in range(len(matching_files)):
+                        basename = os.path.basename(matching_files[i])
+                        match = re.match('[^\\.]*\\.[^\\.]*\\.[^\\.]*\\.[^\\.]*',basename)
+                        sncl = match.group(0)
+                        py_pattern = sncl.replace('.','\\.')
+                        mask = mask | df.snclId.str.contains(py_pattern)
+                        
+                # Subset based on the mask
+                df = df[mask]
+                                
+
+            # Append this dataframe
+            if df.shape[0] == 0:
+                self.logger.debug("No SNCLS found matching '%s'" % _sncl_pattern)
+            else:
+                sncl_pattern_dataframes.append(df)
                             
-        # END of sncl_patterns
+        # END of sncl_patterns loop --------------------------------------------
         
-        if len(dataframes) == 0:
+        if len(sncl_pattern_dataframes) == 0:
             err_msg = "No available waveforms matching" + str(self.sncl_patterns)
             self.logger.info(err_msg)
             raise NoAvailableDataError(err_msg)
         
         else:
-            result = pd.concat(dataframes, ignore_index=True)
-                
-            # TODO:  Maybe the concierge should remember this dataframe for cases like SNR which have get_availability() inside
-            # TODO:  of a get_event() loop.
+            availability = pd.concat(sncl_pattern_dataframes, ignore_index=True)
+            
+            # TODO: remove duplicates       
                
-            if result.shape[0] == 0:              
+            if availability.shape[0] == 0:              
                 err_msg = "No available waveforms matching" + str(self.sncl_patterns)
                 self.logger.info(err_msg)
                 raise NoAvailableDataError(err_msg)
             else:
-                return result
+                # The concierge should remember this dataframe for metrics that
+                # make multiple calls to get_availability with all defaults.
+                self.filtered_availability = availability
+                return availability
     
 
     def get_dataselect(self,
@@ -393,14 +467,14 @@ class Concierge(object):
             # Read local MINIseed file and convert to R_Stream
             filename = '%s.%s.%s.%s.%s' % (network, station, location, channel, _starttime.strftime('%Y.%j'))
             filepattern = self.dataselect_url + '/' + filename + '*' # Allow for possible quality codes
-            matchingFiles = glob.glob(filepattern)
+            matching_files = glob.glob(filepattern)
             
-            if (len(matchingFiles) == 0):
+            if (len(matching_files) == 0):
                 self.logger.info("No files found matching '%s'" % (filepattern))
                 
             else:
-                filepath = matchingFiles[0]
-                if (len(matchingFiles) > 1):
+                filepath = matching_files[0]
+                if (len(matching_files) > 1):
                     self.logger.warning("Multiple files found matching" '%s -- using %s' % (filepattern, filepath))
                 try:
                     # Get the ObsPy version of the stream
