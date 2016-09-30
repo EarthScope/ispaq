@@ -29,8 +29,8 @@ def write_simple_df(df, filepath, sigfigs=6):
         raise("Dataframe of simple metrics does not exist.")
     # Sometimes 'starttime' and 'endtime' get converted from UTCDateTime to float and need to be
     # converted back. Nothing happens if this column is already of type UTCDateTime.
-    df.starttime = df.starttime.apply(UTCDateTime)
-    df.endtime = df.endtime.apply(UTCDateTime)
+    df.starttime = df.starttime.apply(UTCDateTime, precision=0) # no milliseconds
+    df.endtime = df.endtime.apply(UTCDateTime, precision=0) # no milliseconds
     # Get pretty values
     pretty_df = format_simple_df(df, sigfigs=sigfigs)
     # Reorder columns, putting non-standard columns at the end and omitting 'qualityFlag'
@@ -66,11 +66,11 @@ def format_simple_df(df, sigfigs=6):
     format_string = "." + str(sigfigs) + "g"
     df.value = df.value.apply(lambda x: format(x, format_string))
     if 'starttime' in df.columns:
-        df.starttime = df.starttime.apply(UTCDateTime)
-        df.starttime = df.starttime.apply(lambda x: x.isoformat())
+        df.starttime = df.starttime.apply(UTCDateTime, precision=0) # no milliseconds
+        df.starttime = df.starttime.apply(lambda x: x.strftime("%Y-%m-%dT%H:%M:%S"))
     if 'endtime' in df.columns:
-        df.endtime = df.endtime.apply(UTCDateTime)
-        df.endtime = df.endtime.apply(lambda x: x.isoformat())
+        df.endtime = df.endtime.apply(UTCDateTime, precision=0) # no milliseconds
+        df.endtime = df.endtime.apply(lambda x: x.strftime("%Y-%m-%dT%H:%M:%S"))
     # NOTE:  df.time from SNR metric is already a string, otherwise it is NA
     #if 'time' in df.columns:
         #df.time = df.time.apply(lambda x: x.format_iris_web_service())
@@ -111,11 +111,13 @@ def format_numeric_df(df, sigfigs=6):
     format_string = "." + str(sigfigs) + "g"
     for column in df.columns:
         if column == 'starttime':
-            df.starttime = df.starttime.apply(UTCDateTime)
-            df.starttime = df.starttime.apply(lambda x: x.isoformat())
+            df.starttime = df.starttime.apply(UTCDateTime, precision=0) # no milliseconds
+            df.starttime = df.starttime.apply(lambda x: x.strftime("%Y-%m-%dT%H:%M:%S"))
         elif column == 'endtime':
-            df.endtime = df.endtime.apply(UTCDateTime)
-            df.endtime = df.endtime.apply(lambda x: x.isoformat())
+            df.endtime = df.endtime.apply(UTCDateTime, precision=0) # no milliseconds
+            df.endtime = df.endtime.apply(lambda x: x.strftime("%Y-%m-%dT%H:%M:%S"))
+        elif column == 'target':
+            pass # 'target' is the SNCL Id
         else:
             df[column] = df[column].astype(float)
             df[column] = df[column].apply(lambda x: format(x, format_string))

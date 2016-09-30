@@ -121,6 +121,10 @@ def PSD_metrics(concierge):
                 filepath = concierge.output_file_base + "_" + av.snclId + "__PDF.csv"
                 logger.info('Writing PDF to %s.' % os.path.basename(filepath))
                 try:
+                    # Add target, start- and endtimes
+                    PDF['target'] = av.snclId
+                    PDF['starttime'] = concierge.requested_starttime
+                    PDF['endtime'] = concierge.requested_endtime
                     utils.write_numeric_df(PDF, filepath, sigfigs=concierge.sigfigs)  
                 except Exception as e:
                     logger.debug(e)
