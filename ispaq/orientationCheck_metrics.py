@@ -120,7 +120,7 @@ def orientationCheck_metrics(concierge):
         sn_lIds = availability.network + '.' + availability.station + '.' + availability.location + '.' + channelType
     
         # Add sn_lId to the availability dataframe for easy detection
-        availability['sn_lId'] = sn_lIds
+        availability.insert(availability.shape[1],'sn_lId',sn_lIds)
 
         # ----- All available SNCLs -------------------------------------------------
 

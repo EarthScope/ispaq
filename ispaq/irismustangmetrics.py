@@ -244,9 +244,11 @@ def apply_correlation_metric(r_stream1, r_stream2, metric_function_name, *args, 
     """
     function = 'IRISMustangMetrics::' + metric_function_name + 'Metric'
     R_function = robjects.r(function)
+    pandas2ri.activate()
     r_metriclist = R_function(r_stream1, r_stream2, *args, **kwargs)  # args and kwargs shouldn't be needed in theory
+    pandas2ri.deactivate()
     r_dataframe = _R_metricList2DF(r_metriclist)
-    df = pandas2ri.ri2py(r_dataframe)
+    df = pandas2ri.ri2py_dataframe(r_dataframe)
     
     # Convert columns from R POSIXct to pyton UTCDateTime
     df.starttime = df.starttime.apply(UTCDateTime)
@@ -268,20 +270,24 @@ def apply_transferFunction_metric(r_stream1, r_stream2, evalresp1, evalresp2):
     # NOTE:  Conversion of dataframes only works if you activate but we don't want conversion
     # NOTE:  to always be automatic so we deactivate() after we're done converting.
     pandas2ri.activate()
-    r_evalresp1 = pandas2ri.py2ri(evalresp1)
-    r_evalresp2 = pandas2ri.py2ri(evalresp2)
+    r_evalresp1 = pandas2ri.py2ri_pandasdataframe(evalresp1)
+    r_evalresp2 = pandas2ri.py2ri_pandasdataframe(evalresp2)
     pandas2ri.deactivate()
+    
+    # TODO:  Can we just activate/deactivate before/after R_function() without converting
+    # TODO:  r_evalresp1/2 ahead of time?
     
     # Calculate the metric
     r_metriclist = R_function(r_stream1, r_stream2, r_evalresp1, r_evalresp2)
     r_dataframe = _R_metricList2DF(r_metriclist)
-    df = pandas2ri.ri2py(r_dataframe)
+    pandas2ri.activate()
+    df = pandas2ri.ri2py_dataframe(r_dataframe)
+    pandas2ri.deactivate()
     
     # Convert columns from R POSIXct to pyton UTCDateTime
     df.starttime = df.starttime.apply(UTCDateTime)
     df.endtime = df.endtime.apply(UTCDateTime)
     return df
-
 
 #     Functions for PSDMetrics     ---------------------------------------------
 

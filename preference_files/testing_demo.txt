@@ -158,7 +158,7 @@ SNCLs:
   IU_ANMO: IU.ANMO.*.*
   IU.ANMO.00.BHZ: IU.ANMO.00.BHZ
   IU.ANMO.00.BH?: IU.ANMO.00.BH?
-  IU.ANMO.*.BH?: IU.ANMO.00.BH?
+  IU.ANMO.*.BH?: IU.ANMO.*.BH?
   IU_ANMO_VM1: IU.ANMO..VM1 # "No data found" on 2010-02-26
   
   # For testing default combinations of metrics

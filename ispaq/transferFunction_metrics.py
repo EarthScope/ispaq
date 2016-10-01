@@ -239,8 +239,6 @@ def transferFunction_metrics(concierge):
                     logger.debug('Calculating transferFunction metrics for %s:%s' % (Zav1.snclId, Zav2.snclId))
                     try:
                         df = irismustangmetrics.apply_correlation_metric(Zst1, Zst2, 'transferFunction', Zevalresp1, Zevalresp2)
-                        # By default, this metrics returns value="N". Convert this to NaN
-                        df.value = np.NaN
                         dataframes.append(df)
                     except Exception as e:
                         logger.debug('"transfer_function" metric calculation failed for %s:%s: %s' % (Zav1.snclId, Zav2.snclId, e))
@@ -423,8 +421,6 @@ def transferFunction_metrics(concierge):
                                 logger.debug('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
                                 continue
                             
-                            # By default, this metric returns value="N". Convert this to NaN
-                            df.value = np.NaN
                             dataframes.append(df)
 
                         # END for rows (pairs) in matrix
@@ -526,8 +522,8 @@ def transferFunction_metrics(concierge):
                                 logger.debug('Trace rotation failed: %s' % (e))
                                 continue
                             
-                            RYst = traceRotList[0]
-                            RXst = traceRotList[1]
+                            RYst2 = traceRotList[0]
+                            RXst2 = traceRotList[1]
         
                             # Rotate the secondary spectra
                             radians = rotAngle * math.pi/180.0
@@ -548,8 +544,6 @@ def transferFunction_metrics(concierge):
                                     logger.debug('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
                                     continue
                                 
-                                # By default, this metrics returns value="N". Convert this to NaN
-                                df.value = np.NaN
                                 dataframes.append(df)
                                 
                             elif av1.cartAxis == "X":
@@ -560,8 +554,6 @@ def transferFunction_metrics(concierge):
                                     logger.debug('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
                                     continue
                                 
-                                # By default, this metrics returns value="N". Convert this to NaN
-                                df.value = np.NaN
                                 dataframes.append(df)                            
                                 
                         # END of for location pairs in matrix
