@@ -1,3 +1,11 @@
+0.7.11
+ * fixed bugs in transferFunction, orientationCheck
+ * more columns in PDF.csv, no microseconds on output
+ * major refactoring of Concierge.get_availability for
+   more careful creation of filtered availability to handle
+   combinations of local and remote StationXML and Miniseed files
+   including filtering based on locally available data
+
 0.7.10
  * SNCL pattern filtering applied to local StationXML metadata
  * avoid duplicating single local StationXML metadata file when using multiple SNCL patterns
