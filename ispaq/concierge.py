@@ -226,14 +226,18 @@ class Concierge(object):
             self.filtered_availability is not None):
             return(self.filtered_availability)
         
-        # Read from a local StationXML file one time only
+	
+        # Read from a local StationXML file one time only -- IE, once this section has been run once in a job, don't run it again... so availability2 wont run this section.
         if self.station_client is None:
-            
+            # Using Local Data        
+
             # Only read/parse if we haven't already done so
             if self.availability is None:
                 try:
                     self.logger.info("Reading StationXML file %s" % self.station_url)
+                    # Get list of all sncls we have  metadata for
                     sncl_inventory = obspy.read_inventory(self.station_url)
+
                 except Exception as e:
                     err_msg = "The StationXML file: '%s' is not valid" % self.station_url
                     self.logger.debug(e)
@@ -249,7 +253,7 @@ class Concierge(object):
                                            "scale", "scalefreq", "scaleunits", "samplerate",
                                            "starttime", "endtime", "snclId"))
 
-                # Walk through the Inventory object
+                # Walk through the Inventory object and fill the dataframe
                 for n in sncl_inventory.networks:
                     for s in n.stations:
                         for c in s.channels:
@@ -263,18 +267,83 @@ class Concierge(object):
                                                c.sample_rate,
                                                c.start_date, c.end_date, snclId]
 
-                # Save this dataframe internally
-                self.logger.debug('Finished creating availability dataframe')
-                self.availability = df
-            
+                # Wait to Save this dataframe internally until we have added the local data files
+                self.logger.info("Searching for data in '%s'" % self.dataselect_url)
+                # Loop through all sncl_patterns in the preferences file ---------------
+                for sncl_pattern in self.sncl_patterns:
+                    # Get "User Reqeust" parameters -- these are from preferences file
+                    (UR_network, UR_station, UR_location, UR_channel) = sncl_pattern.split('.')
+
+                    # Allow arguments to override UserRequest parameters
+                    if starttime is None:
+                        _starttime = self.requested_starttime
+                    else:
+                        _starttime = starttime
+                    if endtime is None:
+                        _endtime = self.requested_endtime
+                    else:
+                        _endtime = endtime
+                    if network is None:
+                        _network = UR_network
+                    else:
+                        _network = network
+                    if station is None:
+                        _station = UR_station
+                    else:
+                        _station = station
+                    if location is None:
+                        _location = UR_location
+                    else:
+                        _location = location
+                    if channel is None:
+                        _channel = UR_channel
+                    else:
+                        _channel = channel
+
+                    _sncl_pattern = "%s.%s.%s.%s" % (_network,_station,_location,_channel)
+                    if self.station_client is None:	# Local metadata
+                        if self.dataselect_client is None:	# Local data
+                            # Loop over the available data and add to dataframe if they aren't yet
+                            filename = '%s.%s.%s.%s.%s' % (_network, _station, _location, _channel, _starttime.strftime('%Y.%j'))
+                            filepattern = self.dataselect_url + '/' + filename + '*' # Allow for possible quality codes
+                            matching_files = glob.glob(filepattern)	# all files matching our sncls
+
+                            if (len(matching_files) == 0):
+                                err_msg = "No local waveforms matching %s" % filepattern
+                                self.logger.debug(err_msg)
+                                continue
+                            else:
+                                # Loop over all files that we have matching our desired sncls
+                                for _file in matching_files:
+                                    fileSNCL = _file.split("/")[-1]
+                                    snclId = fileSNCL.split(".")[0] + "." + fileSNCL.split(".")[1] + "." + fileSNCL.split(".")[2] + "." + fileSNCL.split(".")[3]
+                                    if not any(df.snclId.str.contains(snclId)):	
+                                        # Only add if not already in the df
+                                        df.loc[len(df)] = [fileSNCL.split(".")[0], fileSNCL.split(".")[1], fileSNCL.split(".")[2], fileSNCL.split(".")[3],
+                                                           None, None, None, None,
+                                                           None, None, None,
+                                                           None, None, None,
+                                                           None, None, None,
+                                                           snclId]
+
+                        # Now save the dataframe internally
+                        self.availability = df
+                        #self.logger.debug('Finished creating availability dataframe')
+
 
         # Container for all of the individual sncl_pattern dataframes generated
         sncl_pattern_dataframes = []
-        
+        loopCounter = 0		# For crossCorrelation when we look for all sn.ls
+
         # Loop through all sncl_patterns ---------------------------------------
-        
         for sncl_pattern in self.sncl_patterns:
-            
+            # We only want to do this one time if we are looking for *.*.*.chan
+            # For example, during crossCorrelation.  Otherwise it creates a bloated
+            # availability dataframe with the same sncls repeading #sncl_patterns times
+            loopCounter += 1
+            if (network is "*" and station is "*" and location is "*" and loopCounter > 1):
+		continue
+
             # Get "User Reqeust" parameters
             (UR_network, UR_station, UR_location, UR_channel) = sncl_pattern.split('.')
 
@@ -307,9 +376,8 @@ class Concierge(object):
             _sncl_pattern = "%s.%s.%s.%s" % (_network,_station,_location,_channel)
 
             # Get availability dataframe ---------------------------------------
-            
             if self.station_client is None:
-                # Use internal dataframe
+                # Use pre-existing internal dataframe if we are using local data 
                 df = self.availability
                 
             else:
@@ -329,7 +397,7 @@ class Concierge(object):
                     continue
 
 
-                self.logger.debug('Building availability dataframe...')
+                self.logger.debug('Adding %s to the availability dataframe' % _sncl_pattern)
 
                 # Set up empty dataframe
                 df = pd.DataFrame(columns=("network", "station", "location", "channel",
@@ -337,7 +405,7 @@ class Concierge(object):
                                            "azimuth", "dip", "instrument",
                                            "scale", "scalefreq", "scaleunits", "samplerate",
                                            "starttime", "endtime", "snclId"))
-    
+
                 # Walk through the Inventory object
                 for n in sncl_inventory.networks:
                     for s in n.stations:
@@ -351,8 +419,7 @@ class Concierge(object):
                                                None,     # TODO:  Figure out how to get instrument 'scaleunits'
                                                c.sample_rate,
                                                c.start_date, c.end_date, snclId]
-            
-            
+
             # Subset availability dataframe based on _sncl_pattern -------------
             
             # NOTE:  This shouldn't be necessary for dataframes obtained from FDSN
@@ -361,17 +428,17 @@ class Concierge(object):
             # Create python regex from _sncl_pattern
             # NOTE:  Replace '.' first before introducing '.*' or '.'!
             py_pattern = _sncl_pattern.replace('.','\\.').replace('*','.*').replace('?','.')
-            
+
+
             # Filter dataframe
             df = df[df.snclId.str.contains(py_pattern)]
-            
-            
+
             # Subset based on locally available data ---------------------------
-            
             if self.dataselect_client is None:
                 filename = '%s.%s.%s.%s.%s' % (_network, _station, _location, _channel, _starttime.strftime('%Y.%j'))
                 filepattern = self.dataselect_url + '/' + filename + '*' # Allow for possible quality codes
                 matching_files = glob.glob(filepattern)
+
                 if (len(matching_files) == 0):
                     err_msg = "No local waveforms matching %s" % filepattern
                     self.logger.debug(err_msg)
@@ -385,29 +452,28 @@ class Concierge(object):
                         sncl = match.group(0)
                         py_pattern = sncl.replace('.','\\.')
                         mask = mask | df.snclId.str.contains(py_pattern)
-                        
                 # Subset based on the mask
                 df = df[mask]
                                 
-
             # Append this dataframe
             if df.shape[0] == 0:
                 self.logger.debug("No SNCLS found matching '%s'" % _sncl_pattern)
             else:
-                sncl_pattern_dataframes.append(df)
-                            
+                sncl_pattern_dataframes.append(df)	# tack the dataframes together
+
         # END of sncl_patterns loop --------------------------------------------
-        
+ 
         if len(sncl_pattern_dataframes) == 0:
             err_msg = "No available waveforms matching" + str(self.sncl_patterns)
             self.logger.info(err_msg)
             raise NoAvailableDataError(err_msg)
         
         else:
-            availability = pd.concat(sncl_pattern_dataframes, ignore_index=True)
-            
-            # TODO: remove duplicates       
-               
+	    # Those (repeating for crossCorr) dataframes become availability
+            availability = pd.concat(sncl_pattern_dataframes, ignore_index=True, verify_integrity=True)
+
+            # TODO: remove duplicates 
+
             if availability.shape[0] == 0:              
                 err_msg = "No available waveforms matching" + str(self.sncl_patterns)
                 self.logger.info(err_msg)
@@ -417,7 +483,6 @@ class Concierge(object):
                 # make multiple calls to get_availability with all defaults.
                 self.filtered_availability = availability
                 return availability
-    
 
     def get_dataselect(self,
                        network=None, station=None, location=None, channel=None,

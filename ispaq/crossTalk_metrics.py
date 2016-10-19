@@ -133,7 +133,12 @@ def crossTalk_metrics(concierge):
 
             # Loop over rows of the availabilitySub dataframe
             for (index2, av) in availabilitySub.iterrows():
-                            
+
+                # NEW if there is no metadata, then skip to the next row
+                if math.isnan(av.latitude):
+                    logger.debug("No metadata for " + av.snclId + ": skipping")
+                    continue                
+
                 try:
                     r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, halfHourStart-1, halfHourEnd+1, inclusiveEnd=False)
                 except Exception as e:

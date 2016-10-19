@@ -115,7 +115,7 @@ def orientationCheck_metrics(concierge):
     
         # Channel types (as opposed to orientation) will contain only the first two characters
         channelType = availability.channel.apply(lambda x: x[0:2])
-    
+
         # Find unique network-station-location combinations
         sn_lIds = availability.network + '.' + availability.station + '.' + availability.location + '.' + channelType
     
@@ -132,6 +132,11 @@ def orientationCheck_metrics(concierge):
             
             if sn_lAvailability.shape[0] != 3:
                 logger.info('Skipping %s because only %d channels were found at this SN.L (3 required)' % (sn_lId, sn_lAvailability.shape[0]))
+                continue
+
+            # If any of the channels don't have metadata, skip this sn.l
+            if any(sn_lAvailability.samplerate.isnull().values):
+                logger.info('Skipping %s because at least one channel is missing metadata' % sn_lId)
                 continue
 
             # Determine N, E and Z channels

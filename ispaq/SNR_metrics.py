@@ -65,7 +65,6 @@ def SNR_metrics(concierge):
     logger.info('Calculating SNR metrics for %d events.' % (events.shape[0]))
 
     for (index, event) in events.iterrows():
-
         logger.info('%03d Magnitude %3.1f event: %s' % (index, event.magnitude, event.eventLocationName))
         
         # Sanity check
@@ -114,7 +113,11 @@ def SNR_metrics(concierge):
     
         # Loop over rows of the availability dataframe
         for (index, av) in availability.iterrows():
-            
+            # NEW if there is no metadata, then skip to the next row
+            if math.isnan(av.latitude):
+                logger.debug("No metadata for " + av.snclId + ": skipping")
+                continue
+
             # get the travel time between the event and the station
             try:
                 tt = irisseismic.getTraveltime(event.latitude, event.longitude, event.depth, 

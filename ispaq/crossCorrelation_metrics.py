@@ -117,7 +117,12 @@ def crossCorrelation_metrics(concierge):
     
         # Loop over rows of the availability dataframe
         for (index, av1) in availability.iterrows():
-            
+
+            # NEW if there is no metadata, then skip to the next row
+            if math.isnan(av1.latitude):
+                logger.debug("No metadata for " + av1.snclId + ": skipping")
+                continue 
+
             snclId = av1.snclId
             
             logger.debug('Working on %s' % (snclId))
@@ -154,14 +159,15 @@ def crossCorrelation_metrics(concierge):
 
             # ----- Now query again to find ANY SNCL near the SNCL of interest ---------
 
-            # Create the regex for all appropriate channels to match for channel 2
-            channels = pd.Series(ch1*len(ch2)) + pd.Series(ch2*len(ch1)) + '?'
-            channelString = ','.join(channels)
-            
+            # Create the regex for channel matching - must be same channel type
+	    sncl1ch1 = snclId.split('.')[-1][0]
+	    sncl1ch2 = snclId.split('.')[-1][1]
+            channelString = "%s%s?" % (sncl1ch1,sncl1ch2)
+
             logger.debug('Calling get_availability for all SNCLs that match "%s"' % (channelString))
 
             # Get the data availability using spatial search parameters
-            try:        
+            try:
                 availability2 = concierge.get_availability(network='*', station='*', location='*', channel=channelString,
                                                            starttime=halfHourStart, endtime=halfHourEnd,
                                                            longitude=av1.longitude, latitude=av1.latitude,
@@ -177,7 +183,13 @@ def crossCorrelation_metrics(concierge):
 
             logger.debug('Found %d nearby SNCLs' % (availability2.shape[0]))
 
+
             # Create masks to find any other SNCLs against which we want to cross-correlate
+
+            # We only want to include those sncls that have sample rate information
+            metaMask = availability2.samplerate.isnull().values
+            metaMask = metaMask == False
+            availability2 = availability2[metaMask]
 
             # Not this station
             stationMask = availability2.station != av1.station
@@ -217,7 +229,11 @@ def crossCorrelation_metrics(concierge):
 
             #for (index2 in seq(nrow(avCompatible))) {
             for (index2, av2) in avCompatible.iterrows():
-                
+                # NEW if there is no metadata, then skip to the next row
+                if math.isnan(av2.latitude):
+                    logger.debug("No metadata for " + av2.snclId + ": skipping")
+                    continue
+
                 debug_point = 1
 
                 # Get data in a window centered on the event's arrival at station #2

@@ -153,7 +153,12 @@ def transferFunction_metrics(concierge):
         # Subset the availability dataframe to contain only results for this networkStation
         (network,station) = networkStation.split('.')
         stationAvailability = availability[(availability.network == network) & (availability.station == station)].reset_index(drop=True)
-        
+
+        # Do not include any sncls that lack metadata
+        metaMask = stationAvailability.dip.isnull().values 
+        metaMask = metaMask == False
+        stationAvailability = stationAvailability[metaMask]
+
         logger.info('Network-Station pair %s.%s has %d channels' % (network, station, stationAvailability.shape[0]))
         
         ##################################################################
