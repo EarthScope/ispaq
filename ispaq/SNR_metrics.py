@@ -42,7 +42,7 @@ def SNR_metrics(concierge):
         
     # Default parameters from IRISMustangUtils::generateMetrics_SNR
     includeRestricted = False
-    channelFilter = '.*'
+    channelFilter = '[BH]H.'
     minmag = 5.5
     maxradius = 180
     windowSecs = 60

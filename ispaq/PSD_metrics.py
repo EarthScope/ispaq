@@ -44,7 +44,7 @@ def PSD_metrics(concierge):
     
     # Default parameters from IRISMustangUtils::generateMetrics_crossCorrelation or crossCorrelationMetrics_exec.R
     includeRestricted = False
-    channelFilter = '.H.' # Gillian email on 9/8/16
+    channelFilter = '.H.' 
 
     # Container for all of the metrics dataframes generated
     dataframes = []

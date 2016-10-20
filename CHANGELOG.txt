@@ -1,3 +1,10 @@
+0.7.12
+ * concierge.get_availability will now load up 1st) all local metadata, then 2) any local data that matches our user-specified sncl pattern.  
+ * crossCorrelation, SNR_metric, crossTalk, orientationCheck, transferFunction now bypasses any metadata-less sncls
+ * crossCorrelation matchies the first sncl type when finding available data for the second sncl
+ * crossTalk, SNR channelFilter="[BH]H."
+ * suppress FutureWarnings
+
 0.7.11
  * fixed bugs in transferFunction, orientationCheck
  * more columns in PDF.csv, no microseconds on output

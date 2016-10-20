@@ -22,6 +22,7 @@ from . import utils
 from . import irisseismic
 from . import irismustangmetrics
 
+pd.options.mode.chained_assignment = None
 
 def crossTalk_metrics(concierge):
     """
@@ -42,7 +43,8 @@ def crossTalk_metrics(concierge):
         
     # Default parameters from IRISMustangUtils::generateMetrics_crossTalk or crossTalkMetrics_exec.R
     includeRestricted = False
-    channelFilter = ".*"
+    channelFilter = '[BH]H.'
+    #channelFilter = '.*'
     minmag = 5.5
     maxradius = 180
     windowSecs = 60
@@ -111,7 +113,8 @@ def crossTalk_metrics(concierge):
         sn_lIds = availability.network + '.' + availability.station + '.' + availability.location + '.' + channelType
         
         # Add sn_lId to the availability dataframe for easy detection
-        availability['sn_lId'] = sn_lIds
+        availability.loc[:,'sn_lId'] = sn_lIds
+ 
 
         # ----- All available SNCLs -------------------------------------------------
 

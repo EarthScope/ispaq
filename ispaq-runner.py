@@ -6,6 +6,9 @@
 
 from __future__ import (absolute_import, division, print_function)
 
+import warnings
+warnings.simplefilter(action = "ignore", category = FutureWarning)
+
 from ispaq.ispaq import main
 
 if __name__ == '__main__':
