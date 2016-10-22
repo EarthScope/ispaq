@@ -1,3 +1,7 @@
+0.7.13
+ * fixed orientation_check reporting value=nan.
+ * requires IRISMustangMetrics version 2.0.0 and IRISSeismic version 1.3.5.
+
 0.7.12
  * concierge.get_availability will now load up 1st) all local metadata, then 2) any local data that matches our user-specified sncl pattern.  
  * crossCorrelation, SNR_metric, crossTalk, orientationCheck, transferFunction now bypasses any metadata-less sncls

@@ -863,6 +863,25 @@ def singleValueMetric(snclq, starttime, endtime, metricName, value, attributeNam
 
     return(df)
 
+# generalValueMetric
+
+def generalValueMetric(snclq, starttime, endtime, metricName, elementNames, elementValues, valueStrings=None):
+    starttime = R_POSIXct(starttime)
+    endtime = R_POSIXct(endtime)
+    quality_flag = -9
+    elementNames = R_character(elementNames)
+    elementValues = R_character(elementValues)
+    R_function = robjects.r('methods::new')
+    if valueStrings is not None:
+        valueStrings = R_character(valueStrings)
+        r_metric = R_function("GeneralValueMetric", snclq, starttime, endtime, metricName, elementNames, elementValues, valueStrings)
+    else:
+        r_metric = R_function("GeneralValueMetric", snclq, starttime, endtime, metricName, elementNames, elementValues)
+    r_metricList = _R_list(r_metric)
+    r_dataframe = _R_metricList2DF(r_metricList)
+    df = pandas2ri.ri2py(r_dataframe)
+
+    return(df) 
 
 # ------------------------------------------------------------------------------
 

@@ -34,9 +34,9 @@ def write_simple_df(df, filepath, sigfigs=6):
     # Get pretty values
     pretty_df = format_simple_df(df, sigfigs=sigfigs)
     # Reorder columns, putting non-standard columns at the end and omitting 'qualityFlag'
-    columns = ['snclq','starttime','endtime','metricName','value']
+    columns = ['snclq','starttime','endtime','metricName']
     original_columns = pretty_df.columns
-    extra_columns = list( set(original_columns).difference(set(columns)) )
+    extra_columns = sorted(list( set(original_columns).difference(set(columns)) ))
     extra_columns.remove('qualityFlag')
     columns.extend(extra_columns)
     # Write out .csv file
@@ -59,12 +59,13 @@ def format_simple_df(df, sigfigs=6):
     """
     # TODO:  Why is type(df.value[0]) = 'str' at this point? Because metrics are always character strings?
     # First convert 'N' to missing value
-    N_mask = df.value.str.contains('^N$')
-    df.loc[N_mask,'value'] = np.nan
-    # Then conver the rest of the values to float
-    df.value = df.value.astype(float)
-    format_string = "." + str(sigfigs) + "g"
-    df.value = df.value.apply(lambda x: format(x, format_string))
+    if 'value' in df.columns:
+        N_mask = df.value.str.contains('^N$')
+        df.loc[N_mask,'value'] = np.nan
+        # Then convert the rest of the values to float
+        df.value = df.value.astype(float)
+        format_string = "." + str(sigfigs) + "g"
+        df.value = df.value.apply(lambda x: format(x, format_string))
     if 'starttime' in df.columns:
         df.starttime = df.starttime.apply(UTCDateTime, precision=0) # no milliseconds
         df.starttime = df.starttime.apply(lambda x: x.strftime("%Y-%m-%dT%H:%M:%S"))

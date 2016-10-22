@@ -248,8 +248,8 @@ def orientationCheck_metrics(concierge):
             rotateOK = True
             for angle in range(1,360,degreeIncrement):
                 
-                if angle % 10 == 0:
-                    logger.debug('rotate2D angle = %d' % angle)
+                #if angle % 10 == 0:
+                #    logger.debug('rotate2D angle = %d' % angle)
                     
                 try:
                     stR = irisseismic.rotate2D(stN, stE, angle)[0]
@@ -300,14 +300,13 @@ def orientationCheck_metrics(concierge):
             azimuth_Y_obs = (float(distaz.backAzimuth) - azimuth_R) % 360
             azimuth_X_obs = (azimuth_Y_obs + 90.0) % 360
         
-            attributeName = ["azimuth_R","backAzimuth","azimuth_Y_obs","azimuth_X_obs","azimuth_Y_meta","azimuth_X_meta","max_Czr","max_C_zr","magnitude"]
-            attributeValues = [azimuth_R, float(distaz.backAzimuth), azimuth_Y_obs, azimuth_X_obs,
+            elementNames = ["azimuth_R","backAzimuth","azimuth_Y_obs","azimuth_X_obs","azimuth_Y_meta","azimuth_X_meta","max_Czr","max_C_zr","magnitude"]
+            elementValues = [azimuth_R, float(distaz.backAzimuth), azimuth_Y_obs, azimuth_X_obs,
                                float(Channel_1.azimuth), float(Channel_2.azimuth), maxCzr, maxC_zr, float(event.magnitude)]
 
             # Create metric
-            df = irisseismic.singleValueMetric(utils.get_slot(stZ, 'id'), windowStart, windowEnd,
-                                               'orientation_check', np.NaN,
-                                               attributeName, attributeValues)
+            df = irisseismic.generalValueMetric(utils.get_slot(stZ, 'id'), windowStart, windowEnd,
+                                               'orientation_check', elementNames, elementValues)
             dataframes.append(df)
                         
         # END of sn_lId loop
