@@ -43,7 +43,7 @@ facilities for this update detection.
 You must first have ```git``` installed your system. Once you do, just:
 
 ```
-git clone https://github.com/MazamaScience/ispaq.git
+git clone https://github.com/iris-edu/ispaq.git
 ```
 
 Onced finished, ```cd ispaq``` before setting up the Anaconda environment.
@@ -81,8 +81,8 @@ Now install the IRIS R packages:
 
 ```
 R CMD install seismicRoll_1.1.2.tar.gz 
-R CMD install IRISSeismic_1.2.3.tar.gz
-R CMD install IRISMustangMetrics_1.2.5.tar.gz 
+R CMD install IRISSeismic_1.3.5.tar.gz
+R CMD install IRISMustangMetrics_2.0.0.tar.gz 
 ```
 
 ### Alternative 2) Creating an environment by hand

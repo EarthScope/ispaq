@@ -22,6 +22,8 @@ from . import utils
 from . import irisseismic
 from . import irismustangmetrics
 
+# avoid "SettingWithCopyWarning" from availability dataframe
+# TODO: find out where the copy issue is occurring (but final results are good)
 pd.options.mode.chained_assignment = None
 
 def crossTalk_metrics(concierge):

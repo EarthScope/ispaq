@@ -102,6 +102,10 @@ def crossCorrelation_metrics(concierge):
             logger.debug('Skipping event because concierge.get_availability failed: %s' % (e))
             continue
                     
+
+        print(event.longitude, event.latitude, eventMinradius, eventMaxradius)
+        print(availability)
+
         # Apply the channelFilter
         availability = availability[availability.channel.str.contains(channelFilter)]      
 
