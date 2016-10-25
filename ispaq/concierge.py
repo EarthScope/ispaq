@@ -271,8 +271,13 @@ class Concierge(object):
                 self.logger.info("Searching for data in '%s'" % self.dataselect_url)
                 # Loop through all sncl_patterns in the preferences file ---------------
                 for sncl_pattern in self.sncl_patterns:
-                    # Get "User Reqeust" parameters -- these are from preferences file
-                    (UR_network, UR_station, UR_location, UR_channel) = sncl_pattern.split('.')
+                    # Get "User Request" parameters -- these are from preferences file
+                    try: 
+                        (UR_network, UR_station, UR_location, UR_channel) = sncl_pattern.split('.')
+                    except Exception as e:
+                        err_msg = "Could not parse sncl_pattern %s" % (sncl_pattern)
+                        self.logger.error(err_msg)
+                        raise ValueError(err_msg)
 
                     # Allow arguments to override UserRequest parameters
                     if starttime is None:
