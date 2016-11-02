@@ -97,7 +97,8 @@ def getTransferFunctionSpectra(st, sampling_rate, respDir=None):
   
     # REC - invoke evalresp either programmatically from a RESP file or by invoking the web service 
     if (respDir):
-        # calling local evalresp
+        # calling local evalresp -- generate the taraget file based on the SNCL identifier
+        # the file pattern is RESP.<STA>.<NET>.<LOC>.<CHA>
         localFile = os.path.join(respDir,".".join("RESP", station, network, location, channel)) # attempt to find the RESP file
         if (os.path.exists(localFile)):
             evalResp = evresp.getEvalresp(localFile, network, station, location, channel, starttime,

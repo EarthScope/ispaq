@@ -23,6 +23,7 @@ from .concierge import NoAvailableDataError
 from . import utils
 from . import irisseismic
 from . import irismustangmetrics
+from . import transferFunctionMetrics as transfn
 
 
 def PSD_metrics(concierge):
@@ -106,7 +107,10 @@ def PSD_metrics(concierge):
 
         if function_metadata.has_key('PSD'):
             try:
-                (df, correctedPSD, PDF) = irismustangmetrics.apply_PSD_metric(r_stream)
+                if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
+                    evalresp = transfn.getTransferFunctionSpectra(r_stream, av.sample_rate, concierge.resp_dir)
+                # get corrected PSDs
+                (df, correctedPSD, PDF) = irismustangmetrics.apply_PSD_metric(r_stream, evalresp=evalresp)
                 dataframes.append(df)
                 # Write out the corrected PSDs
                 filepath = concierge.output_file_base + "_" + av.snclId + "__correctedPSD.csv"
@@ -143,7 +147,9 @@ def PSD_metrics(concierge):
                 starttime = utils.get_slot(r_stream, 'starttime')
                 filename = '%s.%s_PDF.png' % (av.snclId, starttime.strftime('%Y.%j'))
                 filepath = concierge.plot_output_dir + '/' + filename
-                status = irismustangmetrics.apply_PSD_plot(r_stream, filepath)
+                if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
+                    evalresp = transfn.getTransferFunctionSpectra(r_stream, av.sample_rate, concierge.resp_dir)
+                status = irismustangmetrics.apply_PSD_plot(r_stream, filepath, evalresp=evalresp)
             except Exception as e:
                 logger.debug(e)
                 logger.error('"PSD" plot generation failed for %s' % (av.snclId))
