@@ -296,21 +296,22 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
     Invoke the PSDMetric and convert the R dataframe result into
     a Pandas dataframe.
     :param r_stream: an r_stream object
-    :return:
+    :return: tuple of SingleValueMetrics, corrected PSD, and PDF
+    :param (optional kwarg) evalresp= pandas dataframe of FAP from evalresp (freq,amp,phase)
     """
     R_function = robjects.r('IRISMustangMetrics::PSDMetric')
-    r_listOfLists = R_function(r_stream, *args, **kwargs)  # args and kwargs shouldn't be needed in theory
+    r_listOfLists = R_function(r_stream, *args, **kwargs)  # args and kwargs allows additional arguments to be supplied
     r_metriclist = r_listOfLists[0]
     r_dataframe = _R_metricList2DF(r_metriclist)
     df = pandas2ri.ri2py(r_dataframe)
     
-    # Convert columns from R POSIXct to pyton UTCDateTime
+    # Convert columns from R POSIXct to python UTCDateTime
     df.starttime = df.starttime.apply(UTCDateTime)
     df.endtime = df.endtime.apply(UTCDateTime)
     
     # TODO:  What to do about the list of spectraMetrics?
     # TODO:  We would need a new R_spectrumMetricList2DF function to process this further.
-    ###r_spectrumList = r_listOfLists[1]
+    ###r_spectrumList = r_listOfLists[1] ## this would be uncorrected PSD
     
     # correctedPSD is returned as a dataframe
     r_correctedPSD = r_listOfLists[2]
@@ -325,16 +326,24 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
     return (df, correctedPSD, PDF)
 
 
-def apply_PSD_plot(r_stream, filepath):
+def apply_PSD_plot(r_stream, filepath, evalresp=None):
     """"
     Create a PSD plot which will be written to a .png file
     opened 'png' file.
     :param r_stream: an r_stream object
+    :param filepath: file path for png output
+    :param evalresp: (optional) pandas dataframe of FAP from evalresp (freq,amp,phase)
     :return:
     """
     result = robjects.r('grDevices::png')(filepath)
-    r_psdList = robjects.r('IRISSeismic::psdList')(r_stream)    
-    result = robjects.r('IRISSeismic::psdPlot')(r_psdList, style='pdf')
+    r_psdList = robjects.r('IRISSeismic::psdList')(r_stream)
+    if (evalresp):
+        # convert pandas df to R df as parameter automatically 
+        pandas2ri.activate()
+        result = robjects.r('IRISSeismic::psdPlot')(r_psdList, style='pdf', evalresp=evalresp)
+        pandas2ri.deactivate()
+    else:
+        result = robjects.r('IRISSeismic::psdPlot')(r_psdList, style='pdf')
     result = robjects.r('grDevices::dev.off')()
 
     return True

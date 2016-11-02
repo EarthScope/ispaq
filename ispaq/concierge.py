@@ -69,6 +69,10 @@ class Concierge(object):
         self.plot_output_dir = user_request.plot_output_dir
         self.sigfigs = user_request.sigfigs
         
+        # Supporting local files to be used if we are accessing local data
+        self.resp_dir = user_request.resp_dir   # directory where RESP files are located - REC
+                                                # file pattern:  RESP.<STN>.<NET>.<LOC>.<CHA>
+         
         # Output information
         file_base = '%s_%s_%s' % (self.user_request.requested_metric_set,
                                   self.user_request.requested_sncl_set, 
@@ -216,7 +220,7 @@ class Concierge(object):
         # NOTE:  Building the availability dataframe from a large StationXML is time consuming.
         # NOTE:  If we are using local station data then we should only do this once.
         
-        # Special case when using all defaults helps speed up any metrics making mutiple calls to get_availability
+        # Special case when using all defaults helps speed up any metrics making multiple calls to get_availability
         if (network is None and
             station is None and
             location is None and
@@ -258,6 +262,7 @@ class Concierge(object):
                     for s in n.stations:
                         for c in s.channels:
                             snclId = n.code + "." + s.code + "." + c.location_code + "." + c.code
+                            # df.loc signifies the location or row of the df (appending next row)
                             df.loc[len(df)] = [n.code, s.code, c.location_code, c.code,
                                                c.latitude, c.longitude, c.elevation, c.depth,
                                                c.azimuth, c.dip, c.sensor.description,

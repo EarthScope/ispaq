@@ -78,6 +78,10 @@ def getEvalresp(filename, network, station, location, channel, starttime,
                     network, location, units, debug, output, spacing)
     eval_df = pd.DataFrame.from_records(eval_tuple)
     eval_df = pd.DataFrame.transpose(eval_df)
+    if (output == "FAP"):
+        eval_df.columns = ['freq','amp','phase']  # name the DF columns
+    else:
+        eval_df.columns = ['freq','real','imag']
     return eval_df
 
 
