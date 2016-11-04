@@ -33,8 +33,9 @@ def write_simple_df(df, filepath, sigfigs=6):
     df.endtime = df.endtime.apply(UTCDateTime, precision=0) # no milliseconds
     # Get pretty values
     pretty_df = format_simple_df(df, sigfigs=sigfigs)
+    pretty_df = pretty_df.rename(index=str,columns={'snclq':'target','starttime':'start','endtime':'end'})
     # Reorder columns, putting non-standard columns at the end and omitting 'qualityFlag'
-    columns = ['snclq','starttime','endtime','metricName']
+    columns = ['target','start','end','metricName']
     original_columns = pretty_df.columns
     extra_columns = sorted(list( set(original_columns).difference(set(columns)) ))
     extra_columns.remove('qualityFlag')

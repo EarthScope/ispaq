@@ -42,9 +42,9 @@ def PSD_metrics(concierge):
     # Get the logger from the concierge
     logger = concierge.logger
     
-    # Default parameters from IRISMustangUtils::generateMetrics_crossCorrelation or crossCorrelationMetrics_exec.R
+    # Default parameters 
     includeRestricted = False
-    channelFilter = '.H.' 
+    channelFilter = '.[HN].' 
 
     # Container for all of the metrics dataframes generated
     dataframes = []

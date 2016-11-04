@@ -47,7 +47,7 @@ Metrics:
   orientationCheck: orientation_check
   transferFunction: transfer_function
   
-  customStats: sample_median, dead_channel_exp, dead_channel_gsn, pdf_plot
+  customStats: sample_median, cross_talk, dead_channel_gsn, pdf_plot
 
 # User defined sets of SNCLs ---------------------------------------------------
 
@@ -57,7 +57,7 @@ SNCLs:
   TAbasicStats: TA.*.*.VM?,TA.*.*.LH?,TA.*.*.BH?
   TA: TA.*.*.BH?, TA.*.*.HH?, TA.*.*.LH?, TA.*.*.VM?
   TABH: TA.*.*.BH?
-  TAtest: TA.*.*.LH?, TA.*.*.VM?
+  TAtest: TA.109C..BH?
   
 # Data access (typically FDSN web service providers) ---------------------------
  
@@ -75,9 +75,9 @@ SNCLs:
 # NOTE: Directory names should not match FDSN provider names.
 
 Data_Access:
-  dataselect_url: ./test_data ###/Users/gillian/ispaq/data
-  event_url: IRIS
-  station_url: ./test_data/TA.station.channel.xml ###/Users/gillian/ispaq/data/TA.station.channel.xml
+  dataselect_url: /Users/gillian/ispaq/data
+  event_url: USGS
+  station_url: /Users/gillian/ispaq/data/TA.station.channel.xml
   
 
 # Additional user preferences --------------------------------------------------

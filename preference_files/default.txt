@@ -85,7 +85,8 @@ SNCLs:
 
 Data_Access:
   dataselect_url: IRIS
-  event_url: IRIS
+  event_url: USGS   # currently hardcoded to use USGS (http://earthquake.usgs.gov/fdsnws/event/1/) 
+                    # if local QUAKEML file is not specified
   station_url: IRIS
   
 
