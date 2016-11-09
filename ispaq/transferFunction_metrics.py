@@ -102,9 +102,9 @@ def getTransferFunctionSpectra(st, sampling_rate, respDir=None):
     # REC - invoke evalresp either programmatically from a RESP file or by invoking the web service 
     if (respDir):
         # calling local evalresp -- generate the target file based on the SNCL identifier
-        # the file pattern is RESP.<STA>.<NET>.<LOC>.<CHA>
-        localFile = os.path.join(respDir,".".join(["RESP", station, network, location, channel])) # attempt to find the RESP file
-	print("DEBUG: Local evalresp invocation on file: %s..." % localFile)
+        # the file pattern is RESP.<NET>.<STA>.<LOC>.<CHA>
+        localFile = os.path.join(respDir,".".join(["RESP", network, station, location, channel])) # attempt to find the RESP file
+	    #print("DEBUG: Local evalresp invocation on file: %s..." % localFile)
         if (os.path.exists(localFile)):
             debugMode = False
             evalResp = evresp.getEvalresp(localFile, network, station, location, channel, starttime,
@@ -116,7 +116,7 @@ def getTransferFunctionSpectra(st, sampling_rate, respDir=None):
         #print("DEBUG: calling evalresp web service on %s" % ",".join([network,station,location,channel]))
         evalResp = irisseismic.getEvalresp(network, station, location, channel, starttime,
                                        minfreq, maxfreq, nfreq, units.lower(), output.lower())
-    print(evalResp)   # VERBOSE DEBUG -- turn off for production use
+    #print(evalResp)   # VERBOSE DEBUG -- turn off for production use
     return(evalResp)
 
 #
@@ -172,7 +172,7 @@ def transferFunction_metrics(concierge):
     
     for networkStation in networkStationPairs:
  
-	logger.debug("transferFn - %s..." % networkStation)
+        logger.debug("transferFn - %s..." % networkStation)
         # Subset the availability dataframe to contain only results for this networkStation
         (network,station) = networkStation.split('.')
         stationAvailability = availability[(availability.network == network) & (availability.station == station)].reset_index(drop=True)
@@ -180,8 +180,7 @@ def transferFunction_metrics(concierge):
         # Do not include any sncls that lack metadata
         metaMask = stationAvailability.dip.isnull().values 
         metaMask = metaMask == False
-        ####metaMask = [m is not None for m in stationAvailability.dip.values]
-	logger.debug("metaMask: %s" % ",".join(str(x) for x in metaMask))
+        logger.debug("metaMask: %s" % ",".join(str(x) for x in metaMask))
         stationAvailability = stationAvailability[metaMask]
 
 	if stationAvailability.shape[0] == 0:
@@ -455,7 +454,7 @@ def transferFunction_metrics(concierge):
                                 logger.debug('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
                                 continue
                            
-                            logger.debug("append dataframe: %s" % str(df)) 
+                            ##logger.debug("append dataframe: %s" % str(df)) 
                             dataframes.append(df)
 
                         # END for rows (pairs) in matrix

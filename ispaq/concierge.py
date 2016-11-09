@@ -71,7 +71,7 @@ class Concierge(object):
         
         # Supporting local files to be used if we are accessing local data
         self.resp_dir = user_request.resp_dir   # directory where RESP files are located - REC
-                                                # file pattern:  RESP.<STN>.<NET>.<LOC>.<CHA> -- evalresp looks for this
+                                                # file pattern:  RESP.<NET>.<STA>.<LOC>.<CHA> -- evalresp looks for this
          
         # Output information
         file_base = '%s_%s_%s' % (self.user_request.requested_metric_set,
@@ -232,6 +232,7 @@ class Concierge(object):
         
 	
         # Read from a local StationXML file one time only -- IE, once this section has been run once in a job, don't run it again... so availability2 wont run this section.
+        # we have to make sure that we time-filter as well, since we do not have the benefit of the web service to do so
         if self.station_client is None:
             # Using Local Data        
 
@@ -272,7 +273,7 @@ class Concierge(object):
                                                c.sample_rate,
                                                c.start_date, c.end_date, snclId]
 
-                self.logger.debug("availability df rows: %d, cols: %d" % (df.shape[0],df.shape[1]) )
+                #self.logger.debug("availability df rows: %d, cols: %d" % (df.shape[0],df.shape[1]) )
 
                 # Wait to Save this dataframe internally until we have added the local data files
                 self.logger.info("Searching for data in '%s'" % self.dataselect_url)
@@ -356,7 +357,7 @@ class Concierge(object):
             # availability dataframe with the same sncls repeading #sncl_patterns times
             loopCounter += 1
             if (network is "*" and station is "*" and location is "*" and loopCounter > 1):
-		continue
+                continue
 
             # Get "User Request" parameters
             (UR_network, UR_station, UR_location, UR_channel) = sncl_pattern.split('.')
@@ -435,17 +436,19 @@ class Concierge(object):
                                                c.start_date, c.end_date, snclId]
 
             # Subset availability dataframe based on _sncl_pattern -------------
-            
             # NOTE:  This shouldn't be necessary for dataframes obtained from FDSN
             # NOTE:  but it's quick so we always do it
-            
             # Create python regex from _sncl_pattern
             # NOTE:  Replace '.' first before introducing '.*' or '.'!
             py_pattern = _sncl_pattern.replace('.','\\.').replace('*','.*').replace('?','.')
-
-
             # Filter dataframe
             df = df[df.snclId.str.contains(py_pattern)]
+            
+            # Subset availability dataframe based on start and end times
+            #print("starttime: %s, endtime: %s" % (str(_starttime),str(_endtime)))
+            smask = [x < _endtime for x in df.starttime]
+            emask = [x > _starttime for x in df.endtime]
+            df = df[[all(pair) for pair in zip(smask,emask)]]  # get only df rows matching time bounds
 
             # Subset based on locally available data ---------------------------
             if self.dataselect_client is None:
@@ -462,14 +465,14 @@ class Concierge(object):
                     mask = df.snclId.str.contains("MASK WITH ALL FALSE")
                     for i in range(len(matching_files)):
                         basename = os.path.basename(matching_files[i])
-			self.logger.debug("Filtering availability to %s..." % basename)
+                        self.logger.debug("Filtering availability to %s..." % basename)
                         match = re.match('[^\\.]*\\.[^\\.]*\\.[^\\.]*\\.[^\\.]*',basename)
                         sncl = match.group(0)
                         py_pattern = sncl.replace('.','\\.')
                         mask = mask | df.snclId.str.contains(py_pattern)
                 # Subset based on the mask
                 df = df[mask]
-		self.logger.debug("Filtered availability df rows: %d" % df.shape[0])
+                self.logger.debug("Filtered availability df rows: %d" % df.shape[0])
                                 
             # Append this dataframe
             if df.shape[0] == 0:
