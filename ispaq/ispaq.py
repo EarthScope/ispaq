@@ -12,7 +12,7 @@ import argparse
 import datetime
 import logging
 
-__version__ = "0.7.13"
+__version__ = "0.7.13x"
 
 
 def main():
@@ -71,13 +71,14 @@ def main():
 
 
     # Validate the args --------------------------------------------------------
+    logger.debug('Validate the args')
     
     # We can't use required=True in argpase because folks should be able to type only -U
     
     if not args.update_r:
         # start and end times
         if args.starttime is None:
-            logger.critical('argument -S/--starttime is required')
+            logger.critical('argument --starttime is required')
             raise SystemExit
     
         # metric sets
@@ -103,26 +104,34 @@ def main():
         sys.exit(0)
 
     # Load additional modules --------------------------------------------------
+    logger.debug('Load additional modules ...')
 
     # These are loaded here so that asking for --verion or --help is bogged down
     # by the slow-to-load modules that require matplotlib
 
     # ISPAQ modules
     from .user_request import UserRequest
+    logger.debug('user_request')
     from .concierge import Concierge, NoAvailableDataError
+    logger.debug('concierge')
     from . import irisseismic
+    logger.debug('irisseismic')
     from . import irismustangmetrics
+    logger.debug('irismustangmetrics')
     from . import utils
+    logger.debug('utils')
     
     # Specific ISPAQ business logic
     from .simple_metrics import simple_metrics
     from .SNR_metrics import SNR_metrics
     from .PSD_metrics import PSD_metrics
+    logger.debug('simple,SNR,PSD metrics')
     from .crossTalk_metrics import crossTalk_metrics
     from .pressureCorrelation_metrics import pressureCorrelation_metrics
     from .crossCorrelation_metrics import crossCorrelation_metrics
     from .orientationCheck_metrics import orientationCheck_metrics
     from .transferFunction_metrics import transferFunction_metrics
+    logger.debug('complex metrics')
 
 
     # Create UserRequest object ------------------------------------------------

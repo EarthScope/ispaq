@@ -126,7 +126,7 @@ def evalresp(sfft, efft, nfft, filename, date, station='*', channel='*',
     :param locid: Location id
 
     :type units: str
-    :param units: Units to return response in. Can be either DIS, VEL or ACC
+    :param units: Units to return response in. Can be either DEF, DIS, VEL or ACC
 
     :type debug: bool
     :param debug: Verbose output to stdout. Disabled by default.
@@ -151,9 +151,10 @@ def evalresp(sfft, efft, nfft, filename, date, station='*', channel='*',
         fh.write(os.linesep.encode('ascii', 'strict').join(data.splitlines()))
         fh.close()
         # REC - generate the frequency steps
-        freqs = np.logspace(sfft,efft,nfft)     #LOGarithmic (default)
+        freqs = np.logspace(M.log10(sfft),M.log10(efft),nfft)     #LOGarithmic (default)
         if spacing == "LIN":
             freqs = np.linspace(sfft,efft,nfft) #LINear
+        #print("DEBUG: freqs: %s" % ",".join(str(freqs)))
         start_stage = C.c_int(-1)
         stop_stage = C.c_int(0)
         stdio_flag = C.c_int(0)

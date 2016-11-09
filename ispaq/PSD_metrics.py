@@ -23,7 +23,7 @@ from .concierge import NoAvailableDataError
 from . import utils
 from . import irisseismic
 from . import irismustangmetrics
-from . import transferFunctionMetrics as transfn
+from . import transferFunction_metrics as transfn
 
 
 def PSD_metrics(concierge):

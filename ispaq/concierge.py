@@ -71,7 +71,7 @@ class Concierge(object):
         
         # Supporting local files to be used if we are accessing local data
         self.resp_dir = user_request.resp_dir   # directory where RESP files are located - REC
-                                                # file pattern:  RESP.<STN>.<NET>.<LOC>.<CHA>
+                                                # file pattern:  RESP.<STN>.<NET>.<LOC>.<CHA> -- evalresp looks for this
          
         # Output information
         file_base = '%s_%s_%s' % (self.user_request.requested_metric_set,
@@ -272,6 +272,8 @@ class Concierge(object):
                                                c.sample_rate,
                                                c.start_date, c.end_date, snclId]
 
+                self.logger.debug("availability df rows: %d, cols: %d" % (df.shape[0],df.shape[1]) )
+
                 # Wait to Save this dataframe internally until we have added the local data files
                 self.logger.info("Searching for data in '%s'" % self.dataselect_url)
                 # Loop through all sncl_patterns in the preferences file ---------------
@@ -314,8 +316,10 @@ class Concierge(object):
                     if self.station_client is None:	# Local metadata
                         if self.dataselect_client is None:	# Local data
                             # Loop over the available data and add to dataframe if they aren't yet
+                            # look for file patterns of <NET>.<STA>.<LOC>.<CHA>.<YYYY>.<DOY>.*      (any quality code accepted)
                             filename = '%s.%s.%s.%s.%s' % (_network, _station, _location, _channel, _starttime.strftime('%Y.%j'))
                             filepattern = self.dataselect_url + '/' + filename + '*' # Allow for possible quality codes
+                            self.logger.debug("Looking for local data file: %s..." % filepattern)
                             matching_files = glob.glob(filepattern)	# all files matching our sncls
 
                             if (len(matching_files) == 0):
@@ -354,7 +358,7 @@ class Concierge(object):
             if (network is "*" and station is "*" and location is "*" and loopCounter > 1):
 		continue
 
-            # Get "User Reqeust" parameters
+            # Get "User Request" parameters
             (UR_network, UR_station, UR_location, UR_channel) = sncl_pattern.split('.')
 
             # Allow arguments to override UserRequest parameters
@@ -458,12 +462,14 @@ class Concierge(object):
                     mask = df.snclId.str.contains("MASK WITH ALL FALSE")
                     for i in range(len(matching_files)):
                         basename = os.path.basename(matching_files[i])
+			self.logger.debug("Filtering availability to %s..." % basename)
                         match = re.match('[^\\.]*\\.[^\\.]*\\.[^\\.]*\\.[^\\.]*',basename)
                         sncl = match.group(0)
                         py_pattern = sncl.replace('.','\\.')
                         mask = mask | df.snclId.str.contains(py_pattern)
                 # Subset based on the mask
                 df = df[mask]
+		self.logger.debug("Filtered availability df rows: %d" % df.shape[0])
                                 
             # Append this dataframe
             if df.shape[0] == 0:

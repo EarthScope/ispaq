@@ -26,10 +26,13 @@ from . import irismustangmetrics
 from . import evalresp as evresp
 
 
+class EvalrespException(Exception):
+    pass
+
+
 # ------------------------------------------------------------------------------
 #      BEGIN Utility Function
 #
-
 def getTransferFunctionSpectra(st, sampling_rate, respDir=None):
     # This function returns an evalresp fap response for trace st using sampling_rate 
     # to determine frequency limits
@@ -95,21 +98,25 @@ def getTransferFunctionSpectra(st, sampling_rate, respDir=None):
     channel = utils.get_slot(st,'channel')
     starttime = utils.get_slot(st,'starttime')
   
+    #print("DEBUG: minfreq: %f, maxfreq: %f, nfreq: %d" % (minfreq,maxfreq,nfreq))
     # REC - invoke evalresp either programmatically from a RESP file or by invoking the web service 
     if (respDir):
-        # calling local evalresp -- generate the taraget file based on the SNCL identifier
+        # calling local evalresp -- generate the target file based on the SNCL identifier
         # the file pattern is RESP.<STA>.<NET>.<LOC>.<CHA>
-        localFile = os.path.join(respDir,".".join("RESP", station, network, location, channel)) # attempt to find the RESP file
+        localFile = os.path.join(respDir,".".join(["RESP", station, network, location, channel])) # attempt to find the RESP file
+	print("DEBUG: Local evalresp invocation on file: %s..." % localFile)
         if (os.path.exists(localFile)):
+            debugMode = False
             evalResp = evresp.getEvalresp(localFile, network, station, location, channel, starttime,
-                                       minfreq, maxfreq, nfreq, units, output, "LOG", False)
+                                       minfreq, maxfreq, nfreq, units.upper(), output.upper(), "LOG", debugMode)
         else:
-            logger.warn('No RESP file found at %s for evalresp' % (localFile))
+            raise EvalrespException('WARNING: No RESP file found at %s for evalresp' % (localFile))
     else:    
         # calling the web service 
+        #print("DEBUG: calling evalresp web service on %s" % ",".join([network,station,location,channel]))
         evalResp = irisseismic.getEvalresp(network, station, location, channel, starttime,
-                                       minfreq, maxfreq, nfreq, units, output)
-
+                                       minfreq, maxfreq, nfreq, units.lower(), output.lower())
+    print(evalResp)   # VERBOSE DEBUG -- turn off for production use
     return(evalResp)
 
 #
@@ -164,7 +171,8 @@ def transferFunction_metrics(concierge):
     networkStationPairs = networkStationPairs.drop_duplicates().sort_values().reset_index(drop=True)
     
     for networkStation in networkStationPairs:
-  
+ 
+	logger.debug("transferFn - %s..." % networkStation)
         # Subset the availability dataframe to contain only results for this networkStation
         (network,station) = networkStation.split('.')
         stationAvailability = availability[(availability.network == network) & (availability.station == station)].reset_index(drop=True)
@@ -172,9 +180,15 @@ def transferFunction_metrics(concierge):
         # Do not include any sncls that lack metadata
         metaMask = stationAvailability.dip.isnull().values 
         metaMask = metaMask == False
+        ####metaMask = [m is not None for m in stationAvailability.dip.values]
+	logger.debug("metaMask: %s" % ",".join(str(x) for x in metaMask))
         stationAvailability = stationAvailability[metaMask]
 
-        logger.info('Network-Station pair %s.%s has %d channels' % (network, station, stationAvailability.shape[0]))
+	if stationAvailability.shape[0] == 0:
+            logger.info('Network-Station %s.%s has data, but no metadata, skipping.' % (network, station))
+	    continue
+	else:
+            logger.info('Network-Station pair %s.%s has %d channels' % (network, station, stationAvailability.shape[0]))
         
         ##################################################################
         # Loop through all channels by dip looking for multiple locations.
@@ -288,7 +302,7 @@ def transferFunction_metrics(concierge):
                 axisList = []
                 for snclPrefix in snclPrefixes:
                     xyAvailability = channelAvailability[channelAvailability.snclId.str.contains(snclPrefix)]
-        
+                    logger.debug("xyAvailability has %d rows" % xyAvailability.shape[0])
                     # This should never happen, but just in case...
                     if xyAvailability.shape[0] <= 0:
                         continue
@@ -440,7 +454,8 @@ def transferFunction_metrics(concierge):
                             except Exception as e:
                                 logger.debug('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
                                 continue
-                            
+                           
+                            logger.debug("append dataframe: %s" % str(df)) 
                             dataframes.append(df)
 
                         # END for rows (pairs) in matrix
