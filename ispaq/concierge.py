@@ -491,7 +491,7 @@ class Concierge(object):
 
     def get_dataselect(self,
                        network=None, station=None, location=None, channel=None,
-                       starttime=None, endtime=None, quality="B",
+                       starttime=None, endtime=None, quality=None,
                        inclusiveEnd=True, ignoreEpoch=False):
         """
         Returns an R Stream that can be passed to metrics calculation methods.

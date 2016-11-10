@@ -44,7 +44,7 @@ def PSD_metrics(concierge):
     
     # Default parameters 
     includeRestricted = False
-    channelFilter = '.[HN].' 
+    channelFilter = '.[HNL].' 
 
     # Container for all of the metrics dataframes generated
     dataframes = []

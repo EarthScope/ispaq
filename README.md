@@ -117,8 +117,8 @@ Now install the IRIS R packages:
 
 ```
 R CMD install seismicRoll_1.1.2.tar.gz 
-R CMD install IRISSeismic_1.2.3.tar.gz
-R CMD install IRISMustangMetrics_1.2.5.tar.gz 
+R CMD install IRISSeismic_1.3.8.tar.gz
+R CMD install IRISMustangMetrics_2.0.0.tar.gz 
 ```
 
 # First use
