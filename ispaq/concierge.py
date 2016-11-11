@@ -550,6 +550,7 @@ class Concierge(object):
         if self.dataselect_client is None:
             # Read local MINIseed file and convert to R_Stream
             filename = '%s.%s.%s.%s.%s' % (network, station, location, channel, _starttime.strftime('%Y.%j'))
+            self.logger.debug("read local miniseed file for %s..." % filename)
             filepattern = self.dataselect_url + '/' + filename + '*' # Allow for possible quality codes
             matching_files = glob.glob(filepattern)
             
@@ -597,6 +598,7 @@ class Concierge(object):
                     raise
         else:
             # Read from FDSN web services
+            self.logger.debug("read FDSN web services for %s,%s,%s,%s,%s..." % (network, station, location, channel, _starttime.strftime('%Y.%j')))
             try:
                 r_stream = irisseismic.R_getDataselect(self.dataselect_url, network, station, location, channel, _starttime, _endtime, quality, inclusiveEnd, ignoreEpoch)
             except Exception as e:

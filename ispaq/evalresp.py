@@ -78,10 +78,17 @@ def getEvalresp(filename, network, station, location, channel, starttime,
                     network, location, units, debug, output, spacing)
     eval_df = pd.DataFrame.from_records(eval_tuple)
     eval_df = pd.DataFrame.transpose(eval_df)
+    # add the column headers to the data frame
     if (output == "FAP"):
         eval_df.columns = ['freq','amp','phase']  # name the DF columns
+        # to be comparative to ws/evalresp behavior, we must restrict the phase values
+        # to 7 significant digits
+        eval_df.phase = map(lambda x: float('{:.7g}'.format(x)),eval_df.phase)
+        eval_df.freq = map(lambda x: float('{:.7g}'.format(x)),eval_df.freq)
+        eval_df.amp = map(lambda x: float('{:.7g}'.format(x)),eval_df.amp)
     else:
         eval_df.columns = ['freq','real','imag']
+    
     return eval_df
 
 

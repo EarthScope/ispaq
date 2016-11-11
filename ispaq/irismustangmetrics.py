@@ -303,7 +303,8 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
     r_listOfLists = R_function(r_stream, *args, **kwargs)  # args and kwargs allows additional arguments to be supplied
     r_metriclist = r_listOfLists[0]
     r_dataframe = _R_metricList2DF(r_metriclist)
-    df = pandas2ri.ri2py(r_dataframe)
+    pandas2ri.activate()
+    df = pandas2ri.ri2py_dataframe(r_dataframe)
     
     # Convert columns from R POSIXct to python UTCDateTime
     df.starttime = df.starttime.apply(UTCDateTime)
@@ -315,13 +316,14 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
     
     # correctedPSD is returned as a dataframe
     r_correctedPSD = r_listOfLists[2]
-    correctedPSD = pandas2ri.ri2py(r_correctedPSD)
+    correctedPSD = pandas2ri.ri2py_dataframe(r_correctedPSD)
     # Convert columns from R POSIXct to pyton UTCDateTime
     correctedPSD.starttime = correctedPSD.starttime.apply(UTCDateTime)
     correctedPSD.endtime = correctedPSD.endtime.apply(UTCDateTime)
 
     r_PDF = r_listOfLists[3]
-    PDF = pandas2ri.ri2py(r_PDF)
+    PDF = pandas2ri.ri2py_dataframe(r_PDF)
+    pandas2ri.deactivate()
     
     return (df, correctedPSD, PDF)
 

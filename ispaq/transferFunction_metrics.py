@@ -104,7 +104,7 @@ def getTransferFunctionSpectra(st, sampling_rate, respDir=None):
         # calling local evalresp -- generate the target file based on the SNCL identifier
         # the file pattern is RESP.<NET>.<STA>.<LOC>.<CHA>
         localFile = os.path.join(respDir,".".join(["RESP", network, station, location, channel])) # attempt to find the RESP file
-	    #print("DEBUG: Local evalresp invocation on file: %s..." % localFile)
+        #print("DEBUG: Local evalresp invocation on file: %s..." % localFile)
         if (os.path.exists(localFile)):
             debugMode = False
             evalResp = evresp.getEvalresp(localFile, network, station, location, channel, starttime,

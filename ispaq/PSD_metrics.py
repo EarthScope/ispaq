@@ -108,7 +108,8 @@ def PSD_metrics(concierge):
         if function_metadata.has_key('PSD'):
             try:
                 if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
-                    evalresp = transfn.getTransferFunctionSpectra(r_stream, av.sample_rate, concierge.resp_dir)
+                    logger.debug("Accessing local RESP file...")
+                    evalresp = transfn.getTransferFunctionSpectra(r_stream, av.samplerate, concierge.resp_dir)
                 # get corrected PSDs
                 (df, correctedPSD, PDF) = irismustangmetrics.apply_PSD_metric(r_stream, evalresp=evalresp)
                 dataframes.append(df)
@@ -148,7 +149,8 @@ def PSD_metrics(concierge):
                 filename = '%s.%s_PDF.png' % (av.snclId, starttime.strftime('%Y.%j'))
                 filepath = concierge.plot_output_dir + '/' + filename
                 if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
-                    evalresp = transfn.getTransferFunctionSpectra(r_stream, av.sample_rate, concierge.resp_dir)
+                    logger.debug("Accessing local RESP file...")
+                    evalresp = transfn.getTransferFunctionSpectra(r_stream, av.samplerate, concierge.resp_dir)
                 status = irismustangmetrics.apply_PSD_plot(r_stream, filepath, evalresp=evalresp)
             except Exception as e:
                 logger.debug(e)
