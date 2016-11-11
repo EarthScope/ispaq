@@ -221,6 +221,8 @@ def main():
             df = PSD_metrics(concierge)
             if df is None:
                 logger.info('No PSD metrics were calculated')
+            elif df.metricName[0] == 'PSDPlot':
+                logger.info('Only PSD Plots were generated')
             else:
                 try:
                     # Write out the metrics
