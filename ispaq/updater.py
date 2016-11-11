@@ -16,14 +16,14 @@ from rpy2 import robjects
 from rpy2 import rinterface
 from rpy2.robjects import pandas2ri
 
-
 #     R Initialization     -----------------------------------------------------
 
 # Global R options are set here
 
+robjects.r('options(download.file.method="curl")')
+
 # Do now show error messages generated inside of the R packages
 ###robjects.r('options(show.error.messages=FALSE)')
-
 
 #     R functions called internally     ----------------------------------------
 
@@ -42,7 +42,7 @@ def get_IRIS_package_versions(logger):
     # Get version information for locally installed and CRAN available IRIS_packages
     r_installed = robjects.r("installed.packages()[c('seismicRoll','IRISSeismic','IRISMustangMetrics'),'Version']")
     installed_versions = pandas2ri.ri2py(r_installed).tolist()
-    r_available = robjects.r("available.packages()[c('seismicRoll','IRISSeismic','IRISMustangMetrics'),'Version']")
+    r_available = robjects.r('available.packages()[c("seismicRoll","IRISSeismic","IRISMustangMetrics"),"Version"]')
     cran_versions = pandas2ri.ri2py(r_available).tolist()
     
     # Find any 'old' installed packages that available for an upgrade
