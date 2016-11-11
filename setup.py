@@ -30,5 +30,5 @@ setup(
     long_description = long_descr,
     author = "Jonathan Callahan",
     author_email = "jonathan@mazamascience.com",
-    url = "http://github.com/mazamascience/ispaq",
+    url = "http://github.com/iris-edu/ispaq",
     )

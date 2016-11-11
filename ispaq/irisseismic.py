@@ -416,7 +416,7 @@ def getAvailability(client_url="http://service.iris.edu",
 
 def getChannel(client_url="http://service.iris.edu",
                network=None, station=None, location=None, channel=None,
-               starttime=None, endtime=None, includerestricted=False,
+               starttime=None, endtime=None, includerestricted=None,
                latitude=None, longitude=None,
                minradius=None, maxradius=None):
     """
@@ -465,7 +465,7 @@ def getChannel(client_url="http://service.iris.edu",
 
 def R_getDataselect(client_url="http://service.iris.edu",
                     network=None, station=None, location=None, channel=None,
-                    starttime=None, endtime=None, quality="B",
+                    starttime=None, endtime=None, quality=None,
                     inclusiveEnd=True, ignoreEpoch=False):
     """
     Obtain an R Stream using the IRISSeismic::getDataselect function.
@@ -485,6 +485,7 @@ def R_getDataselect(client_url="http://service.iris.edu",
     # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
+    (quality, inclusiveEnd, ignoreEpoch)=_R_args(quality, inclusiveEnd, ignoreEpoch)
         
     # Call the function and return an R Stream
     r_stream = _R_getDataselect(r_client, network, station, location, channel, starttime, endtime, quality, inclusiveEnd, ignoreEpoch)

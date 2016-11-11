@@ -84,7 +84,7 @@ https://conda.anaconda.org/r/osx-64/r-xml-3.98_1.3-r3.2.2_0a.tar.bz2
 https://conda.anaconda.org/r/osx-64/r-xml2-0.1.2-r3.2.2_0a.tar.bz2
 https://repo.continuum.io/pkgs/free/osx-64/readline-6.2-2.tar.bz2
 https://conda.anaconda.org/conda-forge/osx-64/requests-2.10.0-py27_0.tar.bz2
-https://conda.anaconda.org/r/osx-64/rpy2-2.7.0-py27r3.2.2_0.tar.bz2
+https://conda.anaconda.org/bioconda/osx-64/rpy2-2.7.8-py27r3.2.2_1.tar.bz2
 https://repo.continuum.io/pkgs/free/osx-64/scipy-0.18.0-np111py27_0.tar.bz2
 https://repo.continuum.io/pkgs/free/osx-64/setuptools-25.1.6-py27_0.tar.bz2
 https://conda.anaconda.org/r/osx-64/singledispatch-3.4.0.3-py27_1.tar.bz2
