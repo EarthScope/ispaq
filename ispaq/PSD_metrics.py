@@ -31,7 +31,7 @@ def PSD_metrics(concierge):
     Generate *PSD* metrics.
 
     :type concierge: :class:`~ispaq.concierge.Concierge`
-    :param concierge: Data access expiditer.
+    :param concierge: Data access expediter.
     
     :rtype: pandas dataframe (TODO: change this)
     :return: Dataframe of PSD metrics. (TODO: change this)
@@ -107,10 +107,12 @@ def PSD_metrics(concierge):
 
         if function_metadata.has_key('PSD'):
             try:
+                evalresp = None
                 if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
                     logger.debug("Accessing local RESP file...")
                     evalresp = transfn.getTransferFunctionSpectra(r_stream, av.samplerate, concierge.resp_dir)
                 # get corrected PSDs
+                logger.debug("apply_PSD_metric...")
                 (df, correctedPSD, PDF) = irismustangmetrics.apply_PSD_metric(r_stream, evalresp=evalresp)
                 dataframes.append(df)
                 # Write out the corrected PSDs
@@ -148,6 +150,7 @@ def PSD_metrics(concierge):
                 starttime = utils.get_slot(r_stream, 'starttime')
                 filename = '%s.%s_PDF.png' % (av.snclId, starttime.strftime('%Y.%j'))
                 filepath = concierge.plot_output_dir + '/' + filename
+                evalresp = None
                 if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
                     logger.debug("Accessing local RESP file...")
                     evalresp = transfn.getTransferFunctionSpectra(r_stream, av.samplerate, concierge.resp_dir)
@@ -159,7 +162,7 @@ def PSD_metrics(concierge):
 
     # Concatenate and filter dataframes before returning -----------------------
 
-    if len(dataframes) == 0:
+    if len(dataframes) == 0 and not function_metadata.has_key('PSDPlot'):
         logger.warn('"PSD" metric calculation generated zero metrics')
         return None
     else:
