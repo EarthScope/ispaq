@@ -43,7 +43,7 @@ Metrics:
   PDF: pdf_plot
   crossTalk: cross_talk
   pressureCorrelation: pressure_effects
-  crossCorrelation: polarity_check, timing_drift
+  crossCorrelation: polarity_check
   orientationCheck: orientation_check
   transferFunction: transfer_function
   
@@ -57,7 +57,7 @@ SNCLs:
   TAbasicStats: TA.*.*.VM?,TA.*.*.LH?,TA.*.*.BH?
   TA: TA.*.*.BH?, TA.*.*.HH?, TA.*.*.LH?, TA.*.*.VM?
   TABH: TA.*.*.BH?
-  TAtest: TA.109C..BH?
+  TAlocaltest: TA.O30N..BH?
   
 # Data access (typically FDSN web service providers) ---------------------------
  
@@ -83,8 +83,8 @@ Data_Access:
 # Additional user preferences --------------------------------------------------
 
 Preferences:
-  csv_output_dir: . ###/Users/gillian/ispaq/measurements    # directory to contain generated metrics .csv files
-  plot_output_dir: . ###/Users/gillian/ispaq/plots   # directory to contain generated plots
+  csv_output_dir: /Users/gillian/ispaq/measurements    # directory to contain generated metrics .csv files
+  plot_output_dir: /Users/gillian/ispaq/plots   # directory to contain generated plots
   sigfigs: 6           # significant figures used to output metric values
 
 
