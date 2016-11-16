@@ -125,8 +125,8 @@ class UserRequest(object):
             self.invalid_metrics = json_dict['invalid_metrics']
             self.function_by_logic = json_dict['function_by_logic']
             # Additional metadata for local access
-	    self.resp_dir = None   # resp_dir is optional for activating local evalresp on RESP files
-	    if 'resp_dir' in json_dict:
+            self.resp_dir = None   # resp_dir is optional for activating local evalresp on RESP files
+            if 'resp_dir' in json_dict:
             	self.resp_dir = json_dict['resp_dir'] 
 
         #     Initialize from arguments       ---------------------------------
@@ -210,11 +210,11 @@ class UserRequest(object):
 
             #     Additional metadata for local access   ----------------------
             self.resp_dir = None
-	    if 'resp_dir' in data_access:
-            	self.resp_dir = data_access['resp_dir']
+            if 'resp_dir' in data_access:
+                self.resp_dir = data_access['resp_dir']
 
             #     Add individual preferences     ------------------------------
-	    logger.debug('Add individual preferences')
+            logger.debug('Add individual preferences')
             
             if preferences.has_key('plot_output_dir'):
                 self.plot_output_dir = os.path.abspath(os.path.expanduser(preferences['plot_output_dir']))
@@ -230,7 +230,7 @@ class UserRequest(object):
                 self.sigfigs = 6
 
             #     Find required metric functions     --------------------------
-	    logger.debug('Find required metric functions')
+            logger.debug('Find required metric functions')
 
             logger.debug('Validating preferred metrics ...')
 
