@@ -151,9 +151,9 @@ def crossCorrelation_metrics(concierge):
                 r_stream1 = concierge.get_dataselect(av1.network, av1.station, av1.location, av1.channel, windowStart, windowEnd)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.debug('No data for %s' % (av1.snclId))
+                    logger.warning('No data for %s' % (av1.snclId))
                 else:
-                    logger.debug('No data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
+                    logger.warning('No data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
                 continue
             
             # No metric calculation possible if SNCL has more than one trace
@@ -260,9 +260,9 @@ def crossCorrelation_metrics(concierge):
                     r_stream2 = concierge.get_dataselect(av2.network, av2.station, av2.location, av2.channel, windowStart, windowEnd)
                 except Exception as e:
                     if str(e).lower().find('no data') > -1:
-                        logger.debug('No data for %s' % (av2.snclId))
+                        logger.warning('No data for %s' % (av2.snclId))
                     else:
-                        logger.debug('No data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
+                        logger.warning('No data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
                     continue
                 
                 # NOTE:  This check is missing from IRISMustangUtils/R/generateMetrics_crossCorrelation.R

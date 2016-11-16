@@ -169,9 +169,9 @@ def orientationCheck_metrics(concierge):
                                                windowStart, windowEnd, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.debug('No data for %s' % (Channel_1.snclId))
+                    logger.warning('No data for %s' % (Channel_1.snclId))
                 else:
-                    logger.debug('No data for %s from %s: %s' % (Channel_1.snclId, concierge.dataselect_url, e))
+                    logger.warning('No data for %s from %s: %s' % (Channel_1.snclId, concierge.dataselect_url, e))
                 continue
         
             try:
@@ -179,9 +179,9 @@ def orientationCheck_metrics(concierge):
                                                windowStart, windowEnd, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.debug('No data for %s' % (Channel_2.snclId))
+                    logger.warning('No data for %s' % (Channel_2.snclId))
                 else:
-                    logger.debug('No data for %s from %s: %s' % (Channel_2.snclId, concierge.dataselect_url, e))
+                    logger.warning('No data for %s from %s: %s' % (Channel_2.snclId, concierge.dataselect_url, e))
                 continue
         
             try:
@@ -189,9 +189,9 @@ def orientationCheck_metrics(concierge):
                                                windowStart, windowEnd, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.debug('No data for %s' % (ZChannel.snclId))
+                    logger.warning('No data for %s' % (ZChannel.snclId))
                 else:
-                    logger.debug('No data for %s from %s: %s' % (ZChannel.snclId, concierge.dataselect_url, e))
+                    logger.warning('No data for %s from %s: %s' % (ZChannel.snclId, concierge.dataselect_url, e))
                 continue
         
         

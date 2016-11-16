@@ -85,7 +85,7 @@ def PSD_metrics(concierge):
         except Exception as e:
             logger.debug(e)
             if str(e).lower().find('no data') > -1:
-                logger.debug('No data for %s' % (av.snclId))
+                logger.warning('No data for %s' % (av.snclId))
             else:
                 logger.warning('No data for %s from %s' % (av.snclId, concierge.dataselect_url))
             # TODO:  Add empty dataframe ???

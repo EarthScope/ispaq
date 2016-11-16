@@ -146,9 +146,9 @@ def crossTalk_metrics(concierge):
                     r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, halfHourStart-1, halfHourEnd+1, inclusiveEnd=False)
                 except Exception as e:
                     if str(e).lower().find('no data') > -1:
-                        logger.debug('No data for %s' % (av.snclId))
+                        logger.warning('No data for %s' % (av.snclId))
                     else:
-                        logger.debug('No data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
+                        logger.warning('No data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
                     continue
                 
                 
