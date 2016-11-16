@@ -160,23 +160,11 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
     # TODO:  We would need a new R_spectrumMetricList2DF function to process this further.
     ###r_spectrumList = r_listOfLists[1] ## this would be the uncorrected PSD
     
-<<<<<<< HEAD
     # correctedPSD is returned as a dataframe
     r_correctedPSD = r_listOfLists[2]
-    ##print("r_listOfLists 2:")
-    ##print(r_correctedPSD)
-    correctedPSD = pandas2ri.ri2py(r_correctedPSD)
-=======
-    # psd_corrected is returned as a dataframe
-    r_PSDCorrected = r_listOfLists[2]
-    PSDCorrected = pandas2ri.ri2py(r_PSDCorrected)
->>>>>>> branch 'master' of https://github.com/iris-edu/ispaq.git
+    PSDCorrected = pandas2ri.ri2py(r_correctedPSD)
     
-<<<<<<< HEAD
     # Convert columns from R POSIXct to python UTCDateTime
-=======
-    # Convert columns from R POSIXct to pyton UTCDateTime
->>>>>>> branch 'master' of https://github.com/iris-edu/ispaq.git
     PSDCorrected.starttime = PSDCorrected.starttime.apply(UTCDateTime)
     PSDCorrected.endtime = PSDCorrected.endtime.apply(UTCDateTime)
 
