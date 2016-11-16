@@ -41,7 +41,6 @@ def orientationCheck_metrics(concierge):
     logger = concierge.logger
         
     # Default parameters from IRISMustangUtils::generateMetrics_orientationCheck
-    includeRestricted = False
     channelFilter = "[BH]H[12ENZ]"    
     minmag = 7.0
     maxdepth = 100

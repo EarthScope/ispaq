@@ -40,6 +40,7 @@ Metrics:
   spikes: num_spikes
   SNR: sample_snr
   PSD: pct_above_nhnm, pct_below_nlnm, dead_channel_exp, dead_channel_lin, dead_channel_gsn
+  PSDText: psd_corrected, pdf_text
   PDF: pdf_plot
   crossTalk: cross_talk
   pressureCorrelation: pressure_effects
