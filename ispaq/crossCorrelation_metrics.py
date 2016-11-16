@@ -46,7 +46,6 @@ def crossCorrelation_metrics(concierge):
     logger = concierge.logger
         
     # Default parameters from IRISMustangUtils::generateMetrics_crossCorrelation or crossCorrelationMetrics_exec.R
-    includeRestricted=False
     channelFilter = "[BH]H[12ENZ]"    
     minmag = 6.5
     eventMinradius = 15

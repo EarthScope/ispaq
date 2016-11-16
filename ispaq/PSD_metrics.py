@@ -1,5 +1,5 @@
 """
-ISPAQ Business Logic for Simple Metrics.
+ISPAQ Business Logic for PSD Metrics.
 
 :copyright:
     Mazama Science
@@ -44,13 +44,10 @@ def PSD_metrics(concierge):
     logger = concierge.logger
     
     # Default parameters 
-    includeRestricted = False
     channelFilter = '.[HNL].' 
 
     # Container for all of the metrics dataframes generated
     dataframes = []
-    correctedPSDs = []
-    PDFs = []
 
     # ----- All UN-available SNCLs ----------------------------------------------
 
@@ -105,7 +102,7 @@ def PSD_metrics(concierge):
 
         # Run the PSD metric ----------------------------------------
 
-        if function_metadata.has_key('PSD'):
+        if any(key in function_metadata for key in ("PSD","PSDText")) :
             try:
                 evalresp = None
                 if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
@@ -113,30 +110,33 @@ def PSD_metrics(concierge):
                     evalresp = transfn.getTransferFunctionSpectra(r_stream, av.samplerate, concierge.resp_dir)
                 # get corrected PSDs
                 logger.debug("apply_PSD_metric...")
-                (df, correctedPSD, PDF) = irismustangmetrics.apply_PSD_metric(r_stream, evalresp=evalresp)
+                (df, PSDCorrected, PDF) = irismustangmetrics.apply_PSD_metric(r_stream, evalresp=evalresp)
                 dataframes.append(df)
+
+                if "psd_corrected" in concierge.metric_names :
                 # Write out the corrected PSDs
-                filepath = concierge.output_file_base + "_" + av.snclId + "__correctedPSD.csv"
-                logger.info('Writing corrected PSD to %s.' % os.path.basename(filepath))
-                try:
-                    utils.write_numeric_df(correctedPSD, filepath, sigfigs=concierge.sigfigs)
-                except Exception as e:
-                    logger.debug(e)
-                    logger.error('Unable to write %s' % (filepath))
-                    raise
+                    filepath = concierge.output_file_base + "_" + av.snclId + "__PSDCorrected.csv"
+                    logger.info('Writing corrected PSD text to %s.' % os.path.basename(filepath))
+                    try:
+                        utils.write_numeric_df(PSDCorrected, filepath, sigfigs=concierge.sigfigs)
+                    except Exception as e:
+                        logger.debug(e)
+                        logger.error('Unable to write %s' % (filepath))
+                        raise
+                if "pdf_text" in concierge.metric_names :
                 # Write out the PDFs
-                filepath = concierge.output_file_base + "_" + av.snclId + "__PDF.csv"
-                logger.info('Writing PDF to %s.' % os.path.basename(filepath))
-                try:
-                    # Add target, start- and endtimes
-                    PDF['target'] = av.snclId
-                    PDF['starttime'] = concierge.requested_starttime
-                    PDF['endtime'] = concierge.requested_endtime
-                    utils.write_numeric_df(PDF, filepath, sigfigs=concierge.sigfigs)  
-                except Exception as e:
-                    logger.debug(e)
-                    logger.error('Unable to write %s' % (filepath))
-                    raise
+                    filepath = concierge.output_file_base + "_" + av.snclId + "__PDF.csv"
+                    logger.info('Writing PDF text to %s.' % os.path.basename(filepath))
+                    try:
+                        # Add target, start- and endtimes
+                        PDF['target'] = av.snclId
+                        PDF['starttime'] = concierge.requested_starttime
+                        PDF['endtime'] = concierge.requested_endtime
+                        utils.write_numeric_df(PDF, filepath, sigfigs=concierge.sigfigs)  
+                    except Exception as e:
+                        logger.debug(e)
+                        logger.error('Unable to write %s' % (filepath))
+                        raise
             except Exception as e:
                 logger.debug(e)
                 logger.debug('"PSD" metric calculation failed for %s' % (av.snclId))
@@ -144,7 +144,7 @@ def PSD_metrics(concierge):
                 
         # Run the PSD plot ------------------------------------------
 
-        if function_metadata.has_key('PSDPlot'):
+        if 'PSDPlot' in function_metadata :
             try:  
                 # TODO:  Use concierge to determine where to put the plots?
                 starttime = utils.get_slot(r_stream, 'starttime')
@@ -155,6 +155,7 @@ def PSD_metrics(concierge):
                     logger.debug("Accessing local RESP file...")
                     evalresp = transfn.getTransferFunctionSpectra(r_stream, av.samplerate, concierge.resp_dir)
                 status = irismustangmetrics.apply_PSD_plot(r_stream, filepath, evalresp=evalresp)
+                logger.info('Writing PDF plot %s.' % os.path.basename(filepath))
             except Exception as e:
                 logger.debug(e)
                 logger.error('"PSD" plot generation failed for %s' % (av.snclId))
@@ -162,15 +163,23 @@ def PSD_metrics(concierge):
 
     # Concatenate and filter dataframes before returning -----------------------
 
-    if len(dataframes) == 0 and not function_metadata.has_key('PSDPlot'):
+    if len(dataframes) == 0 and 'PSD' in function_metadata:
         logger.warn('"PSD" metric calculation generated zero metrics')
         return None
+
     else:
+        
         # make a dummy data frame in the case of just creating PSDPlots with no supporting DF statistics
         result = pd.DataFrame({'metricName': ['PSDPlot','PSDPlot'], 'value': [0,1]})
+
+        # Create a boolean mask for filtering the dataframe
+        def valid_metric(x):
+            return x in concierge.metric_names
         if function_metadata.has_key('PSD'):                    
             # Concatenate dataframes before returning ----------------------------------
             result = pd.concat(dataframes, ignore_index=True)    
+            mask = result.metricName.apply(valid_metric)
+            result = result[(mask)]
             result.reset_index(drop=True, inplace=True)
         return(result)
 

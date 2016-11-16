@@ -72,7 +72,7 @@ class UserRequest(object):
 
         #     Initialize a dummy object     -----------------------------------
         logger.debug("User request init.")
-        
+ 
         if dummy:
             # Information coming in from the command line
             self.requested_starttime = UTCDateTime("2002-04-20")
@@ -89,10 +89,10 @@ class UserRequest(object):
             # Metric functions determined by querying the R package
             self.invalid_metrics = None
             self.function_by_logic = {'simple': {'basicStats': {'businessLogic': 'simple',
-                                                                'extraAttributes': None,
+                                                                'elementNames': ['value'],
                                                                 'fullDay': True,
                                                                 'metrics': ['sample_min', 'sample_rms'],
-                                                                'outputType': 'SingleValue',
+                                                                'outputType': 'GeneralValue',
                                                                 'speed': 'fast',
                                                                 'streamCount': 1}}}
             self.preferences = {'plot_output_dir': '.',
@@ -180,7 +180,6 @@ class UserRequest(object):
                         	values = [value.strip() for value in values]
                         	values = filter(None, values)  # remove empty strings -- TODO: this can cause index out of range errors on empty entries
 		    # attempt robust assignment of name to value(s) -- currentSection is the current dictionary of interest
-                    #print(str(values))
                     if name is None:  # sanity check
                         continue
 		    if values is None or len(values) == 0:
@@ -230,7 +229,6 @@ class UserRequest(object):
             else:
                 self.sigfigs = 6
 
-
             #     Find required metric functions     --------------------------
 	    logger.debug('Find required metric functions')
 
@@ -249,7 +247,7 @@ class UserRequest(object):
             # Determine which functions and logic types are required
             valid_function_names = set()
             valid_logic_types = set()
-
+            
             # Keep track of valid metrics (typos might cause some to not be found)
             valid_metrics = set()
 

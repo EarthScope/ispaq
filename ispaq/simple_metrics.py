@@ -41,7 +41,6 @@ def simple_metrics(concierge):
     logger = concierge.logger
     
     # Default parameters from IRISMustangUtils::generateMetrics_simple
-    includeRestricted = False
     channelFilter = '.*'
 
     # Container for all of the metrics dataframes generated

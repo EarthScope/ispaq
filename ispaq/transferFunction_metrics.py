@@ -143,7 +143,6 @@ def transferFunction_metrics(concierge):
     logger = concierge.logger
 
     # Default parameters from IRISMustangUtils::generateMetrics_transferFunction or transferFunctionMetrics_exec.R
-    includeRestricted = False
     channelFilter = '[FCHBML][HN].' # Mary Templeton email on 2016-08-26
     
     # Container for all of the metrics dataframes generated
