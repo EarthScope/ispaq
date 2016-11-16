@@ -10,13 +10,8 @@ Python module containing wrappers for the IRISSeismic R package.
 
 from __future__ import (absolute_import, division, print_function)
 from future.types import newint
-
-import math
-import numpy as np
 import pandas as pd
-
 from obspy import UTCDateTime
-
 from rpy2 import robjects
 from rpy2 import rinterface
 from rpy2.robjects import pandas2ri
@@ -486,7 +481,7 @@ def R_getDataselect(client_url="http://service.iris.edu",
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
     (quality, inclusiveEnd, ignoreEpoch)=_R_args(quality, inclusiveEnd, ignoreEpoch)
-        
+       
     # Call the function and return an R Stream
     r_stream = _R_getDataselect(r_client, network, station, location, channel, starttime, endtime, quality, inclusiveEnd, ignoreEpoch)
     

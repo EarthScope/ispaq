@@ -12,7 +12,7 @@ depending on the following factors:
 
 * whether special *business logic* is required to identify appropriate data
 * number of r_stream objects passed in (1 or 2)
-* return type (single values, multilpe values, times, spectra, *etc.*)
+* return type (single values, multiple values, times, spectra, *etc.*)
 
 Functions in the IRISMustangMetrics R package provide this metadata so that
 functions can be called programmatically from python without the user having
@@ -43,174 +43,13 @@ from rpy2.robjects import pandas2ri
 _R_metricList2DF = robjects.r('IRISMustangMetrics::metricList2DF')
 _R_getMetricFunctionMetadata = robjects.r('IRISMustangMetrics::getMetricFunctionMetadata')
 
-def DELETEME_R_getMetricFunctionMetadata():
-    """
-    This function returns a dictionary with the following information:
-     * name -- char, (Name of R function to be run)
-     * streamCount -- int, (number of streams on input)
-     * outputType -- char, [SingleValue | MultipleValue | MultipleTime | Spectrum | Other?]
-     * fullDay -- logical
-     * speed -- char, [slow | medium | fast] (set basic expecations)
-     * extraAttributes -- char, (comma separated list of extra attributes returned in DF)
-     * businessLogic -- char, (Description of business logic which should be implmented in python.)
-    """
-    # TODO:  Replace this functionality with IRISMustangMetrics::getMetricMetadata
-    functiondict = {
-        'basicStats': {
-            'streamCount': 1,
-            'outputType': 'SingleValue',
-            'fullDay': True,
-            'speed': 'fast',
-            'extraAttributes': None,
-            'businessLogic': 'simple',
-            'metrics': ['sample_min',
-                        'sample_median',
-                        'sample_mean',
-                        'sample_max',
-                        'sample_rms',
-                        'sample_unique']
-            },
-        'gaps': {
-            'streamCount': 1,
-            'outputType': 'SingleValue',
-            'fullDay': True,
-            'speed': 'fast',
-            'extraAttributes': None,
-            'businessLogic': 'simple',
-            'metrics': ['num_gaps',
-                        'max_gap',
-                        'num_overlaps',
-                        'max_overlap',
-                        'percent_availability']
-            },
-        'stateOfHealth': {
-            'streamCount': 1,
-            'outputType': 'SingleValue',
-            'fullDay': True,
-            'speed': 'fast',
-            'extraAttributes': None,
-            'businessLogic': 'simple',
-            'metrics': ["calibration_signal",
-                        "timing_correction",
-                        "event_begin",
-                        "event_end",
-                        "event_in_progress",
-                        "clock_locked",
-                        "amplifier_saturation",
-                        "digitizer_clipping",
-                        "spikes",
-                        "glitches",
-                        "missing_padded_data",
-                        "telemetry_sync_error",
-                        "digital_filter_charging",
-                        "suspect_time_tag",
-                        "timing_quality"]
-            },        
-        'STALTA': {
-            'streamCount': 1,
-            'outputType': 'SingleValue',
-            'fullDay': True,
-            'speed': 'fast',
-            'extraAttributes': None,
-            'businessLogic': 'simple',
-            'metrics': ['max_stalta']
-            },
-        'spikes': {
-            'streamCount': 1,
-            'outputType': 'SingleValue',
-            'fullDay': True,
-            'speed': 'fast',
-            'extraAttributes': None,
-            'businessLogic': 'simple',
-            'metrics': ['num_spikes']
-        },
-        'SNR': {
-            'streamCount': 1,
-            'outputType': 'SingleValue',
-            'fullDay': False,
-            'speed': 'slow',
-            'extraAttributes': None,
-            'businessLogic': 'SNR',
-            'metrics': ['sample_snr']
-        },
-        'PSD': {
-            'streamCount': 1,
-            'outputType': 'PSD',
-            'fullDay': True,
-            'speed': 'slow',
-            'extraAttributes': None,
-            'businessLogic': 'PSD',
-            'metrics': ['pct_above_nhnm',
-                        'pct_below_nlnm',
-                        'dead_channel_exp',
-                        'dead_channel_lin',
-                        'dead_channel_gsn']
-        },
-        'PSDPlot': {
-            'streamCount': 1,
-            'outputType': 'plot',
-            'fullDay': True,
-            'speed': 'slow',
-            'extraAttributes': None,
-            'businessLogic': 'PSD',
-            'metrics': ['pdf_plot']
-        },
-        'crossTalk': {
-            'streamCount': 2,
-            'outputType': 'SingleValue',
-            'fullDay': False,
-            'speed': 'fast',
-            'extraAttributes': [],
-            'businessLogic': 'crossTalk',
-            'metrics': ['cross_talk']
-        },
-        'pressureCorrelation': {
-            'streamCount': 2,
-            'outputType': 'SingleValue',
-            'fullDay': False,
-            'speed': 'fast',
-            'extraAttributes': [],
-            'businessLogic': 'pressureCorrelation',
-            'metrics': ['pressure_effects']
-        },
-        'crossCorrelation': {
-            'streamCount': 2,
-            'outputType': 'SingleValue',
-            'fullDay': False,
-            'speed': 'slow',
-            'extraAttributes': [],
-            'businessLogic': 'crossCorrelation',
-            'metrics': ['polarity_check','timing_drift']
-        },
-        'orientationCheck': {
-            'streamCount': 2,
-            'outputType': 'SingleValue',
-            'fullDay': False,
-            'speed': 'slow',
-            'extraAttributes': [],
-            'businessLogic': 'orientationCheck',
-            'metrics': ['orientation_check']
-        },
-        'transferFunction': {
-            'streamCount': 2,
-            'outputType': 'SingleValue',
-            'fullDay': True,
-            'speed': 'slow',
-            'extraAttributes': ['gain_ratio', 'phase_diff', 'ms_coherence'],
-            'businessLogic': 'transferFunction',
-            'metrics': ['transfer_function']
-        }
-    }
-    return(functiondict)
-
 def function_metadata():
     r_json = _R_getMetricFunctionMetadata()
     py_json = r_json[0]
     functionMetadata = json.loads(py_json)
     return functionMetadata
 
-
-#     Functions that return SingleValueMetrics     -----------------------------
+#     Functions that return GeneralValueMetrics     -----------------------------
 
 
 def apply_simple_metric(r_stream, metric_function_name, *args, **kwargs):
@@ -227,7 +66,7 @@ def apply_simple_metric(r_stream, metric_function_name, *args, **kwargs):
     r_dataframe = _R_metricList2DF(r_metriclist)
     df = pandas2ri.ri2py(r_dataframe)
     
-    # Convert columns from R POSIXct to pyton UTCDateTime
+    # Convert columns from R POSIXct to python UTCDateTime
     df.starttime = df.starttime.apply(UTCDateTime)
     df.endtime = df.endtime.apply(UTCDateTime)
     return df
@@ -292,7 +131,7 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
     a Pandas dataframe.
     :param r_stream: an r_stream object
     :param (optional kwarg) evalresp= pandas dataframe of FAP from evalresp (freq,amp,phase)
-    :return: tuple of SingleValueMetrics, corrected PSD, and PDF
+    :return: tuple of GeneralValueMetrics, corrected PSD, and PDF
     """
     R_function = robjects.r('IRISMustangMetrics::PSDMetric')
     pandas2ri.activate()
@@ -319,21 +158,23 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
     
     # TODO:  What to do about the list of spectraMetrics?
     # TODO:  We would need a new R_spectrumMetricList2DF function to process this further.
-    ###r_spectrumList = r_listOfLists[1] ## this would be uncorrected PSD
+    ###r_spectrumList = r_listOfLists[1] ## this would be the uncorrected PSD
     
     # correctedPSD is returned as a dataframe
     r_correctedPSD = r_listOfLists[2]
+    ##print("r_listOfLists 2:")
+    ##print(r_correctedPSD)
     correctedPSD = pandas2ri.ri2py(r_correctedPSD)
     
-    # Convert columns from R POSIXct to pyton UTCDateTime
-    correctedPSD.starttime = correctedPSD.starttime.apply(UTCDateTime)
-    correctedPSD.endtime = correctedPSD.endtime.apply(UTCDateTime)
+    # Convert columns from R POSIXct to python UTCDateTime
+    PSDCorrected.starttime = PSDCorrected.starttime.apply(UTCDateTime)
+    PSDCorrected.endtime = PSDCorrected.endtime.apply(UTCDateTime)
 
     r_PDF = r_listOfLists[3]
     PDF = pandas2ri.ri2py(r_PDF)
     pandas2ri.deactivate()
     
-    return (df, correctedPSD, PDF)
+    return (df, PSDCorrected, PDF)
 
 
 def apply_PSD_plot(r_stream, filepath, evalresp=None):

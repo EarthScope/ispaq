@@ -11,6 +11,7 @@ ISPAQ Data Access Expediter.
 from __future__ import (absolute_import, division, print_function)
 
 import os
+import sys
 import re
 import glob
 
@@ -84,6 +85,9 @@ class Concierge(object):
         
         # Filtered availability dataframe is stored for potential reuse
         self.filtered_availability = None
+        
+        # Keep a /dev/null pipe handy in case we want to bit-dump output
+        self.dev_null = open(os.devnull,"w")
         
         # Add dataselect clients and URLs or reference a local file
         if user_request.dataselect_url in URL_MAPPINGS.keys():
@@ -600,11 +604,17 @@ class Concierge(object):
             # Read from FDSN web services
             self.logger.debug("read FDSN web services for %s,%s,%s,%s,%s..." % (network, station, location, channel, _starttime.strftime('%Y.%j')))
             try:
+                # R getDataselect() seems to capture awkward error reports when there is no data
+                # we want to suppress the stderr channel briefly to block the unwanted feedback from R
+                orig_stderr = sys.stderr
+                sys.stderr = self.dev_null
                 r_stream = irisseismic.R_getDataselect(self.dataselect_url, network, station, location, channel, _starttime, _endtime, quality, inclusiveEnd, ignoreEpoch)
+                sys.stderr = orig_stderr
             except Exception as e:
                 err_msg = "Error reading in waveform from %s webservice" % self.dataselect_client
                 self.logger.debug(e)
-                self.logger.error(err_msg)
+                #self.logger.error(err_msg)# change to debug mode since this is annoying
+                self.logger.debug(err_msg)
                 raise
 
            
