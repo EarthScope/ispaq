@@ -72,7 +72,7 @@ class Concierge(object):
         
         # Supporting local files to be used if we are accessing local data
         self.resp_dir = user_request.resp_dir   # directory where RESP files are located - REC
-                                                # file pattern:  RESP.<NET>.<STA>.<LOC>.<CHA> -- evalresp looks for this
+                                                # file pattern:  RESP.<NET>.<STA>.<LOC>.<CHA> or RESP.<STA>.<NET>.<LOC>.<CHA>
         # if the RESP pattern is set to a URL MAPPING, then we are not using local RESP files but instead irisws/evalresp
         if self.resp_dir in URL_MAPPINGS:
             self.resp_dir = None

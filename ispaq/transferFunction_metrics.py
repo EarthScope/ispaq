@@ -100,20 +100,23 @@ def getTransferFunctionSpectra(st, sampling_rate, respDir=None):
   
     #print("DEBUG: minfreq: %f, maxfreq: %f, nfreq: %d" % (minfreq,maxfreq,nfreq))
     # REC - invoke evalresp either programmatically from a RESP file or by invoking the web service 
+    evalResp = None
     if (respDir):
         # calling local evalresp -- generate the target file based on the SNCL identifier
-        # the file pattern is RESP.<NET>.<STA>.<LOC>.<CHA>
+        # file pattern:  RESP.<NET>.<STA>.<LOC>.<CHA> or RESP.<STA>.<NET>.<LOC>.<CHA>
         localFile = os.path.join(respDir,".".join(["RESP", network, station, location, channel])) # attempt to find the RESP file
-        #print("DEBUG: Local evalresp invocation on file: %s..." % localFile)
-        if (os.path.exists(localFile)):
-            debugMode = False
-            evalResp = evresp.getEvalresp(localFile, network, station, location, channel, starttime,
+        localFile2 = os.path.join(respDir,".".join(["RESP", station, network, location, channel])) # alternate pattern
+        for localFiles in (localFile,localFile2):
+            if (os.path.exists(localFiles)):
+                debugMode = False
+                evalResp = evresp.getEvalresp(localFiles, network, station, location, channel, starttime,
                                        minfreq, maxfreq, nfreq, units.upper(), output.upper(), "LOG", debugMode)
-        else:
-            raise EvalrespException('WARNING: No RESP file found at %s for evalresp' % (localFile))
+                if evalResp is not None:
+                    break   # break early from loop if we found a result
+        if evalResp is None:
+            raise EvalrespException('WARNING: No RESP file found at %s or %s for evalresp' % (localFile,localFile2))
     else:    
         # calling the web service 
-        #print("DEBUG: calling evalresp web service on %s" % ",".join([network,station,location,channel]))
         evalResp = irisseismic.getEvalresp(network, station, location, channel, starttime,
                                        minfreq, maxfreq, nfreq, units.lower(), output.lower())
     #print(evalResp)   # VERBOSE DEBUG -- turn off for production use
