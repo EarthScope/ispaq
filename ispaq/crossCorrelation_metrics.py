@@ -13,13 +13,8 @@ from __future__ import (absolute_import, division, print_function)
 import math
 import numpy as np
 import pandas as pd
-import obspy
 
 from obspy import UTCDateTime
-from obspy import geodetics
-from obspy import taup
-from obspy.taup import TauPyModel
-model = TauPyModel(model="iasp91")
 
 from .concierge import NoAvailableDataError
 
@@ -62,7 +57,7 @@ def crossCorrelation_metrics(concierge):
     # Get the seismic events in this time period
     events = concierge.get_event(minmag=minmag)
         
-    # Sanity check
+    # Sanity checck
     if events is None or events.shape[0] == 0:
         logger.info('No events found for crossCorrelation metrics.')
         return None
@@ -106,14 +101,13 @@ def crossCorrelation_metrics(concierge):
         except Exception as e:
             logger.debug('Skipping event because concierge.get_availability failed: %s' % (e))
             continue
-                    
+        if availability is None:
+            logger.debug("skipping event with no available data")
+            continue            
+
         # Apply the channelFilter
         availability = availability[availability.channel.str.contains(channelFilter)]      
 
-        # Sanity check that some SNCLs exist
-        if availability.shape[0] == 0:
-            logger.debug('Skipping event because no SNCLs are available')
-            continue
     
         # ----- All available SNCLs -------------------------------------------------
 
@@ -133,20 +127,15 @@ def crossCorrelation_metrics(concierge):
             logger.debug('Working on %s' % (snclId))
 
             # Get data in a window centered on the event's arrival at station #1
-            #try:
-            #    tt = irisseismic.getTraveltime(event.latitude, event.longitude, event.depth, 
-            #                                   av1.latitude, av1.longitude)
-
-            #except Exception as e:
-            #    logger.debug('Skipping because getTravelTime failed: %s' % (e))
-            #    continue
+            try:
+                tt = irisseismic.getTraveltime(event.latitude, event.longitude, event.depth, 
+                                               av1.latitude, av1.longitude)
+            except Exception as e:
+                logger.debug('Skipping because getTravelTime failed: %s' % (e))
+                continue
              
-            dist = obspy.geodetics.base.locations2degrees(event.latitude, event.longitude, av1.latitude, av1.longitude)
-            arrivals = model.get_travel_times(source_depth_in_km=event.depth,distance_in_degree=dist)
-            tt=min(arrivals,key=lambda x: x.time).time
-
-            windowStart = event.time + tt - windowSecs/2.0
-            windowEnd = event.time + tt + windowSecs/2.0
+            windowStart = event.time + min(tt.travelTime) - windowSecs/2.0
+            windowEnd = event.time + min(tt.travelTime) + windowSecs/2.0
 
             try:
                 r_stream1 = concierge.get_dataselect(av1.network, av1.station, av1.location, av1.channel, windowStart, windowEnd)
@@ -184,6 +173,9 @@ def crossCorrelation_metrics(concierge):
                                                            minradius=snclMinradius, maxradius=snclMaxradius)
             except Exception as e:
                 logger.debug('Skipping SNCL because get_availability failed: %s' % (e))
+                continue
+            if availability2 is None:
+                logger.debug("skipping event with no available data")
                 continue
 
             # Sanity check that some SNCLs exist

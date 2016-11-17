@@ -90,6 +90,8 @@ def orientationCheck_metrics(concierge):
         halfHourStart = event.time - 60 * 2
         halfHourEnd = event.time + 60 * 28
 
+        print(halfHourStart)
+
         try:        
             availability = concierge.get_availability(starttime=halfHourStart, endtime=halfHourEnd,
                                                       longitude=event.longitude, latitude=event.latitude,
@@ -100,6 +102,10 @@ def orientationCheck_metrics(concierge):
         except Exception as e:
             logger.debug('Skipping event because concierge.get_availability failed: %s' % (e))
             continue
+        if availability is None:
+            logger.debug("skipping event with no available data")
+            continue
+
                     
         # Apply the channelFilter
         availability = availability[availability.channel.str.contains(channelFilter)]      

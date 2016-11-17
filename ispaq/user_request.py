@@ -71,7 +71,6 @@ class UserRequest(object):
         self.args = args
 
         #     Initialize a dummy object     -----------------------------------
-        logger.debug("User request init.")
         
         if dummy:
             # Information coming in from the command line
@@ -124,15 +123,10 @@ class UserRequest(object):
             # Metric functions determined by querying the R package
             self.invalid_metrics = json_dict['invalid_metrics']
             self.function_by_logic = json_dict['function_by_logic']
-            # Additional metadata for local access
-	    self.resp_dir = None   # resp_dir is optional for activating local evalresp on RESP files
-	    if 'resp_dir' in json_dict:
-            	self.resp_dir = json_dict['resp_dir'] 
 
         #     Initialize from arguments       ---------------------------------
 
         else:
-            logger.debug("Initialize from arguments")
             # start and end times
             self.requested_starttime = UTCDateTime(args.starttime)
             if args.endtime is None:
@@ -145,53 +139,39 @@ class UserRequest(object):
             self.requested_sncl_set = args.sncls
 
             #     Load preferences from file      -----------------------------
-	    logger.debug('Load preferences from file')
 
             # Metric and SNCL information from the preferences file
             metric_sets, sncl_sets, data_access, preferences = {}, {}, {}, {}
             currentSection = None
-	    multiValue = False
             for line in args.preferences_file:  # parse file
                 line = line.split('#')[0].strip()  # remove comments
                 if line.lower() == "metrics:":  # metric header
-                    currentSection = metric_sets
-                    multiValue = True
+                    currentSection = 'metric'
                 elif line.lower() == "sncls:":  # sncl header
-                    currentSection = sncl_sets
-                    multiValue = True
+                    currentSection = 'sncl'
                 elif line.lower() == "data_access:":
-                    currentSection = data_access
-                    multiValue = False
+                    currentSection = 'data_access'
                 elif line.lower() == "preferences:":
-                    currentSection = preferences
-                    multiValue = False
+                    currentSection = 'preferences'
                 elif currentSection is not None:  # line following header
                     entry = line.split(':')
                     if len(entry) <= 1:  # empty line
                         name, values = None, None
-			continue
                     else:  # non-empty line
                         name = entry[0]
-			logger.debug("%s len entry: %d" % (name,len(entry)))
-			# check for key with empty value entry, implies optional or default, set value to None in array
-			values = None
-			if name is not None and len(entry) > 1:             # we have a value or set of comma separated values
-                        	values = entry[1].strip().split(',')
-                        	values = [value.strip() for value in values]
-                        	values = filter(None, values)  # remove empty strings -- TODO: this can cause index out of range errors on empty entries
-		    # attempt robust assignment of name to value(s) -- currentSection is the current dictionary of interest
-                    #print(str(values))
-                    if name is None:  # sanity check
-                        continue
-		    if values is None or len(values) == 0:
-			logger.debug("force set %s to None" % name)
-			currentSection[name] = None  # for optional values
-		    elif multiValue:
-			logger.debug("set %s to multi %s" % (name,",".join(values)))
-			currentSection[name] = values
-                    else:
-			logger.debug("set %s to first in %s" % (name,",".join(values)))
-			currentSection[name] = values[0]
+                        values = entry[1].strip().split(',')
+                        values = [value.strip() for value in values]
+                        values = filter(None, values)  # remove empty strings
+                    if name is None:
+                        pass
+                    elif currentSection == 'metric':
+                        metric_sets[name] = values
+                    elif currentSection == 'sncl':
+                        sncl_sets[name] = values
+                    elif currentSection == 'data_access':
+                        data_access[name] = values[0]
+                    elif currentSection == 'preferences':
+                        preferences[name] = values[0]
 
             # Check for invalid arguments
             try:
@@ -209,13 +189,8 @@ class UserRequest(object):
             self.event_url = data_access['event_url']
             self.station_url = data_access['station_url']
 
-            #     Additional metadata for local access   ----------------------
-            self.resp_dir = None
-	    if 'resp_dir' in data_access:
-            	self.resp_dir = data_access['resp_dir']
 
             #     Add individual preferences     ------------------------------
-	    logger.debug('Add individual preferences')
             
             if preferences.has_key('plot_output_dir'):
                 self.plot_output_dir = os.path.abspath(os.path.expanduser(preferences['plot_output_dir']))
@@ -232,7 +207,6 @@ class UserRequest(object):
 
 
             #     Find required metric functions     --------------------------
-	    logger.debug('Find required metric functions')
 
             logger.debug('Validating preferred metrics ...')
 

@@ -94,6 +94,9 @@ def SNR_metrics(concierge):
             logger.debug('Skipping event because concierge.get_availability failed: %s' % (e))
             logger.warn('Skipping event because concierge.get_availability() failed with an unknown error')
             continue
+        if availability is None:
+            logger.debug("skipping event with no available data")
+            continue
                     
         # Apply the channelFilter
         availability = availability[availability.channel.str.contains(channelFilter)]      

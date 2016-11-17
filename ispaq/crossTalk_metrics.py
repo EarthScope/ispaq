@@ -22,8 +22,6 @@ from . import utils
 from . import irisseismic
 from . import irismustangmetrics
 
-# avoid "SettingWithCopyWarning" from availability dataframe
-# TODO: find out where the copy issue is occurring (but final results are good)
 pd.options.mode.chained_assignment = None
 
 def crossTalk_metrics(concierge):
@@ -99,6 +97,10 @@ def crossTalk_metrics(concierge):
         except Exception as e:
             logger.debug('Skipping event because concierge.get_availability failed: %s' % (e))
             continue
+        if availability is None:
+            logger.debug("skipping event with no available data")
+            continue
+
                     
         # Apply the channelFilter
         availability = availability[availability.channel.str.contains(channelFilter)]      

@@ -262,21 +262,26 @@ def apply_transferFunction_metric(r_stream1, r_stream2, evalresp1, evalresp2):
     a Pandas dataframe.
     :param r_stream1: an r_stream object
     :param r_stream2: an r_stream object
-    :param evalresp1: pandas DataFrame of evalresp FAP for r_stream1
-    :param evalresp2: pandas DataFrame of evalresp FAP for r_stream2
+    :param metric_function_name: the name of the set of metrics
     :return:
     """
     R_function = robjects.r('IRISMustangMetrics::transferFunctionMetric')
+    
+    # NOTE:  Conversion of dataframes only works if you activate but we don't want conversion
+    # NOTE:  to always be automatic so we deactivate() after we're done converting.
     pandas2ri.activate()
-   
     r_evalresp1 = pandas2ri.py2ri_pandasdataframe(evalresp1)
     r_evalresp2 = pandas2ri.py2ri_pandasdataframe(evalresp2)
+    pandas2ri.deactivate()
+    
+    # TODO:  Can we just activate/deactivate before/after R_function() without converting
+    # TODO:  r_evalresp1/2 ahead of time?
     
     # Calculate the metric
     r_metriclist = R_function(r_stream1, r_stream2, r_evalresp1, r_evalresp2)
     r_dataframe = _R_metricList2DF(r_metriclist)
+    pandas2ri.activate()
     df = pandas2ri.ri2py_dataframe(r_dataframe)
-    
     pandas2ri.deactivate()
     
     # Convert columns from R POSIXct to pyton UTCDateTime
@@ -291,72 +296,45 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
     Invoke the PSDMetric and convert the R dataframe result into
     a Pandas dataframe.
     :param r_stream: an r_stream object
-    :param (optional kwarg) evalresp= pandas dataframe of FAP from evalresp (freq,amp,phase)
-    :return: tuple of SingleValueMetrics, corrected PSD, and PDF
+    :return:
     """
     R_function = robjects.r('IRISMustangMetrics::PSDMetric')
-    pandas2ri.activate()
-   
-    # look for optional parameter evalresp=pd.DataFrame
-    evalresp = None
-    if 'evalresp' in kwargs:
-        evalresp = kwargs['evalresp']
-    
-    r_listOfLists = None    
-    if evalresp is not None:
-        r_evalresp = pandas2ri.py2ri(evalresp)  # convert to R dataframe
-        r_listOfLists = R_function(r_stream, r_evalresp)
-    else:
-        r_listOfLists = R_function(r_stream)
-        
+    r_listOfLists = R_function(r_stream, *args, **kwargs)  # args and kwargs shouldn't be needed in theory
     r_metriclist = r_listOfLists[0]
     r_dataframe = _R_metricList2DF(r_metriclist)
     df = pandas2ri.ri2py(r_dataframe)
     
-    # Convert columns from R POSIXct to python UTCDateTime
+    # Convert columns from R POSIXct to pyton UTCDateTime
     df.starttime = df.starttime.apply(UTCDateTime)
     df.endtime = df.endtime.apply(UTCDateTime)
     
     # TODO:  What to do about the list of spectraMetrics?
     # TODO:  We would need a new R_spectrumMetricList2DF function to process this further.
-    ###r_spectrumList = r_listOfLists[1] ## this would be uncorrected PSD
+    ###r_spectrumList = r_listOfLists[1]
     
     # correctedPSD is returned as a dataframe
     r_correctedPSD = r_listOfLists[2]
     correctedPSD = pandas2ri.ri2py(r_correctedPSD)
-    
     # Convert columns from R POSIXct to pyton UTCDateTime
     correctedPSD.starttime = correctedPSD.starttime.apply(UTCDateTime)
     correctedPSD.endtime = correctedPSD.endtime.apply(UTCDateTime)
 
     r_PDF = r_listOfLists[3]
     PDF = pandas2ri.ri2py(r_PDF)
-    pandas2ri.deactivate()
     
     return (df, correctedPSD, PDF)
 
 
-def apply_PSD_plot(r_stream, filepath, evalresp=None):
+def apply_PSD_plot(r_stream, filepath):
     """"
     Create a PSD plot which will be written to a .png file
     opened 'png' file.
     :param r_stream: an r_stream object
-    :param filepath: file path for png output
-    :param evalresp: (optional) pandas dataframe of FAP from evalresp (freq,amp,phase)
     :return:
     """
     result = robjects.r('grDevices::png')(filepath)
-    r_psdList = robjects.r('IRISSeismic::psdList')(r_stream)
-    pandas2ri.activate()
-    
-    # convert pandas df to R df as parameter automatically 
-    if evalresp is not None:
-        r_evalresp = pandas2ri.py2ri(evalresp)  # convert to R dataframe
-        result = robjects.r('IRISSeismic::psdPlot')(r_psdList, style='pdf', evalresp=r_evalresp)
-    else:
-        result = robjects.r('IRISSeismic::psdPlot')(r_psdList, style='pdf')
-    
-    pandas2ri.deactivate()
+    r_psdList = robjects.r('IRISSeismic::psdList')(r_stream)    
+    result = robjects.r('IRISSeismic::psdPlot')(r_psdList, style='pdf')
     result = robjects.r('grDevices::dev.off')()
 
     return True
