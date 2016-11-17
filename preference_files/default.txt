@@ -92,6 +92,7 @@ Data_Access:
   event_url: USGS   # currently hardcoded to use USGS (http://earthquake.usgs.gov/fdsnws/event/1/) 
                     # if local QUAKEML file is not specified
   station_url: IRIS
+  resp_dir :        # directory for local response RESP files, if used. 
   
 
 # Additional user preferences --------------------------------------------------
