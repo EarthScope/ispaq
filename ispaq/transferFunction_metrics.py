@@ -276,7 +276,7 @@ def transferFunction_metrics(concierge):
                         df = irismustangmetrics.apply_correlation_metric(Zst1, Zst2, 'transferFunction', Zevalresp1, Zevalresp2)
                         dataframes.append(df)
                     except Exception as e:
-                        logger.debug('"transfer_function" metric calculation failed for %s:%s: %s' % (Zav1.snclId, Zav2.snclId, e))
+                        logger.warning('"transfer_function" metric calculation failed for %s:%s: %s' % (Zav1.snclId, Zav2.snclId, e))
                     
                 # END of for i (pairs) in rowMatrix
 
@@ -453,7 +453,7 @@ def transferFunction_metrics(concierge):
                             try:
                                 df = irismustangmetrics.apply_transferFunction_metric(st1, st2, evalresp1, evalresp2)
                             except Exception as e:
-                                logger.debug('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+                                logger.warning('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
                                 continue
                            
                             ##logger.debug("append dataframe: %s" % str(df)) 
@@ -577,7 +577,7 @@ def transferFunction_metrics(concierge):
                                 try:
                                     df = irismustangmetrics.apply_transferFunction_metric(st1, RYst2, evalresp1, RYevalresp2)
                                 except Exception as e:
-                                    logger.debug('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+                                    logger.warning('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
                                     continue
                                 
                                 dataframes.append(df)
@@ -587,7 +587,7 @@ def transferFunction_metrics(concierge):
                                 try:
                                     df = irismustangmetrics.apply_transferFunction_metric(st1, RXst2, evalresp1, RXevalresp2)
                                 except Exception as e:
-                                    logger.debug('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+                                    logger.warning('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
                                     continue
                                 
                                 dataframes.append(df)                            

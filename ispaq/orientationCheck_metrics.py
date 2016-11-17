@@ -94,7 +94,7 @@ def orientationCheck_metrics(concierge):
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=eventMinradius, maxradius=eventMaxradius)
         except NoAvailableDataError as e:
-            logger.debug('skipping event with no available data')
+            logger.info('skipping event with no available data')
             continue
         except Exception as e:
             logger.debug('Skipping event because concierge.get_availability failed: %s' % (e))
@@ -253,7 +253,7 @@ def orientationCheck_metrics(concierge):
                 try:
                     stR = irisseismic.rotate2D(stN, stE, angle)[0]
                 except Exception as e:
-                    logger.debug('skipping %s: irisseismic.rotate2D failed:  %s' % (sn_lId, e.message))
+                    logger.warning('skipping %s: irisseismic.rotate2D failed:  %s' % (sn_lId, e.message))
                     rotateOK = False
                     break
                 R_data = pd.Series(utils.get_slot(stR,'data'))

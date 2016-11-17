@@ -172,7 +172,7 @@ def SNR_metrics(concierge):
                         df = irismustangmetrics.apply_simple_metric(r_stream, 'SNR', algorithm="splitWindow", windowSecs=windowSecs)
                         dataframes.append(df)
                     except Exception as e:
-                        logger.debug('"SNR" metric calculation failed for %s: %s' % (av.snclId, e))
+                        logger.warning('"SNR" metric calculation failed for %s: %s' % (av.snclId, e))
                     
                 
 

@@ -100,7 +100,7 @@ def crossCorrelation_metrics(concierge):
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=eventMinradius, maxradius=eventMaxradius)
         except NoAvailableDataError as e:
-            logger.debug('skipping event with no available data')
+            logger.warning('skipping event with no available data')
             continue
         except Exception as e:
             logger.debug('Skipping event because concierge.get_availability failed: %s' % (e))
@@ -182,7 +182,7 @@ def crossCorrelation_metrics(concierge):
                                                            longitude=av1.longitude, latitude=av1.latitude,
                                                            minradius=snclMinradius, maxradius=snclMaxradius)
             except Exception as e:
-                logger.debug('Skipping SNCL because get_availability failed: %s' % (e))
+                logger.warning('Skipping SNCL because get_availability failed: %s' % (e))
                 continue
 
             # Sanity check that some SNCLs exist
@@ -285,7 +285,7 @@ def crossCorrelation_metrics(concierge):
                 df = irismustangmetrics.apply_correlation_metric(r_stream1, r_stream2, 'crossCorrelation', maxLagSecs, r_filter)
                 dataframes.append(df)
             except Exception as e:
-                logger.debug('"crossCorrelation" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+                logger.warning('"crossCorrelation" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
             
 
         # END of SNCL loop

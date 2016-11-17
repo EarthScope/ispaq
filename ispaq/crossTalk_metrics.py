@@ -139,7 +139,7 @@ def crossTalk_metrics(concierge):
 
                 # NEW if there is no metadata, then skip to the next row
                 if math.isnan(av.latitude):
-                    logger.debug("No metadata for " + av.snclId + ": skipping")
+                    logger.warning("No metadata for " + av.snclId + ": skipping")
                     continue                
 
                 try:
@@ -178,7 +178,7 @@ def crossTalk_metrics(concierge):
                 df = irismustangmetrics.apply_correlation_metric(streamList[0], streamList[1], 'correlation')
                 dataframes.append(df)
             except Exception as e:
-                logger.debug('"crossTalk" metric calculation failed for %s: %s' % (av.snclId, e))
+                logger.warning('"crossTalk" metric calculation failed for %s: %s' % (av.snclId, e))
             
             if len(streamList) == 3:
 
@@ -187,14 +187,14 @@ def crossTalk_metrics(concierge):
                     df = irismustangmetrics.apply_correlation_metric(streamList[0], streamList[2], 'correlation')
                     dataframes.append(df)
                 except Exception as e:
-                    logger.debug('"crossTalk" metric calculation failed for %s: %s' % (av.snclId, e))
+                    logger.warning('"crossTalk" metric calculation failed for %s: %s' % (av.snclId, e))
                 
                 # 2-3
                 try:
                     df = irismustangmetrics.apply_correlation_metric(streamList[1], streamList[2], 'correlation')
                     dataframes.append(df)
                 except Exception as e:
-                    logger.debug('"crossTalk" metric calculation failed for %s: %s' % (av.snclId, e))
+                    logger.warning('"crossTalk" metric calculation failed for %s: %s' % (av.snclId, e))
                     
 
         # End of sn.lId loop

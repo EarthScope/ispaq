@@ -91,7 +91,7 @@ def pressureCorrelation_metrics(concierge):
         seismicAvailability = seismicAvailability[seismicAvailability.channel.str.contains(channelFilter)]
         
         if seismicAvailability is None or seismicAvailability.shape[0] == 0:
-            logger.debug('No seismic %s channels available' %s (channelFilter))
+            logger.debug('No seismic %s channels available' % (channelFilter))
             continue
                 
         # Find the locations associated with seismic channels
@@ -142,7 +142,7 @@ def pressureCorrelation_metrics(concierge):
                     df = irismustangmetrics.apply_correlation_metric(r_pStream, r_stream, 'correlation')
                     dataframes.append(df)
                 except Exception as e:
-                    logger.debug('"pressure_effects" metric calculation failed for %s:%s: %s' % (pAv.snclId, lAv.snclId, e))              
+                    logger.warning('"pressure_effects" metric calculation failed for %s:%s: %s' % (pAv.snclId, lAv.snclId, e))              
     
             # End of locationAvailability loop
     

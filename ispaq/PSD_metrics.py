@@ -138,8 +138,8 @@ def PSD_metrics(concierge):
                         logger.error('Unable to write %s' % (filepath))
                         raise
             except Exception as e:
-                logger.debug(e)
-                logger.debug('"PSD" metric calculation failed for %s' % (av.snclId))
+                logger.warning(e)
+                logger.warning('"PSD" metric calculation failed for %s' % (av.snclId))
                 continue
                 
         # Run the PSD plot ------------------------------------------
@@ -157,8 +157,8 @@ def PSD_metrics(concierge):
                 status = irismustangmetrics.apply_PSD_plot(r_stream, filepath, evalresp=evalresp)
                 logger.info('Writing PDF plot %s.' % os.path.basename(filepath))
             except Exception as e:
-                logger.debug(e)
-                logger.error('"PSD" plot generation failed for %s' % (av.snclId))
+                logger.warning(e)
+                logger.warning('"PSD" plot generation failed for %s' % (av.snclId))
                     
 
     # Concatenate and filter dataframes before returning -----------------------

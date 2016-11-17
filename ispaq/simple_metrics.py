@@ -93,7 +93,7 @@ def simple_metrics(concierge):
                 df = irismustangmetrics.apply_simple_metric(r_stream, 'gaps')
                 dataframes.append(df)
             except Exception as e:
-                logger.debug('"gaps" metric calculation failed for %s: %s' % (av.snclId, e))
+                logger.warning('"gaps" metric calculation failed for %s: %s' % (av.snclId, e))
                 
                 
         # Run the State-of-Health metric -----------------------------
@@ -103,7 +103,7 @@ def simple_metrics(concierge):
                 df = irismustangmetrics.apply_simple_metric(r_stream, 'stateOfHealth')
                 dataframes.append(df)
             except Exception as e:
-                logger.debug('"stateOfHealth" metric calculation failed for %s: %s' % (av.snclId, e))
+                logger.warning('"stateOfHealth" metric calculation failed for %s: %s' % (av.snclId, e))
                             
             
         # Run the Basic Stats metric ---------------------------------
@@ -113,7 +113,7 @@ def simple_metrics(concierge):
                 df = irismustangmetrics.apply_simple_metric(r_stream, 'basicStats')
                 dataframes.append(df)
             except Exception as e:
-                logger.debug('"basicStats" metric calculation failed for %s: %s' % (av.snclId, e))
+                logger.warning('"basicStats" metric calculation failed for %s: %s' % (av.snclId, e))
                             
        
         # Run the STALTA metric --------------------------------------
@@ -135,7 +135,7 @@ def simple_metrics(concierge):
                     df = irismustangmetrics.apply_simple_metric(r_stream, 'STALTA', staSecs=3, ltaSecs=30, increment=increment, algorithm='classic_LR')
                     dataframes.append(df)
                 except Exception as e:
-                    logger.debug('"STALTA" metric calculation failed for for %s: %s' % (av.snclId, e))
+                    logger.warning('"STALTA" metric calculation failed for for %s: %s' % (av.snclId, e))
             
             
         # Run the Spikes metric --------------------------------------
@@ -153,7 +153,7 @@ def simple_metrics(concierge):
                     df = irismustangmetrics.apply_simple_metric(r_stream, 'spikes', windowSize, thresholdMin, fixedThreshold=True)
                     dataframes.append(df)
                 except Exception as e:
-                    logger.debug('"spikes" metric calculation failed for %s: %s' % (av.snclId, e))            
+                    logger.warning('"spikes" metric calculation failed for %s: %s' % (av.snclId, e))            
                 
 
     # Concatenate and filter dataframes before returning -----------------------
