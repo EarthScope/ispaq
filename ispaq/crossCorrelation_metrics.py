@@ -41,7 +41,6 @@ def crossCorrelation_metrics(concierge):
     logger = concierge.logger
         
     # Default parameters from IRISMustangUtils::generateMetrics_crossCorrelation or crossCorrelationMetrics_exec.R
-    includeRestricted=False
     channelFilter = "[BH]H[12ENZ]"    
     minmag = 6.5
     eventMinradius = 15
@@ -96,7 +95,7 @@ def crossCorrelation_metrics(concierge):
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=eventMinradius, maxradius=eventMaxradius)
         except NoAvailableDataError as e:
-            logger.debug('skipping event with no available data')
+            logger.warning('skipping event with no available data')
             continue
         except Exception as e:
             logger.debug('Skipping event because concierge.get_availability failed: %s' % (e))
@@ -141,9 +140,9 @@ def crossCorrelation_metrics(concierge):
                 r_stream1 = concierge.get_dataselect(av1.network, av1.station, av1.location, av1.channel, windowStart, windowEnd)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.debug('No data for %s' % (av1.snclId))
+                    logger.warning('No data for %s' % (av1.snclId))
                 else:
-                    logger.debug('No data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
+                    logger.warning('No data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
                 continue
             
             # No metric calculation possible if SNCL has more than one trace
@@ -172,7 +171,7 @@ def crossCorrelation_metrics(concierge):
                                                            longitude=av1.longitude, latitude=av1.latitude,
                                                            minradius=snclMinradius, maxradius=snclMaxradius)
             except Exception as e:
-                logger.debug('Skipping SNCL because get_availability failed: %s' % (e))
+                logger.warning('Skipping SNCL because get_availability failed: %s' % (e))
                 continue
             if availability2 is None:
                 logger.debug("skipping event with no available data")
@@ -253,9 +252,9 @@ def crossCorrelation_metrics(concierge):
                     r_stream2 = concierge.get_dataselect(av2.network, av2.station, av2.location, av2.channel, windowStart, windowEnd)
                 except Exception as e:
                     if str(e).lower().find('no data') > -1:
-                        logger.debug('No data for %s' % (av2.snclId))
+                        logger.warning('No data for %s' % (av2.snclId))
                     else:
-                        logger.debug('No data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
+                        logger.warning('No data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
                     continue
                 
                 # NOTE:  This check is missing from IRISMustangUtils/R/generateMetrics_crossCorrelation.R
@@ -278,7 +277,7 @@ def crossCorrelation_metrics(concierge):
                 df = irismustangmetrics.apply_correlation_metric(r_stream1, r_stream2, 'crossCorrelation', maxLagSecs, r_filter)
                 dataframes.append(df)
             except Exception as e:
-                logger.debug('"crossCorrelation" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+                logger.warning('"crossCorrelation" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
             
 
         # END of SNCL loop

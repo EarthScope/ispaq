@@ -1,5 +1,5 @@
 """
-ISPAQ Business Logic for Simple Metrics.
+ISPAQ Business Logic for PSD Metrics.
 
 :copyright:
     Mazama Science
@@ -42,14 +42,11 @@ def PSD_metrics(concierge):
     # Get the logger from the concierge
     logger = concierge.logger
     
-    # Default parameters from IRISMustangUtils::generateMetrics_crossCorrelation or crossCorrelationMetrics_exec.R
-    includeRestricted = False
-    channelFilter = '.H.' 
+    # Default parameters 
+    channelFilter = '.[HNL].' 
 
     # Container for all of the metrics dataframes generated
     dataframes = []
-    correctedPSDs = []
-    PDFs = []
 
     # ----- All UN-available SNCLs ----------------------------------------------
 
@@ -85,10 +82,10 @@ def PSD_metrics(concierge):
             logger.error('concierge.get_availability() failed with an unknown exception')
             return None
 
+
         # NEW: If the day has no data, then skip it (used to raise NoAvailableDataError)
         if availability is None:
             continue
-
 
         # Apply the channelFilter
         availability = availability[availability.channel.str.contains(channelFilter)]      
@@ -104,7 +101,7 @@ def PSD_metrics(concierge):
 
             # Get the data ----------------------------------------------
 
-            # NOTE:  Use the requested starttime, not just what is available
+            # NOTE:  Use the requested starttime and endtime
             try:
                 r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel,starttime,endtime)
             except Exception as e:
@@ -127,35 +124,47 @@ def PSD_metrics(concierge):
 
             # Run the PSD metric ----------------------------------------
 
-            if function_metadata.has_key('PSD'):
+            if any(key in function_metadata for key in ("PSD","PSDText")) :
                 try:
-                    (df, correctedPSD, PDF) = irismustangmetrics.apply_PSD_metric(r_stream)
+                    evalresp = None
+                    if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
+                    logger.debug("Accessing local RESP file...")
+                    evalresp = transfn.getTransferFunctionSpectra(r_stream, av.samplerate, concierge.resp_dir)
+
+                    # get corrected PSDs
+                    logger.debug("apply_PSD_metric...")
+                    (df, PSDCorrected, PDF) = irismustangmetrics.apply_PSD_metric(r_stream, evalresp=evalresp)
                     dataframes.append(df)
-                    # Write out the corrected PSDs
-                    file_base_psd = '%s_%s_%s' % (concierge.user_request.requested_metric_set,
-                                                  concierge.user_request.requested_sncl_set,
-                                                  starttime.date)
-                    filepath = concierge.csv_output_dir + '/' + file_base_psd + "_" + av.snclId + "__correctedPSD.csv"
-                    logger.info('Writing corrected PSD to %s' % os.path.basename(filepath))
-                    try:
-                        utils.write_numeric_df(correctedPSD, filepath, sigfigs=concierge.sigfigs)
-                    except Exception as e:
-                        logger.debug(e)
-                        logger.error('Unable to write %s' % (filepath))
-                        raise
+
+                    if "psd_corrected" in concierge.metric_names :
+                        # Write out the corrected PSDs
+                        # Do it this way to have each individual day file properly named with starttime.date
+                        file_base_psd = '%s_%s_%s' % (concierge.user_request.requested_metric_set,
+                                                      concierge.user_request.requested_sncl_set,
+                                                      starttime.date)
+                        filepath = concierge.csv_output_dir + '/' + file_base_psd + "_" + av.snclId + "__PSDcorrected.csv"
+                        logger.info('Writing corrected PSD to %s' % os.path.basename(filepath))
+                        try:
+                            utils.write_numeric_df(PSDcorrected, filepath, sigfigs=concierge.sigfigs)
+                        except Exception as e:
+                            logger.debug(e)
+                            logger.error('Unable to write %s' % (filepath))
+                            raise
+
+                    if "pdf_text" in concierge.metric_names :
                     # Write out the PDFs
-                    filepath = concierge.csv_output_dir + '/' + file_base_psd + "_" + av.snclId + "__PDF.csv"
-                    logger.info('Writing PDF to %s' % os.path.basename(filepath))
-                    try:
-                        # Add target, start- and endtimes
-                        PDF['target'] = av.snclId
-                        PDF['starttime'] = starttime
-                        PDF['endtime'] = endtime
-                        utils.write_numeric_df(PDF, filepath, sigfigs=concierge.sigfigs)  
-                    except Exception as e:
-                        logger.debug(e)
-                        logger.error('Unable to write %s' % (filepath))
-                        raise
+                        filepath = concierge.csv_output_dir + '/' + file_base_psd + "_" + av.snclId + "__PDF.csv"
+                        logger.info('Writing PDF text to %s.' % os.path.basename(filepath))
+                        try:
+                            # Add target, start- and endtimes
+                            PDF['target'] = av.snclId
+                            PDF['starttime'] = concierge.requested_starttime
+                            PDF['endtime'] = concierge.requested_endtime
+                            utils.write_numeric_df(PDF, filepath, sigfigs=concierge.sigfigs)  
+                        except Exception as e:
+                            logger.debug(e)
+                            logger.error('Unable to write %s' % (filepath))
+                            raise
                 except Exception as e:
                     logger.debug(e)
                     logger.debug('"PSD" metric calculation failed for %s' % (av.snclId))
@@ -163,40 +172,39 @@ def PSD_metrics(concierge):
                 
             # Run the PSD plot ------------------------------------------
 
-            if function_metadata.has_key('PSDPlot'):
+            if 'PSDPlot' in function_metadata :
                 try:  
-                    # TODO:  Use concierge to determine where to put the plots?
-                    #starttime = utils.get_slot(r_stream, 'starttime')
-                    #file_base_pdf = '%s_%s_%s' % (concierge.user_request.requested_metric_set,
-                    #                              concierge.user_request.requested_sncl_set,
-                    #                              starttime.date)
                     filename = '%s.%s_PDF.png' % (av.snclId, starttime.date)
                     filepath = concierge.plot_output_dir + '/' + filename
-                    status = irismustangmetrics.apply_PSD_plot(r_stream, filepath)
+                    evalresp = None
+                    if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
+                        logger.debug("Accessing local RESP file...")
+                        evalresp = transfn.getTransferFunctionSpectra(r_stream, av.samplerate, concierge.resp_dir)
+                    status = irismustangmetrics.apply_PSD_plot(r_stream, filepath, evalresp=evalresp)
+                    logger.info('Writing PDF plot %s.' % os.path.basename(filepath))
                 except Exception as e:
-                    logger.debug(e)
-                    logger.error('"PSD" plot generation failed for %s' % (av.snclId))
+                    logger.warning(e)
+                    logger.warning('"PSD" plot generation failed for %s' % (av.snclId))
                     
     # Concatenate and filter dataframes before returning -----------------------
 
-    if len(dataframes) == 0:
+    if len(dataframes) == 0 and 'PSD' in function_metadata:
         logger.warn('"PSD" metric calculation generated zero metrics')
-        #result = pd.concat(dataframes, ignore_index=True)
-        #return(result)
         return None
+
     else:
-        # TODO:  Should we always add a dummy dataframe in cases where we only generate plots?
-        result = pd.DataFrame({'metricName': 'DUMMY',
-                               'value': 0,
-                               'snclq': 'NET.STA.LOC.CHA.M',
-                               'starttime': starttime,
-                               'endtime': endtime,
-                               'qualityFlag': -9},
-                              index=[0])
-            
+        # make a dummy data frame in the case of just creating PSDPlots with no supporting DF statistics
+        result = pd.DataFrame({'metricName': ['PSDPlot','PSDPlot'], 'value': [0,1]})
+
+        # Create a boolean mask for filtering the dataframe
+        def valid_metric(x):
+            return x in concierge.metric_names
+
         if function_metadata.has_key('PSD'):                    
             # Concatenate dataframes before returning ----------------------------------
             result = pd.concat(dataframes, ignore_index=True)    
+            mask = result.metricName.apply(valid_metric)
+            result = result[(mask)]
             result.reset_index(drop=True, inplace=True)
             
         return(result)

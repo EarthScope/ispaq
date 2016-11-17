@@ -157,7 +157,6 @@ def main():
         logger.critical("Failed to create Concierge object")
         raise SystemExit
 
-
     # Generate Simple Metrics --------------------------------------------------
 
     if 'simple' in concierge.logic_types:
@@ -212,7 +211,7 @@ def main():
         logger.debug('Inside PSD business logic ...')
         try:
             df = PSD_metrics(concierge)
-            if df is None:
+            if df is None and PS:
                 logger.info('No PSD metrics were calculated')
             else:
                 try:

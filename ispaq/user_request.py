@@ -72,6 +72,8 @@ class UserRequest(object):
 
         #     Initialize a dummy object     -----------------------------------
         
+        logger.debug("User request init.")
+ 
         if dummy:
             # Information coming in from the command line
             self.requested_starttime = UTCDateTime("2002-04-20")
@@ -88,10 +90,10 @@ class UserRequest(object):
             # Metric functions determined by querying the R package
             self.invalid_metrics = None
             self.function_by_logic = {'simple': {'basicStats': {'businessLogic': 'simple',
-                                                                'extraAttributes': None,
+                                                                'elementNames': ['value'],
                                                                 'fullDay': True,
                                                                 'metrics': ['sample_min', 'sample_rms'],
-                                                                'outputType': 'SingleValue',
+                                                                'outputType': 'GeneralValue',
                                                                 'speed': 'fast',
                                                                 'streamCount': 1}}}
             self.preferences = {'plot_output_dir': '.',
@@ -123,6 +125,11 @@ class UserRequest(object):
             # Metric functions determined by querying the R package
             self.invalid_metrics = json_dict['invalid_metrics']
             self.function_by_logic = json_dict['function_by_logic']
+
+            # Additional metadata for local access
+            self.resp_dir = None   # resp_dir is optional for activating local evalresp on RESP files
+            if 'resp_dir' in json_dict:
+            	self.resp_dir = json_dict['resp_dir'] 
 
         #     Initialize from arguments       ---------------------------------
 
@@ -159,19 +166,25 @@ class UserRequest(object):
                         name, values = None, None
                     else:  # non-empty line
                         name = entry[0]
-                        values = entry[1].strip().split(',')
-                        values = [value.strip() for value in values]
-                        values = filter(None, values)  # remove empty strings
-                    if name is None:
-                        pass
-                    elif currentSection == 'metric':
-                        metric_sets[name] = values
-                    elif currentSection == 'sncl':
-                        sncl_sets[name] = values
-                    elif currentSection == 'data_access':
-                        data_access[name] = values[0]
-                    elif currentSection == 'preferences':
-                        preferences[name] = values[0]
+			logger.debug("%s len entry: %d" % (name,len(entry)))
+			# check for key with empty value entry, implies optional or default, set value to None in array
+			values = None
+			if name is not None and len(entry) > 1:             # we have a value or set of comma separated values
+                        	values = entry[1].strip().split(',')
+                        	values = [value.strip() for value in values]
+                        	values = filter(None, values)  # remove empty strings -- TODO: this can cause index out of range errors on empty entries
+		    # attempt robust assignment of name to value(s) -- currentSection is the current dictionary of interest
+                    if name is None:  # sanity check
+                        continue
+		    if values is None or len(values) == 0:
+			logger.debug("force set %s to None" % name)
+			currentSection[name] = None  # for optional values
+		    elif multiValue:
+			logger.debug("set %s to multi %s" % (name,",".join(values)))
+			currentSection[name] = values
+                    else:
+			logger.debug("set %s to first in %s" % (name,",".join(values)))
+			currentSection[name] = values[0]
 
             # Check for invalid arguments
             try:
@@ -189,8 +202,13 @@ class UserRequest(object):
             self.event_url = data_access['event_url']
             self.station_url = data_access['station_url']
 
+            #     Additional metadata for local access   ----------------------
+            self.resp_dir = None
+            if 'resp_dir' in data_access:
+                self.resp_dir = data_access['resp_dir']
 
             #     Add individual preferences     ------------------------------
+            logger.debug('Add individual preferences')
             
             if preferences.has_key('plot_output_dir'):
                 self.plot_output_dir = os.path.abspath(os.path.expanduser(preferences['plot_output_dir']))
@@ -205,8 +223,8 @@ class UserRequest(object):
             else:
                 self.sigfigs = 6
 
-
             #     Find required metric functions     --------------------------
+            logger.debug('Find required metric functions')
 
             logger.debug('Validating preferred metrics ...')
 
@@ -223,7 +241,7 @@ class UserRequest(object):
             # Determine which functions and logic types are required
             valid_function_names = set()
             valid_logic_types = set()
-
+            
             # Keep track of valid metrics (typos might cause some to not be found)
             valid_metrics = set()
 

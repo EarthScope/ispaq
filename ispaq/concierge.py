@@ -11,6 +11,7 @@ ISPAQ Data Access Expediter.
 from __future__ import (absolute_import, division, print_function)
 
 import os
+import sys
 import re
 import glob
 import math
@@ -70,6 +71,13 @@ class Concierge(object):
         self.plot_output_dir = user_request.plot_output_dir
         self.sigfigs = user_request.sigfigs
         
+        # Supporting local files to be used if we are accessing local data
+        self.resp_dir = user_request.resp_dir   # directory where RESP files are located - REC
+                                                # file pattern:  RESP.<NET>.<STA>.<LOC>.<CHA> or RESP.<STA>.<NET>.<LOC>.<CHA>
+        # if the RESP pattern is set to a URL MAPPING, then we are not using local RESP files but instead irisws/evalresp
+        if self.resp_dir in URL_MAPPINGS:
+            self.resp_dir = None
+         
         # Output information
         file_base = '%s_%s_%s' % (self.user_request.requested_metric_set,
                                   self.user_request.requested_sncl_set, 
@@ -81,6 +89,9 @@ class Concierge(object):
         
         # Filtered availability dataframe is stored for potential reuse
         self.filtered_availability = None
+        
+        # Keep a /dev/null pipe handy in case we want to bit-dump output
+        self.dev_null = open(os.devnull,"w")
         
         # Add dataselect clients and URLs or reference a local file
         if user_request.dataselect_url in URL_MAPPINGS.keys():
@@ -217,7 +228,6 @@ class Concierge(object):
         # NOTE:  Building the availability dataframe from a large StationXML is time consuming.
         # NOTE:  If we are using local station data then we should only do this once.
         
-	#print("*****ENTERING THE CONCIERGE*****")
 
         # Special case when using all defaults helps speed up any metrics making mutiple calls to get_availability
         # NOTE: If future metrics require this, then uncomment here and add concierge.filtered_availability = None to the end of every metric script.
@@ -343,7 +353,6 @@ class Concierge(object):
                         # Now save the dataframe internally
                         self.availability = df
                         #self.logger.debug('Finished creating availability dataframe')
-                        #print(df)
 
         # Container for all of the individual sncl_pattern dataframes generated
         sncl_pattern_dataframes = []
@@ -496,7 +505,6 @@ class Concierge(object):
                     elif (maxradius is not None) and (minradius is not None):
                         if abs(dist) <= maxradius and  abs(dist) >= minradius:
                             df["dist"].iloc[ii] = "KEEP"
-                    #print("%s - %s: %s" % (minradius,maxradius,abs(dist)))
                 df = df[df.dist.str.contains("KEEP")]
                 df = df.drop('dist', 1)
 
@@ -504,11 +512,8 @@ class Concierge(object):
             if df.shape[0] == 0:
                 self.logger.debug("No SNCLS found matching '%s'" % _sncl_pattern)
             else:
-                #print(df.snclId)
-	        #print(sncl_pattern_dataframes[:].snclId)
                 #if df.snclId not in sncl_pattern_dataframes[:].snclId:
                 sncl_pattern_dataframes.append(df)	# tack the dataframes together
-                #print(sncl_pattern_dataframes)
 
         # END of sncl_patterns loop --------------------------------------------
  
@@ -535,7 +540,6 @@ class Concierge(object):
                 # The concierge should remember this dataframe for metrics that
                 # make multiple calls to get_availability with all defaults.
                 self.filtered_availability = availability
-                #print("*****EXITING THE CONCIERGE*****")
                 return availability
 
     def get_dataselect(self,
@@ -573,7 +577,6 @@ class Concierge(object):
         """
 
 
-        #print("****** ENTERING DATASELECT ******")
 
         # Allow arguments to override UserRequest parameters
         if starttime is None:
@@ -587,30 +590,20 @@ class Concierge(object):
 
         if self.dataselect_client is None:
             # Read local MINIseed file and convert to R_Stream
-            #print("Getting Local Data")
-            #print(_endtime.julday)
-            #print(_starttime.julday)
-
             nday = int((_endtime - .00001).julday - _starttime.julday) + 1   # subtract a short amount of time for 00:00:00 endtimes
-            #print("Number of days: " + str(nday))
             # Create empty stream
             py_stream = obspy.Stream()
 
             for day in range(nday):
-                #print(day)
-                start = (_starttime + day * 86400); #print(start)
-                start = start - (start.hour * 3600 + start.minute * 60 + start.second + start.microsecond * .000001); #print(start)
-                end = start + 86400; #print(end)
+                start = (_starttime + day * 86400)
+                start = start - (start.hour * 3600 + start.minute * 60 + start.second + start.microsecond * .000001)
+                end = start + 86400
 
                 if start <= _starttime:
-                    #print("Start days match!")
                     start = _starttime
                 if end >= _endtime:
-                    #print("End days match!")
                     end = _endtime
 
-                #print(start)
-                #print(end)
                 filename = '%s.%s.%s.%s.%s' % (network, station, location, channel, start.strftime('%Y.%j'))
                 filepattern = self.dataselect_url + '/' + filename + '*' # Allow for possible quality codes
                 matching_files = glob.glob(filepattern)
@@ -629,7 +622,6 @@ class Concierge(object):
                         # combine the two streams, then merge them together into one stream
                         py_stream += py_stream2
                         py_stream.merge()
-                        #print(py_stream)
 
                         # NOTE:  ObsPy does not store state-of-health flags with each stream.
                         # NOTE:  We need to read them in separately from the miniseed file.
@@ -671,14 +663,19 @@ class Concierge(object):
         else:
             # Read from FDSN web services
             try:
+                # R getDataselect() seems to capture awkward error reports when there is no data
+                # we want to suppress the stderr channel briefly to block the unwanted feedback from R
+                orig_stderr = sys.stderr
+                sys.stderr = self.dev_null
                 r_stream = irisseismic.R_getDataselect(self.dataselect_url, network, station, location, channel, _starttime, _endtime, quality, inclusiveEnd, ignoreEpoch)
+                sys.stderr = orig_stderr
             except Exception as e:
                 err_msg = "Error reading in waveform from %s webservice" % self.dataselect_client
                 self.logger.debug(e)
-                self.logger.error(err_msg)
+                #self.logger.error(err_msg)# change to debug mode since this is annoying
+                self.logger.debug(err_msg)
                 raise
 
-        #print("****** EXITING DATASELECT ******")   
         # TODO:  Do we need to test for valid R_Stream.
         if False:              
             return None # TODO:  raise an exception

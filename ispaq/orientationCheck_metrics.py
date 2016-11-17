@@ -41,7 +41,6 @@ def orientationCheck_metrics(concierge):
     logger = concierge.logger
         
     # Default parameters from IRISMustangUtils::generateMetrics_orientationCheck
-    includeRestricted = False
     channelFilter = "[BH]H[12ENZ]"    
     minmag = 7.0
     maxdepth = 100
@@ -97,7 +96,7 @@ def orientationCheck_metrics(concierge):
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=eventMinradius, maxradius=eventMaxradius)
         except NoAvailableDataError as e:
-            logger.debug('skipping event with no available data')
+            logger.info('skipping event with no available data')
             continue
         except Exception as e:
             logger.debug('Skipping event because concierge.get_availability failed: %s' % (e))
@@ -176,9 +175,9 @@ def orientationCheck_metrics(concierge):
                                                windowStart, windowEnd, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.debug('No data for %s' % (Channel_1.snclId))
+                    logger.warning('No data for %s' % (Channel_1.snclId))
                 else:
-                    logger.debug('No data for %s from %s: %s' % (Channel_1.snclId, concierge.dataselect_url, e))
+                    logger.warning('No data for %s from %s: %s' % (Channel_1.snclId, concierge.dataselect_url, e))
                 continue
         
             try:
@@ -186,9 +185,9 @@ def orientationCheck_metrics(concierge):
                                                windowStart, windowEnd, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.debug('No data for %s' % (Channel_2.snclId))
+                    logger.warning('No data for %s' % (Channel_2.snclId))
                 else:
-                    logger.debug('No data for %s from %s: %s' % (Channel_2.snclId, concierge.dataselect_url, e))
+                    logger.warning('No data for %s from %s: %s' % (Channel_2.snclId, concierge.dataselect_url, e))
                 continue
         
             try:
@@ -196,9 +195,9 @@ def orientationCheck_metrics(concierge):
                                                windowStart, windowEnd, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.debug('No data for %s' % (ZChannel.snclId))
+                    logger.warning('No data for %s' % (ZChannel.snclId))
                 else:
-                    logger.debug('No data for %s from %s: %s' % (ZChannel.snclId, concierge.dataselect_url, e))
+                    logger.warning('No data for %s from %s: %s' % (ZChannel.snclId, concierge.dataselect_url, e))
                 continue
         
         
@@ -260,7 +259,7 @@ def orientationCheck_metrics(concierge):
                 try:
                     stR = irisseismic.rotate2D(stN, stE, angle)[0]
                 except Exception as e:
-                    logger.debug('skipping %s: irisseismic.rotate2D failed:  %s' % (sn_lId, e.message))
+                    logger.warning('skipping %s: irisseismic.rotate2D failed:  %s' % (sn_lId, e.message))
                     rotateOK = False
                     break
                 R_data = pd.Series(utils.get_slot(stR,'data'))

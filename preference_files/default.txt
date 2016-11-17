@@ -40,6 +40,7 @@ Metrics:
   spikes: num_spikes
   SNR: sample_snr
   PSD: pct_above_nhnm, pct_below_nlnm, dead_channel_exp, dead_channel_lin, dead_channel_gsn
+  PSDText: psd_corrected, pdf_text
   PDF: pdf_plot
   crossTalk: cross_talk
   pressureCorrelation: pressure_effects
@@ -91,6 +92,7 @@ Data_Access:
   event_url: USGS   # currently hardcoded to use USGS (http://earthquake.usgs.gov/fdsnws/event/1/) 
                     # if local QUAKEML file is not specified
   station_url: IRIS
+  resp_dir :        # directory for local response RESP files, if used. 
   
 
 # Additional user preferences --------------------------------------------------

@@ -41,7 +41,6 @@ def SNR_metrics(concierge):
     logger = concierge.logger
         
     # Default parameters from IRISMustangUtils::generateMetrics_SNR
-    includeRestricted = False
     channelFilter = '[BH]H.'
     minmag = 5.5
     maxradius = 180
@@ -147,9 +146,9 @@ def SNR_metrics(concierge):
                 r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, windowStart-1, windowEnd+1, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.debug('No data for %s' % (av.snclId))
+                    logger.warning('No data for %s' % (av.snclId))
                 else:
-                    logger.debug('No data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
+                    logger.warning('No data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
                 # TODO:  Create appropriate empty dataframe
                 df = pd.DataFrame({'metricName': 'SNR',
                                    'value': 0,
@@ -176,7 +175,7 @@ def SNR_metrics(concierge):
                         df = irismustangmetrics.apply_simple_metric(r_stream, 'SNR', algorithm="splitWindow", windowSecs=windowSecs)
                         dataframes.append(df)
                     except Exception as e:
-                        logger.debug('"SNR" metric calculation failed for %s: %s' % (av.snclId, e))
+                        logger.warning('"SNR" metric calculation failed for %s: %s' % (av.snclId, e))
                     
                 
 

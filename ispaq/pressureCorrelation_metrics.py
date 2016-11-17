@@ -88,9 +88,9 @@ def pressureCorrelation_metrics(concierge):
                 r_pStream = concierge.get_dataselect(pAv.network, pAv.station, pAv.location, pAv.channel, starttime, endtime, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.debug('No data for %s' % (pAv.snclId))
+                    logger.warning('No data for %s' % (pAv.snclId))
                 else:
-                    logger.debug('No data for %s from %s: %s' % (pAv.snclId, concierge.dataselect_url, e))
+                    logger.warning('No data for %s from %s: %s' % (pAv.snclId, concierge.dataselect_url, e))
                 continue
 
             # Merge traces -- gracefully go to next in loop if an error reported
@@ -135,14 +135,13 @@ def pressureCorrelation_metrics(concierge):
             
                 # Loop over rows of the availability dataframe
                 for (index, lAv) in locationAvailability.iterrows():
-                
                     try:
                         r_stream = concierge.get_dataselect(lAv.network, lAv.station, lAv.location, lAv.channel, starttime, endtime,inclusiveEnd=False)
                     except Exception as e:
                         if str(e).lower().find('no data') > -1:
                             logger.debug('No data for %s' % (lAv.snclId))
                         else:
-                            logger.debug('No data for %s from %s: %s' % (lAv.snclId, concierge.dataselect_url, e))
+                            logger.warning('No data for %s from %s: %s' % (lAv.snclId, concierge.dataselect_url, e))
                         continue
                 
                     # Merge traces -- gracefully go to next in loop if an error reported
@@ -157,8 +156,7 @@ def pressureCorrelation_metrics(concierge):
                         df = irismustangmetrics.apply_correlation_metric(r_pStream, r_stream, 'correlation')
                         dataframes.append(df)
                     except Exception as e:
-                        logger.debug('"pressure_effects" metric calculation failed for %s:%s: %s' % (pAv.snclId, lAv.snclId, e))              
-    
+                        logger.warning('"pressure_effects" metric calculation failed for %s:%s: %s' % (pAv.snclId, lAv.snclId, e))              
                 # End of locationAvailability loop
     
             # End of locations loop

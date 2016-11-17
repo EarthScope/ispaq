@@ -91,10 +91,29 @@ def getTransferFunctionSpectra(st, sampling_rate):
     location = utils.get_slot(st,'location')
     channel = utils.get_slot(st,'channel')
     starttime = utils.get_slot(st,'starttime')
-    
-    evalResp = irisseismic.getEvalresp(network, station, location, channel, starttime,
-                                       minfreq, maxfreq, nfreq, units, output)
-
+  
+    #print("DEBUG: minfreq: %f, maxfreq: %f, nfreq: %d" % (minfreq,maxfreq,nfreq))
+    # REC - invoke evalresp either programmatically from a RESP file or by invoking the web service 
+    evalResp = None
+    if (respDir):
+        # calling local evalresp -- generate the target file based on the SNCL identifier
+        # file pattern:  RESP.<NET>.<STA>.<LOC>.<CHA> or RESP.<STA>.<NET>.<LOC>.<CHA>
+        localFile = os.path.join(respDir,".".join(["RESP", network, station, location, channel])) # attempt to find the RESP file
+        localFile2 = os.path.join(respDir,".".join(["RESP", station, network, location, channel])) # alternate pattern
+        for localFiles in (localFile,localFile2):
+            if (os.path.exists(localFiles)):
+                debugMode = False
+                evalResp = evresp.getEvalresp(localFiles, network, station, location, channel, starttime,
+                                       minfreq, maxfreq, nfreq, units.upper(), output.upper(), "LOG", debugMode)
+                if evalResp is not None:
+                    break   # break early from loop if we found a result
+        if evalResp is None:
+            raise EvalrespException('No RESP file found at %s or %s for evalresp' % (localFile,localFile2))
+    else:    
+        # calling the web service 
+        evalResp = irisseismic.getEvalresp(network, station, location, channel, starttime,
+                                       minfreq, maxfreq, nfreq, units.lower(), output.lower())
+    #print(evalResp)   # VERBOSE DEBUG -- turn off for production use
     return(evalResp)
 
 #
@@ -121,7 +140,6 @@ def transferFunction_metrics(concierge):
     logger = concierge.logger
 
     # Default parameters from IRISMustangUtils::generateMetrics_transferFunction or transferFunctionMetrics_exec.R
-    includeRestricted = False
     channelFilter = '[FCHBML][HN].' # Mary Templeton email on 2016-08-26
     
     # Container for all of the metrics dataframes generated
@@ -218,18 +236,18 @@ def transferFunction_metrics(concierge):
                         Zst1 = concierge.get_dataselect(Zav1.network, Zav1.station, Zav1.location, Zav1.channel, inclusiveEnd=False)
                     except Exception as e:
                         if str(e).lower().find('no data') > -1:
-                            logger.debug('No data for %s' % (Zav1.snclId))
+                            logger.warning('No data for %s' % (Zav1.snclId))
                         else:
-                            logger.debug('No data for %s from %s: %s' % (Zav1.snclId, concierge.dataselect_url, e))
+                            logger.warning('No data for %s from %s: %s' % (Zav1.snclId, concierge.dataselect_url, e))
                         continue
                     
                     try:
                         Zst2 = concierge.get_dataselect(Zav2.network, Zav2.station, Zav2.location, Zav2.channel, inclusiveEnd=False)
                     except Exception as e:
                         if str(e).lower().find('no data') > -1:
-                            logger.debug('No data for %s' % (Zav2.snclId))
+                            logger.warning('No data for %s' % (Zav2.snclId))
                         else:
-                            logger.debug('No data for %s from %s: %s' % (Zav2.snclId, concierge.dataselect_url, e))
+                            logger.warning('No data for %s from %s: %s' % (Zav2.snclId, concierge.dataselect_url, e))
                         continue
                     
                     sampling_rate = min(utils.get_slot(Zst1,'sampling_rate'), utils.get_slot(Zst2,'sampling_rate'))
@@ -250,7 +268,7 @@ def transferFunction_metrics(concierge):
                         df = irismustangmetrics.apply_correlation_metric(Zst1, Zst2, 'transferFunction', Zevalresp1, Zevalresp2)
                         dataframes.append(df)
                     except Exception as e:
-                        logger.debug('"transfer_function" metric calculation failed for %s:%s: %s' % (Zav1.snclId, Zav2.snclId, e))
+                        logger.warning('"transfer_function" metric calculation failed for %s:%s: %s' % (Zav1.snclId, Zav2.snclId, e))
                     
                 # END of for i (pairs) in rowMatrix
 
@@ -397,18 +415,18 @@ def transferFunction_metrics(concierge):
                                 st1 = concierge.get_dataselect(av1.network, av1.station, av1.location, av1.channel, inclusiveEnd=False)
                             except Exception as e:
                                 if str(e).lower().find('no data') > -1:
-                                    logger.debug('No data for %s' % (av1.snclId))
+                                    logger.warning('No data for %s' % (av1.snclId))
                                 else:
-                                    logger.debug('No data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
+                                    logger.warning('No data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
                                 continue
         
                             try:
                                 st2 = concierge.get_dataselect(av2.network, av2.station, av2.location, av2.channel, inclusiveEnd=False)
                             except Exception as e:
                                 if str(e).lower().find('no data') > -1:
-                                    logger.debug('No data for %s' % (av2.snclId))
+                                    logger.warning('No data for %s' % (av2.snclId))
                                 else:
-                                    logger.debug('No data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
+                                    logger.warning('No data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
                                 continue
         
                             sampling_rate = min( utils.get_slot(st1, 'sampling_rate'), utils.get_slot(st2, 'sampling_rate') )
@@ -427,7 +445,7 @@ def transferFunction_metrics(concierge):
                             try:
                                 df = irismustangmetrics.apply_transferFunction_metric(st1, st2, evalresp1, evalresp2)
                             except Exception as e:
-                                logger.debug('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+                                logger.warning('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
                                 continue
                             
                             dataframes.append(df)
@@ -475,27 +493,27 @@ def transferFunction_metrics(concierge):
                                 st1 = concierge.get_dataselect(av1.network, av1.station, av1.location, av1.channel, inclusiveEnd=False)
                             except Exception as e:
                                 if str(e).lower().find('no data') > -1:
-                                    logger.debug('No data for %s' % (av1.snclId))
+                                    logger.warning('No data for %s' % (av1.snclId))
                                 else:
-                                    logger.debug('No data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
+                                    logger.warning('No data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
                                 continue
         
                             try:
                                 st2 = concierge.get_dataselect(av2.network, av2.station, av2.location, av2.channel, inclusiveEnd=False)
                             except Exception as e:
                                 if str(e).lower().find('no data') > -1:
-                                    logger.debug('No data for %s' % (av2.snclId))
+                                    logger.warning('No data for %s' % (av2.snclId))
                                 else:
-                                    logger.debug('No data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
+                                    logger.warning('No data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
                                 continue
                              
                             try:
                                 st3 = concierge.get_dataselect(av3.network, av3.station, av3.location, av3.channel, inclusiveEnd=False)
                             except Exception as e:
                                 if str(e).lower().find('no data') > -1:
-                                    logger.debug('No data for %s' % (av3.snclId))
+                                    logger.warning('No data for %s' % (av3.snclId))
                                 else:
-                                    logger.debug('No data for %s from %s: %s' % (av3.snclId, concierge.dataselect_url, e))
+                                    logger.warning('No data for %s from %s: %s' % (av3.snclId, concierge.dataselect_url, e))
                                 continue
                              
                             sampling_rate = min( utils.get_slot(st1, 'sampling_rate'), utils.get_slot(st2, 'sampling_rate') )
@@ -550,7 +568,7 @@ def transferFunction_metrics(concierge):
                                 try:
                                     df = irismustangmetrics.apply_transferFunction_metric(st1, RYst2, evalresp1, RYevalresp2)
                                 except Exception as e:
-                                    logger.debug('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+                                    logger.warning('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
                                     continue
                                 
                                 dataframes.append(df)
@@ -560,7 +578,7 @@ def transferFunction_metrics(concierge):
                                 try:
                                     df = irismustangmetrics.apply_transferFunction_metric(st1, RXst2, evalresp1, RXevalresp2)
                                 except Exception as e:
-                                    logger.debug('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+                                    logger.warning('"transfer_function" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
                                     continue
                                 
                                 dataframes.append(df)                            
