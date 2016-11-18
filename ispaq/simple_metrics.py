@@ -2,10 +2,10 @@
 ISPAQ Business Logic for Simple Metrics.
 
 :copyright:
-Mazama Science
+    Mazama Science
 :license:
-GNU Lesser General Public License, Version 3
-(http://www.gnu.org/copyleft/lesser.html)
+    GNU Lesser General Public License, Version 3
+    (http://www.gnu.org/copyleft/lesser.html)
 """
 
 from __future__ import (absolute_import, division, print_function)
@@ -28,7 +28,7 @@ def simple_metrics(concierge):
 Generate *simple* metrics.
 
 :type concierge: :class:`~ispaq.concierge.Concierge`
-:param concierge: Data access expiditer.
+:param concierge: Data access expediter.
 
 :rtype: pandas dataframe
 :return: Dataframe of simple metrics.
@@ -184,10 +184,6 @@ for (index, av) in availability.iterrows():
         
     if len(dataframes) == 0:
         logger.warn('"simple" metric calculation generated zero metrics')
-        #result = pd.concat(dataframes, ignore_index=True)
-        #mask = result.metricName.apply(valid_metric)
-        #result = result[(mask)]
-        #result.reset_index(drop=True, inplace=True)
         return None
     else:
         result = pd.concat(dataframes, ignore_index=True)    

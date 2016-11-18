@@ -12,7 +12,7 @@ import argparse
 import datetime
 import logging
 
-__version__ = "0.7.13"
+__version__ = "0.7.13x"
 
 
 def main():
@@ -77,7 +77,7 @@ def main():
     if not args.update_r:
         # start and end times
         if args.starttime is None:
-            logger.critical('argument -S/--starttime is required')
+            logger.critical('argument --starttime is required')
             raise SystemExit
     
         # metric sets
@@ -163,8 +163,6 @@ def main():
         logger.debug('Inside simple business logic ...')
         try:
             df = simple_metrics(concierge)
-            print("DID IT ALL, HERE IS WHAT WOULD BE WRITTEN")
-            print(df)
             if df is None:
                 logger.info('No simple metrics were calculated')
             else:
@@ -213,6 +211,8 @@ def main():
             df = PSD_metrics(concierge)
             if df is None and PS:
                 logger.info('No PSD metrics were calculated')
+            elif df.metricName[0] == 'PSDPlot':
+                logger.info('Only PSD Plots were generated')
             else:
                 try:
                     # Write out the metrics

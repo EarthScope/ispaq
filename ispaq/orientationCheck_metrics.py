@@ -89,8 +89,6 @@ def orientationCheck_metrics(concierge):
         halfHourStart = event.time - 60 * 2
         halfHourEnd = event.time + 60 * 28
 
-        print(halfHourStart)
-
         try:        
             availability = concierge.get_availability(starttime=halfHourStart, endtime=halfHourEnd,
                                                       longitude=event.longitude, latitude=event.latitude,

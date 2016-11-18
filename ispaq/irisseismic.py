@@ -411,7 +411,7 @@ def getAvailability(client_url="http://service.iris.edu",
 
 def getChannel(client_url="http://service.iris.edu",
                network=None, station=None, location=None, channel=None,
-               starttime=None, endtime=None, includerestricted=False,
+               starttime=None, endtime=None, includerestricted=None,
                latitude=None, longitude=None,
                minradius=None, maxradius=None):
     """
@@ -460,7 +460,7 @@ def getChannel(client_url="http://service.iris.edu",
 
 def R_getDataselect(client_url="http://service.iris.edu",
                     network=None, station=None, location=None, channel=None,
-                    starttime=None, endtime=None, quality="B",
+                    starttime=None, endtime=None, quality=None,
                     inclusiveEnd=True, ignoreEpoch=False):
     """
     Obtain an R Stream using the IRISSeismic::getDataselect function.
@@ -836,28 +836,6 @@ def rotate2D(st1, st2, angle):
     returnList.append(r_list[1])
     
     return(returnList)
-
-# singleValueMetric is needed in orientationCheck_metrics.py
-def singleValueMetric(snclq, starttime, endtime, metricName, value, attributeName, attributeValues):
-    # Convert python arguments to R equivalents
-    starttime = R_POSIXct(starttime)
-    endtime = R_POSIXct(endtime)
-    quality_flag = -9
-    attributeName = R_character(attributeName)
-    attributeValueString = R_character(attributeValues)
-    
-    R_function = robjects.r('methods::new')
-    r_metric = R_function("SingleValueMetric", snclq, starttime, endtime,
-                          metricName, value, quality_flag,
-                          attributeName,
-                          attributeValueString)
-    
-
-    r_metricList = _R_list(r_metric)
-    r_dataframe = _R_metricList2DF(r_metricList)
-    df = pandas2ri.ri2py(r_dataframe)
-
-    return(df)
 
 # generalValueMetric
 

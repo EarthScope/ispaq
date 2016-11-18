@@ -297,7 +297,7 @@ class Concierge(object):
                 # Add local data to the dataframe, even if we don't have metadata
                 # Loop through all sncl_patterns in the preferences file ---------------
                 for sncl_pattern in self.sncl_patterns:
-                    # Get "User Reqeust" parameters -- these are from preferences file
+                    # Get "User Request" parameters -- these are from preferences file
 
                     try: 
                         (UR_network, UR_station, UR_location, UR_channel) = sncl_pattern.split('.')
@@ -368,7 +368,7 @@ class Concierge(object):
             if (network is "*" and station is "*" and location is "*" and loopCounter > 1):
 		continue
 
-            # Get "User Reqeust" parameters
+            # Get "User Request" parameters
             try: 
                 (UR_network, UR_station, UR_location, UR_channel) = sncl_pattern.split('.')
             except Exception as e:
@@ -412,6 +412,7 @@ class Concierge(object):
                     continue 
             else:
                 # Read from FDSN web services
+                self.logger.debug("read FDSN web services for %s,%s,%s,%s,%s..." % (network, station, location, channel, _starttime.strftime('%Y.%j')))
                 try:
                     sncl_inventory = self.station_client.get_stations(starttime=_starttime, endtime=_endtime,
                                                                       network=_network, station=_station,

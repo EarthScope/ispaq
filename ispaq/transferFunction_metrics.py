@@ -11,7 +11,7 @@ ISPAQ Business Logic for transfer Metrics.
 from __future__ import (absolute_import, division, print_function)
 
 import itertools # for combintations
-
+import os
 import math
 import numpy as np
 import pandas as pd
@@ -23,15 +23,23 @@ from .concierge import NoAvailableDataError
 from . import utils
 from . import irisseismic
 from . import irismustangmetrics
+from . import evalresp as evresp
+
+
+class EvalrespException(Exception):
+    pass
+
 
 
 # ------------------------------------------------------------------------------
 #      BEGIN Utility Function
 #
 
-def getTransferFunctionSpectra(st, sampling_rate):
+def getTransferFunctionSpectra(st, sampling_rate, respDir=None):
     # This function returns an evalresp fap response for trace st using sampling_rate 
     # to determine frequency limits
+    #
+    # set respDir to the directory containing RESP files to run evalresp locally
 
     # Min and Max frequencies for evalresp will be those used for the cross spectral binning
     alignFreq = 0.1
@@ -79,12 +87,12 @@ def getTransferFunctionSpectra(st, sampling_rate):
         
     binFreq = pow(2,octaves)
 
-    # Argurments for evalresp
+    # Arguments for evalresp
     minfreq = min(binFreq)
     maxfreq = max(binFreq)
     nfreq = len(binFreq)
-    units = 'def'
-    output = 'fap'
+    units = 'DEF'
+    output = 'FAP'
 
     network = utils.get_slot(st,'network')
     station = utils.get_slot(st,'station')
@@ -155,9 +163,10 @@ def transferFunction_metrics(concierge):
         logger.debug(e)
         logger.error('concierge.get_availability() failed with an unknown error')
         return None
-        if availability is None:
-            logger.debug("skipping event with no available data")
-            return None
+
+    if availability is None:
+        logger.debug("skipping event with no available data")
+        return None
 
     
     # Apply the channelFilter
@@ -181,7 +190,11 @@ def transferFunction_metrics(concierge):
         metaMask = metaMask == False
         stationAvailability = stationAvailability[metaMask]
 
-        logger.info('Network-Station pair %s.%s has %d channels' % (network, station, stationAvailability.shape[0]))
+        if stationAvailability.shape[0] == 0:
+            logger.info('Network-Station %s.%s has data, but no metadata, skipping.' % (network, station))
+            continue
+        else:
+            logger.info('Network-Station pair %s.%s has %d channels' % (network, station, stationAvailability.shape[0]))
         
         ##################################################################
         # Loop through all channels by dip looking for multiple locations.
@@ -254,8 +267,8 @@ def transferFunction_metrics(concierge):
                 
                     # Get primary (1), secondary (2) and orthogonal secondary spectra 
                     try:
-                        Zevalresp1 = getTransferFunctionSpectra(Zst1,sampling_rate)
-                        Zevalresp2 = getTransferFunctionSpectra(Zst2,sampling_rate) 
+                        Zevalresp1 = getTransferFunctionSpectra(Zst1,sampling_rate,concierge.resp_dir)
+                        Zevalresp2 = getTransferFunctionSpectra(Zst2,sampling_rate,concierge.resp_dir) 
                     except Exception as e:
                         logger.debug('"transferFunction_metrics" getTransferFunctionSpectra failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
                         continue
@@ -433,8 +446,8 @@ def transferFunction_metrics(concierge):
         
                             # Get primary (1), secondary (2) and orthogonal secondary spectra
                             try:
-                                evalresp1 = getTransferFunctionSpectra(st1, sampling_rate)
-                                evalresp2 = getTransferFunctionSpectra(st2, sampling_rate)
+                                evalresp1 = getTransferFunctionSpectra(st1, sampling_rate, concierge.resp_dir)
+                                evalresp2 = getTransferFunctionSpectra(st2, sampling_rate, concierge.resp_dir)
                             except Exception as e:
                                 logger.debug('"transferFunction_metrics" getTransferFunctionSpectra failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
                                 continue
@@ -520,9 +533,9 @@ def transferFunction_metrics(concierge):
         
                             # Get primary (1), secondary (2) and orthogonal secondary spectra 
                             try:
-                                evalresp1 = getTransferFunctionSpectra(st1, sampling_rate)
-                                evalresp2 = getTransferFunctionSpectra(st2, sampling_rate)          
-                                evalresp3 = getTransferFunctionSpectra(st3, sampling_rate)
+                                evalresp1 = getTransferFunctionSpectra(st1, sampling_rate, concierge.resp_dir)
+                                evalresp2 = getTransferFunctionSpectra(st2, sampling_rate, concierge.resp_dir)          
+                                evalresp3 = getTransferFunctionSpectra(st3, sampling_rate, concierge.resp_dir)
                             except Exception as e:
                                 logger.debug('"transferFunction_metrics" getTransferFunctionSpectra failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
                                 continue

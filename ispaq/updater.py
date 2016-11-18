@@ -21,9 +21,10 @@ from rpy2.robjects import pandas2ri
 
 # Global R options are set here
 
+robjects.r('options(download.file.method="curl")')
+
 # Do now show error messages generated inside of the R packages
 ###robjects.r('options(show.error.messages=FALSE)')
-
 
 #     R functions called internally     ----------------------------------------
 

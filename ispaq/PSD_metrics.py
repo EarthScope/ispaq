@@ -23,14 +23,14 @@ from .concierge import NoAvailableDataError
 from . import utils
 from . import irisseismic
 from . import irismustangmetrics
-
+from . import transferFunction_metrics as transfn
 
 def PSD_metrics(concierge):
     """
     Generate *PSD* metrics.
 
     :type concierge: :class:`~ispaq.concierge.Concierge`
-    :param concierge: Data access expiditer.
+    :param concierge: Data access expediter.
     
     :rtype: pandas dataframe (TODO: change this)
     :return: Dataframe of PSD metrics. (TODO: change this)

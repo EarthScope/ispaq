@@ -101,7 +101,8 @@ def apply_transferFunction_metric(r_stream1, r_stream2, evalresp1, evalresp2):
     a Pandas dataframe.
     :param r_stream1: an r_stream object
     :param r_stream2: an r_stream object
-    :param metric_function_name: the name of the set of metrics
+    :param evalresp1: pandas DataFrame of evalresp FAP for r_stream1
+    :param evalresp2: pandas DataFrame of evalresp FAP for r_stream2
     :return:
     """
     R_function = robjects.r('IRISMustangMetrics::transferFunctionMetric')
@@ -166,16 +167,28 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
     return (df, PSDCorrected, PDF)
 
 
-def apply_PSD_plot(r_stream, filepath):
+def apply_PSD_plot(r_stream, filepath, evalresp=None):
     """"
     Create a PSD plot which will be written to a .png file
     opened 'png' file.
     :param r_stream: an r_stream object
+    :param filepath: file path for png output
+    :param evalresp: (optional) pandas dataframe of FAP from evalresp (freq,amp,phase)
     :return:
     """
     result = robjects.r('grDevices::png')(filepath)
     r_psdList = robjects.r('IRISSeismic::psdList')(r_stream)    
-    result = robjects.r('IRISSeismic::psdPlot')(r_psdList, style='pdf')
+    pandas2ri.activate()
+    
+    # convert pandas df to R df as parameter automatically
+    if evalresp is not None:
+        r_evalresp = pandas2ri.py2ri(evalresp)  # convert to R dataframe
+        result = robjects.r('IRISSeismic::psdPlot')(r_psdList, style='pdf', evalresp=r_evalresp)
+    else:
+        result = robjects.r('IRISSeismic::psdPlot')(r_psdList, style='pdf')
+
+    pandas2ri.deactivate()
+
     result = robjects.r('grDevices::dev.off')()
 
     return True

@@ -13,8 +13,13 @@ from __future__ import (absolute_import, division, print_function)
 import math
 import numpy as np
 import pandas as pd
+import obspy
 
 from obspy import UTCDateTime
+from obspy import geodetics
+from obspy import taup
+from obspy.taup import TauPyModel
+model = TauPyModel(model="iasp91")
 
 from .concierge import NoAvailableDataError
 
@@ -126,13 +131,17 @@ def crossCorrelation_metrics(concierge):
             logger.debug('Working on %s' % (snclId))
 
             # Get data in a window centered on the event's arrival at station #1
-            try:
-                tt = irisseismic.getTraveltime(event.latitude, event.longitude, event.depth, 
-                                               av1.latitude, av1.longitude)
-            except Exception as e:
-                logger.debug('Skipping because getTravelTime failed: %s' % (e))
-                continue
+            #try:
+            #    tt = irisseismic.getTraveltime(event.latitude, event.longitude, event.depth, 
+            #                                   av1.latitude, av1.longitude)
+            #except Exception as e:
+            #    logger.debug('Skipping because getTravelTime failed: %s' % (e))
+            #    continue
              
+            dist = obspy.geodetics.base.locations2degrees(event.latitude, event.longitude, av1.latitude, av1.longitude)
+            arrivals = model.get_travel_times(source_depth_in_km=event.depth,distance_in_degree=dist)
+            tt=min(arrivals,key=lambda x: x.time).time
+
             windowStart = event.time + min(tt.travelTime) - windowSecs/2.0
             windowEnd = event.time + min(tt.travelTime) + windowSecs/2.0
 

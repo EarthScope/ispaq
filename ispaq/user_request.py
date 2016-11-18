@@ -150,20 +150,26 @@ class UserRequest(object):
             # Metric and SNCL information from the preferences file
             metric_sets, sncl_sets, data_access, preferences = {}, {}, {}, {}
             currentSection = None
+            multiValue = False
             for line in args.preferences_file:  # parse file
                 line = line.split('#')[0].strip()  # remove comments
                 if line.lower() == "metrics:":  # metric header
-                    currentSection = 'metric'
+                    currentSection = metric_sets
+                    multiValue = True
                 elif line.lower() == "sncls:":  # sncl header
-                    currentSection = 'sncl'
+                    currentSection = sncl_sets
+                    multiValue = True
                 elif line.lower() == "data_access:":
-                    currentSection = 'data_access'
+                    currentSection = data_access
+                    multiValue = False
                 elif line.lower() == "preferences:":
-                    currentSection = 'preferences'
+                    currentSection = preferences
+                    multiValue = False
                 elif currentSection is not None:  # line following header
                     entry = line.split(':')
                     if len(entry) <= 1:  # empty line
                         name, values = None, None
+                        continue
                     else:  # non-empty line
                         name = entry[0]
 			logger.debug("%s len entry: %d" % (name,len(entry)))

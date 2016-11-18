@@ -42,7 +42,6 @@ def pressureCorrelation_metrics(concierge):
     dataframes = []
 
     # Default parameters from IRISMustangUtils::generateMetrics_crossTalk
-    includleRestricted = False
     channelFilter = "LH."
     pressureLocation = "*"
     pressureChannel = "LDO"
