@@ -156,7 +156,7 @@ def crossCorrelation_metrics(concierge):
             
             # No metric calculation possible if SNCL has more than one trace
             if len(utils.get_slot(r_stream1, 'traces')) > 1 :
-                logger.debug('Skipping %s because it has more than one trace' % (av.snclId))
+                logger.debug('Skipping %s because it has more than one trace' % (av1.snclId))
                 continue
 
             # If metadata indicates reversed polarity (dip>0), invert the amplitudes (met 2016/03/03)

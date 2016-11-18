@@ -270,7 +270,7 @@ def transferFunction_metrics(concierge):
                         Zevalresp1 = getTransferFunctionSpectra(Zst1,sampling_rate,concierge.resp_dir)
                         Zevalresp2 = getTransferFunctionSpectra(Zst2,sampling_rate,concierge.resp_dir) 
                     except Exception as e:
-                        logger.debug('"transferFunction_metrics" getTransferFunctionSpectra failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+                        logger.debug('"transferFunction_metrics" getTransferFunctionSpectra failed for %s:%s: %s' % (Zav1.snclId, Zav2.snclId, e))
                         continue
                     
                 
