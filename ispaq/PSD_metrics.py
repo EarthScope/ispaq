@@ -12,8 +12,6 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 
-import math
-import numpy as np
 import pandas as pd
 
 from obspy import UTCDateTime
@@ -128,12 +126,12 @@ def PSD_metrics(concierge):
                 try:
                     evalresp = None
                     if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
-                    logger.debug("Accessing local RESP file...")
-                    evalresp = transfn.getTransferFunctionSpectra(r_stream, av.samplerate, concierge.resp_dir)
+                        logger.debug("Accessing local RESP file...")
+                        evalresp = transfn.getTransferFunctionSpectra(r_stream, av.samplerate, concierge.resp_dir)
 
                     # get corrected PSDs
                     logger.debug("apply_PSD_metric...")
-                    (df, PSDCorrected, PDF) = irismustangmetrics.apply_PSD_metric(r_stream, evalresp=evalresp)
+                    (df, PSDcorrected, PDF) = irismustangmetrics.apply_PSD_metric(r_stream, evalresp=evalresp)
                     dataframes.append(df)
 
                     if "psd_corrected" in concierge.metric_names :

@@ -10,8 +10,6 @@ ISPAQ Business Logic for Simple Metrics.
 
 from __future__ import (absolute_import, division, print_function)
 
-import math
-import numpy as np
 import pandas as pd
 
 from obspy import UTCDateTime
@@ -125,7 +123,7 @@ def pressureCorrelation_metrics(concierge):
                 locationAvailability = seismicAvailability[seismicAvailability.location == loc]
     
                 if locationAvailability is None or locationAvailability.shape[0] == 0:
-                    logger.debug('No location %s channels available' %s (loc))
+                    logger.debug('No location %s channels available' % (loc))
                     continue
          
                 ############################################################

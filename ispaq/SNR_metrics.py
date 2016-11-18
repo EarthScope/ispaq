@@ -14,8 +14,6 @@ import math
 import numpy as np
 import pandas as pd
 
-from obspy import UTCDateTime
-
 from .concierge import NoAvailableDataError
 
 from . import utils

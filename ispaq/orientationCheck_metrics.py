@@ -10,11 +10,8 @@ ISPAQ Business Logic for Orientation Check Metrics.
 
 from __future__ import (absolute_import, division, print_function)
 
-import math
 import numpy as np
 import pandas as pd
-
-from obspy import UTCDateTime
 
 from .concierge import NoAvailableDataError
 
