@@ -75,7 +75,7 @@ def main():
     for m in user_request.metric_sets.keys():
         for s in user_request.sncl_sets.keys():
             # call regular ispaq with each combination
-            command = 'ispaq --starttime={0} --endtime={1} --metrics={2} --sncls={3} --preferences-file={4} --log-level={5} --output-loc={6}'\
+            command = 'python -m ispaq --starttime={0} --endtime={1} --metrics={2} --sncls={3} --preferences-file={4} --log-level={5} --output-loc={6}'\
                 .format(args.starttime, args.endtime, m, s, args.preferences_file.name, args.log_level, test_dir_root)
             logger.info("Preparing test run %s" % command)
             os.system(command)
