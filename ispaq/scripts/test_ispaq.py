@@ -41,8 +41,6 @@ def main():
                         help='endtime in ISO 8601 format')
     parser.add_argument('-P', '--preferences-file', default=os.path.expanduser('./preference_files/testprefs.txt'),
                         type=argparse.FileType('r'), help='location of preference file')
-    parser.add_argument('-O', '--output-loc', default='.',
-                        help='location to output ')
     parser.add_argument('--log-level', action='store', default='DEBUG',
                         help='{DEBUG,INFO,WARNING,ERROR,CRITICAL}')
     args = parser.parse_args(sys.argv[1:])
@@ -64,7 +62,7 @@ def main():
     user_request = UserRequest(args, logger=logger) 
    
     # Set up test output directories ----------------------------------------------
-    test_dir_root = os.path.join(args.output_loc,"TEST_ISPAQ")
+    test_dir_root = "TEST_ISPAQ"
     test_dir_timepath = os.path.join(test_dir_root,time.strftime('%Y%j_%H%M%S'))  # this is time-indexed for this run
     logger.info("Set up test directory: %s..." % test_dir_timepath) 
     if not os.path.exists(test_dir_timepath):
@@ -75,18 +73,18 @@ def main():
     for m in user_request.metric_sets.keys():
         for s in user_request.sncl_sets.keys():
             # call regular ispaq with each combination
-            command = 'python -m ispaq --starttime={0} --endtime={1} --metrics={2} --sncls={3} --preferences-file={4} --log-level={5} --output-loc={6}'\
-                .format(args.starttime, args.endtime, m, s, args.preferences_file.name, args.log_level, test_dir_root)
+            command = 'python -m ispaq --starttime={0} --endtime={1} --metrics={2} --sncls={3} --preferences-file={4} --log-level={5}'\
+                .format(args.starttime, args.endtime, m, s, args.preferences_file.name, args.log_level)
             logger.info("Preparing test run %s" % command)
             os.system(command)
     
             logger.info("Completed with test run, moving output files to time indexed directory...")        
             # move all csv and png files to the time-indexed subdirectory
-            for csv_path in glob.glob(os.path.join(test_dir_root,"*.csv")):
+            for csv_path in glob.glob("*.csv"):
                 csv_file = os.path.basename(csv_path)
                 os.rename(csv_path,os.path.join(test_dir_timepath,csv_file))
                 
-            for png_path in glob.glob(os.path.join(test_dir_root,"*.png")):
+            for png_path in glob.glob("*.png"):
                 png_file = os.path.basename(png_path)
                 os.rename(png_path,os.path.join(test_dir_timepath,png_file))
 
