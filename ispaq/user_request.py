@@ -192,6 +192,11 @@ class UserRequest(object):
                     else:
                         logger.debug("set %s to first in %s" % (name,",".join(values)))
                         currentSection[name] = values[0]
+                        
+            # Check for special keyword to exit after loading preferences
+            pref_keyword = "LOAD_PREFS_ONLY"
+            if pref_keyword in args.metrics:
+                return
 
             # Check for invalid arguments
             try:

@@ -46,7 +46,7 @@ def main():
     parser.add_argument('--log-level', action='store', default='DEBUG',
                         help='{DEBUG,INFO,WARNING,ERROR,CRITICAL}')
     args = parser.parse_args(sys.argv[1:])
-    args.metrics = "TEST"  # dummy value
+    args.metrics = "LOAD_PREFS_ONLY"  # trigger keyword
     args.sncls = "TEST"    # dummy value
     print(args)
     
