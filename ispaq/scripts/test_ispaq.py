@@ -1,16 +1,16 @@
-#!/usr/bin/env python
 """
 #
 # test_ispaq -- test harness for ispaq -- will perform tests on a default file, unless otherwise specified
 #
-# run this from the root ispaq directory (ispaq/scripts/test_ispaq.py)
+# run this as a package from the root ispaq directory:
+# python -m ispaq.scripts.test_ispaq <options>
 # options:    -P <preference_file>
 #             --starttime <YYYY-MM-DD>
 #             --endtime <YYYY-MM-DD>
 #             --log-level <INFO,DEBUG,WARN> 
 #
 # example call, showing the defaults:
-# ispaq/scripts/test_ispaq.py -P ./preference_files/testprefs.txt --starttime=2016-04-20 --endtime=2016-04-21 --log-level=DEBUG
+# python -m ispaq.scripts.test_ispaq -P ./preference_files/testprefs.txt --starttime=2016-04-20 --endtime=2016-04-21 --log-level=DEBUG
 #
 """
 __version__ = "TEST_2016.11.21"
@@ -20,8 +20,7 @@ import time
 import glob
 import argparse
 import logging
-sys.path.insert(0, os.path.abspath(".."))  # access py files in the directory above
-from user_request import UserRequest
+from ispaq.user_request import UserRequest
 
 ## for elegant SIGTERM handling
 import signal
@@ -47,6 +46,8 @@ def main():
     parser.add_argument('--log-level', action='store', default='DEBUG',
                         help='{DEBUG,INFO,WARNING,ERROR,CRITICAL}')
     args = parser.parse_args(sys.argv[1:])
+    args.metrics = "TEST"  # dummy value
+    args.sncls = "TEST"    # dummy value
     print(args)
     
     # Set up logger for this test component -- separate from ISPAQ instances

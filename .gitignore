@@ -76,3 +76,8 @@ TRANSCRIPT.txt
 # WingIDE files
 *.wpr
 *.wpu
+/.settings/
+/.DS_Store
+/.project
+/.pydevproject
+/.gitignore
