@@ -3,14 +3,14 @@
 #
 # test_ispaq -- test harness for ispaq -- will perform tests on a default file, unless otherwise specified
 #
-# run this from the root ispaq directory (scripts/test_ispaq)
+# run this from the root ispaq directory (ispaq/scripts/test_ispaq)
 # options:    -P <preference_file>
 #             --starttime <YYYY-MM-DD>
 #             --endtime <YYYY-MM-DD>
 #             --log-level <INFO,DEBUG,WARN> 
 #
 # example call, showing the defaults:
-# scripts/test_ispaq -P ./preference_files/testprefs.txt --starttime=2016-04-20 --endtime=2016-04-21 --log-level=DEBUG
+# ispaq/scripts/test_ispaq -P ./preference_files/testprefs.txt --starttime=2016-04-20 --endtime=2016-04-21 --log-level=DEBUG
 #
 """
 __version__ = "TEST_2016.11.21"
