@@ -363,7 +363,7 @@ class Concierge(object):
         for sncl_pattern in self.sncl_patterns:
             # We only want to do this one time if we are looking for *.*.*.chan
             # For example, during crossCorrelation.  Otherwise it creates a bloated
-            # availability dataframe with the same sncls repeading #sncl_patterns times
+            # availability dataframe with the same sncls repeating #sncl_patterns times
             loopCounter += 1
             if (network is "*" and station is "*" and location is "*" and loopCounter > 1):
 		continue
@@ -412,7 +412,7 @@ class Concierge(object):
                     continue 
             else:
                 # Read from FDSN web services
-                self.logger.debug("read FDSN web services for %s,%s,%s,%s,%s..." % (network, station, location, channel, _starttime.strftime('%Y.%j')))
+                self.logger.debug("read FDSN web services for %s,%s,%s,%s,%s,%s, ..." % (_network, _station, _location, _channel, _starttime.strftime('%Y.%j'), _endtime.strftime('%Y.%j')))
                 try:
                     sncl_inventory = self.station_client.get_stations(starttime=_starttime, endtime=_endtime,
                                                                       network=_network, station=_station,

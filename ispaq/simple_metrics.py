@@ -11,6 +11,7 @@ ISPAQ Business Logic for Simple Metrics.
 from __future__ import (absolute_import, division, print_function)
 
 import math
+import numpy as np
 import pandas as pd
 
 from obspy import UTCDateTime
@@ -55,6 +56,7 @@ def simple_metrics(concierge):
     end = concierge.requested_endtime
 
     nday = int(end.julday - start.julday) + 1;  # Add one in case we have partial day on end day
+
     for day in range(nday):
         starttime = (start + day * 86400)
         starttime = UTCDateTime(starttime.strftime("%Y-%m-%d") + "T00:00:00Z")
@@ -101,9 +103,9 @@ def simple_metrics(concierge):
                 r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, starttime, endtime)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.debug('No data for %s' % (av.snclId))
+                    logger.warning('No data for %s' % (av.snclId))
                 else:
-                    logger.debug('No data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
+                    logger.warning('No data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
                 continue
 
             # Run the Gaps metric ----------------------------------------
@@ -174,21 +176,21 @@ def simple_metrics(concierge):
                             except Exception as e:
                                 logger.warning('"spikes" metric calculation failed for %s: %s' % (av.snclId, e))            
                         
-            # Concatenate and filter dataframes before returning -----------------------
-        
-            # Create a boolean mask for filtering the dataframe
-            def valid_metric(x):
-                return x in concierge.metric_names
+    # Concatenate and filter dataframes before returning -----------------------
+       
+    # Create a boolean mask for filtering the dataframe
+    def valid_metric(x):
+        return x in concierge.metric_names
                 
-            if len(dataframes) == 0:
-                logger.warn('"simple" metric calculation generated zero metrics')
-                return None
-            else:
-                result = pd.concat(dataframes, ignore_index=True)    
-                mask = result.metricName.apply(valid_metric)
-                result = result[(mask)] 
-                result.reset_index(drop=True, inplace=True)        
-                return(result)
+    if len(dataframes) == 0:
+        logger.warn('"simple" metric calculation generated zero metrics')
+        return None
+    else:
+        result = pd.concat(dataframes, ignore_index=True)    
+        mask = result.metricName.apply(valid_metric)
+        result = result[(mask)] 
+        result.reset_index(drop=True, inplace=True)        
+        return(result)
         
 
 # ------------------------------------------------------------------------------
