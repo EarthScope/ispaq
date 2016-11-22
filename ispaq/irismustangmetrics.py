@@ -140,7 +140,20 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
     :return: tuple of GeneralValueMetrics, corrected PSD, and PDF
     """
     R_function = robjects.r('IRISMustangMetrics::PSDMetric')
-    r_listOfLists = R_function(r_stream, *args, **kwargs)  # args and kwargs shouldn't be needed in theory
+    pandas2ri.activate()
+
+    # look for optional parameter evalresp=pd.DataFrame
+    evalresp = None
+    if 'evalresp' in kwargs:
+        evalresp = kwargs['evalresp']
+   
+    r_listOfLists = None
+    if evalresp is not None:
+        r_evalresp = pandas2ri.py2ri(evalresp)  # convert to R dataframe
+        r_listOfLists = R_function(r_stream, r_evalresp)
+    else:
+        r_listOfLists = R_function(r_stream)
+
     r_metriclist = r_listOfLists[0]
     r_dataframe = _R_metricList2DF(r_metriclist)
     df = pandas2ri.ri2py(r_dataframe)
@@ -163,6 +176,7 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
 
     r_PDF = r_listOfLists[3]
     PDF = pandas2ri.ri2py(r_PDF)
+    pandas2ri.deactivate()
     
     return (df, PSDCorrected, PDF)
 

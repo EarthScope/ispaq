@@ -176,21 +176,21 @@ def simple_metrics(concierge):
                             except Exception as e:
                                 logger.warning('"spikes" metric calculation failed for %s: %s' % (av.snclId, e))            
                         
-            # Concatenate and filter dataframes before returning -----------------------
-        
-            # Create a boolean mask for filtering the dataframe
-            def valid_metric(x):
-                return x in concierge.metric_names
+    # Concatenate and filter dataframes before returning -----------------------
+       
+    # Create a boolean mask for filtering the dataframe
+    def valid_metric(x):
+        return x in concierge.metric_names
                 
-            if len(dataframes) == 0:
-                logger.warn('"simple" metric calculation generated zero metrics')
-                return None
-            else:
-                result = pd.concat(dataframes, ignore_index=True)    
-                mask = result.metricName.apply(valid_metric)
-                result = result[(mask)] 
-                result.reset_index(drop=True, inplace=True)        
-                return(result)
+    if len(dataframes) == 0:
+        logger.warn('"simple" metric calculation generated zero metrics')
+        return None
+    else:
+        result = pd.concat(dataframes, ignore_index=True)    
+        mask = result.metricName.apply(valid_metric)
+        result = result[(mask)] 
+        result.reset_index(drop=True, inplace=True)        
+        return(result)
         
 
 # ------------------------------------------------------------------------------
