@@ -56,10 +56,12 @@ def pressureCorrelation_metrics(concierge):
 
         if starttime == end:
             continue
-        if starttime <= start:
-            starttime = start
-        if endtime >= end:
-            endtime = end
+
+        # removed the following so that starttime is rounded down to beginning of day and endtime rounded up to next day
+        #if starttime <= start:
+        #    starttime = start
+        #if endtime >= end:
+        #    endtime = end
 
         try:
             pressureAvailability = concierge.get_availability(location=pressureLocation, channel=pressureChannel,starttime=starttime,endtime=endtime)

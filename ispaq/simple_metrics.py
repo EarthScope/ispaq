@@ -64,10 +64,12 @@ def simple_metrics(concierge):
 
         if starttime == end:
             continue
-        if starttime <= start:
-            starttime = start
-        if endtime >= end:
-            endtime = end
+
+        # removed the following so that starttime is rounded down to beginning of day and endtime rounded up to next day
+        #if starttime <= start:
+        #    starttime = start
+        #if endtime >= end:
+        #    endtime = end
 
         try:
             availability = concierge.get_availability(starttime=starttime, endtime=endtime)

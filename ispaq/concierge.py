@@ -58,7 +58,7 @@ class Concierge(object):
         self.user_request = user_request
         self.logger = logger
         
-        # Copy important UserRequest properties to the Concierge for smpler access
+        # Copy important UserRequest properties to the Concierge for simpler access
         self.requested_starttime = user_request.requested_starttime
         self.requested_endtime = user_request.requested_endtime
         self.metric_names = user_request.metrics
@@ -79,9 +79,14 @@ class Concierge(object):
             self.resp_dir = None
          
         # Output information
-        file_base = '%s_%s_%s' % (self.user_request.requested_metric_set,
+        file_base = '%s_%s_%s_' % (self.user_request.requested_metric_set,
                                   self.user_request.requested_sncl_set, 
                                   self.requested_starttime.date)
+
+        inclusiveEndtime = self.requested_endtime-1
+        if(inclusiveEndtime.date != self.requested_starttime.date):
+            file_base = file_base + '%s' % (inclusiveEndtime.date)
+  
         self.output_file_base = self.csv_output_dir + '/' + file_base
         
         # Availability dataframe is stored if it is read from a local file

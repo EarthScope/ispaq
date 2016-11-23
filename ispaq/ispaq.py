@@ -12,7 +12,7 @@ import argparse
 import datetime
 import logging
 
-__version__ = "0.7.15x"
+__version__ = "0.7.16x"
 
 
 def main():
@@ -167,7 +167,7 @@ def main():
                 logger.info('No simple metrics were calculated')
             else:
                 try:
-                    filepath = concierge.output_file_base + "__simpleMetrics.csv"
+                    filepath = concierge.output_file_base + "_simpleMetrics.csv"
                     logger.info('Writing simple metrics to %s\n' % os.path.basename(filepath))
                     utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
                 except Exception as e:
@@ -190,7 +190,7 @@ def main():
                 logger.info('No SNR metrics were calculated')
             else:
                 try:
-                    filepath = concierge.output_file_base + "__SNRMetrics.csv"
+                    filepath = concierge.output_file_base + "_SNRMetrics.csv"
                     logger.info('Writing SNR metrics to %s\n' % os.path.basename(filepath))
                     utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
                 except Exception as e:
@@ -216,7 +216,7 @@ def main():
             else:
                 try:
                     # Write out the metrics
-                    filepath = concierge.output_file_base + "__PSDMetrics.csv"
+                    filepath = concierge.output_file_base + "_PSDMetrics.csv"
                     logger.info('Writing PSD metrics to %s\n' % os.path.basename(filepath))
                     utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
                 except Exception as e:
@@ -239,7 +239,7 @@ def main():
                 logger.info('No crossTalk metrics were calculated.')
             else:
                 try:
-                    filepath = concierge.output_file_base + "__crossTalkMetrics.csv"
+                    filepath = concierge.output_file_base + "_crossTalkMetrics.csv"
                     logger.info('Writing crossTalk metrics to %s\n' % os.path.basename(filepath))
                     utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
                 except Exception as e:
@@ -262,7 +262,7 @@ def main():
                 logger.info('No pressureCorrelation metrics were calculated')
             else:
                 try:
-                    filepath = concierge.output_file_base + "__pressureCorrelationMetrics.csv"
+                    filepath = concierge.output_file_base + "_pressureCorrelationMetrics.csv"
                     logger.info('Writing pressureCorrelation metrics to %s\n' % os.path.basename(filepath))
                     utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
                 except Exception as e:
@@ -285,7 +285,7 @@ def main():
                 logger.info('No crossCorrelation metrics were calculated')
             else:
                 try:
-                    filepath = concierge.output_file_base + "__crossCorrelationMetrics.csv"
+                    filepath = concierge.output_file_base + "_crossCorrelationMetrics.csv"
                     logger.info('Writing crossCorrelation metrics to %s\n' % os.path.basename(filepath))
                     utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
                 except Exception as e:
@@ -308,7 +308,7 @@ def main():
                 logger.info('No orientationCheck metrics were calculated')
             else:
                 try:
-                    filepath = concierge.output_file_base + "__orientationCheckMetrics.csv"
+                    filepath = concierge.output_file_base + "_orientationCheckMetrics.csv"
                     logger.info('Writing orientationCheck metrics to %s\n' % os.path.basename(filepath))
                     utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
                 except Exception as e:
@@ -331,7 +331,7 @@ def main():
                 logger.info('No transferFunction metrics were calculated')
             else:
                 try:
-                    filepath = concierge.output_file_base + "__transferMetrics.csv"
+                    filepath = concierge.output_file_base + "_transferMetrics.csv"
                     logger.info('Writing transfer metrics to %s\n' % os.path.basename(filepath))
                     utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
                 except Exception as e:

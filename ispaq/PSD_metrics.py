@@ -64,12 +64,12 @@ def PSD_metrics(concierge):
 
         if starttime == end:
             continue
-        if starttime <= start:
-            starttime = start
-        if endtime >= end:
-            endtime = end
 
-
+        # removed the following so that starttime is rounded down to beginning of day and endtime rounded up to next day
+        #if starttime <= start:
+        #    starttime = start
+        #if endtime >= end:
+        #    endtime = end
 
         try:
             availability = concierge.get_availability(starttime=starttime,endtime=endtime)
@@ -140,7 +140,7 @@ def PSD_metrics(concierge):
                         file_base_psd = '%s_%s_%s' % (concierge.user_request.requested_metric_set,
                                                       concierge.user_request.requested_sncl_set,
                                                       starttime.date)
-                        filepath = concierge.csv_output_dir + '/' + file_base_psd + "_" + av.snclId + "__PSDcorrected.csv"
+                        filepath = concierge.csv_output_dir + '/' + file_base_psd + "_" + av.snclId + "_PSDcorrected.csv"
                         logger.info('Writing corrected PSD to %s' % os.path.basename(filepath))
                         try:
                             utils.write_numeric_df(PSDcorrected, filepath, sigfigs=concierge.sigfigs)
@@ -151,13 +151,13 @@ def PSD_metrics(concierge):
 
                     if "pdf_text" in concierge.metric_names :
                     # Write out the PDFs
-                        filepath = concierge.csv_output_dir + '/' + file_base_psd + "_" + av.snclId + "__PDF.csv"
+                        filepath = concierge.csv_output_dir + '/' + file_base_psd + "_" + av.snclId + "_PDF.csv"
                         logger.info('Writing PDF text to %s.' % os.path.basename(filepath))
                         try:
                             # Add target, start- and endtimes
                             PDF['target'] = av.snclId
-                            PDF['starttime'] = concierge.requested_starttime
-                            PDF['endtime'] = concierge.requested_endtime
+                            PDF['starttime'] = starttime
+                            PDF['endtime'] = endtime
                             utils.write_numeric_df(PDF, filepath, sigfigs=concierge.sigfigs)  
                         except Exception as e:
                             logger.debug(e)
