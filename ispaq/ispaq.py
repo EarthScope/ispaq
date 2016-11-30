@@ -12,7 +12,7 @@ import argparse
 import datetime
 import logging
 
-__version__ = "0.7.17x"
+__version__ = "0.7.18x"
 
 
 def main():

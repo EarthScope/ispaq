@@ -548,7 +548,7 @@ def getEvalresp(network=None, station=None, location=None, channel=None,
     return df
     
     
-def getEvent(client_url="http://service.iris.edu", starttime=None, endtime=None,
+def getEvent(client_url="http://earthquake.usgs.gov", starttime=None, endtime=None,
              minmag=None, maxmag=None, magtype=None,
              mindepth=None, maxdepth=None):
     """
@@ -564,7 +564,7 @@ def getEvent(client_url="http://service.iris.edu", starttime=None, endtime=None,
     
     .. rubric:: Example
     
-    >>> df = getEvent("http://service.iris.edu", UTCDateTime("2012-06-21"), UTCDateTime("2012-06-28"), minmag=6)
+    >>> df = getEvent("http://earthquake.usgs.gov", UTCDateTime("2012-06-21"), UTCDateTime("2012-06-28"), minmag=6)
     >>> df.shape
     (2, 13)
     >>> df.eventLocationName  #doctest: +ELLIPSIS

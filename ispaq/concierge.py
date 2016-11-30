@@ -794,7 +794,7 @@ class Concierge(object):
                                    'time': origin.time,
                                    'latitude': origin.latitude,
                                    'longitude': origin.longitude,
-                                   'depth': origin.depth/1000, # IRIS event webservice returns depth in km # TODO:  check this
+                                   'depth': origin.depth/1000, # QuakeML convention is meters, convert to kilometers
                                    'author': origin.creation_info.author,
                                    'cCatalog': None,
                                    'contributor': None,
@@ -808,6 +808,20 @@ class Concierge(object):
                 
             # Concatenate into the events dataframe
             events = pd.concat(dataframes, ignore_index=True)    
+            if _starttime:
+                events = events[events['time'] >= _starttime]
+            if _endtime:
+                events = events[events['time'] <= _endtime]
+            if minmag:
+                events = events[events['magnitude'] >= minmag]
+            if maxmag:
+                events = events[events['magnitude'] <= maxmag]
+            if magtype:
+                events = events[events['magType'].str.match(magtype, as_indexer=True)]
+            if mindepth:
+                events = events[events['depth'] >= mindepth]
+            if maxdepth:
+                events = events[events['depth'] <= maxdepth] 
 
         else:
             # Read from FDSN web services
