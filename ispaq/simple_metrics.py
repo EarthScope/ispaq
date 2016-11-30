@@ -161,22 +161,22 @@ def simple_metrics(concierge):
                         logger.warning('"STALTA" metric calculation failed for for %s: %s' % (av.snclId, e))
                     
                     
-                    # Run the Spikes metric --------------------------------------
+            # Run the Spikes metric --------------------------------------
 
-                    # NOTE:  Appropriate values for spikesMetric arguments are determined empirically
+            # NOTE:  Appropriate values for spikesMetric arguments are determined empirically
                     
-                    if function_metadata.has_key('spikes'):
+            if function_metadata.has_key('spikes'):
                
-                        # Limit this metric to BH. and HH. channels
-                        if av.channel.startswith('BH') or av.channel.startswith('HH'):
-                            windowSize = 41
-                            thresholdMin = 10
+                # Limit this metric to BH. and HH. channels
+                if av.channel.startswith('BH') or av.channel.startswith('HH'):
+                    windowSize = 41
+                    thresholdMin = 10
                            
-                            try:
-                                df = irismustangmetrics.apply_simple_metric(r_stream, 'spikes', windowSize, thresholdMin, fixedThreshold=True)
-                                dataframes.append(df)
-                            except Exception as e:
-                                logger.warning('"spikes" metric calculation failed for %s: %s' % (av.snclId, e))            
+                    try:
+                        df = irismustangmetrics.apply_simple_metric(r_stream, 'spikes', windowSize, thresholdMin, fixedThreshold=True)
+                        dataframes.append(df)
+                    except Exception as e:
+                        logger.warning('"spikes" metric calculation failed for %s: %s' % (av.snclId, e))            
                         
     # Concatenate and filter dataframes before returning -----------------------
        

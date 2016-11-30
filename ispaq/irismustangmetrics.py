@@ -62,7 +62,7 @@ def apply_simple_metric(r_stream, metric_function_name, *args, **kwargs):
     """
     function = 'IRISMustangMetrics::' + metric_function_name + 'Metric'
     R_function = robjects.r(function)
-    r_metriclist = R_function(r_stream, *args, **kwargs)  # args and kwargs shouldn't be needed in theory
+    r_metriclist = R_function(r_stream, *args, **kwargs)  
     r_dataframe = _R_metricList2DF(r_metriclist)
     df = pandas2ri.ri2py(r_dataframe)
     
