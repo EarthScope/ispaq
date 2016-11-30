@@ -1,6 +1,25 @@
-# ISPAQ
+# ISPAQ - IRIS System for Portable Assessment of Quality
 
-*IRIS System for Portable Assessment of Quality*
+ISPAQ is a python client that allows seismic data scientists and instrumentation operators
+to run data quality metrics on their own workstation, using much of same code base as is
+used in IRIS's MUSTANG data quality web service.
+
+Users have the ability to create personalized _preference files_ that list combinations
+of station specifiers and statistical metrics of interest, such that they can be run
+repeatedly over data from many different time periods.
+
+ISPAQ offers the option for access to FDSN Web Services to get raw data and metadata directly
+from selected data centers supporting the FDSN protocol.  Alternately, users can ready local files
+and metadata on their own workstations, possibly sourced directly from instrumentation, and construct
+on-the-spot data quality analyses on that data.
+
+Output is provided in csv format for tabular metrics, and Probability Density Functions can be
+plotted to PNG image files.
+
+The business logic for MUSTANG metrics is emulated through ObsPy and custom Python code and the
+core calculations are performed using the same R packages as used by MUSTANG.  Currently, only
+SEED formatted data and StationXML metadata is supported as source seismogram material.  RESP files
+and FDSN Web Service event files are also used in some situations.
 
 # Background
 
@@ -8,35 +27,32 @@
  has developed a comprehensive quality assurance system called
 [MUSTANG](http://service.iris.edu/mustang/).
 
-MUSTANG consists of several components:
+The MUSTANG system was built to operate at the IRIS DMC and is not generally portable. 
+The key MUSTANG component is the Metric Calculators, and those were always
+intended to be shared.  Whereas the results of MUSTANG calculations are stored in a database, and
+provided to users via web services, ISPAQ is intended to reproduce the process of calculating these
+metrics from the source data, such that results can be verified and alternate data sources not
+available in MUSTANG can be processed at the user's initiative.
 
- * a scheduling system that controls when metrics are computed on specific pieces of the IRIS seismic archive
- * a database to store results of those calculations
- * a system that determines when metrics should be refreshed due to changes in metadata, time series data, or algorithmic implementation
- * several dozen metric calculators that generate the QA related statistics
-
-The MUSTANG system was built to operate at the IRIS DMC and is not portable. 
-However, the key MUSTANG component is the Metric Calculators, and those were always
-intended to be shared. For seismic networks or experiments that do not have their 
-data managed by IRIS, we wish to develop an IRIS System for Portable Assessment of 
-Quality (ISPAQ). This will be a portable system for data centers or individual 
-field investigators to enable localized data quality assessment. ISPAQ will make
-use of FDSN web services through which the required information to make the statistical 
-calculations can be accessed. Necessarily, the system must be much less complex and 
-less automated than the IRIS MUSTANG implementation, but still enables seismic networks
-to perform quality assurance on the data from their networks and experiments.
-
-IRIS currently has approximately 50 MUSTANG algorithms that calculate metrics, most 
+IRIS currently has close to 50 MUSTANG algorithms that calculate metrics, most 
 written in R, that are now publicly available in the CRAN repository under the name 
-IRISMustangMetrics. The CRAN repository only contains algorithms written in R 
-(and R-compatible compiled code). Other MUSTANG quality metrics that are not written 
-in R are not intended to be part of ISPAQ at this time. More metrics will be added 
-to the repository in the future. The ISPAQ system must be dynamic, when a new metric 
-is included in the CRAN repository, ISPAQ would learn about it automatically and 
-enable the execution of the new metric algorithm on a local set of data. R provides 
-facilities for this update detection.
+[IRISMustangMetrics](http://cran.r-project.org/).  ISPAQ comes with the latest version of these packages
+available in CRAN and we provide an update capability in ISPAQ to allow users to seamlessly upgrade
+their R packages as IRIS provides them.
+
+The R package IRISMustangMetrics cannot include workflow and data selection
+business logic implemented at scale in MUSTANG, as much of this code is non-portable.  However, it
+is the goal of ISPAQ to provide a similar set of business logic in Python, such that the end result
+is identical or very similar to the results you will see in MUSTANG.  The end result is a lightweight
+and portable version of MUSTANG that users are free to leverage on their own hardware.
 
 # Installation
+
+ISPAQ must be installed on the user's system using very reliable tools for package transfer.  ISPAQ is being
+distributed through _GitHub_, via IRIS's public repository.  You will use a simple command to get a copy of
+the latest stable release.  In addition, you will use the _miniconda_ python package manager to create a
+customized environment designed to run ISPAQ properly.  This will include an localized installation of ObsPy and R.
+Just follow the steps below to begin running ISPAQ.
 
 ## Download the Source Code
 
