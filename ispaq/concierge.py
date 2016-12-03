@@ -336,7 +336,6 @@ class Concierge(object):
                         if self.dataselect_client is None:	# Local data
                             # Loop over the available data and add to dataframe if they aren't yet
                             filename = '%s.%s.%s.%s.%s' % (_network, _station, _location, _channel, _starttime.strftime('%Y.%j'))
-                            self.logger.debug("read local miniseed file for %s..." % filename)
                             filepattern = self.dataselect_url + '/' + filename + '*' # Allow for possible quality codes
                             matching_files = glob.glob(filepattern)	# all files matching our sncls
 
@@ -598,11 +597,12 @@ class Concierge(object):
             _endtime = endtime
 
         if self.dataselect_client is None:
-            # Read local MINIseed file and convert to R_Stream
+            # Read local MiniSEED file and convert to R_Stream
             nday = int((_endtime - .00001).julday - _starttime.julday) + 1   # subtract a short amount of time for 00:00:00 endtimes
 
             if (nday == 1):
                 filename = '%s.%s.%s.%s.%s' % (network, station, location, channel, _starttime.strftime('%Y.%j'))
+                self.logger.debug("read local miniseed file for %s..." % filename)
                 filepattern = self.dataselect_url + '/' + filename + '*' # Allow for possible quality codes
                 matching_files = glob.glob(filepattern)
 
@@ -612,6 +612,7 @@ class Concierge(object):
                     filepath=matching_files[0]
                     if (len(matching_files) > 1):
                         self.logger.warning("Multiple files found matching" '%s -- using %s' % (filepattern, filepath))
+                    
                     try:
                         # Get the ObsPy version of the stream
                         py_stream = obspy.read(filepath)
@@ -647,9 +648,9 @@ class Concierge(object):
                         raise
 
             else:
-                err_msg = "time request spans day boundary, %s - %s, No data will be read" % (_starttime,_endtime)
-                self.logger.error(err_msg)
-                raise Exception(err_msg + 'def')
+                #err_msg = "get_dataselect time request spans day boundary, %s - %s, No local data will be read" % (_starttime,_endtime)
+                #self.logger.error(err_msg)
+                #raise Exception(err_msg + 'def')
 
 		# create tempfile
 		x = tempfile.TemporaryFile()
@@ -666,6 +667,7 @@ class Concierge(object):
 			end = _endtime
 
 		    filename = '%s.%s.%s.%s.%s' % (network, station, location, channel, start.strftime('%Y.%j'))
+                    self.logger.debug("read local miniseed file for %s..." % filename)
 		    filepattern = self.dataselect_url + '/' + filename + '*' # Allow for possible quality codes
 		    matching_files = glob.glob(filepattern)
 		
@@ -674,20 +676,20 @@ class Concierge(object):
 		    
 		    else:
 			filepath = matching_files[0]
-			print("filepath", filepath)
-
+             
 			if (len(matching_files) > 1):
 			    self.logger.warning("Multiple files found matching" '%s -- using %s' % (filepattern, filepath))
-			for line in filepath:
-			    x.write(line)
-                # end day loop
+
+                        # write miniseed to tempfile
+                        with open(filepath, 'rb') as f:
+                            x.write(f.read())
+                            x.flush()
+                        f.close()
 
 		try:
-		    # Get the ObsPy version of the stream
-		    py_stream = obspy.read(x)
-                    py_stream = py_stream.slice(start, end)
-		    x.close()
-		    print("start",start,"end",end)
+                    py_stream = obspy.read(x)
+                    x.close()
+                    py_stream = py_stream.slice(_starttime, _endtime)
                     # NOTE:  ObsPy does not store state-of-health flags with each stream.
 		    flag_dict = obspy.io.mseed.util.get_timing_and_data_quality(filepath)
 		    act_flags = [0,0,0,0,0,0,0,0] # TODO:  Find a way to read act_flags
