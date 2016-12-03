@@ -119,7 +119,7 @@ conda install -c r r-tidyr=0.3.1
 conda install -c r r-quadprog=1.5.5
 conda install -c bioconda r-signal=0.7.6
 conda install -c bioconda r-pracma=1.8.8
-conda install -c r rpy2=2.7.0
+conda install -c bioconda rpy2=2.7.8
 ```
 
 See what is installed in our (ispaq) environment with:
