@@ -166,7 +166,7 @@ class UserRequest(object):
                     currentSection = preferences
                     multiValue = False
                 elif currentSection is not None:  # line following header
-                    entry = line.split(':')
+                    entry = line.split(':',1)
                     if len(entry) <= 1:  # empty line
                         name, values = None, None
                         continue

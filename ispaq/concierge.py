@@ -105,6 +105,9 @@ class Concierge(object):
             # Get data from FDSN dataselect service
             self.dataselect_url = URL_MAPPINGS[user_request.dataselect_url]
             self.dataselect_client = Client(user_request.dataselect_url)
+        elif "http://" in user_request.dataselect_url:
+            self.dataselect_url = user_request.dataselect_url
+            self.dataselect_client = Client(user_request.dataselect_url)
         else:
             if os.path.exists(os.path.abspath(user_request.dataselect_url)):
                 # Get data from local miniseed files
@@ -119,6 +122,9 @@ class Concierge(object):
         if user_request.event_url in URL_MAPPINGS.keys():
             self.event_url = URL_MAPPINGS[user_request.event_url]
             self.event_client = Client(user_request.event_url)
+        elif "http://" in user_request.event_url:
+            self.event_url = user_request.event_url
+            self.event_client = Client(user_request.event_url)
         else:
             if os.path.exists(os.path.abspath(user_request.event_url)):
                 # Get data from local QUAKEML files
@@ -132,6 +138,9 @@ class Concierge(object):
         # Add station clients and URLs or reference a local file
         if user_request.station_url in URL_MAPPINGS.keys():
             self.station_url = URL_MAPPINGS[user_request.station_url]
+            self.station_client = Client(user_request.station_url)
+        elif "http://" in user_request.station_url:
+            self.station_url = user_request.station_url
             self.station_client = Client(user_request.station_url)
         else:
             if os.path.exists(os.path.abspath(user_request.station_url)):
