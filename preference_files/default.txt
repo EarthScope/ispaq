@@ -76,6 +76,9 @@ SNCLs:
 #   BGR, EMSC, ETH, GEONET, GFZ, INGV, IPGP, IRIS, ISC, KOERI,
 #   LMU, NCEDC, NIEP, ODC, ORFEUS, RESIF, SCEDC, USGS, USP
 #
+#   FDSN service providers may also be specified as an http:// address:
+#   example, http://service.iris.edu 
+#
 #   Specified FDSN service provider must be the same for dataselect_url and station_url
 #   and you should not specify one as FDSN and the other as local
 #
