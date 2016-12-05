@@ -169,7 +169,7 @@ class UserRequest(object):
                     multiValue = False
                 elif currentSection is not None:  # line following header
                     isPreferences = True
-                    entry = line.split(':')
+                    entry = line.split(':',1)
                     if len(entry) <= 1:  # empty line
                         name, values = None, None
                         continue
@@ -230,7 +230,7 @@ class UserRequest(object):
                 # assign web service defaults
                 self.dataselect_url = 'IRIS'
                 self.event_url = 'FDSN'
-
+                self.station_url = 'IRIS'
 
             #     Additional metadata for local access   ----------------------
             self.resp_dir = None
@@ -254,9 +254,7 @@ class UserRequest(object):
                 self.sigfigs = 6
 
             #     Find required metric functions     --------------------------
-            logger.debug('Find required metric functions')
-
-            logger.debug('Validating preferred metrics ...')
+            logger.debug('Find required metric functions ...')
 
             # Obtain a dictionary from ispaq.irismustangmetrics of the following form:
             # {metric_function_1: <various metadata including list of metrics>}

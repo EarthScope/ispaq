@@ -76,6 +76,9 @@ SNCLs:
 #   BGR, EMSC, ETH, GEONET, GFZ, INGV, IPGP, IRIS, ISC, KOERI,
 #   LMU, NCEDC, NIEP, ODC, ORFEUS, RESIF, SCEDC, USGS, USP
 #
+#   FDSN service providers may also be specified as an http:// address:
+#   example, http://service.iris.edu 
+#
 #   Specified FDSN service provider must be the same for dataselect_url and station_url
 #   and you should not specify one as FDSN and the other as local
 #
@@ -89,8 +92,7 @@ SNCLs:
 
 Data_Access:
   dataselect_url: IRIS
-  event_url: USGS   # currently hardcoded to use USGS (http://earthquake.usgs.gov/fdsnws/event/1/) 
-                    # if local QUAKEML file is not specified
+  event_url: USGS   
   station_url: IRIS
   resp_dir :        # directory for local response RESP files, if used. 
   

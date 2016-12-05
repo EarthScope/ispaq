@@ -97,8 +97,8 @@ Now install the IRIS R packages:
 
 ```
 R CMD install seismicRoll_1.1.2.tar.gz 
-R CMD install IRISSeismic_1.3.5.tar.gz
-R CMD install IRISMustangMetrics_2.0.0.tar.gz 
+R CMD install IRISSeismic_1.3.9.tar.gz
+R CMD install IRISMustangMetrics_2.0.2.tar.gz 
 ```
 
 ### Alternative 2) Creating an environment by hand
@@ -119,7 +119,7 @@ conda install -c r r-tidyr=0.3.1
 conda install -c r r-quadprog=1.5.5
 conda install -c bioconda r-signal=0.7.6
 conda install -c bioconda r-pracma=1.8.8
-conda install -c r rpy2=2.7.0
+conda install -c bioconda rpy2=2.7.8
 ```
 
 See what is installed in our (ispaq) environment with:

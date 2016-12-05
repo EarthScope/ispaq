@@ -15,6 +15,8 @@ import sys
 import re
 import glob
 import math
+import fileinput
+import tempfile
 
 import pandas as pd
 
@@ -103,6 +105,9 @@ class Concierge(object):
             # Get data from FDSN dataselect service
             self.dataselect_url = URL_MAPPINGS[user_request.dataselect_url]
             self.dataselect_client = Client(user_request.dataselect_url)
+        elif ("http://" or "https://") in user_request.dataselect_url:
+            self.dataselect_url = user_request.dataselect_url
+            self.dataselect_client = Client(user_request.dataselect_url)
         else:
             if os.path.exists(os.path.abspath(user_request.dataselect_url)):
                 # Get data from local miniseed files
@@ -117,6 +122,9 @@ class Concierge(object):
         if user_request.event_url in URL_MAPPINGS.keys():
             self.event_url = URL_MAPPINGS[user_request.event_url]
             self.event_client = Client(user_request.event_url)
+        elif ("http://" or "https://") in user_request.event_url:
+            self.event_url = user_request.event_url
+            self.event_client = Client(user_request.event_url)
         else:
             if os.path.exists(os.path.abspath(user_request.event_url)):
                 # Get data from local QUAKEML files
@@ -130,6 +138,9 @@ class Concierge(object):
         # Add station clients and URLs or reference a local file
         if user_request.station_url in URL_MAPPINGS.keys():
             self.station_url = URL_MAPPINGS[user_request.station_url]
+            self.station_client = Client(user_request.station_url)
+        elif ("http://" or "https://") in user_request.station_url:
+            self.station_url = user_request.station_url
             self.station_client = Client(user_request.station_url)
         else:
             if os.path.exists(os.path.abspath(user_request.station_url)):
@@ -551,7 +562,7 @@ class Concierge(object):
     def get_dataselect(self,
                        network=None, station=None, location=None, channel=None,
                        starttime=None, endtime=None, quality=None,
-                       inclusiveEnd=True, ignoreEpoch=False):
+                       inclusiveEnd=False, ignoreEpoch=False):
         """
         Returns an R Stream that can be passed to metrics calculation methods.
 
@@ -595,76 +606,134 @@ class Concierge(object):
             _endtime = endtime
 
         if self.dataselect_client is None:
-            # Read local MINIseed file and convert to R_Stream
+            # Read local MiniSEED file and convert to R_Stream
             nday = int((_endtime - .00001).julday - _starttime.julday) + 1   # subtract a short amount of time for 00:00:00 endtimes
-            # Create empty stream
-            py_stream = obspy.Stream()
 
-            for day in range(nday):
-                start = (_starttime + day * 86400)
-                start = start - (start.hour * 3600 + start.minute * 60 + start.second + start.microsecond * .000001)
-                end = start + 86400
-
-                if start <= _starttime:
-                    start = _starttime
-                if end >= _endtime:
-                    end = _endtime
-
-                filename = '%s.%s.%s.%s.%s' % (network, station, location, channel, start.strftime('%Y.%j'))
+            if (nday == 1):
+                filename = '%s.%s.%s.%s.%s' % (network, station, location, channel, _starttime.strftime('%Y.%j'))
+                self.logger.debug("read local miniseed file for %s..." % filename)
                 filepattern = self.dataselect_url + '/' + filename + '*' # Allow for possible quality codes
                 matching_files = glob.glob(filepattern)
-            
+
                 if (len(matching_files) == 0):
                     self.logger.info("No files found matching '%s'" % (filepattern))
-                
                 else:
-                    filepath = matching_files[0]
+                    filepath=matching_files[0]
                     if (len(matching_files) > 1):
                         self.logger.warning("Multiple files found matching" '%s -- using %s' % (filepattern, filepath))
+                    
                     try:
                         # Get the ObsPy version of the stream
-                        py_stream2 = obspy.read(filepath)
-                        py_stream2 = py_stream2.slice(start, end)
-                        # combine the two streams, then merge them together into one stream
-                        py_stream += py_stream2
-                        py_stream.merge()
-
-                        # NOTE:  ObsPy does not store state-of-health flags with each stream.
-                        # NOTE:  We need to read them in separately from the miniseed file.
-                        # TODO: add the flags for each day of data 
+                        py_stream = obspy.read(filepath)
+                        py_stream = py_stream.slice(_starttime, _endtime)
                         flag_dict = obspy.io.mseed.util.get_timing_and_data_quality(filepath)
                         act_flags = [0,0,0,0,0,0,0,0] # TODO:  Find a way to read act_flags
                         io_flags = [0,0,0,0,0,0,0,0] # TODO:  Find a way to read io_flags
                         dq_flags = flag_dict['data_quality_flags']
-
                         # NOTE:  ObsPy does not store station metadata with each trace.
                         # NOTE:  We need to read them in separately from station metadata.
-                        # NOTE:  This should be consistent for each day of data
-                        availability = self.get_availability(network, station, location, channel, _starttime, _endtime)
-                        sensor = availability.instrument[0]
-                        scale = availability.scale[0]
-                        scalefreq = availability.scalefreq[0]
-                        scaleunits = availability.scaleunits[0]
-                        if sensor is None: sensor = ""           # default from IRISSeismic Trace class prototype
-                        if scale is None: scale = 1.0            # default from IRISSeismic Trace class prototype
-                        if scalefreq is None: scalefreq = 1.0    # default from IRISSeismic Trace class prototype
-                        if scaleunits is None: scaleunits = ""   # default from IRISSeismic Trace class prototype
-                        latitude = availability.latitude[0]
-                        longitude = availability.longitude[0]
-                        elevation = availability.elevation[0]
-                        depth = availability.depth[0]
-                        azimuth = availability.azimuth[0]
-                        dip = availability.dip[0]
-
-                        # Create the IRISSeismic version of the stream
-                        r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags,
-                                                        sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
+			availability = self.get_availability(network, station, location, channel, _starttime, _endtime)
+			sensor = availability.instrument[0]
+			scale = availability.scale[0]
+			scalefreq = availability.scalefreq[0]
+			scaleunits = availability.scaleunits[0]
+			if sensor is None: sensor = ""           # default from IRISSeismic Trace class prototype
+			if scale is None: scale = 1.0            # default from IRISSeismic Trace class prototype
+			if scalefreq is None: scalefreq = 1.0    # default from IRISSeismic Trace class prototype
+			if scaleunits is None: scaleunits = ""   # default from IRISSeismic Trace class prototype
+			latitude = availability.latitude[0]
+			longitude = availability.longitude[0]
+			elevation = availability.elevation[0]
+			depth = availability.depth[0]
+			azimuth = availability.azimuth[0]
+			dip = availability.dip[0]
+			# Create the IRISSeismic version of the stream
+			r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags,
+							sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
                     except Exception as e:
                         err_msg = "Error reading in local waveform from %s" % filepath
                         self.logger.debug(e)
                         self.logger.error(err_msg)
                         raise
-            # End day loop
+
+            else:
+                #err_msg = "get_dataselect time request spans day boundary, %s - %s, No local data will be read" % (_starttime,_endtime)
+                #self.logger.error(err_msg)
+                #raise Exception(err_msg + 'def')
+
+		# create tempfile
+		x = tempfile.TemporaryFile()
+
+                # begin day loop
+		for day in range(nday):
+		    start = (_starttime + day * 86400)
+		    start = start - (start.hour * 3600 + start.minute * 60 + start.second + start.microsecond * .000001)
+		    end = start + 86400
+
+		    if start <= _starttime:
+			start = _starttime
+		    if end >= _endtime:
+			end = _endtime
+
+		    filename = '%s.%s.%s.%s.%s' % (network, station, location, channel, start.strftime('%Y.%j'))
+                    self.logger.debug("read local miniseed file for %s..." % filename)
+		    filepattern = self.dataselect_url + '/' + filename + '*' # Allow for possible quality codes
+		    matching_files = glob.glob(filepattern)
+		
+		    if (len(matching_files) == 0):
+                        err_msg = "No files found matching '%s'" % (filepattern)
+                        raise Exception(err_msg)
+		    
+		    else:
+			filepath = matching_files[0]
+             
+			if (len(matching_files) > 1):
+			    self.logger.warning("Multiple files found matching" '%s -- using %s' % (filepattern, filepath))
+
+                        # write miniseed to tempfile
+                        with open(filepath, 'rb') as f:
+                            x.write(f.read())
+                            x.flush()
+                        f.close()
+
+		try:
+                    py_stream = obspy.read(x)
+                    x.close()
+                    py_stream = py_stream.slice(_starttime, _endtime)
+                    # NOTE:  ObsPy does not store state-of-health flags with each stream.
+		    flag_dict = obspy.io.mseed.util.get_timing_and_data_quality(filepath)
+		    act_flags = [0,0,0,0,0,0,0,0] # TODO:  Find a way to read act_flags
+		    io_flags = [0,0,0,0,0,0,0,0] # TODO:  Find a way to read io_flags
+		    dq_flags = flag_dict['data_quality_flags']
+
+		    # NOTE:  ObsPy does not store station metadata with each trace.
+		    # NOTE:  We need to read them in separately from station metadata.
+		    # NOTE:  This should be consistent for each day of data
+		    availability = self.get_availability(network, station, location, channel, _starttime, _endtime)
+		    sensor = availability.instrument[0]
+		    scale = availability.scale[0]
+		    scalefreq = availability.scalefreq[0]
+		    scaleunits = availability.scaleunits[0]
+		    if sensor is None: sensor = ""           # default from IRISSeismic Trace class prototype
+		    if scale is None: scale = 1.0            # default from IRISSeismic Trace class prototype
+		    if scalefreq is None: scalefreq = 1.0    # default from IRISSeismic Trace class prototype
+		    if scaleunits is None: scaleunits = ""   # default from IRISSeismic Trace class prototype
+		    latitude = availability.latitude[0]
+		    longitude = availability.longitude[0]
+		    elevation = availability.elevation[0]
+		    depth = availability.depth[0]
+		    azimuth = availability.azimuth[0]
+		    dip = availability.dip[0]
+
+		    # Create the IRISSeismic version of the stream
+		    r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags,
+						    sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
+			
+                except Exception as e:
+                    err_msg = "Error reading in local waveform from %s" % filepath
+                    self.logger.debug(e)
+                    self.logger.error(err_msg)
+                    raise
 
         else:
             # Read from FDSN web services
