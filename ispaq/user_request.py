@@ -141,16 +141,18 @@ class UserRequest(object):
             else:
                 self.requested_endtime = UTCDateTime(args.endtime)
 
-            # metric and sncl sets
+            # metric and sncl sets -- which could also be just metrics and sncls if
+            # we are not using a preferences file
             self.requested_metric_set = args.metrics
             self.requested_sncl_set = args.sncls
 
             #     Load preferences from file      -----------------------------
 
-            # Metric and SNCL information from the preferences file
+            # Metric and SNCL information from the preferences file -- optional
             metric_sets, sncl_sets, data_access, preferences = {}, {}, {}, {}
             currentSection = None
             multiValue = False
+            isPreferences = False # will be set to true if we are reading a preferences file
             for line in args.preferences_file:  # parse file
                 line = line.split('#')[0].strip()  # remove comments
                 if line.lower() == "metrics:":  # metric header
@@ -166,6 +168,7 @@ class UserRequest(object):
                     currentSection = preferences
                     multiValue = False
                 elif currentSection is not None:  # line following header
+                    isPreferences = True
                     entry = line.split(':')
                     if len(entry) <= 1:  # empty line
                         name, values = None, None
@@ -202,22 +205,32 @@ class UserRequest(object):
                 self.data_access = data_access
                 self.preferences = preferences
                 return
+            
+            # Finalize our assignments -- if we had no preferences file
+            # then assign directly from command line and from defaults
+            if isPreferences:
+                # we are using a preferences file (-P)
+                # Check for invalid arguments by comparing command line args
+                # to what we read from the preferences file
+                try:
+                    self.metrics = metric_sets[self.requested_metric_set]
+                except KeyError as e:
+                    logger.critical('Invalid metric_set name: %s' % (e))
+                    raise SystemExit
+                try:
+                    self.sncls = sncl_sets[self.requested_sncl_set]
+                except KeyError as e:
+                    logger.critical('Invalid sncl_set name: %s' % (e))
+                    raise SystemExit
+                self.dataselect_url = data_access['dataselect_url']
+                self.event_url = data_access['event_url']
+                self.station_url = data_access['station_url']
+            else:
+                # no preferences file, use command line settings and
+                # assign web service defaults
+                self.dataselect_url = 'IRIS'
+                self.event_url = 'FDSN'
 
-            # Check for invalid arguments
-            try:
-                self.metrics = metric_sets[self.requested_metric_set]
-            except KeyError as e:
-                logger.critical('Invalid metric_set name: %s' % (e))
-                raise SystemExit
-            try:
-                self.sncls = sncl_sets[self.requested_sncl_set]
-            except KeyError as e:
-                logger.critical('Invalid sncl_set name: %s' % (e))
-                raise SystemExit
-
-            self.dataselect_url = data_access['dataselect_url']
-            self.event_url = data_access['event_url']
-            self.station_url = data_access['station_url']
 
             #     Additional metadata for local access   ----------------------
             self.resp_dir = None
