@@ -672,7 +672,8 @@ class Concierge(object):
 		    matching_files = glob.glob(filepattern)
 		
 		    if (len(matching_files) == 0):
-			self.logger.info("No files found matching '%s'" % (filepattern))
+                        err_msg = "No files found matching '%s'" % (filepattern)
+                        raise Exception(err_msg)
 		    
 		    else:
 			filepath = matching_files[0]
