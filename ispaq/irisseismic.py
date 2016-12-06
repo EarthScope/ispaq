@@ -826,7 +826,7 @@ def trim_taper_filter(stN, stE, stZ, max_length, taper, filterArgs):
     return(stN, stE, stZ, HZ)
 
 
-# rotate2D is needed in orientationCheck_metrics.py
+# rotate2D is needed in orientationCheck_metrics.py 
 def rotate2D(st1, st2, angle):
     R_function = robjects.r('IRISSeismic::rotate2D')
     r_list = R_function(st1, st2, angle)
