@@ -82,6 +82,8 @@ SNCLs:
 #   Specified FDSN service provider must be the same for dataselect_url and station_url
 #   and you should not specify one as FDSN and the other as local
 #
+#   The FDSN event service must provide an option for text output.
+#
 # To use local data you must instead specify local paths:
 # 
 #  * dataselect_url = directory containing miniseed files
