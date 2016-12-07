@@ -624,8 +624,10 @@ class Concierge(object):
                     
                     try:
                         # Get the ObsPy version of the stream
+                        if not inclusiveEnd:
+                            _endtime = _endtime - 0.000001
                         py_stream = obspy.read(filepath)
-                        py_stream = py_stream.slice(_starttime, _endtime)
+                        py_stream = py_stream.slice(_starttime, _endtime, nearest_sample=False)
                         flag_dict = obspy.io.mseed.util.get_timing_and_data_quality(filepath)
                         act_flags = [0,0,0,0,0,0,0,0] # TODO:  Find a way to read act_flags
                         io_flags = [0,0,0,0,0,0,0,0] # TODO:  Find a way to read io_flags
@@ -699,7 +701,9 @@ class Concierge(object):
 		try:
                     py_stream = obspy.read(x)
                     x.close()
-                    py_stream = py_stream.slice(_starttime, _endtime)
+                    if not inclusiveEnd:
+                            _endtime = _endtime - 0.000001
+                    py_stream = py_stream.slice(_starttime, _endtime, nearest_sample=False) 
                     # NOTE:  ObsPy does not store state-of-health flags with each stream.
 		    flag_dict = obspy.io.mseed.util.get_timing_and_data_quality(filepath)
 		    act_flags = [0,0,0,0,0,0,0,0] # TODO:  Find a way to read act_flags

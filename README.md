@@ -96,9 +96,9 @@ conda list
 Now install the IRIS R packages:
 
 ```
-R CMD install seismicRoll_1.1.2.tar.gz 
-R CMD install IRISSeismic_1.3.9.tar.gz
-R CMD install IRISMustangMetrics_2.0.2.tar.gz 
+R CMD INSTALL seismicRoll_1.1.2.tar.gz 
+R CMD INSTALL IRISSeismic_1.3.9.tar.gz
+R CMD INSTALL IRISMustangMetrics_2.0.2.tar.gz 
 ```
 
 ### Alternative 2) Creating an environment by hand
@@ -115,7 +115,6 @@ conda install -c r r-devtools=1.9.1
 conda install -c r r-rcurl=1.95_4.7
 conda install -c r r-xml=3.98_1.3 
 conda install -c r r-dplyr=0.4.3
-conda install -c r r-tidyr=0.3.1
 conda install -c r r-quadprog=1.5.5
 conda install -c bioconda r-signal=0.7.6
 conda install -c bioconda r-pracma=1.8.8
@@ -132,9 +131,9 @@ conda list
 Now install the IRIS R packages:
 
 ```
-R CMD install seismicRoll_1.1.2.tar.gz 
-R CMD install IRISSeismic_1.3.8.tar.gz
-R CMD install IRISMustangMetrics_2.0.0.tar.gz 
+R CMD INSTALL seismicRoll_1.1.2.tar.gz 
+R CMD INSTALL IRISSeismic_1.3.9.tar.gz
+R CMD INSTALL IRISMustangMetrics_2.0.2.tar.gz 
 ```
 
 # First use

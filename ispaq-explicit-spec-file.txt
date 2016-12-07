@@ -78,7 +78,6 @@ https://conda.anaconda.org/r/osx-64/r-spatial-7.3_11-r3.2.2_0a.tar.bz2
 https://conda.anaconda.org/r/osx-64/r-stringi-1.0_1-r3.2.2_0a.tar.bz2
 https://conda.anaconda.org/r/osx-64/r-stringr-1.0.0-r3.2.2_0a.tar.bz2
 https://conda.anaconda.org/r/osx-64/r-survival-2.38_3-r3.2.2_0a.tar.bz2
-https://conda.anaconda.org/r/osx-64/r-tidyr-0.3.1-r3.2.2_0a.tar.bz2
 https://conda.anaconda.org/r/osx-64/r-whisker-0.3_2-r3.2.2_2a.tar.bz2
 https://conda.anaconda.org/r/osx-64/r-xml-3.98_1.3-r3.2.2_0a.tar.bz2
 https://conda.anaconda.org/r/osx-64/r-xml2-0.1.2-r3.2.2_0a.tar.bz2

@@ -148,7 +148,7 @@ def transferFunction_metrics(concierge):
     logger = concierge.logger
 
     # Default parameters from IRISMustangUtils::generateMetrics_transferFunction or transferFunctionMetrics_exec.R
-    channelFilter = '[FCHBML][HN].' # Mary Templeton email on 2016-08-26
+    channelFilter = '[FCHBML][HN].' 
     
     # Container for all of the metrics dataframes generated
     dataframes = []
@@ -219,7 +219,6 @@ def transferFunction_metrics(concierge):
 	    dips = stationAvailability.dip.abs().drop_duplicates().sort_values().reset_index(drop=True)
 	
 	    for dip in dips:
-	
 		logger.debug('Working on dip %f' % (dip))
 	
 		# Find channels with the current dip
@@ -268,7 +267,7 @@ def transferFunction_metrics(concierge):
 			    else:
 				logger.warning('No data for %s from %s: %s' % (Zav1.snclId, concierge.dataselect_url, e))
 			    continue
-			
+
 			try:
 			    Zst2 = concierge.get_dataselect(Zav2.network, Zav2.station, Zav2.location, Zav2.channel, windowStart, windowEnd, inclusiveEnd=False)
 			except Exception as e:

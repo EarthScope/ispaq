@@ -54,7 +54,7 @@ Metrics:
 SNCLs:
 
   # For testing default combinations of metrics
-  basicStats: IU.ANMO.00.BH?
+  basicStats: IU.ADK.00.BH?
   gaps: II.KAPI.00.BH?
   stateOfHealth: IU.ANMO.00.BH?
   spikes: IU.RAO.10.BH?, IM.TX31..BH?
@@ -81,6 +81,8 @@ SNCLs:
 #
 #   Specified FDSN service provider must be the same for dataselect_url and station_url
 #   and you should not specify one as FDSN and the other as local
+#
+#   The FDSN event service must provide an option for text output.
 #
 # To use local data you must instead specify local paths:
 # 
