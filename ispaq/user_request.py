@@ -143,7 +143,7 @@ class UserRequest(object):
 
             # metric and sncl sets
             self.requested_metric_set = args.metrics
-            self.requested_sncl_set = args.sncls
+            self.requested_sncl_set = args.stations
 
             #     Load preferences from file      -----------------------------
 
@@ -202,16 +202,35 @@ class UserRequest(object):
                 self.data_access = data_access
                 self.preferences = preferences
                 return
+            
+            # Check for missing Data_Access values
+            for url in ["dataselect_url","station_url"]:
+                if url not in data_access.keys():
+                    logger.critical("preference file is missing Data_Access: %s entry." % url)
+                    raise SystemExit
+
+                if data_access[url] is None:
+                    logger.critical("preference file Data_Access: %s is not specified." % url)
+                    raise SystemExit
+
+            if "event_url" not in data_access.keys():
+                logger.warning("preference file is missing Data_Access: event_url entry. Defaulting to 'USGS'.")
+                data_access['event_url'] = 'USGS'
+
+            if data_access['event_url'] is None:
+                logger.warning("preference file Data_Access: event_url is not specified. Defaulting to 'USGS'.")
+                data_access['event_url'] = 'USGS'
+
             # Check for invalid arguments
             try:
                 self.metrics = metric_sets[self.requested_metric_set]
             except KeyError as e:
-                logger.critical('Invalid metric_set name: %s' % (e))
+                logger.critical('Invalid metric alias name: %s' % (e))
                 raise SystemExit
             try:
                 self.sncls = sncl_sets[self.requested_sncl_set]
             except KeyError as e:
-                logger.critical('Invalid sncl_set name: %s' % (e))
+                logger.critical('Invalid station alias name: %s' % (e))
                 raise SystemExit
 
             self.dataselect_url = data_access['dataselect_url']

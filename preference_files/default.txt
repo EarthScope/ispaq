@@ -54,7 +54,7 @@ Metrics:
 SNCLs:
 
   # For testing default combinations of metrics
-  basicStats: IU.ADK.00.BH?
+  basicStats: IU.ANMO.00.BH?
   gaps: II.KAPI.00.BH?
   stateOfHealth: IU.ANMO.00.BH?
   spikes: IU.RAO.10.BH?, IM.TX31..BH?
@@ -94,8 +94,8 @@ SNCLs:
 
 Data_Access:
   dataselect_url: IRIS
-  event_url: USGS   
   station_url: IRIS
+  event_url: USGS   
   resp_dir :        # directory for local response RESP files, if used. 
   
 
