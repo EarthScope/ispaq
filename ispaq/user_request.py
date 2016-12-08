@@ -193,6 +193,17 @@ class UserRequest(object):
                         logger.debug("set %s to first in %s" % (name,",".join(values)))
                         currentSection[name] = values[0]
                         
+            # Check for special keyword to exit after loading preferences
+            # Be sure to save object instance variables needed from the preference files
+            pref_keyword = "LOAD_PREFS_ONLY"
+            if pref_keyword in args.metrics:
+                self.metric_sets = metric_sets
+                self.sncl_sets = sncl_sets
+                self.data_access = data_access
+                self.preferences = preferences
+                return
+
+            # Check for missing Data_Access values
             for url in ["dataselect_url","station_url"]:
                 if url not in data_access.keys():
                     logger.critical("preference file is missing Data_Access: %s entry." % url)
@@ -209,16 +220,6 @@ class UserRequest(object):
             if data_access['event_url'] is None:
                 logger.warning("preference file event_url entry for Data_Access is not specified. Defaulting to 'USGS'.")
                 data_access['event_url'] = 'USGS'
-
-            # Check for special keyword to exit after loading preferences
-            # Be sure to save object instance variables needed from the preference files
-            pref_keyword = "LOAD_PREFS_ONLY"
-            if pref_keyword in args.metrics:
-                self.metric_sets = metric_sets
-                self.sncl_sets = sncl_sets
-                self.data_access = data_access
-                self.preferences = preferences
-                return
 
             # Check for invalid arguments
             try:
