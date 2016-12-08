@@ -28,7 +28,7 @@ def main():
                         help='endtime in ISO 8601 format')
     parser.add_argument('-M', '--metrics', required=False,
                         help='metric alias, defined in preference file')
-    parser.add_argument('-S', '--sncls', action='store', required=False,
+    parser.add_argument('-S', '--stations', action='store', required=False,
                         help='stations alias, defined in preference file')
     parser.add_argument('-P', '--preferences-file', default=os.path.expanduser('./preference_files/default.txt'),
                         type=argparse.FileType('r'), help='    location of preference file')
@@ -85,9 +85,9 @@ def main():
             logger.critical('argument -M/--metrics is required')
             raise SystemExit
             
-        # sncl sets
-        if args.sncls is None:
-            logger.critical('argument -S/--sncls is required')
+        # stations sets
+        if args.stations is None:
+            logger.critical('argument -S/--stations is required')
             raise SystemExit
     
     

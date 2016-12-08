@@ -94,8 +94,8 @@ SNCLs:
 
 Data_Access:
   dataselect_url: IRIS
-  event_url: USGS   
   station_url: IRIS
+  event_url: USGS   
   resp_dir :        # directory for local response RESP files, if used. 
   
 

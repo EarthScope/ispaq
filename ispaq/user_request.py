@@ -143,7 +143,7 @@ class UserRequest(object):
 
             # metric and sncl sets
             self.requested_metric_set = args.metrics
-            self.requested_sncl_set = args.sncls
+            self.requested_sncl_set = args.stations
 
             #     Load preferences from file      -----------------------------
 
@@ -193,6 +193,31 @@ class UserRequest(object):
                         logger.debug("set %s to first in %s" % (name,",".join(values)))
                         currentSection[name] = values[0]
                         
+            if "dataselect_url" not in data_access.keys():
+                logger.critical("preference file is missing Data_Access: dataselect_url entry.")
+                raise SystemExit
+
+            if data_access['dataselect_url'] is None:
+                logger.critical("preference file Data_Access: dataselect_url is not specified.")
+                raise SystemExit
+
+            if "station_url" not in data_access.keys():
+                logger.critical("preference file is missing Data_Access: station_url entry.")
+                raise SystemExit
+
+            if data_access['station_url'] is None:
+                logger.critical("preference file Data_Access: station_url entry is not specified.")
+                raise SystemExit
+
+            if "event_url" not in data_access.keys():
+                logger.warning("preference file is missing event_url entry for Data_Access. Defaulting to 'USGS'.")
+                data_access['event_url'] = 'USGS'
+
+            if data_access['event_url'] is None:
+                logger.warning("preference file event_url entry for Data_Access is not specified. Defaulting to 'USGS'.")
+                data_access['event_url'] = 'USGS'
+         
+
             # Check for special keyword to exit after loading preferences
             # Be sure to save object instance variables needed from the preference files
             pref_keyword = "LOAD_PREFS_ONLY"
@@ -207,12 +232,12 @@ class UserRequest(object):
             try:
                 self.metrics = metric_sets[self.requested_metric_set]
             except KeyError as e:
-                logger.critical('Invalid metric_set name: %s' % (e))
+                logger.critical('Invalid metric alias name: %s' % (e))
                 raise SystemExit
             try:
                 self.sncls = sncl_sets[self.requested_sncl_set]
             except KeyError as e:
-                logger.critical('Invalid sncl_set name: %s' % (e))
+                logger.critical('Invalid station alias name: %s' % (e))
                 raise SystemExit
 
             self.dataselect_url = data_access['dataselect_url']
