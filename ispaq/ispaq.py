@@ -12,12 +12,14 @@ import argparse
 import datetime
 import logging
 
-__version__ = "0.7.23x"
+__version__ = "0.7.25x"
 
 
 def main():
 
     # Parse arguments ----------------------------------------------------------
+    
+    default_preference_file = './preference_files/default.txt'  # we will use this pref file if one is not specified
     
     parser = argparse.ArgumentParser(description=__doc__.strip())
     parser.add_argument('-V', '--version', action='version',
@@ -27,10 +29,10 @@ def main():
     parser.add_argument('--endtime', action='store', required=False,
                         help='endtime in ISO 8601 format')
     parser.add_argument('-M', '--metrics', required=False,
-                        help='name of metric to calculate')
+                        help='metric alias, defined in preference file')
     parser.add_argument('-S', '--sncls', action='store', required=False,
-                        help='Network.Station.Location.Channel identifier (e.g. US.OXF..BHZ)')
-    parser.add_argument('-P', '--preferences-file', default=os.path.expanduser('./preference_files/default.txt'),
+                        help='stations alias, defined in preference file')
+    parser.add_argument('-P', '--preferences-file', default=os.path.expanduser(default_preference_file),
                         type=argparse.FileType('r'), help='location of preference file')
     parser.add_argument('--log-level', action='store', default='INFO',
                         choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],
@@ -38,10 +40,13 @@ def main():
     parser.add_argument('-A', '--append', action='store_true', default=True,
                         help='append to TRANSCRIPT file rather than overwriting')
     parser.add_argument('-U', '--update-r', action='store_true', default=False,
-                        help='report on R package updates')
+                        help='check CRAN for more recent IRIS Mustang R package versions')
 
-    args = parser.parse_args(sys.argv[1:])
-    
+    try:
+        args = parser.parse_args(sys.argv[1:])
+    except IOError, msg:
+        parser.error(str(msg))   # we may encounter an error accessing the indicated file
+        raise SystemExit
     
     # Set up logging -----------------------------------------------------------
     
@@ -81,12 +86,12 @@ def main():
             raise SystemExit
     
         # metric sets
-        if args.starttime is None:
+        if args.metrics is None:
             logger.critical('argument -M/--metrics is required')
             raise SystemExit
             
         # sncl sets
-        if args.starttime is None:
+        if args.sncls is None:
             logger.critical('argument -S/--sncls is required')
             raise SystemExit
     
