@@ -214,11 +214,11 @@ class UserRequest(object):
                     raise SystemExit
 
             if "event_url" not in data_access.keys():
-                logger.warning("preference file is missing event_url entry for Data_Access. Defaulting to 'USGS'.")
+                logger.warning("preference file is missing Data_Access: event_url entry. Defaulting to 'USGS'.")
                 data_access['event_url'] = 'USGS'
 
             if data_access['event_url'] is None:
-                logger.warning("preference file event_url entry for Data_Access is not specified. Defaulting to 'USGS'.")
+                logger.warning("preference file Data_Access: event_url is not specified. Defaulting to 'USGS'.")
                 data_access['event_url'] = 'USGS'
 
             # Check for invalid arguments
