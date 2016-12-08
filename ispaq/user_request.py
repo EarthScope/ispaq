@@ -12,6 +12,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 import json
+import re
 
 from obspy import UTCDateTime
 
@@ -221,17 +222,24 @@ class UserRequest(object):
                 logger.warning("preference file Data_Access: event_url is not specified. Defaulting to 'USGS'.")
                 data_access['event_url'] = 'USGS'
 
-            # Check for invalid arguments
+            # assign station and metrics aliases 
             try:
                 self.metrics = metric_sets[self.requested_metric_set]
             except KeyError as e:
-                logger.critical('Invalid metric alias name: %s' % (e))
-                raise SystemExit
+                # assign indicated metric anyway and we will perform a validation check
+                self.metrics = e
+
             try:
                 self.sncls = sncl_sets[self.requested_sncl_set]
             except KeyError as e:
-                logger.critical('Invalid station alias name: %s' % (e))
-                raise SystemExit
+                # a non-matching station alias might be an actual SNCL name
+                # instead of a preferences alias
+                if re.match('\W+?\.\W+?\.\W+?\.\W+?', e):
+                    self.sncls = e
+                else:
+                    logger.critical('Invalid station parameter: %s' % (e))
+                    raise SystemExit
+            
 
             self.dataselect_url = data_access['dataselect_url']
             self.event_url = data_access['event_url']
@@ -291,6 +299,14 @@ class UserRequest(object):
             invalid_metrics = set(self.metrics).difference(valid_metrics)
             if len(invalid_metrics):
                 logger.info('The following invalid metric names were ignored: ' + str(invalid_metrics))
+                
+            # check for empty sncl and metrics entries
+            if self.sncls is None or len(set(self.sncls)) == 0:
+                logger.critical('No valid stations exist')
+                raise SystemExit
+            if self.metrics is None or len(set(self.metrics)) == 0:
+                logger.critical('No valid metrics exist')
+                raise SystemExit
             
             # Now reconstruct the reorganized function_by_logic dictionary with only 
             # user requested logic types, functions and metrics.
