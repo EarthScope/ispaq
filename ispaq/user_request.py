@@ -73,7 +73,7 @@ class UserRequest(object):
 
         #     Initialize a dummy object     -----------------------------------
         
-        logger.debug("User request init.")
+        logger.debug("User request initialization")
  
         if dummy:
             # Information coming in from the command line
@@ -230,8 +230,7 @@ class UserRequest(object):
             except KeyError as e:
                 # assign indicated metric anyway and we will perform a validation check
                 logger.debug('Explicit metric detected %s' % e)
-                ##self.metrics = str(e).split(',')  # allow for comma separated elements - why not?
-                self.metrics = [self.requested_metric_set,]
+                self.metrics = self.requested_metric_set.split(',')  # allow for comma-separated entries
 
             try:
                 self.sncls = sncl_sets[self.requested_sncl_set]  # list assignment
@@ -240,9 +239,8 @@ class UserRequest(object):
                 # instead of a preferences alias
                 logger.debug('Explicit SNCL detected %s' % e)
                 reg_expr = '([a-zA-Z0-9_*?]+?\.){2}[a-zA-Z0-9_*?]*?\.[a-zA-Z0-9_*?]+?'
-                if re.search(reg_expr, e):
-                    ##self.sncls = str(e).split(',')  # allow for comma separated elements - why not?
-                    self.sncls = [self.requested_sncl_set,]
+                if re.search(reg_expr, self.requested_sncl_set):  # best guess for validity
+                    self.sncls = self.requested_sncl_set.split(',')  # allow for comma-separated entries
                 else:
                     logger.critical('Invalid station parameter: %s' % e)
                     raise SystemExit
@@ -296,13 +294,10 @@ class UserRequest(object):
             # Loop over all default functions to see if any associated metrics were requested
             for function_name in default_function_dict:
                 default_function = default_function_dict[function_name]
-                logger.debug('default_function[metrics]: %s' % default_function['metrics'])
                 for metric in self.metrics:
-                    logger.debug('compare to: %s' % metric)
                     if metric in default_function['metrics']:
                         valid_function_names.add(function_name)
                         valid_logic_types.add(default_function['businessLogic'])
-                        logger.debug('** valid metric add: %s' % metric)
                         valid_metrics.add(metric)
 
             # Warn of invalid metrics
