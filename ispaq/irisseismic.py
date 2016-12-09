@@ -242,7 +242,7 @@ def R_Trace(trace,
     """
     r_trace = robjects.r('new("Trace")')
     r_trace = _R_initialize(r_trace,
-                           id=trace.id,
+                           id=".".join([trace.id,trace.stats.mseed.dataquality]),
                            stats=R_TraceHeader(trace.stats, latitude, longitude, elevation, depth, azimuth, dip),
                            Sensor=sensor,
                            InstrumentSensitivity=scale, 
