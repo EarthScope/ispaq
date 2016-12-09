@@ -205,6 +205,7 @@ class UserRequest(object):
                 return
             
             # Check for missing Data_Access values
+            logger.debug('Check for missing URL values')
             for url in ["dataselect_url","station_url"]:
                 if url not in data_access.keys():
                     logger.critical("preference file is missing Data_Access: %s entry." % url)
@@ -223,21 +224,27 @@ class UserRequest(object):
                 data_access['event_url'] = 'USGS'
 
             # assign station and metrics aliases 
+            logger.debug('Assign station and metrics aliases')
             try:
-                self.metrics = metric_sets[self.requested_metric_set]
+                self.metrics = metric_sets[self.requested_metric_set]  # list assignment
             except KeyError as e:
                 # assign indicated metric anyway and we will perform a validation check
-                self.metrics = e
+                logger.debug('Explicit metric detected %s' % e)
+                ##self.metrics = str(e).split(',')  # allow for comma separated elements - why not?
+                self.metrics = [self.requested_metric_set,]
 
             try:
-                self.sncls = sncl_sets[self.requested_sncl_set]
+                self.sncls = sncl_sets[self.requested_sncl_set]  # list assignment
             except KeyError as e:
                 # a non-matching station alias might be an actual SNCL name
                 # instead of a preferences alias
-                if re.match('\W+?\.\W+?\.\W+?\.\W+?', e):
-                    self.sncls = e
+                logger.debug('Explicit SNCL detected %s' % e)
+                reg_expr = '([a-zA-Z0-9_*?]+?\.){2}[a-zA-Z0-9_*?]*?\.[a-zA-Z0-9_*?]+?'
+                if re.search(reg_expr, e):
+                    ##self.sncls = str(e).split(',')  # allow for comma separated elements - why not?
+                    self.sncls = [self.requested_sncl_set,]
                 else:
-                    logger.critical('Invalid station parameter: %s' % (e))
+                    logger.critical('Invalid station parameter: %s' % e)
                     raise SystemExit
             
 
@@ -289,16 +296,22 @@ class UserRequest(object):
             # Loop over all default functions to see if any associated metrics were requested
             for function_name in default_function_dict:
                 default_function = default_function_dict[function_name]
+                logger.debug('default_function[metrics]: %s' % default_function['metrics'])
                 for metric in self.metrics:
+                    logger.debug('compare to: %s' % metric)
                     if metric in default_function['metrics']:
                         valid_function_names.add(function_name)
                         valid_logic_types.add(default_function['businessLogic'])
+                        logger.debug('** valid metric add: %s' % metric)
                         valid_metrics.add(metric)
 
             # Warn of invalid metrics
             invalid_metrics = set(self.metrics).difference(valid_metrics)
             if len(invalid_metrics):
                 logger.info('The following invalid metric names were ignored: ' + str(invalid_metrics))
+            if not len(valid_metrics):
+                logger.critical('No valid metrics exist')
+                raise SystemExit
                 
             # check for empty sncl and metrics entries
             if self.sncls is None or len(set(self.sncls)) == 0:
