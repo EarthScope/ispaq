@@ -1,43 +1,34 @@
 ################################################################################
 # Examples that use IRIS web services
 #
-# Preferences file should have:
+# If not using preference_files/default.txt, the preference file should be specified
+# using the -P option
 #
 
 # basicStats
-ispaq-runner.py -M basicStats -S basicStats --starttime 2010-04-20 --log-level INFO -A
+run_ispaq.py -M basicStats -S basicStats --starttime 2010-04-20 --log-level INFO -A
 # gaps
-ispaq-runner.py -M gaps -S gaps --starttime 2013-01-05 --log-level INFO -A
+run_ispaq.py -M gaps -S gaps --starttime 2013-01-05 --log-level INFO -A
 # Spikes
-ispaq-runner.py -M spikes -S spikes --starttime 2013-01-03 --log-level INFO -A
+run_ispaq.py -M spikes -S spikes --starttime 2013-01-03 --log-level INFO -A
 # STALTA
-ispaq-runner.py -M STALTA -S STALTA --starttime 2013-06-02 --log-level INFO -A
+run_ispaq.py -M STALTA -S STALTA --starttime 2013-06-02 --log-level INFO -A
 # SNR
-ispaq-runner.py -M SNR -S SNR --starttime 2013-06-02 --log-level INFO -A
+run_ispaq.py -M SNR -S SNR --starttime 2013-06-02 --log-level INFO -A
 # PSD
-ispaq-runner.py -M PSD -S PSD --starttime 2011-05-18 --log-level INFO -A
+run_ispaq.py -M PSD -S PSD --starttime 2011-05-18 --log-level INFO -A
 # PDF
-ispaq-runner.py -M PDF -S PDF --starttime 2013-06-01 --log-level INFO -A
+run_ispaq.py -M PDF -S PDF --starttime 2013-06-01 --log-level INFO -A
 # crossTalk
-ispaq-runner.py -M crossTalk -S crossTalk --starttime 2013-09-21 --log-level INFO -A
+run_ispaq.py -M crossTalk -S crossTalk --starttime 2013-09-21 --log-level INFO -A
 # pressureCorrelation
-ispaq-runner.py -M pressureCorrelation -S pressureCorrelation --starttime 2013-05-02 --log-level INFO -A
+run_ispaq.py -M pressureCorrelation -S pressureCorrelation --starttime 2013-05-02 --log-level INFO -A
 # crossCorrelation
-ispaq-runner.py -M crossCorrelation -S crossCorrelation --starttime 2011-01-01 --log-level INFO -A
+run_ispaq.py -M crossCorrelation -S crossCorrelation --starttime 2011-01-01 --log-level INFO -A
 # orientationCheck
-ispaq-runner.py -M orientationCheck -S orientationCheck --starttime 2015-11-24 --log-level INFO -A
+run_ispaq.py -M orientationCheck -S orientationCheck --starttime 2015-11-24 --log-level INFO -A
 # transferFunction
-ispaq-runner.py -M transferFunction -S transferFunction --starttime 2012-10-03 --log-level INFO -A
-
+run_ispaq.py -M transferFunction -S transferFunction --starttime 2012-10-03 --log-level INFO -A
 
 ################################################################################
-# Examples that use local files
-#
-# Preferences file should have:
-#
-
-# basicStats
-###
-# PSD
-###
 
