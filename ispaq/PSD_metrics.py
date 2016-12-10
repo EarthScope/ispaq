@@ -134,6 +134,9 @@ def PSD_metrics(concierge):
                         filepath = concierge.csv_output_dir + '/' + file_base_psd + "_" + av.snclId + "_PSDcorrected.csv"
                         logger.info('Writing corrected PSD to %s' % os.path.basename(filepath))
                         try:
+                            # Add target
+                            PSDcorrected['target'] = av.snclId
+                            PSDcorrected = PSDcorrected[['target','starttime','endtime','freq','power']]
                             utils.write_numeric_df(PSDcorrected, filepath, sigfigs=concierge.sigfigs)
                         except Exception as e:
                             logger.debug(e)
@@ -149,6 +152,7 @@ def PSD_metrics(concierge):
                             PDF['target'] = av.snclId
                             PDF['starttime'] = starttime
                             PDF['endtime'] = endtime
+                            PDF = PDF[['target','starttime','endtime','freq','power','hits']]
                             utils.write_numeric_df(PDF, filepath, sigfigs=concierge.sigfigs)  
                         except Exception as e:
                             logger.debug(e)
