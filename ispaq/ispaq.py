@@ -31,7 +31,7 @@ def main():
     parser.add_argument('-S', '--stations', action='store', required=False,
                         help='stations alias, defined in preference file')
     parser.add_argument('-P', '--preferences-file', default=os.path.expanduser('./preference_files/default.txt'),
-                        type=argparse.FileType('r'), help='    location of preference file')
+                        type=argparse.FileType('r'), help='    path to preference file')
     parser.add_argument('--log-level', action='store', default='INFO',
                         choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],
                         help='log level printed to console')
@@ -212,7 +212,7 @@ def main():
             if df is None:
                 logger.info('No PSD metrics were calculated')
             elif df.metricName[0] == 'PSDPlot':
-                logger.info('Only PSD Plots were generated')
+                pass
             else:
                 try:
                     # Write out the metrics

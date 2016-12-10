@@ -108,15 +108,6 @@ def PSD_metrics(concierge):
                     logger.debug('No data for %s' % (av.snclId))
                 else:
                     logger.warning('No data for %s from %s' % (av.snclId, concierge.dataselect_url))
-                # TODO:  Add empty dataframe ???
-                #df = pd.DataFrame({'metricName': 'percent_available',
-                                   #'value': 0,
-                                   #'snclq': av.snclId + '.M',
-                                   #'starttime': starttime,
-                                   #'endtime': endtime,
-                                   #'qualityFlag': -9},
-                                   #index=[0]) 
-                #dataframes.append(df)
                 continue
 
 

@@ -86,7 +86,7 @@ conda create -n ispaq --file ispaq-explicit-spec-file.txt
 source activate ispaq
 ```
 
-(note: if `source activate ispaq` does not work because your shell is csh/tcsh instead of bash
+> Note: if `source activate ispaq` does not work because your shell is csh/tcsh instead of bash
 you will need to add the ispaq environment to your PATH in the terminal window that you are using.
 e.g., `setenv PATH ~/miniconda2/envs/ispaq/bin:$PATH`)
 
@@ -125,9 +125,9 @@ conda install -c bioconda r-pracma=1.8.8
 conda install -c bioconda rpy2=2.7.8
 ```
 
-(note: if `source activate ispaq` does not work because your shell is csh/tcsh instead of bash
+> Note: if `source activate ispaq` does not work because your shell is csh/tcsh instead of bash
 you will need to add the ispaq environment to your PATH in the terminal window that you are using.
-e.g., `setenv PATH ~/miniconda2/envs/ispaq/bin:$PATH`)
+e.g., `setenv PATH ~/miniconda2/envs/ispaq/bin:$PATH`
 
 See what is installed in our (ispaq) environment with:
 
@@ -155,7 +155,7 @@ source activate ispaq
 
 after which your prompt should begin with ```(ispaq) ```.
 
-(note: if you are using a csh/tcsh shell there will be no prompt change)
+> Note: if you are using a csh/tcsh shell there will be no prompt change.
 
 A list of command line options is available with the ```--help``` flag:
 
@@ -179,7 +179,7 @@ optional arguments:
   -S STATIONS, --stations STATIONS
                         stations alias, defined in preference file
   -P PREFERENCES_FILE, --preferences-file PREFERENCES_FILE
-                        location of preference file
+                        path to preference file
   --log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
                         log level printed to console
   -A, --append          append to TRANSCRIPT file rather than overwriting
@@ -192,7 +192,7 @@ If -P is not provided, ISPAQ uses the default preference file located at ispaq/p
 If --log-level is not specified, the default log-level is INFO.
 
 When --starttime is invoked without --endtime, metrics are run for a single day. Metrics that are defined  
-as daylong metrics (24 hour window, see metrics documentation at http://services.iris.edu/mustang/measurements/1)
+as daylong metrics (24 hour window, see metrics documentation at [MUSTANG](http://services.iris.edu/mustang/measurements/1))
 will be calculated for the time period 00:00:00-23:59:59.9999. An endtime of YYYY-DD-MM is interpreted as 
 YYYY-DD-MM 00:00:00 so that e.g., --starttime=2016-01-01 --endtime=2016-01-02 will calculate one day of metrics. 
 When an endtime greater than one day is requested, metrics will be calculated for multiple single days. 
@@ -201,15 +201,17 @@ The option -U should be used alone. No metrics are calculated when this option i
 
 ### Preference files
 
-The ISPAQ system is designed to be configurable through the user of *preference files*.
-These are located in the ```preference_files/``` directory.  Not surprisingly, the default
+The ISPAQ system is designed to be configurable through the use of *preference files*.
+These are usually located in the ```preference_files/``` directory.  Not surprisingly, the default
 preference file is ```preference_files/default.txt``. This file is self describing
 with the following comments in the header:
 
 ```
 # Preferences fall into four categories:
-#  * Metrics -- aliases for user defined combinations of metrics
-#  * SNCLs -- aliases for user defined combinations of SNCL patterns
+#  * Metrics -- aliases for user defined combinations of metrics (Use with -M)
+#  * Station SNCLs -- aliases for user defined combinations of SNCL patterns (Use with -S)
+#                     SNCL patterns are station names formatted as network.station.location.channel
+#                     wildcards * and ? are allowed (*.*.*.*)
 #  * Data_Access -- FDSN web services or local files
 #  * Preferences -- additional user preferences
 #
@@ -248,23 +250,26 @@ or
 
 *MetricSet*\_*StationSet*\_*startdate*\_*enddate*\_*businessLogic*.csv
 
-where businessLogic corresponds to which ispaq script is invoked:
- 
-simpleMetrics -> ispaq/simple_metrics.py  (most metrics that do not depend on metadata or event information)
-SNRMetrics -> ispaq/SNR_metrics.py        (sample_snr)
-PSDMetrics -> ispaq/PSD_metrics.py        (pct_above_nhnm, pct_below_nlnm, dead_channel_exp/lin/gsn)
-crossTalkMetrics -> ispaq/crossTalk_metrics.py                       (cross_talk)
-pressureCorrelationMetrics -> ispaq/pressureCorrelation_metrics.py   (pressure_effects)
-crossCorrelationMetrics -> ispaq/crossCorrelation_metrics.py         (polarity_check)
-orientationCheckMetrics -> ispaq/orientationCheck_metrics.py         (orientation_check)
-transferMetrics -> ispaq/transferFunction_metrics.py                 (transfer_function)
+where businessLogic corresponds to which script is invoked:
 
-The MetricSet PDFtext (metrics psd_corrected, pdf_text) will generate corrected PSDs and PDFs in files named:
+| businessLogic | ISPAQ script | metrics |
+| ----------|--------------|---------|
+| simpleMetrics | simple_metrics.py | most metrics |
+| SNRMetrics | SNR_metrics.py | sample_snr   |
+| PSDMetrics | PSD_metrics.py | pct_above_nhnm, pct_below_nlnm, dead_channel_exp/lin/gsn |
+| crossTalkMetrics | crossTalk_metrics.py | cross_talk |
+| pressureCorrelationMetrics | pressureCorrelation_metrics.py | pressure_effects | 
+| crossCorrelationMetrics | crossCorrelation_metrics.py | polarity_check | 
+| orientationCheckMetrics | orientationCheck_metrics.py | orientation_check | 
+| transferMetrics | transferFunction_metrics.py | transfer_function |
+
+The MetricSet PSDText (or any user defined set with metrics psd_corrected or pdf_text) will generate 
+corrected PSDs and PDFs in files named:
 
 * *MetricSet*\_*StationSet*\_*date*\_*SNCL*\__correctedPSD.csv
 * *MetricSet*\_*StationSet*\_*date*\_*SNCL*\__PDF.csv
 
-while asking for the MetricSet ```PDF``` (metric pdf_plot) will generate PDF plot images as:
+while the MetricSet PDF (metric pdf_plot) will generate PDF plot images as:
 
 * *SNCL*\.*JulianDate*\_PDF.png
 
@@ -294,13 +299,230 @@ The following example demonstrates what will should see.
 (ispaq) $
 ```
 
-> Note: Please ignore the warning message from matplotlib until we figure out how to suppress it. It will only occur on first use. 
+> Note: Please ignore the warning message from matplotlib. It will only occur on first use. 
 
 ### Using Local Data Files
 
-1. data directory
-2. data format, miniSEED and StationXML
-3. `dataselect` script
-4. what happens if data is not in the correct file
-5. lack of flag metrics, obspy
+To be added ...
+
+### Current List of Metrics
+
+> Note: when using local data files, metrics based on miniSEED act_flags, io_flags, and timing blockette 1001 are not valid. 
+Thse metrics are calibration_signal, clock_locked, event_begin, event_end, event_in_progress, timing_correction, 
+and timing_quality.
+
+* **amplifier_saturation**:
+The number of times that the 'Amplifier saturation detected' bit in the 'dq_flags' byte is set within a miniSEED file. 
+This data quality flag is set by some dataloggers in the fixed section of the miniSEED header. The flag was intended to 
+indicate that the preamp is being overdriven, but the exact meaning is datalogger-specific.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/amplifier_saturation/)
+
+* **calibration_signal**:
+The number of times that the 'Calibration signals present' bit in the 'act_flags' byte is set within a miniSEED file. 
+A value of 1 indicates that a calibration signal was being sent to that channel.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/calibration_signal/)
+
+* **clock_locked**:
+The number of times that the 'Clock locked' bit in the 'io_flags' byte is set within a miniSEED file. This clock flag 
+is set to 1 by some dataloggers in the fixed section of the miniSEED header to indicate that its GPS has locked with 
+enough satellites to obtain a time/position fix.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/clock_locked/)
+
+* **cross_talk**:
+The correlation coefficient of channel pairs from the same sensor. Data windows are defined by seismic events. 
+Correlation coefficients near 1 may indicate cross-talk between those channels.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/cross_talk/)
+
+* **dead_channel_exp**:
+Dead channel metric - exponential fit. This metric is calculated from the mean of all the PSDs generated 
+(typically 47 for a 24 hour period). Values of the PSD mean curve over the band expLoPeriod:expHiPeriod are fit to 
+an exponential curve by a least squares linear regression of log(PSD mean) ~ log(period). The dead_channel_exp metric 
+is the standard deviation of the fit residuals of this regression. Lower numbers indicate a better fit and a higher 
+likelihood that the mean PSD is exponential - an indication of a dead channel.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/dead_channel_exp/)
+
+* **dead_channel_gsn**:
+A boolean measurement providing a TRUE or FALSE indication that the channel exhibits a 5dB deviation below the NLNM 
+in the 4 to 8s period band as measured using a McNamara PDF noise matrix. The TRUE condition is indicated with a numeric 
+representation of '1' and the FALSE condition represented as a '0'.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/dead_channel_gsn/)
+
+* **dead_channel_lin**:
+Dead channel metric - linear fit. This metric is calculated from the mean of all the PSDs generated (typically 47 
+for a 24 hour period). Values of the PSD mean curve over the band linLoPeriod:linHiPeriod are fit to a linear curve 
+by a least squares linear regression of PSD mean ~ log(period). The dead_channel_lin metric is the standard deviation 
+of the fit residuals of this regression. Lower numbers indicate a better fit and a higher likelihood that the mean PSD 
+is linear - an indication that the sensor is not returning expected seismic energy.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/dead_channel_lin/)
+
+* **digital_filter_charging**:
+The number of times that the 'A digital filter may be charging' bit in the 'dq_flags' byte is set within a miniSEED file. 
+Data samples acquired while a datalogger is loading filter parameters - such as after a reboot - may contain a transient.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/digital_filter_charging/)
+
+* **digitizer_clipping**:
+The number of times that the 'Digitizer clipping detected' bit in the 'dq_flags' byte is set within a miniSEED file. 
+This flag indicates that the input voltage has exceeded the maximum range of the ADC.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/digitizer_clipping/)
+
+* **event_begin**:
+The number of times that the 'Beginning of an event, station trigger' bit in the 'act_flags' byte is set within a miniSEED 
+file. This metric can be used to quickly identify data days that may have events. It may also indicate when trigger 
+parameters need adjusting at a station.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/event_begin/)
+
+* **event_end**:
+The number of times that the 'End of an event, station detrigger' bit in the 'act_flags' byte is set within a miniSEED 
+file. This metric can be used to quickly identify data days that may have events. It may also indicate when trigger 
+parameters need adjusting at a station.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/event_end/)
+
+* **event_in_progress**:
+The number of times that the 'Event in progress' bit in the 'act_flags' byte is set within a miniSEED file. This metric 
+can be used to quickly identify data days that may have events. It may also indicate when trigger parameters need 
+adjusting at a station.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/event_in_progress/)
+
+* **glitches**:
+The number of times that the 'Glitches detected' bit in the 'dq_flags' byte is set within a miniSEED file. This metric can 
+be used to identify data with large filled values that data users may need to handle in a way that they don't affect 
+their research outcomes.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/glitches/)
+
+* **max_gap**:
+Indicates the size of the largest gap encountered within a 24-hour window.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/max_gap/)
+
+* **max_overlap**:
+Indicates the size of the largest overlap in seconds encountered within a 24-hour window.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/max_overlap/)
+
+* **max_stalta**:
+The STALTAMetric function calculates the maximum of STA/LTA of the incoming seismic signal over a 24 hour period. In order 
+to reduce computation time of the rolling averages, the averaging window is advanced in 1/2 second increments.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/max_stalta/)
+
+* **missing_padded_data**:
+The number of times that the 'Missing/padded data present' bit in the 'dq_flags' byte is set within a miniSEED file. This 
+metric can be used to identify data with padded values that data users may need to handle in a way that they don't affect
+their research outcomes.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/missing_padded_data/)
+
+* **num_gaps**:
+This metric reports the number of gaps encountered within a 24-hour window.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/num_gaps/)
+
+* **num_overlaps**:
+This metric reports the number of overlaps encountered in a 24-hour window.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/num_overlaps/)
+
+* **num_spikes**:
+This metric uses a rolling Hampel filter, a median absolute deviation (MAD) test, to find outliers in a timeseries. 
+The number of discrete spikes is determined after adjacent outliers have been combined into individual spikes.
+NOTE: not to be confused with the spikes metric, which is an SOH flag only.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/num_spikes/)
+
+* **orientation_check**:
+Determine channel orientations by rotating horizontal channels until the resulting radial component maximizes 
+cross-correlation with the Hilbert transform of the vertical component. This metric uses Rayleigh waves from large, 
+shallow events.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/num_spikes/)
+
+* **pct_above_nhnm**:
+Percent above New High Noise Model. Percentage of Probability Density Function values that are above the New High Noise 
+Model. This value is calculated over the entire time period.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/pct_above_nhnm/)
+
+* **pct_below_nlnm**:
+Percent below New Low Noise Model. Percentage of Probability Density Function values that are below the New Low Noise 
+Model. This value is calculated over the entire time period.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/pct_below_nlnm/)
+
+* **pdf_plot**:
+Needs documentation
+
+* **percent_availability**:
+The portion of data available for each day is represented as a percentage. 100% data available means full coverage of 
+data for the reported start and end time.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/percent_availability/)
+
+* **polarity_check**:
+The signed cross-correlation peak value based on the cross-correlation of two neighboring station channels in proximity 
+to a large earthquake signal. A negative peak close to 1.0 can indicate reversed polarity.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/polarity_check/)
+
+* **pressure_effects**:
+The correlation coefficient of a seismic channel and an LDO pressure channel. Large correlation coefficients may 
+indicate the presence of atmospheric effects in the seismic data.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/pressure_effects/)
+
+* **psd_corrected**:
+Needs documentation
+
+* **sample_max**:
+This metric reports largest amplitude value in counts encountered within a 24-hour window.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_max/)
+
+* **sample_mean**:
+This metric reports the average amplitude value in counts over a 24-hour window. This mean is one measure of the 
+central tendency of the amplitudes that is calculated from every amplitude value present in the time series. The mean 
+value itself may not occur as an amplitude value in the times series.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_mean/)
+
+* **sample_median**:
+This metric reports the middle amplitude value in counts of sorted amplitude values from a 24-hour window. This median 
+is one measure of the central tendency of the amplitudes in a time series when values are arranged in sorted order. 
+The median value itself always occurs as an amplitude value in the times series.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_median/)
+
+* **sample_min**:
+This metric reports smallest amplitude value in counts encountered within a 24-hour window.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_min/)
+
+* **sample_rms**:
+Displays the RMS variance of trace amplitudes within a 24-hour window.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_rms/)
+
+* **sample_snr**:
+A ratio of the RMS variance calculated from data 30 seconds before and 30 seconds following the predicted 
+first-arriving P phase.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_snr/)
+
+* **sample_unique**:
+This metric reports the number (count) of unique values in data trace over a 24-hour window. 
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_unique/)
+
+* **spikes**:
+The number of times that the 'Spikes detected' bit in the 'dq_flags' byte is set within a miniSEED file. This data 
+quality flag is set by some dataloggers in the fixed section of the miniSEED header when short-duration spikes have 
+been detected in the data. Because spikes have shorter duration than the natural period of most seismic sensors, spikes 
+often indicate a problem introduced at or after the datalogger.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/spikes/)
+
+* **suspect_time_tag**:
+The number of times that the 'Time tag is questionable' bit in the 'dq_flags' byte is set within a miniSEED file. 
+This metric can be used to identify stations with GPS locking problems and data days with potential timing issues.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/suspect_time_tag/)
+
+* **telemetry_sync_error**:
+The number of times that the 'Telemetry synchronization error' bit in the 'dq_flags' byte is set within a miniSEED file. 
+This metric can be searched to determine which stations may have telemetry problems or to identify or omit gappy data 
+from a data request.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/telemetry_sync_error/)
+
+* **timing_correction**:
+The number of times that the 'Time correction applied' bit in the 'act_flags' byte is set within a miniSEED file. 
+This clock quality flag is set by the network operator in the fixed section of the miniSEED header when a timing correction 
+stored in field 16 of the miniSEED fixed header has been applied to the data's original time stamp. A value of 0 means 
+that no timing correction has been applied.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/timing_correction/)
+
+* **timing_quality**:
+Daily average of the SEED timing quality stored in miniSEED blockette 1001. This value is vendor specific and expressed 
+as a percentage of maximum accuracy. Percentage is NULL if not present in the miniSEED.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/timing_quality/)
+
+* **transfer_function**:
+Transfer function metric consisting of the gain ratio, phase difference and magnitude squared of two co-located sensors.
+[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/transfer_function/)
 
