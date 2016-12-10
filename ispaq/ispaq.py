@@ -19,6 +19,8 @@ def main():
 
     # Parse arguments ----------------------------------------------------------
     
+    default_preference_file = './preference_files/default.txt'  # we will use this pref file if one is not specified
+    
     parser = argparse.ArgumentParser(description=__doc__.strip())
     parser.add_argument('-V', '--version', action='version',
                         version='%(prog)s ' + __version__)
@@ -31,7 +33,7 @@ def main():
     parser.add_argument('-S', '--stations', action='store', required=False,
                         help='stations alias, defined in preference file')
     parser.add_argument('-P', '--preferences-file', default=os.path.expanduser('./preference_files/default.txt'),
-                        type=argparse.FileType('r'), help='    path to preference file')
+                        type=argparse.FileType('r'), help='path to preference file')
     parser.add_argument('--log-level', action='store', default='INFO',
                         choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],
                         help='log level printed to console')
@@ -40,8 +42,11 @@ def main():
     parser.add_argument('-U', '--update-r', action='store_true', default=False,
                         help='check CRAN for more recent IRIS Mustang R package versions')
 
-    args = parser.parse_args(sys.argv[1:])
-    
+    try:
+        args = parser.parse_args(sys.argv[1:])
+    except IOError, msg:
+        parser.error(str(msg))   # we may encounter an error accessing the indicated file
+        raise SystemExit
     
     # Set up logging -----------------------------------------------------------
     
