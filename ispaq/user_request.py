@@ -206,14 +206,22 @@ class UserRequest(object):
             
             # Check for missing Data_Access values
             logger.debug('Check for missing URL values')
-            for url in ["dataselect_url","station_url"]:
-                if url not in data_access.keys():
-                    logger.critical("preference file is missing Data_Access: %s entry." % url)
-                    raise SystemExit
+            #for url in ["dataselect_url","station_url"]:
+            #    if url not in data_access.keys():
+            #        logger.critical("preference file is missing Data_Access: %s entry." % url)
+            #        raise SystemExit
 
-                if data_access[url] is None:
-                    logger.critical("preference file Data_Access: %s is not specified." % url)
-                    raise SystemExit
+            #    if data_access[url] is None:
+            #        logger.critical("preference file Data_Access: %s is not specified." % url)
+            #        raise SystemExit
+
+            if "dataselect_url" not in data_access.keys():
+                logger.critical("preference file is missing Data_Access: dataselect_url entry.")
+                raise SystemExit
+
+            if data_access['dataselect_url'] is None:
+                logger.critical("preference file Data_Access: dataselect_url is not specified.")
+                raise SystemExit
 
             if "event_url" not in data_access.keys():
                 logger.warning("preference file is missing Data_Access: event_url entry. Defaulting to 'USGS'.")

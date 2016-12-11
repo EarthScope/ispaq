@@ -73,13 +73,6 @@ class Concierge(object):
         self.plot_output_dir = user_request.plot_output_dir
         self.sigfigs = user_request.sigfigs
         
-        # Supporting local files to be used if we are accessing local data
-        self.resp_dir = user_request.resp_dir   # directory where RESP files are located - REC
-                                                # file pattern:  RESP.<NET>.<STA>.<LOC>.<CHA> or RESP.<STA>.<NET>.<LOC>.<CHA>
-        # if the RESP pattern is set to a URL MAPPING, then we are not using local RESP files but instead irisws/evalresp
-        if self.resp_dir in URL_MAPPINGS:
-            self.resp_dir = None
-         
         # Output information
         file_base = '%s_%s_%s_' % (self.user_request.requested_metric_set,
                                   self.user_request.requested_sncl_set, 
@@ -136,7 +129,9 @@ class Concierge(object):
                 raise ValueError(err_msg)
 
         # Add station clients and URLs or reference a local file
-        if user_request.station_url in URL_MAPPINGS.keys():
+        if user_request.station_url is None:
+            self.station_url = None  # no metadata exists, some metrics cannot be run
+        elif user_request.station_url in URL_MAPPINGS.keys():
             self.station_url = URL_MAPPINGS[user_request.station_url]
             self.station_client = Client(user_request.station_url)
         elif ("http://" or "https://") in user_request.station_url:
@@ -152,7 +147,19 @@ class Concierge(object):
                 self.logger.error(err_msg)
                 raise ValueError(err_msg)
 
-
+        # Add local response files if used
+        if user_request.resp_dir is None:                # use irisws/evalresp
+            self.resp_dir = None  # use irisws/evalresp
+        elif user_request.resp_dir in URL_MAPPINGS.keys(): # use irisws/evalresp
+            self.resp_dir = None 
+        else:
+            if os.path.exists(os.path.abspath(user_request.resp_dir)):   
+                self.resp_dir = os.path.abspath(user_request.resp_dir)  # directory where RESP files are located - REC
+                                                                        # file pattern:  RESP.<NET>.<STA>.<LOC>.<CHA> or RESP.<STA>.<NET>.<LOC>.<CHA>
+            else:
+                err_msg = "Cannot find preference file resp_dir: '%s'" % user_request.resp_dir
+                self.logger.error(err_msg)
+                raise ValueError(err_msg)
 
     def get_availability(self,
                          network=None, station=None, location=None, channel=None,
