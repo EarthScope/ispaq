@@ -46,9 +46,8 @@ def PSD_metrics(concierge):
     # Container for all of the metrics dataframes generated
     dataframes = []
 
-    # ----- All UN-available SNCLs ----------------------------------------------
-
-    # TODO:  Anything to do here?
+    if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
+        logger.info("Searching for response files in '%s'" % concierge.resp_dir)
 
     # ----- All available SNCLs -------------------------------------------------
 
@@ -117,7 +116,6 @@ def PSD_metrics(concierge):
                 try:
                     evalresp = None
                     if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
-                        logger.debug("Accessing local RESP file...")
                         evalresp = transfn.getTransferFunctionSpectra(r_stream, av.samplerate, concierge.resp_dir)
 
                     # get corrected PSDs

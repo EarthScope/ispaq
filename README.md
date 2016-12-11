@@ -305,6 +305,10 @@ The following example demonstrates what will should see.
 
 To be added ...
 
+(miniSEED data format, file naming)
+(dataselect command line tool)
+(RESP file naming format)
+
 ### Current List of Metrics
 
 > Note: when using local data files, metrics based on miniSEED act_flags, io_flags, and timing blockette 1001 are not valid. 

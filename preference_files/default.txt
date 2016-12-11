@@ -90,6 +90,10 @@ Station_SNCLs:
 #  * dataselect_url = directory containing miniseed files
 #  * event_url = path of QUAKEML file
 #  * station_url = path of StationXML file
+#  * resp_dir = directory containing local response RESP files, if used.
+#
+# In the absence of local RESP files, ISPAQ defaults to the IRIS DMC evalresp web service.
+# http://service.iris.edu/irisws/evalresp/1/
 #
 # NOTE: Directory names should not match FDSN provider names.
 
@@ -97,7 +101,7 @@ Data_Access:
   dataselect_url: IRIS
   station_url: IRIS
   event_url: USGS   
-  resp_dir :           # directory for local response RESP files, if used. 
+  resp_dir :            
   
 
 # Additional user preferences --------------------------------------------------
