@@ -315,23 +315,23 @@ and timing_quality.
 The number of times that the 'Amplifier saturation detected' bit in the 'dq_flags' byte is set within a miniSEED file. 
 This data quality flag is set by some dataloggers in the fixed section of the miniSEED header. The flag was intended to 
 indicate that the preamp is being overdriven, but the exact meaning is datalogger-specific.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/amplifier_saturation/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/amplifier_saturation/)
 
 * **calibration_signal**:
 The number of times that the 'Calibration signals present' bit in the 'act_flags' byte is set within a miniSEED file. 
 A value of 1 indicates that a calibration signal was being sent to that channel.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/calibration_signal/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/calibration_signal/)
 
 * **clock_locked**:
 The number of times that the 'Clock locked' bit in the 'io_flags' byte is set within a miniSEED file. This clock flag 
 is set to 1 by some dataloggers in the fixed section of the miniSEED header to indicate that its GPS has locked with 
 enough satellites to obtain a time/position fix.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/clock_locked/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/clock_locked/)
 
 * **cross_talk**:
 The correlation coefficient of channel pairs from the same sensor. Data windows are defined by seismic events. 
 Correlation coefficients near 1 may indicate cross-talk between those channels.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/cross_talk/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/cross_talk/)
 
 * **dead_channel_exp**:
 Dead channel metric - exponential fit. This metric is calculated from the mean of all the PSDs generated 
@@ -339,13 +339,13 @@ Dead channel metric - exponential fit. This metric is calculated from the mean o
 an exponential curve by a least squares linear regression of log(PSD mean) ~ log(period). The dead_channel_exp metric 
 is the standard deviation of the fit residuals of this regression. Lower numbers indicate a better fit and a higher 
 likelihood that the mean PSD is exponential - an indication of a dead channel.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/dead_channel_exp/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/dead_channel_exp/)
 
 * **dead_channel_gsn**:
 A boolean measurement providing a TRUE or FALSE indication that the channel exhibits a 5dB deviation below the NLNM 
 in the 4 to 8s period band as measured using a McNamara PDF noise matrix. The TRUE condition is indicated with a numeric 
 representation of '1' and the FALSE condition represented as a '0'.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/dead_channel_gsn/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/dead_channel_gsn/)
 
 * **dead_channel_lin**:
 Dead channel metric - linear fit. This metric is calculated from the mean of all the PSDs generated (typically 47 
@@ -353,90 +353,90 @@ for a 24 hour period). Values of the PSD mean curve over the band linLoPeriod:li
 by a least squares linear regression of PSD mean ~ log(period). The dead_channel_lin metric is the standard deviation 
 of the fit residuals of this regression. Lower numbers indicate a better fit and a higher likelihood that the mean PSD 
 is linear - an indication that the sensor is not returning expected seismic energy.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/dead_channel_lin/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/dead_channel_lin/)
 
 * **digital_filter_charging**:
 The number of times that the 'A digital filter may be charging' bit in the 'dq_flags' byte is set within a miniSEED file. 
 Data samples acquired while a datalogger is loading filter parameters - such as after a reboot - may contain a transient.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/digital_filter_charging/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/digital_filter_charging/)
 
 * **digitizer_clipping**:
 The number of times that the 'Digitizer clipping detected' bit in the 'dq_flags' byte is set within a miniSEED file. 
 This flag indicates that the input voltage has exceeded the maximum range of the ADC.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/digitizer_clipping/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/digitizer_clipping/)
 
 * **event_begin**:
 The number of times that the 'Beginning of an event, station trigger' bit in the 'act_flags' byte is set within a miniSEED 
 file. This metric can be used to quickly identify data days that may have events. It may also indicate when trigger 
 parameters need adjusting at a station.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/event_begin/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/event_begin/)
 
 * **event_end**:
 The number of times that the 'End of an event, station detrigger' bit in the 'act_flags' byte is set within a miniSEED 
 file. This metric can be used to quickly identify data days that may have events. It may also indicate when trigger 
 parameters need adjusting at a station.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/event_end/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/event_end/)
 
 * **event_in_progress**:
 The number of times that the 'Event in progress' bit in the 'act_flags' byte is set within a miniSEED file. This metric 
 can be used to quickly identify data days that may have events. It may also indicate when trigger parameters need 
 adjusting at a station.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/event_in_progress/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/event_in_progress/)
 
 * **glitches**:
 The number of times that the 'Glitches detected' bit in the 'dq_flags' byte is set within a miniSEED file. This metric can 
 be used to identify data with large filled values that data users may need to handle in a way that they don't affect 
 their research outcomes.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/glitches/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/glitches/)
 
 * **max_gap**:
 Indicates the size of the largest gap encountered within a 24-hour window.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/max_gap/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/max_gap/)
 
 * **max_overlap**:
 Indicates the size of the largest overlap in seconds encountered within a 24-hour window.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/max_overlap/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/max_overlap/)
 
 * **max_stalta**:
 The STALTAMetric function calculates the maximum of STA/LTA of the incoming seismic signal over a 24 hour period. In order 
 to reduce computation time of the rolling averages, the averaging window is advanced in 1/2 second increments.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/max_stalta/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/max_stalta/)
 
 * **missing_padded_data**:
 The number of times that the 'Missing/padded data present' bit in the 'dq_flags' byte is set within a miniSEED file. This 
 metric can be used to identify data with padded values that data users may need to handle in a way that they don't affect
 their research outcomes.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/missing_padded_data/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/missing_padded_data/)
 
 * **num_gaps**:
 This metric reports the number of gaps encountered within a 24-hour window.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/num_gaps/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/num_gaps/)
 
 * **num_overlaps**:
 This metric reports the number of overlaps encountered in a 24-hour window.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/num_overlaps/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/num_overlaps/)
 
 * **num_spikes**:
 This metric uses a rolling Hampel filter, a median absolute deviation (MAD) test, to find outliers in a timeseries. 
 The number of discrete spikes is determined after adjacent outliers have been combined into individual spikes.
 NOTE: not to be confused with the spikes metric, which is an SOH flag only.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/num_spikes/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/num_spikes/)
 
 * **orientation_check**:
 Determine channel orientations by rotating horizontal channels until the resulting radial component maximizes 
 cross-correlation with the Hilbert transform of the vertical component. This metric uses Rayleigh waves from large, 
 shallow events.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/num_spikes/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/num_spikes/)
 
 * **pct_above_nhnm**:
 Percent above New High Noise Model. Percentage of Probability Density Function values that are above the New High Noise 
 Model. This value is calculated over the entire time period.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/pct_above_nhnm/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/pct_above_nhnm/)
 
 * **pct_below_nlnm**:
 Percent below New Low Noise Model. Percentage of Probability Density Function values that are below the New Low Noise 
 Model. This value is calculated over the entire time period.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/pct_below_nlnm/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/pct_below_nlnm/)
 
 * **pdf_plot**:
 Probability density function plots. Generates one plot per station-day.
@@ -449,87 +449,87 @@ Probability density function text output (frequency, power, hits, target, startt
 * **percent_availability**:
 The portion of data available for each day is represented as a percentage. 100% data available means full coverage of 
 data for the reported start and end time.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/percent_availability/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/percent_availability/)
 
 * **polarity_check**:
 The signed cross-correlation peak value based on the cross-correlation of two neighboring station channels in proximity 
 to a large earthquake signal. A negative peak close to 1.0 can indicate reversed polarity.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/polarity_check/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/polarity_check/)
 
 * **pressure_effects**:
 The correlation coefficient of a seismic channel and an LDO pressure channel. Large correlation coefficients may 
 indicate the presence of atmospheric effects in the seismic data.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/pressure_effects/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/pressure_effects/)
 
 * **psd_corrected**:
 Power spectral density values, corrected for instrument response, in text format (starttime, endtime, 
 frequency, power).
-[Detailed Documentation](http://service.iris.edu/mustang/noise-psd/docs/1/help/)
+[Documentation](http://service.iris.edu/mustang/noise-psd/docs/1/help/)
 
 * **sample_max**:
 This metric reports largest amplitude value in counts encountered within a 24-hour window.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_max/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_max/)
 
 * **sample_mean**:
 This metric reports the average amplitude value in counts over a 24-hour window. This mean is one measure of the 
 central tendency of the amplitudes that is calculated from every amplitude value present in the time series. The mean 
 value itself may not occur as an amplitude value in the times series.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_mean/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_mean/)
 
 * **sample_median**:
 This metric reports the middle amplitude value in counts of sorted amplitude values from a 24-hour window. This median 
 is one measure of the central tendency of the amplitudes in a time series when values are arranged in sorted order. 
 The median value itself always occurs as an amplitude value in the times series.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_median/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_median/)
 
 * **sample_min**:
 This metric reports smallest amplitude value in counts encountered within a 24-hour window.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_min/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_min/)
 
 * **sample_rms**:
 Displays the RMS variance of trace amplitudes within a 24-hour window.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_rms/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_rms/)
 
 * **sample_snr**:
 A ratio of the RMS variance calculated from data 30 seconds before and 30 seconds following the predicted 
 first-arriving P phase.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_snr/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_snr/)
 
 * **sample_unique**:
 This metric reports the number (count) of unique values in data trace over a 24-hour window. 
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_unique/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_unique/)
 
 * **spikes**:
 The number of times that the 'Spikes detected' bit in the 'dq_flags' byte is set within a miniSEED file. This data 
 quality flag is set by some dataloggers in the fixed section of the miniSEED header when short-duration spikes have 
 been detected in the data. Because spikes have shorter duration than the natural period of most seismic sensors, spikes 
 often indicate a problem introduced at or after the datalogger.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/spikes/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/spikes/)
 
 * **suspect_time_tag**:
 The number of times that the 'Time tag is questionable' bit in the 'dq_flags' byte is set within a miniSEED file. 
 This metric can be used to identify stations with GPS locking problems and data days with potential timing issues.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/suspect_time_tag/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/suspect_time_tag/)
 
 * **telemetry_sync_error**:
 The number of times that the 'Telemetry synchronization error' bit in the 'dq_flags' byte is set within a miniSEED file. 
 This metric can be searched to determine which stations may have telemetry problems or to identify or omit gappy data 
 from a data request.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/telemetry_sync_error/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/telemetry_sync_error/)
 
 * **timing_correction**:
 The number of times that the 'Time correction applied' bit in the 'act_flags' byte is set within a miniSEED file. 
 This clock quality flag is set by the network operator in the fixed section of the miniSEED header when a timing correction 
 stored in field 16 of the miniSEED fixed header has been applied to the data's original time stamp. A value of 0 means 
 that no timing correction has been applied.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/timing_correction/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/timing_correction/)
 
 * **timing_quality**:
 Daily average of the SEED timing quality stored in miniSEED blockette 1001. This value is vendor specific and expressed 
 as a percentage of maximum accuracy. Percentage is NULL if not present in the miniSEED.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/timing_quality/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/timing_quality/)
 
 * **transfer_function**:
 Transfer function metric consisting of the gain ratio, phase difference and magnitude squared of two co-located sensors.
-[Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/transfer_function/)
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/transfer_function/)
 
