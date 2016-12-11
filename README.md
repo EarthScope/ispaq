@@ -439,7 +439,12 @@ Model. This value is calculated over the entire time period.
 [Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/pct_below_nlnm/)
 
 * **pdf_plot**:
-Needs documentation
+Probability density function plots. Generates one plot per station-day.
+[Reference](https://profile.usgs.gov/myscience/upload_folder/ci2012Feb2217152844121McNamaraBuland_BSSA.pdf)
+
+* **pdf_text**:
+Probability density function text output (frequency, power, hits, target, starttime, endtime)
+[Reference](https://profile.usgs.gov/myscience/upload_folder/ci2012Feb2217152844121McNamaraBuland_BSSA.pdf)
 
 * **percent_availability**:
 The portion of data available for each day is represented as a percentage. 100% data available means full coverage of 
@@ -457,7 +462,9 @@ indicate the presence of atmospheric effects in the seismic data.
 [Detailed Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/pressure_effects/)
 
 * **psd_corrected**:
-Needs documentation
+Power spectral density values, corrected for instrument response, in text format (starttime, endtime, 
+frequency, power).
+[Detailed Documentation](http://service.iris.edu/mustang/noise-psd/docs/1/help/)
 
 * **sample_max**:
 This metric reports largest amplitude value in counts encountered within a 24-hour window.
