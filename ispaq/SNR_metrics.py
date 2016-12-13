@@ -168,7 +168,7 @@ def SNR_metrics(concierge):
                     logger.debug('Skipping %s becuase it is missing data in the SNR window' % (av.snclId)) 
                     continue
                 else:
-                    logger.debug('Calculating SNR metrics for %s' % (av.snclId))
+                    logger.info('%03d Calculating SNR metrics for %s' % (index, av.snclId))
                     try:
                         df = irismustangmetrics.apply_simple_metric(r_stream, 'SNR', algorithm="splitWindow", windowSecs=windowSecs)
                         dataframes.append(df)

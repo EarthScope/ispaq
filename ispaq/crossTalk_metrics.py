@@ -120,9 +120,9 @@ def crossTalk_metrics(concierge):
 
         # ----- All available SNCLs -------------------------------------------------
 
-        for sn_lId in sorted(list(set(sn_lIds))):
+        for idx, sn_lId in enumerate(sorted(list(set(sn_lIds)))):
 
-            logger.debug('Working on SN.L %s' % (sn_lId))
+            logger.info('Calculating crossTalk metrics for %s' % (sn_lId))
 
             availabilitySub = availability[availability.sn_lId == sn_lId]
             

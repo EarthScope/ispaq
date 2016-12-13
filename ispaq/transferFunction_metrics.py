@@ -193,6 +193,8 @@ def transferFunction_metrics(concierge):
 	# Get unique network-station pairs
 	networkStationPairs = availability.network + '.' + availability.station
 	networkStationPairs = networkStationPairs.drop_duplicates().sort_values().reset_index(drop=True)
+
+        logger.info('Calculating transferFunction metrics for %d SNCLs for %s' % (len(networkStationPairs), str(beginday).split('T')[0]))
 	
 	for networkStation in networkStationPairs:
       
@@ -206,10 +208,10 @@ def transferFunction_metrics(concierge):
 	    stationAvailability = stationAvailability[metaMask]
 
 	    if stationAvailability.shape[0] == 0:
-		logger.info('Network-Station %s.%s has data, but no metadata, skipping.' % (network, station))
+		logger.info('Network-Station pair %s.%s has data, but no metadata, skipping.' % (network, station))
 		continue
 	    else:
-		logger.info('Network-Station pair %s.%s has %d channels' % (network, station, stationAvailability.shape[0]))
+		logger.debug('Network-Station pair %s.%s has %d channels' % (network, station, stationAvailability.shape[0]))
 	    
 	    ##################################################################
 	    # Loop through all channels by dip looking for multiple locations.
@@ -290,7 +292,7 @@ def transferFunction_metrics(concierge):
 		    
 			# Run the transferFunction metric ----------------------------------------
 		
-			logger.debug('Calculating transferFunction metrics for %s:%s' % (Zav1.snclId, Zav2.snclId))
+			logger.info('%03d Calculating transferFunction metrics for %s:%s' % (i, Zav1.snclId[:-1], Zav2.snclId[:-1]))
 			try:
 			    df = irismustangmetrics.apply_correlation_metric(Zst1, Zst2, 'transferFunction', Zevalresp1, Zevalresp2)
 			    dataframes.append(df)

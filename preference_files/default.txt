@@ -2,7 +2,7 @@
 # 
 # Preferences fall into four categories:
 #  * Metrics -- aliases for user defined combinations of metrics
-#  * Station SNCLs -- aliases for user defined combinations of SNCL patterns
+#  * Station_SNCLs -- aliases for user defined combinations of SNCL patterns
 #                     SNCL patterns are station names formatted as network.station.location.channel
 #                     wildcards * and ? are allowed (*.*.*.*)
 #  * Data_Access -- FDSN web services or local files
@@ -17,7 +17,7 @@
 # Example invocations that use these default preferences:
 #
 #   run_ispaq.py -M basicStats -S basicStats --starttime 2010-04-20 --log-level INFO -A
-#   run_ispaq.py -M gaps -S gaps --starttime 2013-01-05 --log-level INFO -A
+#   run_ispaq.py -M gaps -S gaps --starttime 2013-01-05 --endtime 2013-01-08 --log-level INFO -A
 #   run_ispaq.py -M spikes -S spikes --starttime 2013-01-03 --log-level INFO -A
 #   run_ispaq.py -M STALTA -S STALTA --starttime 2013-06-02 --log-level INFO -A
 #   run_ispaq.py -M SNR -S SNR --starttime 2013-06-02 --log-level INFO -A
@@ -27,10 +27,10 @@
 #   run_ispaq.py -M pressureCorrelation -S pressureCorrelation --starttime 2013-05-02 --log-level INFO -A
 #   run_ispaq.py -M crossCorrelation -S crossCorrelation --starttime 2011-01-01 --log-level INFO -A
 #   run_ispaq.py -M orientationCheck -S orientationCheck --starttime 2015-11-24 --log-level INFO -A
-#   run_ispaq.py -M transferFunction -S transferFunction --starttime 2012-10-03 --log-level INFO -A
+#   run_ispaq.py -M transferFunction -S transferFunction --starttime=2012-10-03 --endtime=2012-10-05 --log-level INFO -A
 
 
-# User defined sets of metrics -------------------------------------------------
+# Metric Set Aliases -------------------------------------------------
 
 Metrics:
 
@@ -46,29 +46,31 @@ Metrics:
   PDF: pdf_plot
   crossTalk: cross_talk
   pressureCorrelation: pressure_effects
-  crossCorrelation: polarity_check, timing_drift
+  crossCorrelation: polarity_check
   orientationCheck: orientation_check
   transferFunction: transfer_function
   
+  # Example user defined combination
+  customStats: sample_min, max_stalta, psd_corrected
 
-# User defined sets of SNCLs ---------------------------------------------------
+# Station Set Aliases  ---------------------------------------------------
 
 Station_SNCLs:
 
-  # For testing default combinations of metrics
+  # Examples for testing default combinations of metrics
   basicStats: IU.ANMO.00.BH?
   gaps: II.KAPI.00.BH?
   stateOfHealth: IU.ANMO.00.BH?
   spikes: IU.RAO.10.BH?, IM.TX31..BH?
-  STALTA: IU.ANMO.00.BHZ, US.OXF..BHZ, IU.GUMO.00.*
+  STALTA: IU.ANMO.00.BHZ, US.OXF.??.BHZ, IU.GUMO.00.*
   SNR: IU.GUMO.00.BHZ
   PSD: IU.GRFO..BH?
   PDF: IU.GRFO..BH?
   crossTalk: II.B*.00.*
   pressureCorrelation: IU.A*.*.L*
-  crossCorrelation: II.E*.00.B??
-  orientationCheck: IU.BILL.00.*, IU.FUIR.00.*
-  transferFunction: IU.ANMO.*.*
+  crossCorrelation: II.EFI.00.B??
+  orientationCheck: IU.BILL.00.*, IU.FURI.00.*
+  transferFunction: IU.ANMO.*.BH?
   
 # Data access (FDSN web service providers or local files) -------------------------
  
@@ -87,10 +89,10 @@ Station_SNCLs:
 #
 # To use local data you must instead specify local paths:
 # 
-#  * dataselect_url = directory containing miniseed files
-#  * event_url = path of QUAKEML file
-#  * station_url = path of StationXML file
-#  * resp_dir = directory containing local response RESP files, if used.
+#  * dataselect_url: directory containing miniseed files
+#  * event_url: path of QUAKEML file
+#  * station_url:  path of StationXML file
+#  * resp_dir: directory containing local response RESP files, if used.
 #
 # In the absence of local RESP files, ISPAQ defaults to the IRIS DMC evalresp web service.
 # http://service.iris.edu/irisws/evalresp/1/
@@ -101,7 +103,7 @@ Data_Access:
   dataselect_url: IRIS
   station_url: IRIS
   event_url: USGS   
-  resp_dir :            
+  resp_dir:
   
 
 # Additional user preferences --------------------------------------------------

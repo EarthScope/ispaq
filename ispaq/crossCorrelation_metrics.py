@@ -140,10 +140,11 @@ def crossCorrelation_metrics(concierge):
              
             dist = obspy.geodetics.base.locations2degrees(event.latitude, event.longitude, av1.latitude, av1.longitude)
             arrivals = model.get_travel_times(source_depth_in_km=event.depth,distance_in_degree=dist)
+
             tt=min(arrivals,key=lambda x: x.time).time
 
-            windowStart = event.time + min(tt.travelTime) - windowSecs/2.0
-            windowEnd = event.time + min(tt.travelTime) + windowSecs/2.0
+            windowStart = event.time + tt - windowSecs/2.0
+            windowEnd = event.time + tt + windowSecs/2.0
 
             try:
                 r_stream1 = concierge.get_dataselect(av1.network, av1.station, av1.location, av1.channel, windowStart, windowEnd)
@@ -258,12 +259,13 @@ def crossCorrelation_metrics(concierge):
                 windowEnd = event.time + min(tt.travelTime) + windowSecs/2.0
 
                 try:
+                    logger.debug('Trying near neighbor station %s' % (av2.snclId))
                     r_stream2 = concierge.get_dataselect(av2.network, av2.station, av2.location, av2.channel, windowStart, windowEnd)
                 except Exception as e:
                     if str(e).lower().find('no data') > -1:
-                        logger.warning('No data for %s' % (av2.snclId))
+                        logger.debug('No data for %s' % (av2.snclId))
                     else:
-                        logger.warning('No data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
+                        logger.debug('No data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
                     continue
                 
                 # NOTE:  This check is missing from IRISMustangUtils/R/generateMetrics_crossCorrelation.R
@@ -281,7 +283,7 @@ def crossCorrelation_metrics(concierge):
             r_filter = irisseismic.butter(defaultFilterArgs[0],defaultFilterArgs[1])
 
             # Calculate the cross-correlation metrics and append them to the list
-            logger.debug('Calculating crossCorrelation metrics for %s:%s' % (av1.snclId, av2.snclId))
+            logger.info('Calculating crossCorrelation metrics for %s:%s' % (av1.snclId, av2.snclId))
             try:
                 df = irismustangmetrics.apply_correlation_metric(r_stream1, r_stream2, 'crossCorrelation', maxLagSecs, r_filter)
                 dataframes.append(df)

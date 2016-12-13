@@ -157,7 +157,7 @@ class UserRequest(object):
                 if line.lower() == "metrics:":  # metric header
                     currentSection = metric_sets
                     multiValue = True
-                elif line.lower() == "sncls:" or line.lower() == "station_sncls:":  # sncl header
+                elif line.lower() in ['sncls:','station_sncls:','stations:']:
                     currentSection = sncl_sets
                     multiValue = True
                 elif line.lower() == "data_access:":

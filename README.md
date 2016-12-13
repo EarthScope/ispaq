@@ -77,7 +77,7 @@ are installed with compatible verions.
 By setting up a [conda virual environment](http://conda.pydata.org/docs/using/envs.html),
 we assure that our ISPAQ installation is entirely separate from any other installed software.
 
-### Alternative 1 for MacOSX ) Creating an environment from a 'spec' file
+### Alternative 1 for MacOSX. Creating an environment from a 'spec' file
 
 This method does everything at once.
 
@@ -105,7 +105,7 @@ R CMD INSTALL IRISSeismic_1.3.9.tar.gz
 R CMD INSTALL IRISMustangMetrics_2.0.2.tar.gz 
 ```
 
-### Alternative 2 for MacOSX or Linux ) Creating an environment by hand
+### Alternative 2 for MacOSX, Linux, or Windows (untested)). Creating an environment by hand
 
 This method requires more user intput but lets you see what is being installed.
 
@@ -194,8 +194,7 @@ If --log-level is not specified, the default log-level is INFO.
 When --starttime is invoked without --endtime, metrics are run for a single day. Metrics that are defined  
 as daylong metrics (24 hour window, see metrics documentation at [MUSTANG](http://services.iris.edu/mustang/measurements/1))
 will be calculated for the time period 00:00:00-23:59:59.9999. An endtime of YYYY-DD-MM is interpreted as 
-YYYY-DD-MM 00:00:00 so that e.g., --starttime=2016-01-01 --endtime=2016-01-02 will calculate one day of metrics. 
-When an endtime greater than one day is requested, metrics will be calculated for multiple single days. 
+YYYY-DD-MM 00:00:00 so that e.g., --starttime=2016-01-01 --endtime=2016-01-02 will calculate one day of metrics. When an endtime greater than one day is requested, metrics will be calculated for multiple single days. 
 
 The option -U should be used alone. No metrics are calculated when this option is invoked.
 
@@ -209,7 +208,7 @@ with the following comments in the header:
 ```
 # Preferences fall into four categories:
 #  * Metrics -- aliases for user defined combinations of metrics (Use with -M)
-#  * Station SNCLs -- aliases for user defined combinations of SNCL patterns (Use with -S)
+#  * Station_SNCLs -- aliases for user defined combinations of SNCL patterns (Use with -S)
 #                     SNCL patterns are station names formatted as network.station.location.channel
 #                     wildcards * and ? are allowed (*.*.*.*)
 #  * Data_Access -- FDSN web services or local files
@@ -219,23 +218,32 @@ with the following comments in the header:
 # each category heading, all lines containing a colon will be interpreted
 # as key:value and made made available to ISPAQ.
 #
-# Text to the right of `#` are comments and are ignored by the parser
-
-# Example invocations that use these default preferences:
-#
-#   run_ispaq.py -M basicStats -S basicStats --starttime 2010-04-20 --log-level INFO -A
-#   run_ispaq.py -M gaps -S gaps --starttime 2013-01-05 --log-level INFO -A
-#   run_ispaq.py -M spikes -S spikes --starttime 2013-01-03 --log-level INFO -A
-#   run_ispaq.py -M STALTA -S STALTA --starttime 2013-06-02 --log-level INFO -A
-#   run_ispaq.py -M SNR -S SNR --starttime 2013-06-02 --log-level INFO -A
-#   run_ispaq.py -M PSD -S PSD --starttime 2011-05-18 --log-level INFO -A
-#   run_ispaq.py -M PDF -S PDF --starttime 2013-06-01 --log-level INFO -A
-#   run_ispaq.py -M crossTalk -S crossTalk --starttime 2013-09-21 --log-level INFO -A
-#   run_ispaq.py -M pressureCorrelation -S pressureCorrelation --starttime 2013-05-02 --log-level INFO -A
-#   run_ispaq.py -M crossCorrelation -S crossCorrelation --starttime 2011-01-01 --log-level INFO -A
-#   run_ispaq.py -M orientationCheck -S orientationCheck --starttime 2015-11-24 --log-level INFO -A
-#   run_ispaq.py -M transferFunction -S transferFunction --starttime 2012-10-03 --log-level INFO -A
 ```
+**Metric** aliases can be any of one of the predefined options or any user created *alias: metric* combination,
+where *metric* can be a single metric name or a comma separated list of valid metric names. Example, "myMetrics: num_gaps, sample_mean, cross_talk".
+
+**Station_SNCL** aliases are user created *alias: network.station.location.channel* combinations. Station SNCLs can be comma separated lists. \* or ? wildcards can be used in any of the network, station, location, channel elements. Example, "myStations: IU.\*.00.BH?, IU.ANMO.\*.?HZ, II.PFO.??.\*".
+
+**Data_Access** has four entries describing where to find data, metadata, events, and optionally response files.
+
+* *dataselect_url:* should be followed by either one of of the FDSN web service aliases used by ObsPy, a url (e.g., http://service.iris.edu) pointing to an FDSN-style web service, or a file path to a directory containing miniSEED files.
+
+* *station_url:* should by followed by either one of of the FDSN web service aliases used by ObsPy, a url pointing to an FDSN-style web service, or a path to a file containing metadata in StationXML format. If no metadata is available this can be left unspecified, e.g. "station_url:", and only metrics that do not rely on metadata information will be calculated.
+
+* *event_url:* should be followed by either one of of the FDSN web service aliases used by ObsPy, a url pointing to an FDSN-style web service, or a path to a file containing metadata in QuakeML format. Web service providers must have an event service that has the option of returning text format. 
+
+* *resp_dir:* can be not specified or absent if local response files are not used. In that case, the default is to retrieve response information from [IRIS Evalresp](http://service.iris.edu/irisws/evalresp/1/). Otherwise, this should be a path to a directory containing response files in RESP format.
+
+**Preferences** has three entries describing ispaq output.
+
+* *csv_ouput_dir:* should be followed by a directory path for output of generated metric text files.
+
+* *plot_ouput_dir:* should be followed by a directory path for output of generated PDF plots.
+
+* *sigfigs:* should be followed by a number describing the significant figures used to ouput metric values.
+
+
+More information about using local files can be found below in the section "Using Local Data Files".
 
 ### Output files
 
@@ -281,13 +289,15 @@ You can modify the information printed to the console by modifying the ```--log-
 To see detailed progress information use ```--log-level DEBUG```. To hide everything other
 than an outright crash use ```--log-level CRITICAL```.
 
-The following example demonstrates what will should see. 
+The following example demonstrates what you should see. 
+
+> Note: Please ignore the warning message from matplotlib. It will only occur on first use. 
 
 ```
 (ispaq) $ run_ispaq.py -M basicStats -S basicStats --starttime 2010-04-20 --log-level INFO
 2016-08-26 15:50:43 - INFO - Running ISPAQ version 0.7.6 on Fri Aug 26 15:50:43 2016
 
-/Users/jonathancallahan/miniconda2/envs/ispaq/lib/python2.7/site-packages/matplotlib/font_manager.py:273: UserWarning: Matplotlib is building the font cache using fc-list. This may take a moment.
+~/miniconda2/envs/ispaq/lib/python2.7/site-packages/matplotlib/font_manager.py:273: UserWarning: Matplotlib is building the font cache using fc-list. This may take a moment.
   warnings.warn('Matplotlib is building the font cache using fc-list. This may take a moment.')
 2016-08-26 15:51:02 - INFO - Calculating simple metrics for 3 SNCLs.
 2016-08-26 15:51:02 - INFO - 000 Calculating simple metrics for IU.ANMO.00.BH1
@@ -299,22 +309,15 @@ The following example demonstrates what will should see.
 (ispaq) $
 ```
 
-> Note: Please ignore the warning message from matplotlib. It will only occur on first use. 
-
 ### Using Local Data Files
 
 To be added ...
 
-(miniSEED data format, file naming)
-(dataselect command line tool)
-(RESP file naming format)
 
-### Current List of Metrics
+### List of Metrics
 
-> Note: when using local data files, metrics based on miniSEED act_flags, io_flags, and timing blockette 1001 are not valid. 
-Thse metrics are calibration_signal, clock_locked, event_begin, event_end, event_in_progress, timing_correction, 
-and timing_quality.
-
+> Note: when using local data files, metrics based on miniSEED act_flags, io_flags, and timing blockette 1001 are not valid. These metrics are calibration_signal, clock_locked, event_begin, event_end, event_in_progress, timing_correction, and timing_quality.
+ 
 * **amplifier_saturation**:
 The number of times that the 'Amplifier saturation detected' bit in the 'dq_flags' byte is set within a miniSEED file. 
 This data quality flag is set by some dataloggers in the fixed section of the miniSEED header. The flag was intended to 
@@ -537,3 +540,21 @@ as a percentage of maximum accuracy. Percentage is NULL if not present in the mi
 Transfer function metric consisting of the gain ratio, phase difference and magnitude squared of two co-located sensors.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/transfer_function/)
 
+### Examples Using Default.txt Preference File
+
+> Note: not specifying `-P` in command line is the same as specifying `-P preference_files/default.txt`
+
+```
+run_ispaq.py -M basicStats -S basicStats --starttime 2010-04-20
+run_ispaq.py -M gaps -S gaps --starttime 2013-01-05 --endtime 2013-01-08
+run_ispaq.py -M spikes -S spikes --starttime 2013-01-03
+run_ispaq.py -M STALTA -S STALTA --starttime 2013-06-02
+run_ispaq.py -M SNR -S SNR --starttime 2013-06-02
+run_ispaq.py -M PSD -S PSD --starttime 2011-05-18
+run_ispaq.py -M PDF -S PDF --starttime 2013-06-01
+run_ispaq.py -M crossTalk -S crossTalk --starttime 2013-09-21
+run_ispaq.py -M pressureCorrelation -S pressureCorrelation --starttime 2013-05-02
+run_ispaq.py -M crossCorrelation -S crossCorrelation --starttime 2011-01-01
+run_ispaq.py -M orientationCheck -S orientationCheck --starttime 2015-11-24
+run_ispaq.py -M transferFunction -S transferFunction --starttime=2012-10-03 --endtime=2012-10-05 
+```

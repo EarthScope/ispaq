@@ -79,7 +79,7 @@ def pressureCorrelation_metrics(concierge):
         # Loop over rows of the availability dataframe
         for (pIndex, pAv) in pressureAvailability.iterrows():
         
-            logger.info(' %03d Pressure channel %s' % (pIndex, pAv.snclId))
+            logger.info('%03d Pressure channel %s' % (pIndex, pAv.snclId))
         
             # Get the data ----------------------------------------------
 
