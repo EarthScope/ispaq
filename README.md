@@ -551,6 +551,7 @@ run_ispaq.py -M spikes -S spikes --starttime 2013-01-03
 run_ispaq.py -M STALTA -S STALTA --starttime 2013-06-02
 run_ispaq.py -M SNR -S SNR --starttime 2013-06-02
 run_ispaq.py -M PSD -S PSD --starttime 2011-05-18
+run_ispaq.py -M PSDText -S PSD --starttime 2011-05-18 
 run_ispaq.py -M PDF -S PDF --starttime 2013-06-01
 run_ispaq.py -M crossTalk -S crossTalk --starttime 2013-09-21
 run_ispaq.py -M pressureCorrelation -S pressureCorrelation --starttime 2013-05-02
