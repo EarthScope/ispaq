@@ -8,24 +8,18 @@ Users have the ability to create personalized _preference files_ that list combi
 of station specifiers and statistical metrics of interest, such that they can be run
 repeatedly over data from many different time periods.
 
-ISPAQ offers the option for access to FDSN Web Services to get raw data and metadata directly
-from selected data centers supporting the FDSN protocol.  Alternately, users can ready local files
-and metadata on their own workstations, possibly sourced directly from instrumentation, and construct
-on-the-spot data quality analyses on that data.
+ISPAQ offers the option for access to [FDSN Web Services](http://www.fdsn.org/webservices/) to get raw data and metadata directly from selected data centers supporting the FDSN protocol.  Alternately, users can 
+read local [miniSEED](http://ds.iris.edu/ds/nodes/dmc/data/formats/seed/) files and metadata on their own workstations, possibly sourced directly from instrumentation, and construct on-the-spot data quality analyses on that data.
 
-Output is provided in csv format for tabular metrics, and Probability Density Functions can be
+Output is provided in csv format for tabular metrics and Probability Density Functions (PDF) can be
 plotted to PNG image files.
 
-The business logic for MUSTANG metrics is emulated through ObsPy and custom Python code and the
-core calculations are performed using the same R packages as used by MUSTANG.  Currently, only
-SEED formatted data and StationXML metadata is supported as source seismogram material.  RESP files
-and FDSN Web Service event files are also used in some situations.
+The business logic for MUSTANG metrics is emulated through [ObsPy](https://github.com/obspy/obspy/wiki) and custom Python code and the core calculations are performed using the same R packages as used by MUSTANG.
 
 # Background
 
 [IRIS](http://www.iris.edu/hq/) (Incorporated Research Institutions for Seismology)
- has developed a comprehensive quality assurance system called
-[MUSTANG](http://service.iris.edu/mustang/).
+ has developed a comprehensive quality assurance system called [MUSTANG](http://service.iris.edu/mustang/).
 
 The MUSTANG system was built to operate at the IRIS DMC and is not generally portable. 
 The key MUSTANG component is the Metric Calculators, and those were always
@@ -74,8 +68,9 @@ your system.
 We will use conda to simplify installation and ensure that all dependencies
 are installed with compatible verions.
 
-By setting up a [conda virual environment](http://conda.pydata.org/docs/using/envs.html),
+By setting up a [conda virtual environment](http://conda.pydata.org/docs/using/envs.html),
 we assure that our ISPAQ installation is entirely separate from any other installed software.
+
 
 ### Alternative 1 for MacOSX. Creating an environment from a 'spec' file
 
@@ -86,7 +81,7 @@ conda create -n ispaq --file ispaq-explicit-spec-file.txt
 source activate ispaq
 ```
 
-> Note: if `source activate ispaq` does not work because your shell is csh/tcsh instead of bash
+Note: if `source activate ispaq` does not work because your shell is csh/tcsh instead of bash
 you will need to add the ispaq environment to your PATH in the terminal window that you are using.
 e.g., `setenv PATH ~/miniconda2/envs/ispaq/bin:$PATH`)
 
@@ -105,9 +100,9 @@ R CMD INSTALL IRISSeismic_1.3.9.tar.gz
 R CMD INSTALL IRISMustangMetrics_2.0.2.tar.gz 
 ```
 
-### Alternative 2 for MacOSX, Linux, or Windows (untested)). Creating an environment by hand
+### Alternative 2 for MacOSX, Linux, or Windows (untested). Creating an environment by hand
 
-This method requires more user intput but lets you see what is being installed.
+This method requires more user input but lets you see what is being installed.
 
 ```
 conda create --name ispaq python=2.7
@@ -125,7 +120,7 @@ conda install -c bioconda r-pracma=1.8.8
 conda install -c bioconda rpy2=2.7.8
 ```
 
-> Note: if `source activate ispaq` does not work because your shell is csh/tcsh instead of bash
+Note: if `source activate ispaq` does not work because your shell is csh/tcsh instead of bash
 you will need to add the ispaq environment to your PATH in the terminal window that you are using.
 e.g., `setenv PATH ~/miniconda2/envs/ispaq/bin:$PATH`
 
@@ -144,7 +139,7 @@ R CMD INSTALL IRISSeismic_1.3.9.tar.gz
 R CMD INSTALL IRISMustangMetrics_2.0.2.tar.gz 
 ```
 
-# First use
+# Using ISPAQ
 
 Every time you use ISPAQ you must ensure that you are running in the proper Anaconda
 environment. If you followed the instructions above you only need to:
@@ -155,7 +150,7 @@ source activate ispaq
 
 after which your prompt should begin with ```(ispaq) ```.
 
-> Note: if you are using a csh/tcsh shell there will be no prompt change.
+Note: if you are using a csh/tcsh shell there will be no prompt change.
 
 A list of command line options is available with the ```--help``` flag:
 
@@ -184,7 +179,7 @@ optional arguments:
                         log level printed to console
   -A, --append          append to TRANSCRIPT file rather than overwriting
   -U, --update-r        check CRAN for more recent IRIS Mustang R package
-                        versions
+                        versions and install if available
 ```
 
 When calculating metrics, valid arguments for -M, -S, and --starttime must be provided. 
@@ -194,7 +189,7 @@ If --log-level is not specified, the default log-level is INFO.
 When --starttime is invoked without --endtime, metrics are run for a single day. Metrics that are defined  
 as daylong metrics (24 hour window, see metrics documentation at [MUSTANG](http://services.iris.edu/mustang/measurements/1))
 will be calculated for the time period 00:00:00-23:59:59.9999. An endtime of YYYY-DD-MM is interpreted as 
-YYYY-DD-MM 00:00:00 so that e.g., --starttime=2016-01-01 --endtime=2016-01-02 will calculate one day of metrics. When an endtime greater than one day is requested, metrics will be calculated for multiple single days. 
+YYYY-DD-MM 00:00:00 so that e.g., --starttime=2016-01-01 --endtime=2016-01-02 will also calculate one day of metrics. When an endtime greater than one day is requested, metrics will be calculated for multiple single days. 
 
 The option -U should be used alone. No metrics are calculated when this option is invoked.
 
@@ -226,13 +221,13 @@ where *metric* can be a single metric name or a comma separated list of valid me
 
 **Data_Access** has four entries describing where to find data, metadata, events, and optionally response files.
 
-* *dataselect_url:* should be followed by either one of of the FDSN web service aliases used by ObsPy, a url (e.g., http://service.iris.edu) pointing to an FDSN-style web service, or a file path to a directory containing miniSEED files.
+* *dataselect_url:* should be followed by either one of of the FDSN web service aliases used by ObsPy, a url (e.g., http://service.iris.edu) pointing to an FDSN-style web service, or a file path to a directory containing miniSEED files. See: "Using Local Data Files", below.
 
-* *station_url:* should by followed by either one of of the FDSN web service aliases used by ObsPy, a url pointing to an FDSN-style web service, or a path to a file containing metadata in StationXML format. If no metadata is available this can be left unspecified, e.g. "station_url:", and only metrics that do not rely on metadata information will be calculated.
+* *station_url:* should by followed by either one of of the FDSN web service aliases used by ObsPy, a url pointing to an FDSN-style web service, or a path to a file containing metadata in [StationXML](http://www.fdsn.org/xml/station/) format ([schema](http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd)). If web services are being used, then this should be the same as the dataselect_url.
 
-* *event_url:* should be followed by either one of of the FDSN web service aliases used by ObsPy, a url pointing to an FDSN-style web service, or a path to a file containing metadata in QuakeML format. Web service providers must have an event service that has the option of returning text format. 
+* *event_url:* should be followed by either one of of the FDSN web service aliases used by ObsPy, a url pointing to an FDSN-style web service, or a path to a file containing metadata in [QuakeML](https://quake.ethz.ch/quakeml) format ([schema](https://quake.ethz.ch/quakeml/docs/xml?action=AttachFile&do=get&target=QuakeML-BED-1.2.xsd)). Web service providers must have an event service that has the option of returning text format. 
 
-* *resp_dir:* can be not specified or absent if local response files are not used. In that case, the default is to retrieve response information from [IRIS Evalresp](http://service.iris.edu/irisws/evalresp/1/). Otherwise, this should be a path to a directory containing response files in RESP format.
+* *resp_dir:* should be unspecified or absent if local response files are not used. In that case, the default is to retrieve response information from [IRIS Evalresp](http://service.iris.edu/irisws/evalresp/1/). Otherwise, this should be a path to a directory containing response files in [RESP](http://ds.iris.edu/ds/nodes/dmc/data/formats/resp/) format. Local response files are expected to be named RESP.network.station.location.channel or RESP.station.network.location.channel (e.g., RESP.IU.CASY.00.BH1 or RESP.CASY.IU.00.BH1). These are only used when generating PSD related metrics or PDF plots.
 
 **Preferences** has three entries describing ispaq output.
 
@@ -289,9 +284,7 @@ You can modify the information printed to the console by modifying the ```--log-
 To see detailed progress information use ```--log-level DEBUG```. To hide everything other
 than an outright crash use ```--log-level CRITICAL```.
 
-The following example demonstrates what you should see. 
-
-> Note: Please ignore the warning message from matplotlib. It will only occur on first use. 
+The following example demonstrates what you should see. Note: Please ignore the warning message from matplotlib. It will only occur on first use. 
 
 ```
 (ispaq) $ run_ispaq.py -M basicStats -S basicStats --starttime 2010-04-20 --log-level INFO
@@ -311,12 +304,19 @@ The following example demonstrates what you should see.
 
 ### Using Local Data Files
 
-To be added ...
+Local data files should be in miniSEED format and organized in station-channel-day files 
+with naming convention network.station.channel.year.julianday.quality where quality is optional (e.g., TA.P19K..BHZ.2016.214.M or TA.P19K..BHZ.2016.214). The files should all exist in the same directory.
+
+Note: All data is expected to be in the day file that matches its timestamp; if records do not break on the day boundary, data that is not in the correct day file will not be used in the metrics calculation. This can lead to cases where, for example, a gap is calculated at the start of a day when the data for that time period is in the previous day file.
+
+If your miniSEED files are not already split on day boundaries, one tool that can be used for this task is the dataselect command line tool available at [seiscode.iris.washington.edu](https://seiscode.iris.washington.edu/projects/dataselect/files). The following example reads the input miniSEED files, prunes the data to the sample level, splits the records on day boundaries, and writes to files named network.station.location.channel.year.julianday.quality.
+
+Example: `dataselect -Ps -Sd -A %n.%s.%l.%c.%Y.%j.%q inputfiles`
 
 
 ### List of Metrics
 
-> Note: when using local data files, metrics based on miniSEED act_flags, io_flags, and timing blockette 1001 are not valid. These metrics are calibration_signal, clock_locked, event_begin, event_end, event_in_progress, timing_correction, and timing_quality.
+Note: when using local data files, metrics based on miniSEED act_flags, io_flags, and timing blockette 1001 are not valid. These metrics are calibration_signal, clock_locked, event_begin, event_end, event_in_progress, timing_correction, and timing_quality.
  
 * **amplifier_saturation**:
 The number of times that the 'Amplifier saturation detected' bit in the 'dq_flags' byte is set within a miniSEED file. 
@@ -542,7 +542,7 @@ Transfer function metric consisting of the gain ratio, phase difference and magn
 
 ### Examples Using Default.txt Preference File
 
-> Note: not specifying `-P` in command line is the same as specifying `-P preference_files/default.txt`
+Note: not specifying `-P` in command line is the same as specifying `-P preference_files/default.txt`
 
 ```
 run_ispaq.py -M basicStats -S basicStats --starttime 2010-04-20
