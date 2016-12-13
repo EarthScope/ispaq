@@ -126,7 +126,7 @@ def orientationCheck_metrics(concierge):
 
         for sn_lId in sorted(list(set(sn_lIds))):
 
-            logger.debug('Working on SN.L %s' % (sn_lId))
+            logger.info('Calculating orientationCheck metrics for %s' % (sn_lId))
 
             sn_lAvailability = availability[availability.sn_lId == sn_lId]
             
