@@ -1,0 +1,1443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<q:quakeml xmlns:q="http://quakeml.org/xmlns/quakeml/1.2" xmlns:iris="http://service.iris.edu/fdsnws/event/1/" xmlns="http://quakeml.org/xmlns/bed/1.2" xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance" xsi:schemaLocation="http://quakeml.org/schema/xsd http://quakeml.org/schema/xsd/QuakeML-1.2.xsd">
+ <eventParameters publicID="smi:service.iris.edu/fdsnws/event/1/query">
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845324">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="718">
+    <type>Flinn-Engdahl region</type>
+    <text>HINDU KUSH REGION, AFGHANISTAN</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15399677</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8960402</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8960402" iris:contributorOriginId="00198753" iris:contributor="ISC" iris:contributorEventId="14342119" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T23:21:12.3400</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>35.9326</value>
+    </latitude>
+    <longitude>
+     <value>70.0186</value>
+    </longitude>
+    <depth>
+     <value>99100.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15399677">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8960404</originID>
+    <type>MW</type>
+    <mag>
+     <value>5.7</value>
+    </mag>
+    <creationInfo>
+     <author>GCMT</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845322">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15399646</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8960385</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8960385" iris:contributorOriginId="00198751" iris:contributor="ISC" iris:contributorEventId="17149518" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T23:12:32.5700</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-34.725</value>
+    </latitude>
+    <longitude>
+     <value>-71.8177</value>
+    </longitude>
+    <depth>
+     <value>16000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15399646">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8960386</originID>
+    <type>mb</type>
+    <mag>
+     <value>6.0</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845319">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="136">
+    <type>Flinn-Engdahl region</type>
+    <text>CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15399603</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8960357</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8960357" iris:contributorOriginId="00198746" iris:contributor="ISC" iris:contributorEventId="14342117" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T23:02:01.7100</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-37.6767</value>
+    </latitude>
+    <longitude>
+     <value>-72.7651</value>
+    </longitude>
+    <depth>
+     <value>40400.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15399603">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8960360</originID>
+    <type>MW</type>
+    <mag>
+     <value>5.9</value>
+    </mag>
+    <creationInfo>
+     <author>GCMT</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845269">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="403">
+    <type>Flinn-Engdahl region</type>
+    <text>NORTHERN MID-ATLANTIC RIDGE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15398814</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8959938</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8959938" iris:contributorOriginId="00198679" iris:contributor="ISC" iris:contributorEventId="14342115" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T19:54:29.7700</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>10.8044</value>
+    </latitude>
+    <longitude>
+     <value>-43.4003</value>
+    </longitude>
+    <depth>
+     <value>16000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15398814">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8959941</originID>
+    <type>MW</type>
+    <mag>
+     <value>5.8</value>
+    </mag>
+    <creationInfo>
+     <author>GCMT</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845258">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="134">
+    <type>Flinn-Engdahl region</type>
+    <text>OFF COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15398562</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8959798</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8959798" iris:contributorOriginId="00198659" iris:contributor="ISC" iris:contributorEventId="14357795" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T19:00:05.6300</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-33.4675</value>
+    </latitude>
+    <longitude>
+     <value>-72.028</value>
+    </longitude>
+    <depth>
+     <value>19000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15398562">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8959800</originID>
+    <type>MW</type>
+    <mag>
+     <value>6.2</value>
+    </mag>
+    <creationInfo>
+     <author>GCMT</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845252">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15398441</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8959726</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8959726" iris:contributorOriginId="00198647" iris:contributor="ISC" iris:contributorEventId="14341931" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T18:15:22.9400</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-37.4664</value>
+    </latitude>
+    <longitude>
+     <value>-73.6706</value>
+    </longitude>
+    <depth>
+     <value>25000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15398441">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8959728</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.6</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845243">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15398306</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8959652</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8959652" iris:contributorOriginId="00198634" iris:contributor="ISC" iris:contributorEventId="14341930" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T17:43:36.4100</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-36.538</value>
+    </latitude>
+    <longitude>
+     <value>-73.1317</value>
+    </longitude>
+    <depth>
+     <value>32100.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15398306">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8959653</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.5</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845237">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15398225</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8959603</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8959603" iris:contributorOriginId="00198626" iris:contributor="ISC" iris:contributorEventId="14344848" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T17:24:31.5300</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-36.3859</value>
+    </latitude>
+    <longitude>
+     <value>-73.1192</value>
+    </longitude>
+    <depth>
+     <value>25000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15398225">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8959605</originID>
+    <type>MW</type>
+    <mag>
+     <value>6.1</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845234">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15398171</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8959576</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8959576" iris:contributorOriginId="00198622" iris:contributor="ISC" iris:contributorEventId="14341928" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T17:11:48.4200</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-34.0602</value>
+    </latitude>
+    <longitude>
+     <value>-71.9389</value>
+    </longitude>
+    <depth>
+     <value>33600.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15398171">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8959581</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.5</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845221">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15397915</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8959445</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8959445" iris:contributorOriginId="00198599" iris:contributor="ISC" iris:contributorEventId="14341926" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T16:27:55.2700</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-37.8232</value>
+    </latitude>
+    <longitude>
+     <value>-73.3338</value>
+    </longitude>
+    <depth>
+     <value>22000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15397915">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8959446</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.5</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845207">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="129">
+    <type>Flinn-Engdahl region</type>
+    <text>SALTA PROVINCE, ARGENTINA</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15397678</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8959307</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8959307" iris:contributorOriginId="00198576" iris:contributor="ISC" iris:contributorEventId="14341924" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T15:45:39.2200</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-24.7957</value>
+    </latitude>
+    <longitude>
+     <value>-65.4619</value>
+    </longitude>
+    <depth>
+     <value>31800.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15397678">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8959314</originID>
+    <type>MW</type>
+    <mag>
+     <value>6.3</value>
+    </mag>
+    <creationInfo>
+     <author>GCMT</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845206">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15397658</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8959303</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8959303" iris:contributorOriginId="00198573" iris:contributor="ISC" iris:contributorEventId="15626710" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T15:44:50.8700</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-36.1263</value>
+    </latitude>
+    <longitude>
+     <value>-73.2851</value>
+    </longitude>
+    <depth>
+     <value>35000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15397658">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8959306</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.5</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845110">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="134">
+    <type>Flinn-Engdahl region</type>
+    <text>OFF COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15396475</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958660</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8958660" iris:contributorOriginId="00198448" iris:contributor="ISC" iris:contributorEventId="14341917" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T12:03:27.9700</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-34.3559</value>
+    </latitude>
+    <longitude>
+     <value>-73.9088</value>
+    </longitude>
+    <depth>
+     <value>35000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15396475">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958662</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.5</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845083">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15396098</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958441</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8958441" iris:contributorOriginId="00198411" iris:contributor="ISC" iris:contributorEventId="14341915" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T10:38:32.6300</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-38.1685</value>
+    </latitude>
+    <longitude>
+     <value>-73.823</value>
+    </longitude>
+    <depth>
+     <value>18000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15396098">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958445</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.9</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845081">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15396032</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958415</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8958415" iris:contributorOriginId="00336949" iris:contributor="ISC" iris:contributorEventId="16248580" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T10:30:34.7000</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-33.2287</value>
+    </latitude>
+    <longitude>
+     <value>-71.9718</value>
+    </longitude>
+    <depth>
+     <value>15000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15396032">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958416</originID>
+    <type>mb</type>
+    <mag>
+     <value>6.0</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=3952728">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15396022</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958411</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8958411" iris:contributorOriginId="00578267" iris:contributor="ISC" iris:contributorEventId="697919" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T10:30:10.2800</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-37.8697</value>
+    </latitude>
+    <longitude>
+     <value>-73.5473</value>
+    </longitude>
+    <depth>
+     <value>22000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15396022">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958411</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.8</value>
+    </mag>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845075">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="134">
+    <type>Flinn-Engdahl region</type>
+    <text>OFF COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395939</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958353</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8958353" iris:contributorOriginId="00198395" iris:contributor="ISC" iris:contributorEventId="14341914" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T10:10:11.8900</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-33.7611</value>
+    </latitude>
+    <longitude>
+     <value>-72.4168</value>
+    </longitude>
+    <depth>
+     <value>17000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395939">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958357</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.6</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845072">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395868</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958314</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8958314" iris:contributorOriginId="00198390" iris:contributor="ISC" iris:contributorEventId="14869110" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T09:59:20.1000</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-38.1804</value>
+    </latitude>
+    <longitude>
+     <value>-73.6813</value>
+    </longitude>
+    <depth>
+     <value>34000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395868">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958315</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.8</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845051">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="134">
+    <type>Flinn-Engdahl region</type>
+    <text>OFF COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395541</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958141</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8958141" iris:contributorOriginId="00198353" iris:contributor="ISC" iris:contributorEventId="14341742" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T09:00:13.1000</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-33.6229</value>
+    </latitude>
+    <longitude>
+     <value>-72.0256</value>
+    </longitude>
+    <depth>
+     <value>19000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395541">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958142</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.6</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845044">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="134">
+    <type>Flinn-Engdahl region</type>
+    <text>OFF COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395466</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958098</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8958098" iris:contributorOriginId="00198344" iris:contributor="ISC" iris:contributorEventId="22072" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T08:48:05.3800</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-38.4746</value>
+    </latitude>
+    <longitude>
+     <value>-75.3521</value>
+    </longitude>
+    <depth>
+     <value>35000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395466">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958099</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.6</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845038">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="134">
+    <type>Flinn-Engdahl region</type>
+    <text>OFF COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395392</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958056</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8958056" iris:contributorOriginId="00198333" iris:contributor="ISC" iris:contributorEventId="17149224" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T08:31:55.9500</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-33.0368</value>
+    </latitude>
+    <longitude>
+     <value>-72.4303</value>
+    </longitude>
+    <depth>
+     <value>14000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395392">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958058</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.5</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845036">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395379</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958049</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8958049" iris:contributorOriginId="00198332" iris:contributor="ISC" iris:contributorEventId="14342374" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T08:31:02.5800</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-34.8833</value>
+    </latitude>
+    <longitude>
+     <value>-72.5231</value>
+    </longitude>
+    <depth>
+     <value>26900.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395379">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958053</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.7</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845033">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395343</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958029</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8958029" iris:contributorOriginId="00198327" iris:contributor="ISC" iris:contributorEventId="14869030" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T08:25:29.2300</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-34.8047</value>
+    </latitude>
+    <longitude>
+     <value>-72.4495</value>
+    </longitude>
+    <depth>
+     <value>34200.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395343">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8958033</originID>
+    <type>mb</type>
+    <mag>
+     <value>6.1</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845028">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395277</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957992</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8957992" iris:contributorOriginId="00198321" iris:contributor="ISC" iris:contributorEventId="15106230" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T08:13:10.5000</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-33.6059</value>
+    </latitude>
+    <longitude>
+     <value>-71.9014</value>
+    </longitude>
+    <depth>
+     <value>19000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395277">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957997</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.6</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845026">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="134">
+    <type>Flinn-Engdahl region</type>
+    <text>OFF COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395240</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957968</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8957968" iris:contributorOriginId="00198316" iris:contributor="ISC" iris:contributorEventId="14357776" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T08:01:23.4800</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-37.84</value>
+    </latitude>
+    <longitude>
+     <value>-75.2105</value>
+    </longitude>
+    <depth>
+     <value>35000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395240">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957974</originID>
+    <type>MW</type>
+    <mag>
+     <value>7.4</value>
+    </mag>
+    <creationInfo>
+     <author>GCMT</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845014">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395072</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957885</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8957885" iris:contributorOriginId="00198299" iris:contributor="ISC" iris:contributorEventId="14868998" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T07:40:44.7200</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-35.2174</value>
+    </latitude>
+    <longitude>
+     <value>-72.2628</value>
+    </longitude>
+    <depth>
+     <value>18000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395072">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957888</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.5</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845013">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395050</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957873</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8957873" iris:contributorOriginId="00198297" iris:contributor="ISC" iris:contributorEventId="14342359" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T07:37:18.1400</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-36.94</value>
+    </latitude>
+    <longitude>
+     <value>-72.8146</value>
+    </longitude>
+    <depth>
+     <value>39700.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395050">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957876</originID>
+    <type>mb</type>
+    <mag>
+     <value>6.0</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845011">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="134">
+    <type>Flinn-Engdahl region</type>
+    <text>OFF COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395024</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957857</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8957857" iris:contributorOriginId="00198294" iris:contributor="ISC" iris:contributorEventId="14341737" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T07:34:29.7300</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-33.8653</value>
+    </latitude>
+    <longitude>
+     <value>-72.2045</value>
+    </longitude>
+    <depth>
+     <value>27300.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15395024">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957860</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.5</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845009">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394994</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957846</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8957846" iris:contributorOriginId="00198292" iris:contributor="ISC" iris:contributorEventId="22060" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T07:33:30.4600</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-37.9989</value>
+    </latitude>
+    <longitude>
+     <value>-73.5485</value>
+    </longitude>
+    <depth>
+     <value>33000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394994">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957848</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.6</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2845005">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394950</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957816</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8957816" iris:contributorOriginId="00198287" iris:contributor="ISC" iris:contributorEventId="14868987" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T07:23:13.9900</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-36.9592</value>
+    </latitude>
+    <longitude>
+     <value>-73.5409</value>
+    </longitude>
+    <depth>
+     <value>19500.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394950">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957819</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.6</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2844998">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="134">
+    <type>Flinn-Engdahl region</type>
+    <text>OFF COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394898</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957782</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8957782" iris:contributorOriginId="00198281" iris:contributor="ISC" iris:contributorEventId="14357772" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T07:12:27.8400</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-33.8643</value>
+    </latitude>
+    <longitude>
+     <value>-72.0028</value>
+    </longitude>
+    <depth>
+     <value>31400.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394898">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957787</originID>
+    <type>mb</type>
+    <mag>
+     <value>6.0</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2844996">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="134">
+    <type>Flinn-Engdahl region</type>
+    <text>OFF COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394878</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957772</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8957772" iris:contributorOriginId="00198280" iris:contributor="ISC" iris:contributorEventId="17149180" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T07:05:03.5500</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-33.8681</value>
+    </latitude>
+    <longitude>
+     <value>-72.0349</value>
+    </longitude>
+    <depth>
+     <value>19000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394878">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957774</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.8</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=3952573">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394850</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957756</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8957756" iris:contributorOriginId="16659968" iris:contributor="ISC" iris:contributorEventId="17149177" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T06:57:17.0400</value>
+    </time>
+    <creationInfo>
+     <author>IDC</author>
+    </creationInfo>
+    <latitude>
+     <value>-35.0791</value>
+    </latitude>
+    <longitude>
+     <value>-72.5808</value>
+    </longitude>
+    <depth>
+     <value>0.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394850">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957756</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.7</value>
+    </mag>
+    <creationInfo>
+     <author>IDC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2844992">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394841</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957752</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8957752" iris:contributorOriginId="00198276" iris:contributor="ISC" iris:contributorEventId="17149174" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T06:56:23.6000</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-34.3052</value>
+    </latitude>
+    <longitude>
+     <value>-72.2133</value>
+    </longitude>
+    <depth>
+     <value>16000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394841">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957754</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.6</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=3952570">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394834</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957748</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8957748" iris:contributorOriginId="16659966" iris:contributor="ISC" iris:contributorEventId="17149172" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T06:53:14.6500</value>
+    </time>
+    <creationInfo>
+     <author>IDC</author>
+    </creationInfo>
+    <latitude>
+     <value>-34.3636</value>
+    </latitude>
+    <longitude>
+     <value>-71.8998</value>
+    </longitude>
+    <depth>
+     <value>0.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394834">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957748</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.6</value>
+    </mag>
+    <creationInfo>
+     <author>IDC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2844990">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394822</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957741</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8957741" iris:contributorOriginId="00198274" iris:contributor="ISC" iris:contributorEventId="16114035" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T06:52:31.7800</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-34.8376</value>
+    </latitude>
+    <longitude>
+     <value>-72.6607</value>
+    </longitude>
+    <depth>
+     <value>18000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394822">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957742</originID>
+    <type>mb</type>
+    <mag>
+     <value>6.2</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2844989">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="137">
+    <type>Flinn-Engdahl region</type>
+    <text>SAN JUAN PROVINCE, ARGENTINA</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394820</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957735</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8957735" iris:contributorOriginId="00198273" iris:contributor="ISC" iris:contributorEventId="14368730" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T06:51:16.4500</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-31.6822</value>
+    </latitude>
+    <longitude>
+     <value>-69.1821</value>
+    </longitude>
+    <depth>
+     <value>31200.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394820">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957740</originID>
+    <type>mb</type>
+    <mag>
+     <value>6.0</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2844988">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394803</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957727</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8957727" iris:contributorOriginId="00198271" iris:contributor="ISC" iris:contributorEventId="17149170" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T06:47:23.9900</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-33.6145</value>
+    </latitude>
+    <longitude>
+     <value>-71.5407</value>
+    </longitude>
+    <depth>
+     <value>35000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394803">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957730</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.6</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2844987">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="691">
+    <type>Flinn-Engdahl region</type>
+    <text>PACIFIC-ANTARCTIC RIDGE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394789</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957718</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8957718" iris:contributorOriginId="00198270" iris:contributor="ISC" iris:contributorEventId="15664866" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T06:34:13.5900</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-53.8198</value>
+    </latitude>
+    <longitude>
+     <value>-132.9605</value>
+    </longitude>
+    <depth>
+     <value>10000.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394789">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957719</originID>
+    <type>mb</type>
+    <mag>
+     <value>5.6</value>
+    </mag>
+    <creationInfo>
+     <author>NEIC</author>
+    </creationInfo>
+   </magnitude>
+  </event>
+  <event publicID="smi:service.iris.edu/fdsnws/event/1/query?eventid=2844986">
+   <type>earthquake</type>
+   <description xmlns:iris="http://service.iris.edu/fdsnws/event/1/" iris:FEcode="135">
+    <type>Flinn-Engdahl region</type>
+    <text>NEAR COAST OF CENTRAL CHILE</text>
+   </description>
+   <preferredMagnitudeID>smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394775</preferredMagnitudeID>
+   <preferredOriginID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957708</preferredOriginID>
+   <origin xmlns:iris="http://service.iris.edu/fdsnws/event/1/" publicID="smi:service.iris.edu/fdsnws/event/1/query?originid=8957708" iris:contributorOriginId="00198269" iris:contributor="ISC" iris:contributorEventId="14340585" iris:catalog="ISC">
+    <time>
+     <value>2010-02-27T06:34:13.3300</value>
+    </time>
+    <creationInfo>
+     <author>ISC</author>
+    </creationInfo>
+    <latitude>
+     <value>-36.1485</value>
+    </latitude>
+    <longitude>
+     <value>-72.9327</value>
+    </longitude>
+    <depth>
+     <value>28100.0</value>
+    </depth>
+   </origin>
+   <magnitude publicID="smi:service.iris.edu/fdsnws/event/1/query?magnitudeid=15394775">
+    <originID>smi:service.iris.edu/fdsnws/event/1/query?originid=8957714</originID>
+    <type>MW</type>
+    <mag>
+     <value>8.8</value>
+    </mag>
+    <creationInfo>
+     <author>GCMT</author>
+    </creationInfo>
+   </magnitude>
+  </event></eventParameters></q:quakeml>

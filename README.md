@@ -309,7 +309,7 @@ with naming convention network.station.channel.year.julianday.quality where qual
 
 Note: All data is expected to be in the day file that matches its timestamp; if records do not break on the day boundary, data that is not in the correct day file will not be used in the metrics calculation. This can lead to cases where, for example, a gap is calculated at the start of a day when the data for that time period is in the previous day file.
 
-If your miniSEED files are not already split on day boundaries, one tool that can be used for this task is the dataselect command line tool available at [seiscode.iris.washington.edu](https://seiscode.iris.washington.edu/projects/dataselect/files). The following example reads the input miniSEED files, prunes the data to the sample level, splits the records on day boundaries, and writes to files named network.station.location.channel.year.julianday.quality.
+If your miniSEED files are not already split on day boundaries, one tool that can be used for this task is the dataselect command line tool available at [seiscode.iris.washington.edu](https://seiscode.iris.washington.edu/projects/dataselect). The following example reads the input miniSEED files, prunes the data to the sample level, splits the records on day boundaries, and writes to files named network.station.location.channel.year.julianday.quality.
 
 Example: `dataselect -Ps -Sd -A %n.%s.%l.%c.%Y.%j.%q inputfiles`
 
