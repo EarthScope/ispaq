@@ -45,7 +45,7 @@ def main():
                         help='{DEBUG,INFO,WARNING,ERROR,CRITICAL}')
     args = parser.parse_args(sys.argv[1:])
     args.metrics = "LOAD_PREFS_ONLY"  # trigger keyword
-    args.sncls = "TEST"    # dummy value
+    args.stations = "TEST"    # dummy value
     print(args)
     
     # Set up logger for this test component -- separate from ISPAQ instances
@@ -73,7 +73,7 @@ def main():
     for m in user_request.metric_sets.keys():
         for s in user_request.sncl_sets.keys():
             # call regular ispaq with each combination
-            command = 'python -m ispaq --starttime={0} --endtime={1} --metrics={2} --sncls={3} --preferences-file={4} --log-level={5}'\
+            command = 'python -m ispaq --starttime={0} --endtime={1} --metrics={2} --stations={3} --preferences-file={4} --log-level={5}'\
                 .format(args.starttime, args.endtime, m, s, args.preferences_file.name, args.log_level)
             logger.info("Preparing test run %s" % command)
             os.system(command)
