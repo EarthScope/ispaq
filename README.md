@@ -25,38 +25,39 @@ The MUSTANG system was built to operate at the IRIS DMC and is not generally por
 The key MUSTANG component is the Metric Calculators, and those were always
 intended to be shared.  Whereas the results of MUSTANG calculations are stored in a database, and
 provided to users via web services, ISPAQ is intended to reproduce the process of calculating these
-metrics from the source data, such that results can be verified and alternate data sources not
-available in MUSTANG can be processed at the user's initiative.
+metrics locally on the user's workstation.  This has the benefit of allowing users to generate just-in-time metrics
+on data of their choosing, whether stored at IRIS DMC or on the user's own data store.
 
-IRIS currently has close to 50 MUSTANG algorithms that calculate metrics, most 
+IRIS has close to 50 MUSTANG algorithms that calculate metrics, most 
 written in R, that are now publicly available in the CRAN repository under the name 
 [IRISMustangMetrics](http://cran.r-project.org/).  ISPAQ comes with the latest version of these packages
-available in CRAN and we provide an update capability in ISPAQ to allow users to seamlessly upgrade
-their R packages as IRIS provides them.
+available in CRAN and ISPAQ has an update capability to allow users to seamlessly upgrade
+these R packages as new releases become available.
 
-The R package IRISMustangMetrics cannot include workflow and data selection
-business logic implemented at scale in MUSTANG, as much of this code is non-portable.  However, it
-is the goal of ISPAQ to provide a similar set of business logic in Python, such that the end result
-is identical or very similar to the results you will see in MUSTANG.  The end result is a lightweight
+ISPAQ contains business logic similar to MUSTANG, such that the computed metrics produced
+are identical (or very similar) to the results you will see in MUSTANG.  The end result is a lightweight
 and portable version of MUSTANG that users are free to leverage on their own hardware.
 
 # Installation
 
 ISPAQ must be installed on the user's system using very reliable tools for package transfer.  ISPAQ is being
-distributed through _GitHub_, via IRIS's public repository.  You will use a simple command to get a copy of
+distributed through _GitHub_, via IRIS's public repository (_iris-edu_).  You will use a simple command to get a copy of
 the latest stable release.  In addition, you will use the _miniconda_ python package manager to create a
-customized environment designed to run ISPAQ properly.  This will include an localized installation of ObsPy and R.
-Just follow the steps below to begin running ISPAQ.
+customized Python environment designed to run ISPAQ properly.  This will include an localized installation of ObsPy and R.
+
+Follow the steps below to begin running ISPAQ.
 
 ## Download the Source Code
 
-You must first have ```git``` installed your system. Once you do, just:
+You must first have ```git``` installed your system (see: [Git Home Page](https://git-scm.com/)).
+After you have git installed, you will download the ISPAQ distribution from GitHub by opening a
+text terminal and typing:
 
 ```
 git clone https://github.com/iris-edu/ispaq.git
 ```
 
-Onced finished, ```cd ispaq``` before setting up the Anaconda environment.
+Once finished, ```cd ispaq``` before setting up the Anaconda environment.
 
 ## Install the Anaconda Environment
 
@@ -182,16 +183,22 @@ optional arguments:
                         versions and install if available
 ```
 
+For those that prefer to run ISPAQ as a package, you can use the following invocation (using help example):
+```
+(ispaq) $ python -m ispaq.ispaq --help
+````
+
 When calculating metrics, valid arguments for -M, -S, and --starttime must be provided. 
 If -P is not provided, ISPAQ uses the default preference file located at ispaq/preference_files/default.txt.
 If --log-level is not specified, the default log-level is INFO.
 
 When --starttime is invoked without --endtime, metrics are run for a single day. Metrics that are defined  
-as daylong metrics (24 hour window, see metrics documentation at [MUSTANG](http://services.iris.edu/mustang/measurements/1))
+as day-long metrics (24 hour windows, see metrics documentation at [MUSTANG](http://services.iris.edu/mustang/measurements/1))
 will be calculated for the time period 00:00:00-23:59:59.9999. An endtime of YYYY-DD-MM is interpreted as 
-YYYY-DD-MM 00:00:00 so that e.g., --starttime=2016-01-01 --endtime=2016-01-02 will also calculate one day of metrics. When an endtime greater than one day is requested, metrics will be calculated for multiple single days. 
+YYYY-DD-MM 00:00:00 so that e.g., --starttime=2016-01-01 --endtime=2016-01-02 will also calculate one day of metrics.
+When an endtime greater than one day is requested, metrics will be calculated by cycling through multiple single days. 
 
-The option -U should be used alone. No metrics are calculated when this option is invoked.
+The option -U should be used alone when checking for updates. No metrics are calculated when this option is invoked.
 
 ### Preference files
 
@@ -221,39 +228,38 @@ where *metric* can be a single metric name or a comma separated list of valid me
 
 **Data_Access** has four entries describing where to find data, metadata, events, and optionally response files.
 
-* *dataselect_url:* should be followed by either one of of the FDSN web service aliases used by ObsPy, a url (e.g., http://service.iris.edu) pointing to an FDSN-style web service, or a file path to a directory containing miniSEED files. See: "Using Local Data Files", below.
+* *dataselect_url:* should indicate a miniseed location as one of the FDSN web service aliases used by ObsPy (e.g. IRIS), an explicit URL pointing to an FDSN web service domain (e.g. http://service.iris.edu), or a file path to a directory containing miniSEED files (_See: "Using Local Data Files", below_).
 
-* *station_url:* should by followed by either one of of the FDSN web service aliases used by ObsPy, a url pointing to an FDSN-style web service, or a path to a file containing metadata in [StationXML](http://www.fdsn.org/xml/station/) format ([schema](http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd)). If web services are being used, then this should be the same as the dataselect_url.
+* *station_url:* should indicate a StationXML metadata location as an FDSN web service alias, an explicit URL, or a path to a file containing metadata in [StationXML](http://www.fdsn.org/xml/station/) format ([schema](http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd)).  For web services, this is generally the same entry as _dataselect_url_.
 
-* *event_url:* should be followed by either one of of the FDSN web service aliases used by ObsPy, a url pointing to an FDSN-style web service, or a path to a file containing metadata in [QuakeML](https://quake.ethz.ch/quakeml) format ([schema](https://quake.ethz.ch/quakeml/docs/xml?action=AttachFile&do=get&target=QuakeML-BED-1.2.xsd)). Web service providers must have an event service that has the option of returning text format. 
+* *event_url:* should indicate a QuakeML event catalog location as an FDSN web service alias (e.g. USGS), an explicit URL, or a path to a file containing metadata in [QuakeML](https://quake.ethz.ch/quakeml) format ([schema](https://quake.ethz.ch/quakeml/docs/xml?action=AttachFile&do=get&target=QuakeML-BED-1.2.xsd)). _Only web service providers that can output text format can be used at this time._  This entry will only be used by metrics that require event information in order to be processed.
 
-* *resp_dir:* should be unspecified or absent if local response files are not used. In that case, the default is to retrieve response information from [IRIS Evalresp](http://service.iris.edu/irisws/evalresp/1/). Otherwise, this should be a path to a directory containing response files in [RESP](http://ds.iris.edu/ds/nodes/dmc/data/formats/resp/) format. Local response files are expected to be named RESP.network.station.location.channel or RESP.station.network.location.channel (e.g., RESP.IU.CASY.00.BH1 or RESP.CASY.IU.00.BH1). These are only used when generating PSD related metrics or PDF plots.
+* *resp_dir:* should be unspecified or absent if local response files are not used.  The default behavior is to retrieve response information from [IRIS Evalresp](http://service.iris.edu/irisws/evalresp/1/). To make use of local instrument responses, this parameter should indicate a path to a directory containing response files in [RESP](http://ds.iris.edu/ds/nodes/dmc/data/formats/resp/) format. Local response files are expected to be named RESP.network.station.location.channel or RESP.station.network.location.channel (e.g., RESP.IU.CASY.00.BH1 or RESP.CASY.IU.00.BH1). These are only used when generating PSD related metrics or PDF plots.
 
 **Preferences** has three entries describing ispaq output.
 
-* *csv_ouput_dir:* should be followed by a directory path for output of generated metric text files.
+* *csv_output_dir:* should be followed by a directory path for output of generated metric text files (CSV).
 
-* *plot_ouput_dir:* should be followed by a directory path for output of generated PDF plots.
+* *plot_output_dir:* should be followed by a directory path for output of generated PDF plots (PNG).
 
-* *sigfigs:* should be followed by a number describing the significant figures used to ouput metric values.
-
+* *sigfigs:* should indicate the number of significant figures used to output metric values.
 
 More information about using local files can be found below in the section "Using Local Data Files".
 
 ### Output files
 
-ISPAQ will always create a log file named ```ISPAQ_TRANSCRIPT.log``` to record all actions taken
-and all logging messages generated during processing.
+ISPAQ will always create a log file named ```ISPAQ_TRANSCRIPT.log``` to record actions taken
+and messages generated during processing.
 
 Results of metrics calculations will be written to .csv files using the following naming scheme:
 
-*MetricSet*\_*StationSet*\_*date*\__*businessLogic*.csv
+* *MetricSet*\_*StationSet*\_*date*\__*businessLogic*.csv
 
 or
 
-*MetricSet*\_*StationSet*\_*startdate*\_*enddate*\_*businessLogic*.csv
+* *MetricSet*\_*StationSet*\_*startdate*\_*enddate*\_*businessLogic*.csv
 
-where businessLogic corresponds to which script is invoked:
+where _businessLogic_ corresponds to which script is invoked:
 
 | businessLogic | ISPAQ script | metrics |
 | ----------|--------------|---------|
@@ -551,6 +557,7 @@ run_ispaq.py -M spikes -S spikes --starttime 2013-01-03
 run_ispaq.py -M STALTA -S STALTA --starttime 2013-06-02
 run_ispaq.py -M SNR -S SNR --starttime 2013-06-02
 run_ispaq.py -M PSD -S PSD --starttime 2011-05-18
+run_ispaq.py -M PSDText -S PSD --starttime 2011-05-18 
 run_ispaq.py -M PDF -S PDF --starttime 2013-06-01
 run_ispaq.py -M crossTalk -S crossTalk --starttime 2013-09-21
 run_ispaq.py -M pressureCorrelation -S pressureCorrelation --starttime 2013-05-02
