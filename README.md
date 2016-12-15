@@ -359,10 +359,9 @@ Example: `dataselect -Ps -Sd -A %n.%s.%l.%c.%Y.%j.%q inputfiles`
 
 ### List of Metrics
 
-Note: when using local data files, metrics based on miniSEED act_flags, io_flags, and timing blockette 1001 are 
+Note: When using local data files, metrics based on miniSEED act_flags, io_flags, and timing blockette 1001 are 
 not valid. These metrics are calibration_signal, clock_locked, event_begin, event_end, event_in_progress, 
-timing_correction, and timing_quality. Timing_quality will return the value 'nan' and the other metrics will 
-return '0'.
+timing_correction, and timing_quality. ISPAQ will not return values for these metrics. 
  
 * **amplifier_saturation**:
 The number of times that the 'Amplifier saturation detected' bit in the 'dq_flags' byte is set within a 
