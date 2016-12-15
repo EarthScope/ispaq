@@ -59,7 +59,6 @@ def format_simple_df(df, sigfigs=6):
     * Round the 'value' column to the specified number of significant figures.
     * Convert 'starttime' and 'endtime' to python 'date' objects.
     """
-    # First convert 'NULL' to missing value
     if 'value' in df.columns:
         # convert values to float
         df.value = df.value.astype(float)

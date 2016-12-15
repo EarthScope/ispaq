@@ -13,7 +13,7 @@ import argparse
 import datetime
 import logging
 
-__version__ = "0.8.2rec"
+__version__ = "0.8.3"
 
 
 def main():
@@ -50,6 +50,8 @@ def main():
                         help='append to TRANSCRIPT file rather than overwriting')
     parser.add_argument('-U', '--update-r', action='store_true', default=False,
                         help='check CRAN for more recent IRIS Mustang R package versions')
+    parser.add_argument('-L', '--list-metrics', action='store_true', default=False,
+                        help='list names of available metrics')
 
     try:
         args = parser.parse_args(sys.argv[1:])
@@ -88,7 +90,7 @@ def main():
     
     # We can't use required=True in argpase because folks should be able to type only -U
     
-    if not args.update_r:
+    if not (args.update_r or args.list_metrics):
         # start and end times
         if args.starttime is None:
             logger.critical('argument --starttime is required')
@@ -111,10 +113,20 @@ def main():
         logger.info('Checking for IRIS R package updates...')
         from . import updater
         df = updater.get_IRIS_package_versions(logger)
-        # TODO: Decide on proper behavior and output when updating R packages
         print('\n%s\n' % df)
         updater.update_IRIS_packages(logger)
         sys.exit(0)
+
+    if args.list_metrics:
+        logger.info('Checking for available metrics in IRIS R packages...')
+        from . import irismustangmetrics
+        default_function_dict = irismustangmetrics.function_metadata()
+        for function_name in default_function_dict:
+            default_function = default_function_dict[function_name]
+            for metric_name in default_function['metrics']:
+                print(metric_name)
+        sys.exit(0)
+
 
     # Load additional modules --------------------------------------------------
 

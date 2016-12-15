@@ -34,7 +34,7 @@ metrics locally on the user's workstation.  This has the benefit of allowing use
 just-in-time metrics on data of their choosing, whether stored at IRIS DMC or on the user's own data 
 store.
 
-IRIS has close to 50 MUSTANG algorithms that calculate metrics, most 
+IRIS has over 40 MUSTANG algorithms that calculate metrics, most 
 written in R, that are now publicly available in the CRAN repository under the name 
 [IRISMustangMetrics](http://cran.r-project.org/).  ISPAQ comes with the latest version of these packages
 available in CRAN and ISPAQ has an update capability to allow users to seamlessly upgrade
@@ -167,7 +167,7 @@ A list of command line options is available with the ```--help``` flag:
 usage: run_ispaq.py [-h] [-V] [--starttime STARTTIME] [--endtime ENDTIME]
                     [-M METRICS] [-S STATIONS] [-P PREFERENCES_FILE]
                     [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-A]
-                    [-U]
+                    [-U][-L]
 
 ispaq.ispaq: provides entry point main().
 
@@ -188,6 +188,7 @@ optional arguments:
   -A, --append          append to TRANSCRIPT file rather than overwriting
   -U, --update-r        check CRAN for more recent IRIS Mustang R package
                         versions and install if available
+  -L, --list-metrics    list names of available metrics
 ```
 
 For those that prefer to run ISPAQ as a package, you can use the following invocation (using help example):
@@ -207,8 +208,7 @@ YYYY-DD-MM 00:00:00 so that e.g., --starttime=2016-01-01 --endtime=2016-01-02 wi
 of metrics. When an endtime greater than one day is requested, metrics will be calculated by cycling through 
 multiple single days. 
 
-The option -U should be used alone when checking for updates. No metrics are calculated when this option 
-is invoked.
+The options -U and -L should be used alone. No metrics are calculated when these options are invoked.
 
 ### Preference files
 

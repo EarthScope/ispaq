@@ -132,7 +132,7 @@ $(document).ready(function () {
 <p><a href="http://www.iris.edu/hq/">IRIS</a> (Incorporated Research Institutions for Seismology) has developed a comprehensive quality assurance system called <a href="http://service.iris.edu/mustang/">MUSTANG</a>.</p>
 <p>The MUSTANG system was built to operate at the IRIS DMC and is not generally portable. The key MUSTANG component is the Metric Calculators, and those were always intended to be shared.<br />
 Whereas the results of MUSTANG calculations are stored in a database, and provided to users via web services, ISPAQ is intended to reproduce the process of calculating these metrics locally on the user’s workstation. This has the benefit of allowing users to generate just-in-time metrics on data of their choosing, whether stored at IRIS DMC or on the user’s own data store.</p>
-<p>IRIS has close to 50 MUSTANG algorithms that calculate metrics, most written in R, that are now publicly available in the CRAN repository under the name <a href="http://cran.r-project.org/">IRISMustangMetrics</a>. ISPAQ comes with the latest version of these packages available in CRAN and ISPAQ has an update capability to allow users to seamlessly upgrade these R packages as new releases become available.</p>
+<p>IRIS has over 40 MUSTANG algorithms that calculate metrics, most written in R, that are now publicly available in the CRAN repository under the name <a href="http://cran.r-project.org/">IRISMustangMetrics</a>. ISPAQ comes with the latest version of these packages available in CRAN and ISPAQ has an update capability to allow users to seamlessly upgrade these R packages as new releases become available.</p>
 <p>ISPAQ contains business logic similar to MUSTANG, such that the computed metrics produced are identical (or very similar) to the results you will see in MUSTANG. The end result is a lightweight and portable version of MUSTANG that users are free to leverage on their own hardware.</p>
 </div>
 <div id="installation" class="section level1">
@@ -202,7 +202,7 @@ R CMD INSTALL IRISMustangMetrics_2.0.2.tar.gz </code></pre>
 usage: run_ispaq.py [-h] [-V] [--starttime STARTTIME] [--endtime ENDTIME]
                     [-M METRICS] [-S STATIONS] [-P PREFERENCES_FILE]
                     [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-A]
-                    [-U]
+                    [-U][-L]
 
 ispaq.ispaq: provides entry point main().
 
@@ -222,13 +222,14 @@ optional arguments:
                         log level printed to console
   -A, --append          append to TRANSCRIPT file rather than overwriting
   -U, --update-r        check CRAN for more recent IRIS Mustang R package
-                        versions and install if available</code></pre>
+                        versions and install if available
+  -L, --list-metrics    list names of available metrics</code></pre>
 <p>For those that prefer to run ISPAQ as a package, you can use the following invocation (using help example):</p>
 <pre><code>(ispaq) $ python -m ispaq.ispaq --help</code></pre>
 <p>When calculating metrics, valid arguments for -M, -S, and –starttime must be provided. If -P is not provided, ISPAQ uses the default preference file located at ispaq/preference_files/default.txt. If –log-level is not specified, the default log-level is INFO.</p>
 <p>When –starttime is invoked without –endtime, metrics are run for a single day. Metrics that are defined<br />
 as day-long metrics (24 hour windows, see metrics documentation at <a href="http://services.iris.edu/mustang/measurements/1">MUSTANG</a>) will be calculated for the time period 00:00:00-23:59:59.9999. An endtime of YYYY-DD-MM is interpreted as YYYY-DD-MM 00:00:00 so that e.g., –starttime=2016-01-01 –endtime=2016-01-02 will also calculate one day of metrics. When an endtime greater than one day is requested, metrics will be calculated by cycling through multiple single days.</p>
-<p>The option -U should be used alone when checking for updates. No metrics are calculated when this option is invoked.</p>
+<p>The options -U and -L should be used alone. No metrics are calculated when these options are invoked.</p>
 <div id="preference-files" class="section level3">
 <h3>Preference files</h3>
 <p>The ISPAQ system is designed to be configurable through the use of <em>preference files</em>. These are usually located in the <code>preference_files/</code> directory. Not surprisingly, the default preference file is `<code>preference_files/default.txt</code>. This file is self describing with the following comments in the header:</p>
@@ -367,7 +368,7 @@ For web services, this is generally the same entry as <em>dataselect_url</em>.</
 </div>
 <div id="list-of-metrics" class="section level3">
 <h3>List of Metrics</h3>
-<p>Note: when using local data files, metrics based on miniSEED act_flags, io_flags, and timing blockette 1001 are not valid. These metrics are calibration_signal, clock_locked, event_begin, event_end, event_in_progress, timing_correction, and timing_quality. Timing_quality will return the value ‘nan’ and the other metrics will return ‘0’.</p>
+<p>Note: When using local data files, metrics based on miniSEED act_flags, io_flags, and timing blockette 1001 are not valid. These metrics are calibration_signal, clock_locked, event_begin, event_end, event_in_progress, timing_correction, and timing_quality. ISPAQ will not return values for these metrics.</p>
 <ul>
 <li><p><strong>amplifier_saturation</strong>: The number of times that the ‘Amplifier saturation detected’ bit in the ‘dq_flags’ byte is set within a miniSEED file. This data quality flag is set by some dataloggers in the fixed section of the miniSEED header. The flag was intended to indicate that the preamp is being overdriven, but the exact meaning is datalogger-specific. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/amplifier_saturation/">Documentation</a></p></li>
 <li><p><strong>calibration_signal</strong>: The number of times that the ‘Calibration signals present’ bit in the ‘act_flags’ byte is set within a miniSEED file. A value of 1 indicates that a calibration signal was being sent to that channel. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/calibration_signal/">Documentation</a></p></li>
