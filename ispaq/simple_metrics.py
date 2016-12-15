@@ -125,6 +125,10 @@ def simple_metrics(concierge):
                 try:
                     df = irismustangmetrics.apply_simple_metric(r_stream, 'stateOfHealth')
                     dataframes.append(df)
+                    # metrics calibration_signal, clock_locked, event_begin, event_end, 
+                    # event_in_progress, timing_correction, and timing_quality are not valid for local miniSEED
+                    if concierge.dataselect_client is None:
+                        df =df[~df.metricName.isin(["calibration_signal","clock_locked","event_begin","event_end","event_in_progess","timing_correction","timing_quality"])]
                 except Exception as e:
                     logger.warning('"stateOfHealth" metric calculation failed for %s: %s' % (av.snclId, e))
                     

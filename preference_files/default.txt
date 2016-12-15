@@ -111,6 +111,6 @@ Data_Access:
 Preferences:
   csv_output_dir: .    # directory to contain generated metrics .csv files
   plot_output_dir: .   # directory to contain generated plots
-  sigfigs: 6           # significant figures used to output metric values
+  sigfigs: 6           # significant figures used to output metric values (only applicable to columns named 'value')
 
 

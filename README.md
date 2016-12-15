@@ -8,25 +8,31 @@ Users have the ability to create personalized _preference files_ that list combi
 of station specifiers and statistical metrics of interest, such that they can be run
 repeatedly over data from many different time periods.
 
-ISPAQ offers the option for access to [FDSN Web Services](http://www.fdsn.org/webservices/) to get raw data and metadata directly from selected data centers supporting the FDSN protocol.  Alternately, users can 
-read local [miniSEED](http://ds.iris.edu/ds/nodes/dmc/data/formats/seed/) files and metadata on their own workstations, possibly sourced directly from instrumentation, and construct on-the-spot data quality analyses on that data.
+ISPAQ offers the option for access to [FDSN Web Services](http://www.fdsn.org/webservices/) to get raw 
+data and metadata directly from selected data centers supporting the FDSN protocol.  Alternately, users 
+can read local [miniSEED](http://ds.iris.edu/ds/nodes/dmc/data/formats/seed/) files and metadata on 
+their own workstations, possibly sourced directly from instrumentation, and construct on-the-spot data 
+quality analyses on that data.
 
 Output is provided in csv format for tabular metrics and Probability Density Functions (PDF) can be
 plotted to PNG image files.
 
-The business logic for MUSTANG metrics is emulated through [ObsPy](https://github.com/obspy/obspy/wiki) and custom Python code and the core calculations are performed using the same R packages as used by MUSTANG.
+The business logic for MUSTANG metrics is emulated through [ObsPy](https://github.com/obspy/obspy/wiki) 
+and custom Python code and the core calculations are performed using the same R packages as used by 
+MUSTANG.
 
 # Background
 
-[IRIS](http://www.iris.edu/hq/) (Incorporated Research Institutions for Seismology)
- has developed a comprehensive quality assurance system called [MUSTANG](http://service.iris.edu/mustang/).
+[IRIS](http://www.iris.edu/hq/) (Incorporated Research Institutions for Seismology) has developed a 
+comprehensive quality assurance system called [MUSTANG](http://service.iris.edu/mustang/).
 
 The MUSTANG system was built to operate at the IRIS DMC and is not generally portable. 
-The key MUSTANG component is the Metric Calculators, and those were always
-intended to be shared.  Whereas the results of MUSTANG calculations are stored in a database, and
+The key MUSTANG component is the Metric Calculators, and those were always intended to be shared.  
+Whereas the results of MUSTANG calculations are stored in a database, and
 provided to users via web services, ISPAQ is intended to reproduce the process of calculating these
-metrics locally on the user's workstation.  This has the benefit of allowing users to generate just-in-time metrics
-on data of their choosing, whether stored at IRIS DMC or on the user's own data store.
+metrics locally on the user's workstation.  This has the benefit of allowing users to generate 
+just-in-time metrics on data of their choosing, whether stored at IRIS DMC or on the user's own data 
+store.
 
 IRIS has close to 50 MUSTANG algorithms that calculate metrics, most 
 written in R, that are now publicly available in the CRAN repository under the name 
@@ -40,10 +46,11 @@ and portable version of MUSTANG that users are free to leverage on their own har
 
 # Installation
 
-ISPAQ must be installed on the user's system using very reliable tools for package transfer.  ISPAQ is being
-distributed through _GitHub_, via IRIS's public repository (_iris-edu_).  You will use a simple command to get a copy of
-the latest stable release.  In addition, you will use the _miniconda_ python package manager to create a
-customized Python environment designed to run ISPAQ properly.  This will include an localized installation of ObsPy and R.
+ISPAQ must be installed on the user's system using very reliable tools for package transfer.  ISPAQ is 
+being distributed through _GitHub_, via IRIS's public repository (_iris-edu_).  You will use a simple 
+command to get a copy of the latest stable release.  In addition, you will use the _miniconda_ python 
+package manager to create a customized Python environment designed to run ISPAQ properly.  This will 
+include a localized installation of ObsPy and R.
 
 Follow the steps below to begin running ISPAQ.
 
@@ -193,12 +200,15 @@ If -P is not provided, ISPAQ uses the default preference file located at ispaq/p
 If --log-level is not specified, the default log-level is INFO.
 
 When --starttime is invoked without --endtime, metrics are run for a single day. Metrics that are defined  
-as day-long metrics (24 hour windows, see metrics documentation at [MUSTANG](http://services.iris.edu/mustang/measurements/1))
+as day-long metrics (24 hour windows, see metrics documentation at 
+[MUSTANG](http://services.iris.edu/mustang/measurements/1))
 will be calculated for the time period 00:00:00-23:59:59.9999. An endtime of YYYY-DD-MM is interpreted as 
-YYYY-DD-MM 00:00:00 so that e.g., --starttime=2016-01-01 --endtime=2016-01-02 will also calculate one day of metrics.
-When an endtime greater than one day is requested, metrics will be calculated by cycling through multiple single days. 
+YYYY-DD-MM 00:00:00 so that e.g., --starttime=2016-01-01 --endtime=2016-01-02 will also calculate one day 
+of metrics. When an endtime greater than one day is requested, metrics will be calculated by cycling through 
+multiple single days. 
 
-The option -U should be used alone when checking for updates. No metrics are calculated when this option is invoked.
+The option -U should be used alone when checking for updates. No metrics are calculated when this option 
+is invoked.
 
 ### Preference files
 
@@ -221,20 +231,38 @@ with the following comments in the header:
 # as key:value and made made available to ISPAQ.
 #
 ```
-**Metric** aliases can be any of one of the predefined options or any user created *alias: metric* combination,
-where *metric* can be a single metric name or a comma separated list of valid metric names. Example, "myMetrics: num_gaps, sample_mean, cross_talk".
+**Metric** aliases can be any of one of the predefined options or any user created *alias: metric* combination, 
+where *metric* can be a single metric name or a comma separated list of valid metric names. 
+Example, "myMetrics: num_gaps, sample_mean, cross_talk".
 
-**Station_SNCL** aliases are user created *alias: network.station.location.channel* combinations. Station SNCLs can be comma separated lists. \* or ? wildcards can be used in any of the network, station, location, channel elements. Example, "myStations: IU.\*.00.BH?, IU.ANMO.\*.?HZ, II.PFO.??.\*".
+**Station_SNCL** aliases are user created *alias: network.station.location.channel* combinations. Station SNCLs 
+can be comma separated lists. \* or ? wildcards can be used in any of the network, station, location, channel 
+elements. Example, "myStations: IU.\*.00.BH?, IU.ANMO.\*.?HZ, II.PFO.??.\*".
 
 **Data_Access** has four entries describing where to find data, metadata, events, and optionally response files.
 
-* *dataselect_url:* should indicate a miniseed location as one of the FDSN web service aliases used by ObsPy (e.g. IRIS), an explicit URL pointing to an FDSN web service domain (e.g. http://service.iris.edu), or a file path to a directory containing miniSEED files (_See: "Using Local Data Files", below_).
+* *dataselect_url:* should indicate a miniseed location as one of the FDSN web service aliases used by ObsPy 
+(e.g. IRIS), an explicit URL pointing to an FDSN web service domain (e.g. http://service.iris.edu), or a file 
+path to a directory containing miniSEED files (_See: "Using Local Data Files", below_).
 
-* *station_url:* should indicate a metadata location as an FDSN web service alias, an explicit URL, or a path to a file containing metadata in [StationXML](http://www.fdsn.org/xml/station/) format ([schema](http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd)).  For web services, this is generally the same entry as _dataselect_url_.
+* *station_url:* should indicate a metadata location as an FDSN web service alias, an explicit URL, or a path 
+to a file containing metadata in [StationXML](http://www.fdsn.org/xml/station/) format 
+([schema](http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd)).  
+For web services, this is generally the same entry as _dataselect_url_.
 
-* *event_url:* should indicate an event catalog location as an FDSN web service alias (e.g. USGS), an explicit URL, or a path to a file containing metadata in [QuakeML](https://quake.ethz.ch/quakeml) format ([schema](https://quake.ethz.ch/quakeml/docs/xml?action=AttachFile&do=get&target=QuakeML-BED-1.2.xsd)). _Only web service providers that can output text format can be used at this time._  This entry will only be used by metrics that require event information in order to be processed.
+* *event_url:* should indicate an event catalog location as an FDSN web service alias (e.g. USGS), an 
+explicit URL, or a path to a file containing metadata in [QuakeML](https://quake.ethz.ch/quakeml) format 
+([schema](https://quake.ethz.ch/quakeml/docs/xml?action=AttachFile&do=get&target=QuakeML-BED-1.2.xsd)). 
+_Only web service providers that can output text format can be used at this time._  This entry will 
+only be used by metrics that require event information in order to be processed.
 
-* *resp_dir:* should be unspecified or absent if local response files are not used.  The default behavior is to retrieve response information from [IRIS Evalresp](http://service.iris.edu/irisws/evalresp/1/). To make use of local instrument responses, this parameter should indicate a path to a directory containing response files in [RESP](http://ds.iris.edu/ds/nodes/dmc/data/formats/resp/) format. Local response files are expected to be named RESP.network.station.location.channel or RESP.station.network.location.channel (e.g., RESP.IU.CASY.00.BH1 or RESP.CASY.IU.00.BH1). These are only used when generating PSD related metrics or PDF plots.
+* *resp_dir:* should be unspecified or absent if local response files are not used.  The default behavior is to 
+retrieve response information from [IRIS Evalresp](http://service.iris.edu/irisws/evalresp/1/). To make use of 
+local instrument responses, this parameter should indicate a path to a directory containing response files in 
+[RESP](http://ds.iris.edu/ds/nodes/dmc/data/formats/resp/) format. Local response files are expected to be 
+named RESP.network.station.location.channel or RESP.station.network.location.channel 
+(e.g., RESP.IU.CASY.00.BH1 or RESP.CASY.IU.00.BH1). These are only used when generating PSD related metrics 
+or PDF plots.
 
 **Preferences** has three entries describing ispaq output.
 
@@ -242,7 +270,8 @@ where *metric* can be a single metric name or a comma separated list of valid me
 
 * *plot_output_dir:* should be followed by a directory path for output of generated PDF plots (PNG).
 
-* *sigfigs:* should indicate the number of significant figures used to output metric values.
+* *sigfigs:* should indicate the number of significant figures used to output metric values (only applicable 
+to columns named 'value').
 
 More information about using local files can be found below in the section "Using Local Data Files".
 
@@ -290,14 +319,14 @@ You can modify the information printed to the console by modifying the ```--log-
 To see detailed progress information use ```--log-level DEBUG```. To hide everything other
 than an outright crash use ```--log-level CRITICAL```.
 
-The following example demonstrates what you should see. Note: Please ignore the warning message from matplotlib. It will only occur on first use. 
+The following example demonstrates what you should see. Note: Please ignore the warning message from matplotlib. 
+It will only occur on first use. 
 
 ```
 (ispaq) $ run_ispaq.py -M basicStats -S basicStats --starttime 2010-04-20 --log-level INFO
 2016-08-26 15:50:43 - INFO - Running ISPAQ version 0.7.6 on Fri Aug 26 15:50:43 2016
 
-~/miniconda2/envs/ispaq/lib/python2.7/site-packages/matplotlib/font_manager.py:273: UserWarning: Matplotlib is building the font cache using fc-list. This may take a moment.
-  warnings.warn('Matplotlib is building the font cache using fc-list. This may take a moment.')
+~/miniconda2/envs/ispaq/lib/python2.7/site-packages/matplotlib/font_manager.py:273: UserWarning: Matplotlib is building the font cache using fc-list. This may take a moment. warnings.warn('Matplotlib is building the font cache using fc-list. This may take a moment.')
 2016-08-26 15:51:02 - INFO - Calculating simple metrics for 3 SNCLs.
 2016-08-26 15:51:02 - INFO - 000 Calculating simple metrics for IU.ANMO.00.BH1
 2016-08-26 15:51:04 - INFO - 001 Calculating simple metrics for IU.ANMO.00.BH2
@@ -311,34 +340,45 @@ The following example demonstrates what you should see. Note: Please ignore the 
 ### Using Local Data Files
 
 Local data files should be in miniSEED format and organized in station-channel-day files 
-with naming convention network.station.channel.year.julianday.quality where quality is optional (e.g., TA.P19K..BHZ.2016.214.M or TA.P19K..BHZ.2016.214). The files should all exist in the same directory.
+with naming convention network.station.channel.year.julianday.quality where quality is optional 
+(e.g., TA.P19K..BHZ.2016.214.M or TA.P19K..BHZ.2016.214). The files should all exist in the same directory.
 
-Note: All data is expected to be in the day file that matches its timestamp; if records do not break on the day boundary, data that is not in the correct day file will not be used in the metrics calculation. This can lead to cases where, for example, a gap is calculated at the start of a day when the data for that time period is in the previous day file.
+Note: All data is expected to be in the day file that matches its timestamp; if records do not break on the 
+day boundary, data that is not in the correct day file will not be used in the metrics calculation. This can 
+lead to cases where, for example, a gap is calculated at the start of a day when the data for that time period 
+is in the previous day file.
 
-If your miniSEED files are not already split on day boundaries, one tool that can be used for this task is the dataselect command line tool available at [seiscode.iris.washington.edu](https://seiscode.iris.washington.edu/projects/dataselect). The following example reads the input miniSEED files, prunes the data to the sample level, splits the records on day boundaries, and writes to files named network.station.location.channel.year.julianday.quality.
+If your miniSEED files are not already split on day boundaries, one tool that can be used for this task is the 
+dataselect command line tool available at 
+[seiscode.iris.washington.edu](https://seiscode.iris.washington.edu/projects/dataselect). The following example 
+reads the input miniSEED files, prunes the data to the sample level, splits the records on day boundaries, 
+and writes to files named network.station.location.channel.year.julianday.quality.
 
 Example: `dataselect -Ps -Sd -A %n.%s.%l.%c.%Y.%j.%q inputfiles`
 
 
 ### List of Metrics
 
-Note: when using local data files, metrics based on miniSEED act_flags, io_flags, and timing blockette 1001 are not valid. These metrics are calibration_signal, clock_locked, event_begin, event_end, event_in_progress, timing_correction, and timing_quality.
+Note: when using local data files, metrics based on miniSEED act_flags, io_flags, and timing blockette 1001 are 
+not valid. These metrics are calibration_signal, clock_locked, event_begin, event_end, event_in_progress, 
+timing_correction, and timing_quality. Timing_quality will return the value 'nan' and the other metrics will 
+return '0'.
  
 * **amplifier_saturation**:
-The number of times that the 'Amplifier saturation detected' bit in the 'dq_flags' byte is set within a miniSEED file. 
-This data quality flag is set by some dataloggers in the fixed section of the miniSEED header. The flag was intended to 
-indicate that the preamp is being overdriven, but the exact meaning is datalogger-specific.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/amplifier_saturation/)
+The number of times that the 'Amplifier saturation detected' bit in the 'dq_flags' byte is set within a 
+miniSEED file. This data quality flag is set by some dataloggers in the fixed section of the miniSEED header. 
+The flag was intended to indicate that the preamp is being overdriven, but the exact meaning is 
+datalogger-specific. [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/amplifier_saturation/)
 
 * **calibration_signal**:
-The number of times that the 'Calibration signals present' bit in the 'act_flags' byte is set within a miniSEED file. 
-A value of 1 indicates that a calibration signal was being sent to that channel.
+The number of times that the 'Calibration signals present' bit in the 'act_flags' byte is set within a miniSEED 
+file. A value of 1 indicates that a calibration signal was being sent to that channel.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/calibration_signal/)
 
 * **clock_locked**:
-The number of times that the 'Clock locked' bit in the 'io_flags' byte is set within a miniSEED file. This clock flag 
-is set to 1 by some dataloggers in the fixed section of the miniSEED header to indicate that its GPS has locked with 
-enough satellites to obtain a time/position fix.
+The number of times that the 'Clock locked' bit in the 'io_flags' byte is set within a miniSEED file. This 
+clock flag is set to 1 by some dataloggers in the fixed section of the miniSEED header to indicate that its 
+GPS has locked with enough satellites to obtain a time/position fix.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/clock_locked/)
 
 * **cross_talk**:
@@ -348,29 +388,30 @@ Correlation coefficients near 1 may indicate cross-talk between those channels.
 
 * **dead_channel_exp**:
 Dead channel metric - exponential fit. This metric is calculated from the mean of all the PSDs generated 
-(typically 47 for a 24 hour period). Values of the PSD mean curve over the band expLoPeriod:expHiPeriod are fit to 
-an exponential curve by a least squares linear regression of log(PSD mean) ~ log(period). The dead_channel_exp metric 
-is the standard deviation of the fit residuals of this regression. Lower numbers indicate a better fit and a higher 
-likelihood that the mean PSD is exponential - an indication of a dead channel.
+(typically 47 for a 24 hour period). Values of the PSD mean curve over the band expLoPeriod:expHiPeriod are 
+fit to an exponential curve by a least squares linear regression of log(PSD mean) ~ log(period). The 
+dead_channel_exp metric is the standard deviation of the fit residuals of this regression. Lower numbers 
+indicate a better fit and a higher likelihood that the mean PSD is exponential - an indication of a dead channel.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/dead_channel_exp/)
 
 * **dead_channel_gsn**:
-A boolean measurement providing a TRUE or FALSE indication that the channel exhibits a 5dB deviation below the NLNM 
-in the 4 to 8s period band as measured using a McNamara PDF noise matrix. The TRUE condition is indicated with a numeric 
-representation of '1' and the FALSE condition represented as a '0'.
+A boolean measurement providing a TRUE or FALSE indication that the channel exhibits a 5dB deviation below the 
+NLNM in the 4 to 8s period band as measured using a McNamara PDF noise matrix. The TRUE condition is indicated 
+with a numeric representation of '1' and the FALSE condition represented as a '0'.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/dead_channel_gsn/)
 
 * **dead_channel_lin**:
 Dead channel metric - linear fit. This metric is calculated from the mean of all the PSDs generated (typically 47 
 for a 24 hour period). Values of the PSD mean curve over the band linLoPeriod:linHiPeriod are fit to a linear curve 
 by a least squares linear regression of PSD mean ~ log(period). The dead_channel_lin metric is the standard deviation 
-of the fit residuals of this regression. Lower numbers indicate a better fit and a higher likelihood that the mean PSD 
-is linear - an indication that the sensor is not returning expected seismic energy.
+of the fit residuals of this regression. Lower numbers indicate a better fit and a higher likelihood that the mean 
+PSD is linear - an indication that the sensor is not returning expected seismic energy.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/dead_channel_lin/)
 
 * **digital_filter_charging**:
-The number of times that the 'A digital filter may be charging' bit in the 'dq_flags' byte is set within a miniSEED file. 
-Data samples acquired while a datalogger is loading filter parameters - such as after a reboot - may contain a transient.
+The number of times that the 'A digital filter may be charging' bit in the 'dq_flags' byte is set within a miniSEED 
+file. Data samples acquired while a datalogger is loading filter parameters - such as after a reboot - may contain 
+a transient.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/digital_filter_charging/)
 
 * **digitizer_clipping**:
@@ -379,27 +420,27 @@ This flag indicates that the input voltage has exceeded the maximum range of the
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/digitizer_clipping/)
 
 * **event_begin**:
-The number of times that the 'Beginning of an event, station trigger' bit in the 'act_flags' byte is set within a miniSEED 
-file. This metric can be used to quickly identify data days that may have events. It may also indicate when trigger 
-parameters need adjusting at a station.
+The number of times that the 'Beginning of an event, station trigger' bit in the 'act_flags' byte is set within a 
+miniSEED file. This metric can be used to quickly identify data days that may have events. It may also indicate 
+when trigger parameters need adjusting at a station.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/event_begin/)
 
 * **event_end**:
-The number of times that the 'End of an event, station detrigger' bit in the 'act_flags' byte is set within a miniSEED 
-file. This metric can be used to quickly identify data days that may have events. It may also indicate when trigger 
-parameters need adjusting at a station.
+The number of times that the 'End of an event, station detrigger' bit in the 'act_flags' byte is set within a 
+miniSEED file. This metric can be used to quickly identify data days that may have events. It may also indicate 
+when trigger parameters need adjusting at a station.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/event_end/)
 
 * **event_in_progress**:
-The number of times that the 'Event in progress' bit in the 'act_flags' byte is set within a miniSEED file. This metric 
-can be used to quickly identify data days that may have events. It may also indicate when trigger parameters need 
-adjusting at a station.
+The number of times that the 'Event in progress' bit in the 'act_flags' byte is set within a miniSEED file. This 
+metric can be used to quickly identify data days that may have events. It may also indicate when trigger 
+parameters need adjusting at a station.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/event_in_progress/)
 
 * **glitches**:
-The number of times that the 'Glitches detected' bit in the 'dq_flags' byte is set within a miniSEED file. This metric can 
-be used to identify data with large filled values that data users may need to handle in a way that they don't affect 
-their research outcomes.
+The number of times that the 'Glitches detected' bit in the 'dq_flags' byte is set within a miniSEED file. This 
+metric can be used to identify data with large filled values that data users may need to handle in a way that they 
+don't affect their research outcomes.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/glitches/)
 
 * **max_gap**:
@@ -411,14 +452,14 @@ Indicates the size of the largest overlap in seconds encountered within a 24-hou
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/max_overlap/)
 
 * **max_stalta**:
-The STALTAMetric function calculates the maximum of STA/LTA of the incoming seismic signal over a 24 hour period. In order 
-to reduce computation time of the rolling averages, the averaging window is advanced in 1/2 second increments.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/max_stalta/)
+The STALTAMetric function calculates the maximum of STA/LTA of the incoming seismic signal over a 24 hour period. 
+In order to reduce computation time of the rolling averages, the averaging window is advanced in 1/2 second 
+increments. [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/max_stalta/)
 
 * **missing_padded_data**:
-The number of times that the 'Missing/padded data present' bit in the 'dq_flags' byte is set within a miniSEED file. This 
-metric can be used to identify data with padded values that data users may need to handle in a way that they don't affect
-their research outcomes.
+The number of times that the 'Missing/padded data present' bit in the 'dq_flags' byte is set within a miniSEED file. 
+This metric can be used to identify data with padded values that data users may need to handle in a way that they 
+don't affect their research outcomes.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/missing_padded_data/)
 
 * **num_gaps**:
@@ -442,8 +483,8 @@ shallow events.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/num_spikes/)
 
 * **pct_above_nhnm**:
-Percent above New High Noise Model. Percentage of Probability Density Function values that are above the New High Noise 
-Model. This value is calculated over the entire time period.
+Percent above New High Noise Model. Percentage of Probability Density Function values that are above the New 
+High Noise Model. This value is calculated over the entire time period.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/pct_above_nhnm/)
 
 * **pct_below_nlnm**:
@@ -465,8 +506,8 @@ data for the reported start and end time.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/percent_availability/)
 
 * **polarity_check**:
-The signed cross-correlation peak value based on the cross-correlation of two neighboring station channels in proximity 
-to a large earthquake signal. A negative peak close to 1.0 can indicate reversed polarity.
+The signed cross-correlation peak value based on the cross-correlation of two neighboring station channels in 
+proximity to a large earthquake signal. A negative peak close to 1.0 can indicate reversed polarity.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/polarity_check/)
 
 * **pressure_effects**:
@@ -515,8 +556,8 @@ This metric reports the number (count) of unique values in data trace over a 24-
 * **spikes**:
 The number of times that the 'Spikes detected' bit in the 'dq_flags' byte is set within a miniSEED file. This data 
 quality flag is set by some dataloggers in the fixed section of the miniSEED header when short-duration spikes have 
-been detected in the data. Because spikes have shorter duration than the natural period of most seismic sensors, spikes 
-often indicate a problem introduced at or after the datalogger.
+been detected in the data. Because spikes have shorter duration than the natural period of most seismic sensors, 
+spikes often indicate a problem introduced at or after the datalogger.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/spikes/)
 
 * **suspect_time_tag**:
@@ -525,30 +566,28 @@ This metric can be used to identify stations with GPS locking problems and data 
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/suspect_time_tag/)
 
 * **telemetry_sync_error**:
-The number of times that the 'Telemetry synchronization error' bit in the 'dq_flags' byte is set within a miniSEED file. 
-This metric can be searched to determine which stations may have telemetry problems or to identify or omit gappy data 
-from a data request.
+The number of times that the 'Telemetry synchronization error' bit in the 'dq_flags' byte is set within a miniSEED 
+file. This metric can be searched to determine which stations may have telemetry problems or to identify or omit gappy data from a data request.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/telemetry_sync_error/)
 
 * **timing_correction**:
 The number of times that the 'Time correction applied' bit in the 'act_flags' byte is set within a miniSEED file. 
-This clock quality flag is set by the network operator in the fixed section of the miniSEED header when a timing correction 
-stored in field 16 of the miniSEED fixed header has been applied to the data's original time stamp. A value of 0 means 
-that no timing correction has been applied.
+This clock quality flag is set by the network operator in the fixed section of the miniSEED header when a timing 
+correction stored in field 16 of the miniSEED fixed header has been applied to the data's original time stamp. A value of 0 means that no timing correction has been applied.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/timing_correction/)
 
 * **timing_quality**:
-Daily average of the SEED timing quality stored in miniSEED blockette 1001. This value is vendor specific and expressed 
-as a percentage of maximum accuracy. Percentage is NULL if not present in the miniSEED.
+Daily average of the SEED timing quality stored in miniSEED blockette 1001. This value is vendor specific and 
+expressed as a percentage of maximum accuracy. Percentage is NULL if not present in the miniSEED.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/timing_quality/)
 
 * **transfer_function**:
-Transfer function metric consisting of the gain ratio, phase difference and magnitude squared of two co-located sensors.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/transfer_function/)
+Transfer function metric consisting of the gain ratio, phase difference and magnitude squared of two co-located 
+sensors. [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/transfer_function/)
 
 ### Examples Using Default.txt Preference File
 
-Note: not specifying `-P` in command line is the same as specifying `-P preference_files/default.txt`
+Note: not specifying `-P` in the command line is the same as specifying `-P preference_files/default.txt`
 
 ```
 run_ispaq.py -M basicStats -S basicStats --starttime 2010-04-20

@@ -31,6 +31,7 @@ def write_simple_df(df, filepath, sigfigs=6):
     # converted back. Nothing happens if this column is already of type UTCDateTime.
     df.starttime = df.starttime.apply(UTCDateTime, precision=0) # no milliseconds
     df.endtime = df.endtime.apply(UTCDateTime, precision=0) # no milliseconds
+    df = df.replace('NULL',np.nan)
     # Get pretty values
     pretty_df = format_simple_df(df, sigfigs=sigfigs)
     pretty_df = pretty_df.rename(index=str,columns={'snclq':'target','starttime':'start','endtime':'end'})
@@ -58,12 +59,9 @@ def format_simple_df(df, sigfigs=6):
     * Round the 'value' column to the specified number of significant figures.
     * Convert 'starttime' and 'endtime' to python 'date' objects.
     """
-    # TODO:  Why is type(df.value[0]) = 'str' at this point? Because metrics are always character strings?
-    # First convert 'N' to missing value
+    # First convert 'NULL' to missing value
     if 'value' in df.columns:
-        N_mask = df.value.str.contains('^N$')
-        df.loc[N_mask,'value'] = np.nan
-        # Then convert the rest of the values to float
+        # convert values to float
         df.value = df.value.astype(float)
         format_string = "." + str(sigfigs) + "g"
         df.value = df.value.apply(lambda x: format(x, format_string))
@@ -73,9 +71,6 @@ def format_simple_df(df, sigfigs=6):
     if 'endtime' in df.columns:
         df.endtime = df.endtime.apply(UTCDateTime, precision=0) # no milliseconds
         df.endtime = df.endtime.apply(lambda x: x.strftime("%Y-%m-%dT%H:%M:%S"))
-    # NOTE:  df.time from SNR metric is already a string, otherwise it is NA
-    #if 'time' in df.columns:
-        #df.time = df.time.apply(lambda x: x.format_iris_web_service())
     if 'qualityFlag' in df.columns:
         df.qualityFlag = df.qualityFlag.astype(int)
 
