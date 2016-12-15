@@ -121,10 +121,13 @@ def main():
         logger.info('Checking for available metrics in IRIS R packages...')
         from . import irismustangmetrics
         default_function_dict = irismustangmetrics.function_metadata()
+        metricList = []
         for function_name in default_function_dict:
             default_function = default_function_dict[function_name]
             for metric_name in default_function['metrics']:
-                print(metric_name)
+                metricList.append(metric_name)
+        for line in sorted(metricList):
+            print(line)
         sys.exit(0)
 
 

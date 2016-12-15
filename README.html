@@ -121,7 +121,7 @@ $(document).ready(function () {
 
 <div id="ispaq---iris-system-for-portable-assessment-of-quality" class="section level1">
 <h1>ISPAQ - IRIS System for Portable Assessment of Quality</h1>
-<p>ISPAQ is a python client that allows seismic data scientists and instrumentation operators to run data quality metrics on their own workstation, using much of same code base as is used in IRIS’s MUSTANG data quality web service.</p>
+<p>ISPAQ is a Python client that allows seismic data scientists and instrumentation operators to run data quality metrics on their own workstation, using much of same code base as is used in IRIS’s MUSTANG data quality web service.</p>
 <p>Users have the ability to create personalized <em>preference files</em> that list combinations of station specifiers and statistical metrics of interest, such that they can be run repeatedly over data from many different time periods.</p>
 <p>ISPAQ offers the option for access to <a href="http://www.fdsn.org/webservices/">FDSN Web Services</a> to get raw data and metadata directly from selected data centers supporting the FDSN protocol. Alternately, users can read local <a href="http://ds.iris.edu/ds/nodes/dmc/data/formats/seed/">miniSEED</a> files and metadata on their own workstations, possibly sourced directly from instrumentation, and construct on-the-spot data quality analyses on that data.</p>
 <p>Output is provided in csv format for tabular metrics and Probability Density Functions (PDF) can be plotted to PNG image files.</p>
@@ -143,6 +143,8 @@ Whereas the results of MUSTANG calculations are stored in a database, and provid
 <h2>Download the Source Code</h2>
 <p>You must first have <code>git</code> installed your system (see: <a href="https://git-scm.com/">Git Home Page</a>). After you have git installed, you will download the ISPAQ distribution from GitHub by opening a text terminal and typing:</p>
 <pre><code>git clone https://github.com/iris-edu/ispaq.git</code></pre>
+<p>Once cloned, if a new ispaq version becomes available, you can update the Python code by typing:</p>
+<pre><code>git pull origin master</code></pre>
 <p>Once finished, <code>cd ispaq</code> before setting up the Anaconda environment.</p>
 </div>
 <div id="install-the-anaconda-environment" class="section level2">

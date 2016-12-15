@@ -1,6 +1,6 @@
 # ISPAQ - IRIS System for Portable Assessment of Quality
 
-ISPAQ is a python client that allows seismic data scientists and instrumentation operators
+ISPAQ is a Python client that allows seismic data scientists and instrumentation operators
 to run data quality metrics on their own workstation, using much of same code base as is
 used in IRIS's MUSTANG data quality web service.
 
@@ -62,6 +62,12 @@ text terminal and typing:
 
 ```
 git clone https://github.com/iris-edu/ispaq.git
+```
+
+Once cloned, if a new ispaq version becomes available, you can update the Python code by typing:
+
+```
+git pull origin master
 ```
 
 Once finished, ```cd ispaq``` before setting up the Anaconda environment.
