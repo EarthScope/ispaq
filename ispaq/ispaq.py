@@ -8,18 +8,27 @@ from __future__ import (absolute_import, division, print_function)
 # Basic modules
 import os
 import sys
+import imp
 import argparse
 import datetime
 import logging
 
-__version__ = "0.8.1x"
+__version__ = "0.8.2rec"
 
 
 def main():
-
-    # Parse arguments ----------------------------------------------------------
     
-    default_preference_file = './preference_files/default.txt'  # we will use this pref file if one is not specified
+    # Check our Conda environment ----------------------------------------------
+    # let's check for our primary supporting python modules
+    try:
+        imp.find_module('rpy2')
+        imp.find_module('obspy')
+        imp.find_module('pandas')
+    except ImportError as e:
+        print('ERROR: please activate your ispaq environment before running: %s' % e)
+        raise SystemExit
+        
+    # Parse arguments ----------------------------------------------------------
     
     parser = argparse.ArgumentParser(description=__doc__.strip())
     parser.add_argument('-V', '--version', action='version',
