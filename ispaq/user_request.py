@@ -343,6 +343,10 @@ class UserRequest(object):
                         function['metrics'] = list( set(function['metrics']).intersection(valid_metrics) )
                         function_by_logic[logic_type][function_name] = function
 
+            if not len(function_by_logic):
+                logger.critical('No metrics can be run with this version of ISPAQ')
+                raise SystemExit
+
             # Assign the invalid metrics and restructured function_by_logic dictionary
             self.invalid_metrics = list(invalid_metrics)
             self.function_by_logic = function_by_logic
