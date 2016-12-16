@@ -16,13 +16,10 @@ import re
 
 from obspy import UTCDateTime
 
-# The metricslist function returns a dictionary information on "metric sets",
-# "business logic" and "metric names".
-# TODO:  metricslist should be a function in the R irisMustangMetrics package.
-
 # ISPAQ modules
 from . import irismustangmetrics
 
+from .ispaq import currentispaq
 
 class UserRequest(object):
     """
@@ -303,11 +300,11 @@ class UserRequest(object):
             # Warn of invalid metrics
             invalid_metrics = set(self.metrics).difference(valid_metrics)
             if len(invalid_metrics):
-                logger.info('The following invalid metric names were ignored: ' + str(invalid_metrics))
+                logger.warning('The following metric names are invalid and were ignored: ' + str(list(invalid_metrics)))
             if not len(valid_metrics):
                 logger.critical('No valid metrics exist')
                 raise SystemExit
-                
+
             # check for empty sncl and metrics entries
             if self.sncls is None or len(set(self.sncls)) == 0:
                 logger.critical('No valid stations exist')
@@ -316,19 +313,36 @@ class UserRequest(object):
                 logger.critical('No valid metrics exist')
                 raise SystemExit
             
+            # Check for metrics that may require a more recent version of ISPAQ --------------------
+            ispq = currentispaq()
+            versionMetric = []
+
+            for function_name in valid_function_names:
+                default_function = default_function_dict[function_name]
+                bLogic = default_function['businessLogic']
+                if bLogic not in ispq:    
+                    for metric_name in set(default_function['metrics']).intersection(valid_metrics):
+                        versionMetric.append(metric_name)
+                else:
+                    if function_name not in ispq[bLogic]:
+                        for metric_name in set(default_function['metrics']).intersection(valid_metrics):
+                            versionMetric.append(metric_name)
+ 
+            if len(versionMetric):
+                logger.warning("The following metrics will not run with this version of ISPAQ: " + str([str(x) for x in versionMetric]))
+
             # Now reconstruct the reorganized function_by_logic dictionary with only 
-            # user requested logic types, functions and metrics.
+            # user requested logic types, functions and metrics that can run on this ISPAQ version
             function_by_logic = {}
-            for logic_type in valid_logic_types:
+            for logic_type in set(ispq).intersection(valid_logic_types):
                 function_by_logic[logic_type] = {}
-                for function_name in valid_function_names:
+                for function_name in set(ispq[logic_type]).intersection(valid_function_names):
                     function = default_function_dict[function_name]
                     if function['businessLogic'] == logic_type:
                         # Modify the metric names associated with this function
                         function['metrics'] = list( set(function['metrics']).intersection(valid_metrics) )
                         function_by_logic[logic_type][function_name] = function
-                        
-                        
+
             # Assign the invalid metrics and restructured function_by_logic dictionary
             self.invalid_metrics = list(invalid_metrics)
             self.function_by_logic = function_by_logic

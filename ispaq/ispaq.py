@@ -13,8 +13,21 @@ import argparse
 import datetime
 import logging
 
-__version__ = "0.8.3"
+__version__ = "0.8.4"
 
+# dictionary of currently defined ISPAQ metric groups and business logic
+# for comparison with R package IRISMustangMetrics/ISPAQUtils.R json
+
+def currentispaq():
+    groups = {'simple': ['basicStats','gaps','spikes','STALTA','stateOfHealth'],
+              'SNR': ['SNR'],
+              'PSD': ['PSD','PSDText','PSDPlot'],
+              'crossCorrelation': ['crossCorrelation'],
+              'crossTalk': ['crossTalk'],
+              'orientationCheck': ['orientationCheck'],
+              'pressureCorrelation': ['pressureCorrelation'],
+              'transferFunction': ['transferFunction'] }
+    return groups
 
 def main():
     
@@ -121,11 +134,21 @@ def main():
         logger.info('Checking for available metrics in IRIS R packages...')
         from . import irismustangmetrics
         default_function_dict = irismustangmetrics.function_metadata()
+        ispaq_dict = currentispaq()
         metricList = []
         for function_name in default_function_dict:
             default_function = default_function_dict[function_name]
-            for metric_name in default_function['metrics']:
-                metricList.append(metric_name)
+            bLogic = default_function['businessLogic']
+            if bLogic not in ispaq_dict:    
+                for metric_name in default_function['metrics']:
+                    metricList.append(metric_name + "  *metric will not run with this version of ISPAQ*")
+            else:
+                if function_name not in ispaq_dict[bLogic]:
+                    for metric_name in default_function['metrics']:
+                        metricList.append(metric_name + "  *metric will not run with this version of ISPAQ*")
+                else:
+                    for metric_name in default_function['metrics']:
+                        metricList.append(metric_name)
         for line in sorted(metricList):
             print(line)
         sys.exit(0)
@@ -168,7 +191,6 @@ def main():
         logger.debug(e)
         logger.critical("Failed to create UserRequest object")
         raise SystemExit
-
 
     # Create Concierge (aka Expediter) -----------------------------------------
     #
