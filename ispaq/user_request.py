@@ -344,7 +344,7 @@ class UserRequest(object):
                         function_by_logic[logic_type][function_name] = function
 
             if not len(function_by_logic):
-                logger.critical('No metrics can be run with this version of ISPAQ')
+                logger.critical('No requested metrics can be run with this version of ISPAQ')
                 raise SystemExit
 
             # Assign the invalid metrics and restructured function_by_logic dictionary
