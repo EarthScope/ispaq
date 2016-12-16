@@ -109,14 +109,14 @@ def PSD_metrics(concierge):
                     logger.warning('No data for %s from %s' % (av.snclId, concierge.dataselect_url))
                 continue
 
-
             # Run the PSD metric ----------------------------------------
 
             if any(key in function_metadata for key in ("PSD","PSDText")) :
                 try:
                     evalresp = None
                     if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
-                        evalresp = transfn.getTransferFunctionSpectra(r_stream, av.samplerate, concierge.resp_dir)
+                        sampling_rate = utils.get_slot(r_stream, 'sampling_rate')
+                        evalresp = transfn.getTransferFunctionSpectra(r_stream, sampling_rate, concierge.resp_dir)
 
                     # get corrected PSDs
                     logger.debug("apply_PSD_metric...")
@@ -158,7 +158,7 @@ def PSD_metrics(concierge):
                             raise
                 except Exception as e:
                     logger.debug(e)
-                    logger.debug('"PSD" metric calculation failed for %s' % (av.snclId))
+                    logger.warning('"PSD" metric calculation failed for %s' % (av.snclId))
                     continue
                 
             # Run the PSD plot ------------------------------------------

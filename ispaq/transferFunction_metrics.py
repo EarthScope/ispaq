@@ -41,6 +41,9 @@ def getTransferFunctionSpectra(st, sampling_rate, respDir=None):
     #
     # set respDir to the directory containing RESP files to run evalresp locally
 
+    if sampling_rate is None:
+       raise Exception("no sampling_rate was passed to getTransferFunctionSpectra")
+
     # Min and Max frequencies for evalresp will be those used for the cross spectral binning
     alignFreq = 0.1
 
@@ -57,7 +60,7 @@ def getTransferFunctionSpectra(st, sampling_rate, respDir=None):
     log2_alignFreq = math.log(alignFreq,2)
     log2_loFreq = math.log(loFreq,2)
     log2_hiFreq = math.log(hiFreq,2)
-    
+
     if alignFreq >= hiFreq:
         octaves = []
         octave = log2_alignFreq
@@ -66,7 +69,6 @@ def getTransferFunctionSpectra(st, sampling_rate, respDir=None):
                 octaves.append(octave)
             octave -= 0.125
         octaves = pd.Series(octaves).sort_values().reset_index(drop=True)
-            
     else:
         octaves = []
         octave = log2_alignFreq
@@ -100,7 +102,6 @@ def getTransferFunctionSpectra(st, sampling_rate, respDir=None):
     channel = utils.get_slot(st,'channel')
     starttime = utils.get_slot(st,'starttime')
   
-    #print("DEBUG: minfreq: %f, maxfreq: %f, nfreq: %d" % (minfreq,maxfreq,nfreq))
     # REC - invoke evalresp either programmatically from a RESP file or by invoking the web service 
     evalResp = None
     if (respDir):
@@ -121,7 +122,6 @@ def getTransferFunctionSpectra(st, sampling_rate, respDir=None):
         # calling the web service 
         evalResp = irisseismic.getEvalresp(network, station, location, channel, starttime,
                                        minfreq, maxfreq, nfreq, units.lower(), output.lower())
-    #print(evalResp)   # VERBOSE DEBUG -- turn off for production use
     return(evalResp)
 
 #
