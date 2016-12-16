@@ -15,7 +15,7 @@ from obspy import UTCDateTime
 from rpy2 import robjects
 from rpy2 import rinterface
 from rpy2.robjects import pandas2ri
-
+import numpy as np
 
 #     R Initialization     -----------------------------------------------------
 
@@ -124,9 +124,13 @@ def R_float(x):
     <FloatVector - Python:...>
     [1.500000, 2.500000, 3.500000]
     """
-    if isinstance(x,float) or isinstance(x, int) or isinstance(x, newint):
-        x = [x]
-    return robjects.vectors.FloatVector(x)
+
+    if x is None:
+        return np.NaN 
+    else:
+        if isinstance(x,float) or isinstance(x, int) or isinstance(x, newint):
+            x = [x]
+        return robjects.vectors.FloatVector(x)
 
 
 def R_character(x):
@@ -201,6 +205,8 @@ def R_TraceHeader(stats, latitude, longitude, elevation, depth, azimuth, dip):
     :param stats: ObsPy Stats object.
     :return: IRISSeismic TraceHeader object.
     """
+
+
     r_headerList = _R_list(network=stats.network,
                            station=stats.station,
                            location=stats.location,
@@ -291,7 +297,6 @@ def R_Stream(stream,
     r_listOfTraces = R_list(len(stream.traces))
     for i in range(len(stream.traces)):
         r_listOfTraces[i] = R_Trace(stream.traces[i], sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
-        
     # Create R Stream object
     r_stream = robjects.r('new("Stream")')
     r_stream = _R_initialize(r_stream,

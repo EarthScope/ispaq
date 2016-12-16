@@ -131,6 +131,7 @@ class Concierge(object):
         # Add station clients and URLs or reference a local file
         if user_request.station_url is None:
             self.station_url = None  # no metadata exists, some metrics cannot be run
+            self.station_client = None
         elif user_request.station_url in URL_MAPPINGS.keys():
             self.station_url = URL_MAPPINGS[user_request.station_url]
             self.station_client = Client(user_request.station_url)
@@ -272,7 +273,11 @@ class Concierge(object):
                 try:
                     self.logger.info("Reading StationXML file %s" % self.station_url)
                     # Get list of all sncls we have  metadata for
-                    sncl_inventory = obspy.read_inventory(self.station_url)
+                    if self.station_url is None:
+                        self.logger.debug("No station XML file listed")
+                        #sncl_inventory = [] 
+                    else:
+                        sncl_inventory = obspy.read_inventory(self.station_url)
 
                 except Exception as e:
                     err_msg = "The StationXML file: '%s' is not valid" % self.station_url
@@ -301,19 +306,20 @@ class Concierge(object):
 
 
                 # Walk through the Inventory object and fill the dataframe with metadata
-                for n in sncl_inventory.networks:
-                    for s in n.stations:
-                        for c in s.channels:
-                            if c.start_date < _endtime and c.end_date > _starttime:
-                                snclId = n.code + "." + s.code + "." + c.location_code + "." + c.code
-                                df.loc[len(df)] = [n.code, s.code, c.location_code, c.code,
-                                                   c.latitude, c.longitude, c.elevation, c.depth,
-                                                   c.azimuth, c.dip, c.sensor.description,
-                                                   None,     # TODO:  Figure out how to get instrument 'scale'
-                                                   None,     # TODO:  Figure out how to get instrument 'scalefreq'
-                                                   None,     # TODO:  Figure out how to get instrument 'scaleunits'
-                                                   c.sample_rate,
-                                                   c.start_date, c.end_date, snclId]
+                if 'sncl_inventory' in locals():
+                    for n in sncl_inventory.networks:
+                        for s in n.stations:
+                            for c in s.channels:
+                                if c.start_date < _endtime and c.end_date > _starttime:
+                                    snclId = n.code + "." + s.code + "." + c.location_code + "." + c.code
+                                    df.loc[len(df)] = [n.code, s.code, c.location_code, c.code,
+                                                       c.latitude, c.longitude, c.elevation, c.depth,
+                                                       c.azimuth, c.dip, c.sensor.description,
+                                                       None,     # TODO:  Figure out how to get instrument 'scale'
+                                                       None,     # TODO:  Figure out how to get instrument 'scalefreq'
+                                                       None,     # TODO:  Figure out how to get instrument 'scaleunits'
+                                                       c.sample_rate,
+                                                       c.start_date, c.end_date, snclId]
 
                 self.logger.info("Searching for data in '%s'" % self.dataselect_url)
 
@@ -530,7 +536,7 @@ class Concierge(object):
                         if abs(dist) <= maxradius and  abs(dist) >= minradius:
                             df["dist"].iloc[ii] = "KEEP"
                 df = df[df.dist.str.contains("KEEP")]
-                df = df.drop('dist', 1)
+            df = df.drop('dist', 1)
 
             # Append this dataframe
             if df.shape[0] == 0:
