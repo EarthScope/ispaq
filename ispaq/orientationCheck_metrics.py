@@ -49,6 +49,11 @@ def orientationCheck_metrics(concierge):
     filterArgs = [2,0.02,0.04]    
     degreeIncrement = 1
         
+    # Sanity check for metadata
+    if concierge.station_url is None:
+        logger.warning('No station metadata found for orientationCheck metrics.')
+        return None
+
     # Get the seismic events in this time period
     events = concierge.get_event(minmag=minmag)
         
@@ -316,7 +321,7 @@ def orientationCheck_metrics(concierge):
     # Concatenate dataframes before returning ----------------------------------
     
     if len(dataframes) == 0:
-        logger.warn('"orientation_check" metric calculation generated zero metrics')
+        logger.warning('"orientation_check" metric calculation generated zero metrics')
         return None
     else:
         result = pd.concat(dataframes, ignore_index=True)    

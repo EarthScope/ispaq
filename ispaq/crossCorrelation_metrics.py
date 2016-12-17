@@ -58,6 +58,11 @@ def crossCorrelation_metrics(concierge):
     ch2 = ['H']
     defaultFilterArgs = [2,0.01]    
         
+    # Sanity check for metadata
+    if concierge.station_url is None:
+        logger.warning('No station metadata found for crossCorrelation metrics.')
+        return None
+
     # Get the seismic events in this time period
     events = concierge.get_event(minmag=minmag)
         
@@ -304,7 +309,7 @@ def crossCorrelation_metrics(concierge):
         return x in concierge.metric_names
         
     if len(dataframes) == 0:
-        logger.warn('"cross_correlation" metric calculation generated zero metrics')
+        logger.warning('"cross_correlation" metric calculation generated zero metrics')
         return None
     else:
         result = pd.concat(dataframes, ignore_index=True)    

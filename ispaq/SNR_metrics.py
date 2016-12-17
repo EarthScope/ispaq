@@ -89,7 +89,7 @@ def SNR_metrics(concierge):
             continue
         except Exception as e:            
             logger.debug('Skipping event because concierge.get_availability failed: %s' % (e))
-            logger.warn('Skipping event because concierge.get_availability() failed with an unknown error')
+            logger.warning('Skipping event because concierge.get_availability() failed with an unknown error')
             continue
         if availability is None:
             logger.debug("skipping event with no available data")
@@ -124,7 +124,7 @@ def SNR_metrics(concierge):
                                                av.latitude, av.longitude)
             except Exception as e:
                 logger.debug('Skipping because getTravelTime failed: %s' % (e))
-                logger.warn('Skipping because getTravelTime failed with an unknown error')
+                logger.warning('Skipping because getTravelTime failed with an unknown error')
                 continue
         
             # get P arrival or first arrival

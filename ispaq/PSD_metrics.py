@@ -180,7 +180,7 @@ def PSD_metrics(concierge):
     # Concatenate and filter dataframes before returning -----------------------
 
     if len(dataframes) == 0 and 'PSD' in function_metadata:
-        logger.warn('"PSD" metric calculation generated zero metrics')
+        logger.warning('"PSD" metric calculation generated zero metrics')
         return None
 
     else:

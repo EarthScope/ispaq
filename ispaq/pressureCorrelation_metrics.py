@@ -57,12 +57,6 @@ def pressureCorrelation_metrics(concierge):
         if starttime == end:
             continue
 
-        # removed the following so that starttime is rounded down to beginning of day and endtime rounded up to next day
-        #if starttime <= start:
-        #    starttime = start
-        #if endtime >= end:
-        #    endtime = end
-
         try:
             pressureAvailability = concierge.get_availability(location=pressureLocation, channel=pressureChannel,starttime=starttime,endtime=endtime)
         except Exception as e:
@@ -167,7 +161,7 @@ def pressureCorrelation_metrics(concierge):
     # Concatenate and filter dataframes before returning -----------------------
 
     if len(dataframes) == 0:
-        logger.warn('"pressure_correlation" metric calculation generated zero metrics')
+        logger.warning('"pressure_correlation" metric calculation generated zero metrics')
         return None
     else:
         result = pd.concat(dataframes, ignore_index=True) 

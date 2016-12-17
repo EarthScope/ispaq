@@ -188,7 +188,7 @@ def simple_metrics(concierge):
         return x in concierge.metric_names
                 
     if len(dataframes) == 0:
-        logger.warn('"simple" metric calculation generated zero metrics')
+        logger.warning('"simple" metric calculation generated zero metrics')
         return None
     else:
         result = pd.concat(dataframes, ignore_index=True)    

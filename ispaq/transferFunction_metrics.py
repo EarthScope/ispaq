@@ -150,6 +150,11 @@ def transferFunction_metrics(concierge):
     # Default parameters from IRISMustangUtils::generateMetrics_transferFunction or transferFunctionMetrics_exec.R
     channelFilter = '[FCHBML][HN].' 
     
+    # Sanity check for metadata
+    if concierge.station_url is None:
+        logger.warning('No station metadata found for transferFunction metrics.')
+        return None
+
     # Container for all of the metrics dataframes generated
     dataframes = []
 
@@ -631,7 +636,7 @@ def transferFunction_metrics(concierge):
 	# END for stations    
         
     if len(dataframes) == 0:
-        logger.warn('"transfer_function" metric calculation generated zero metrics')
+        logger.warning('"transfer_function" metric calculation generated zero metrics')
         return None
     else:
         result = pd.concat(dataframes, ignore_index=True)
