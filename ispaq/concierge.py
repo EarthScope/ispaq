@@ -271,12 +271,11 @@ class Concierge(object):
             # Only read/parse if we haven't already done so
             if self.availability is None:
                 try:
-                    self.logger.info("Reading StationXML file %s" % self.station_url)
                     # Get list of all sncls we have  metadata for
                     if self.station_url is None:
-                        self.logger.debug("No station XML file listed")
-                        #sncl_inventory = [] 
+                        self.logger.info("Reading StationXML file: No station XML file listed")
                     else:
+                        self.logger.info("Reading StationXML file %s" % self.station_url)
                         sncl_inventory = obspy.read_inventory(self.station_url)
 
                 except Exception as e:
@@ -386,7 +385,6 @@ class Concierge(object):
         # Container for all of the individual sncl_pattern dataframes generated
         sncl_pattern_dataframes = []
         loopCounter = 0		# For crossCorrelation when we look for all sn.ls
-
 
         # Loop through all sncl_patterns ---------------------------------------
         for sncl_pattern in self.sncl_patterns:
@@ -523,18 +521,20 @@ class Concierge(object):
                 for ii in range(len(df)):
                     lat = df['latitude'].iloc[ii]; 
                     lon = df['longitude'].iloc[ii]; 
-                    [dist,AB,BA] = obspy.geodetics.base.gps2dist_azimuth(latitude, longitude, lat, lon)
-                    dist = obspy.geodetics.base.kilometer2degrees(dist/1000)
-
-                    if (minradius is None) and (maxradius is not None):
-                        if abs(dist) <= maxradius:
-                            df["dist"].iloc[ii] = "KEEP"
-                    elif (maxradius is None) and (minradius is not None):
-                        if abs(dist) >= minradius:
-                            df["dist"].iloc[ii] = "KEEP"
-                    elif (maxradius is not None) and (minradius is not None):
-                        if abs(dist) <= maxradius and  abs(dist) >= minradius:
-                            df["dist"].iloc[ii] = "KEEP"
+                    if lat and lon:
+                        [dist,AB,BA] = obspy.geodetics.base.gps2dist_azimuth(latitude, longitude, lat, lon)
+                        dist = obspy.geodetics.base.kilometer2degrees(dist/1000)
+                        if (minradius is None) and (maxradius is not None):
+                            if abs(dist) <= maxradius:
+                                df["dist"].iloc[ii] = "KEEP"
+                        elif (maxradius is None) and (minradius is not None):
+                            if abs(dist) >= minradius:
+                                df["dist"].iloc[ii] = "KEEP"
+                        elif (maxradius is not None) and (minradius is not None):
+                            if abs(dist) <= maxradius and  abs(dist) >= minradius:
+                                df["dist"].iloc[ii] = "KEEP"
+                    else:
+                        next
                 df = df[df.dist.str.contains("KEEP")]
             df = df.drop('dist', 1)
 

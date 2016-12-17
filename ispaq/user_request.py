@@ -170,7 +170,7 @@ class UserRequest(object):
                         continue
                     else:  # non-empty line
                         name = entry[0]
-                        logger.debug("%s len entry: %d" % (name,len(entry)))
+                        #logger.debug("%s len entry: %d" % (name,len(entry)))
                         # check for key with empty value entry, implies optional or default, set value to None in array
                         values = None
                         if name is not None and len(entry) > 1:             # we have a value or set of comma separated values
@@ -182,13 +182,13 @@ class UserRequest(object):
                     if name is None:  # sanity check
                         continue
                     if values is None or len(values) == 0:
-                        logger.debug("force set %s to None" % name)
+                        #logger.debug("force set %s to None" % name)
                         currentSection[name] = None  # for optional values
                     elif multiValue:
-                        logger.debug("set %s to multi %s" % (name,",".join(values)))
+                        #logger.debug("set %s to multi %s" % (name,",".join(values)))
                         currentSection[name] = values
                     else:
-                        logger.debug("set %s to first in %s" % (name,",".join(values)))
+                        #logger.debug("set %s to first in %s" % (name,",".join(values)))
                         currentSection[name] = values[0]
                         
             # Check for special keyword to exit after loading preferences
@@ -202,7 +202,7 @@ class UserRequest(object):
                 return
             
             # Check for missing Data_Access values
-            logger.debug('Check for missing URL values')
+            #logger.debug('Check for missing URL values')
 
             if "dataselect_url" not in data_access.keys():
                 logger.critical("preference file is missing Data_Access: dataselect_url entry.")

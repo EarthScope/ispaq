@@ -117,7 +117,7 @@ def getTransferFunctionSpectra(st, sampling_rate, respDir=None):
                 if evalResp is not None:
                     break   # break early from loop if we found a result
         if evalResp is None:
-            raise EvalrespException('No RESP file found at %s or %s for evalresp' % (localFile,localFile2))
+            raise EvalrespException('No RESP file found at %s or %s' % (localFile,localFile2))
     else:    
         # calling the web service 
         evalResp = irisseismic.getEvalresp(network, station, location, channel, starttime,
