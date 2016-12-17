@@ -212,6 +212,10 @@ class UserRequest(object):
                 logger.critical("preference file Data_Access: dataselect_url is not specified.")
                 raise SystemExit
 
+            if "station_url" not in data_access.keys():
+                logger.critical("preference file is missing Data_Access: station_url entry.")
+                raise SystemExit
+
             if "event_url" not in data_access.keys():
                 logger.warning("preference file is missing Data_Access: event_url entry. Defaulting to 'USGS'.")
                 data_access['event_url'] = 'USGS'

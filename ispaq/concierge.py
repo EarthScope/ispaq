@@ -273,7 +273,7 @@ class Concierge(object):
                 try:
                     # Get list of all sncls we have  metadata for
                     if self.station_url is None:
-                        self.logger.info("Reading StationXML file: No station XML file listed")
+                        self.logger.info("Reading StationXML file: No station_url in preference file")
                     else:
                         self.logger.info("Reading StationXML file %s" % self.station_url)
                         sncl_inventory = obspy.read_inventory(self.station_url)
