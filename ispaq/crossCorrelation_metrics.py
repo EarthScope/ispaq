@@ -60,13 +60,13 @@ def crossCorrelation_metrics(concierge):
         
     # Sanity check for metadata
     if concierge.station_url is None:
-        logger.warning('No station metadata found for crossCorrelation metrics.')
+        logger.warning('No station metadata found for crossCorrelation metrics')
         return None
 
     # Get the seismic events in this time period
     events = concierge.get_event(minmag=minmag)
         
-    # Sanity checck
+    # Sanity check
     if events is None or events.shape[0] == 0:
         logger.info('No events found for crossCorrelation metrics.')
         return None
@@ -86,12 +86,12 @@ def crossCorrelation_metrics(concierge):
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
-            logger.debug('Skipping event because of missing longitude or latitude')
+            logger.info('Skipping event because of missing longitude or latitude')
             continue
     
         # Sanity check
         if pd.isnull(event.depth):
-            logger.debug('Skipping event because of missing depth')
+            logger.info('Skipping event because of missing depth')
             continue        
         
         # Get the data availability around this event
@@ -105,13 +105,13 @@ def crossCorrelation_metrics(concierge):
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=eventMinradius, maxradius=eventMaxradius)
         except NoAvailableDataError as e:
-            logger.warning('skipping event with no available data')
+            logger.info('skipping event with no available data')
             continue
         except Exception as e:
-            logger.debug('Skipping event because concierge.get_availability failed: %s' % (e))
+            logger.warning('Skipping event because concierge.get_availability failed: %s' % (e))
             continue
         if availability is None:
-            logger.debug("skipping event with no available data")
+            logger.info("skipping event with no available data")
             continue            
 
         # Apply the channelFilter
@@ -126,9 +126,8 @@ def crossCorrelation_metrics(concierge):
         # Loop over rows of the availability dataframe
         for (index, av1) in availability.iterrows():
 
-            # NEW if there is no metadata, then skip to the next row
-            if math.isnan(av1.latitude):
-                logger.debug("No metadata for " + av1.snclId + ": skipping")
+            if math.isnan(av1.latitude) or math.isnan(av1.longitude):
+                logger.info("No metadata for " + av1.snclId + ": skipping")
                 continue 
 
             snclId = av1.snclId
@@ -136,12 +135,6 @@ def crossCorrelation_metrics(concierge):
             logger.debug('Working on %s' % (snclId))
 
             # Get data in a window centered on the event's arrival at station #1
-            #try:
-            #    tt = irisseismic.getTraveltime(event.latitude, event.longitude, event.depth, 
-            #                                   av1.latitude, av1.longitude)
-            #except Exception as e:
-            #    logger.debug('Skipping because getTravelTime failed: %s' % (e))
-            #    continue
              
             dist = obspy.geodetics.base.locations2degrees(event.latitude, event.longitude, av1.latitude, av1.longitude)
             arrivals = model.get_travel_times(source_depth_in_km=event.depth,distance_in_degree=dist)
@@ -155,14 +148,14 @@ def crossCorrelation_metrics(concierge):
                 r_stream1 = concierge.get_dataselect(av1.network, av1.station, av1.location, av1.channel, windowStart, windowEnd)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.warning('No data for %s' % (av1.snclId))
+                    logger.info('No data for %s' % (av1.snclId))
                 else:
-                    logger.warning('No data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
+                    logger.info('No data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
                 continue
             
             # No metric calculation possible if SNCL has more than one trace
             if len(utils.get_slot(r_stream1, 'traces')) > 1 :
-                logger.debug('Skipping %s because it has more than one trace' % (av1.snclId))
+                logger.info('Skipping %s because it has more than one trace' % (av1.snclId))
                 continue
 
             # If metadata indicates reversed polarity (dip>0), invert the amplitudes (met 2016/03/03)
@@ -194,7 +187,7 @@ def crossCorrelation_metrics(concierge):
 
             # Sanity check that some SNCLs exist
             if availability2.shape[0] == 0:
-                logger.debug('Skipping SNCL because no nearby SNCLs are available')
+                logger.info('Skipping SNCL because no nearby SNCLs are available')
                 continue
 
             logger.debug('Found %d nearby SNCLs' % (availability2.shape[0]))
@@ -233,7 +226,7 @@ def crossCorrelation_metrics(concierge):
             mask = stationMask & channelMask & sampleRateMask
 
             if not any(mask):
-                logger.debug('Skipping SNCL because no nearby SNCLs are compatible')
+                logger.info('Skipping SNCL because no nearby SNCLs are compatible')
                 continue
             else:
                 avCompatible = availability2[mask].reset_index()
@@ -243,11 +236,9 @@ def crossCorrelation_metrics(concierge):
                 
             # ----- Compatible SNCLs found.  Find the closest one with data ------------
 
-            #for (index2 in seq(nrow(avCompatible))) {
             for (index2, av2) in avCompatible.iterrows():
-                # NEW if there is no metadata, then skip to the next row
-                if math.isnan(av2.latitude):
-                    logger.debug("No metadata for " + av2.snclId + ": skipping")
+                if math.isnan(av2.latitude) or math.isnan(av2.longitude):
+                    logger.info("No metadata for " + av2.snclId + ": skipping")
                     continue
 
                 debug_point = 1
@@ -257,26 +248,26 @@ def crossCorrelation_metrics(concierge):
                     tt = irisseismic.getTraveltime(event.latitude, event.longitude, event.depth, 
                                                    av2.latitude, av2.longitude)
                 except Exception as e:
-                    logger.debug('Skipping because getTravelTime failed: %s' % (e))
+                    logger.warning('Skipping because getTravelTime failed: %s' % (e))
                     continue
                 
                 windowStart = event.time + min(tt.travelTime) - windowSecs/2.0
                 windowEnd = event.time + min(tt.travelTime) + windowSecs/2.0
 
                 try:
-                    logger.debug('Trying near neighbor station %s' % (av2.snclId))
+                    logger.info('Trying near neighbor station %s' % (av2.snclId))
                     r_stream2 = concierge.get_dataselect(av2.network, av2.station, av2.location, av2.channel, windowStart, windowEnd)
                 except Exception as e:
                     if str(e).lower().find('no data') > -1:
-                        logger.debug('No data for %s' % (av2.snclId))
+                        logger.info('No data for %s' % (av2.snclId))
                     else:
-                        logger.debug('No data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
+                        logger.info('No data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
                     continue
                 
                 # NOTE:  This check is missing from IRISMustangUtils/R/generateMetrics_crossCorrelation.R
                 # No metric calculation possible if SNCL has more than one trace
                 if len(utils.get_slot(r_stream2, 'traces')) > 1 :
-                    logger.debug('Skipping %s because it has more than one trace' % (av2.snclId))
+                    logger.info('Skipping %s because it has more than one trace' % (av2.snclId))
                     continue
                 else:
                     # Found everything we need so end the loop

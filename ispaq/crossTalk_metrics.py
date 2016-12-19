@@ -49,7 +49,7 @@ def crossTalk_metrics(concierge):
         
     # Sanity check for metadata
     if concierge.station_url is None:
-        logger.warning('No station metadata found for crossTalk metrics.')
+        logger.warning('No station metadata found for crossTalk metrics')
         return None
 
     # Get the seismic events in this time period
@@ -76,12 +76,12 @@ def crossTalk_metrics(concierge):
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
-            logger.debug('Skipping event because of missing longitude or latitude')
+            logger.info('Skipping event because of missing longitude or latitude')
             continue
     
         # Sanity check
         if pd.isnull(event.depth):
-            logger.debug('Skipping event because of missing depth')
+            logger.info('Skipping event because of missing depth')
             continue        
         
         # Get the data availability around this event
@@ -95,13 +95,13 @@ def crossTalk_metrics(concierge):
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=0, maxradius=maxradius)
         except NoAvailableDataError as e:
-            logger.debug('skipping event with no available data')
+            logger.info('Skipping event with no available data')
             continue
         except Exception as e:
-            logger.debug('Skipping event because concierge.get_availability failed: %s' % (e))
+            logger.warning('Skipping event because concierge.get_availability failed: %s' % (e))
             continue
         if availability is None:
-            logger.debug("skipping event with no available data")
+            logger.info("Skipping event with no available data")
             continue
 
                     
@@ -110,7 +110,7 @@ def crossTalk_metrics(concierge):
 
         # Sanity check that some SNCLs exist
         if availability.shape[0] == 0:
-            logger.debug('Skipping event because no SNCLs are available')
+            logger.info('Skipping event because no stations are available')
             continue
     
         # Channel types (as opposed to orientation) will contain only the first two characters
@@ -132,7 +132,7 @@ def crossTalk_metrics(concierge):
             availabilitySub = availability[availability.sn_lId == sn_lId]
             
             if availabilitySub.shape[0] == 1:
-                logger.debug('Skipping %s because there is only a single channel at this SN.L' % (sn_lId))
+                logger.info('Skipping %s because there is only a single channel at this SN.L' % (sn_lId))
                 continue
 
             # Get the data --------------------------------------
@@ -146,31 +146,31 @@ def crossTalk_metrics(concierge):
 
                 # NEW if there is no metadata, then skip to the next row
                 if math.isnan(av.latitude):
-                    logger.warning("No metadata for " + av.snclId + ": skipping")
+                    logger.info("No metadata for " + av.snclId + ": skipping")
                     continue                
 
                 try:
                     r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, halfHourStart-1, halfHourEnd+1, inclusiveEnd=False)
                 except Exception as e:
                     if str(e).lower().find('no data') > -1:
-                        logger.warning('No data for %s' % (av.snclId))
+                        logger.info('No data for %s' % (av.snclId))
                     else:
-                        logger.warning('No data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
+                        logger.info('No data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
                     continue
                 
                 
                 if len(utils.get_slot(r_stream, 'traces')) > 1 :
-                    logger.debug('Skipping %s because it has more than one trace' % (av.snclId))
+                    logger.info('Skipping %s because it has more than one trace' % (av.snclId))
                     continue
                 else:
                     streamList.append(r_stream)
                     
             if len(streamList) == 0:
-                logger.debug('Skipping %s because it has no data' % (sn_lId))
+                logger.info('Skipping %s because it has no data' % (sn_lId))
                 continue
                 
             if len(streamList) == 1:
-                logger.debug('Skipping %s because it only has data for one channel' % (sn_lId))
+                logger.info('Skipping %s because it only has data for one channel' % (sn_lId))
                 continue   
 
             # Run the correlation metrics -----------------------

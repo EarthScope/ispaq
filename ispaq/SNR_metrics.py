@@ -66,12 +66,12 @@ def SNR_metrics(concierge):
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
-            logger.debug('Skipping because of missing longitude or latitude')
+            logger.info('Skipping event because of missing longitude or latitude')
             continue
     
         # Sanity check
         if pd.isnull(event.depth):
-            logger.debug('Skipping because of missing depth')
+            logger.info('Skipping event because of missing depth')
             continue        
         
         # Get the data availability around this event
@@ -85,14 +85,13 @@ def SNR_metrics(concierge):
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=0, maxradius=maxradius)
         except NoAvailableDataError as e:
-            logger.debug('skipping event with no available data')
+            logger.info('Skipping event with no available data')
             continue
         except Exception as e:            
-            logger.debug('Skipping event because concierge.get_availability failed: %s' % (e))
-            logger.warning('Skipping event because concierge.get_availability() failed with an unknown error')
+            logger.warning('Skipping event because concierge.get_availability failed: %s' % (e))
             continue
         if availability is None:
-            logger.debug("skipping event with no available data")
+            logger.info("Skipping event with no available data")
             continue
                     
         # Apply the channelFilter
@@ -100,7 +99,7 @@ def SNR_metrics(concierge):
 
         # Sanity check that some SNCLs exist
         if availability.shape[0] == 0:
-            logger.debug('Skipping because no SNCLs are available')
+            logger.info('Skipping event because no SNCLs are available')
             continue
         
         logger.debug('%d SNCLs available for this event' % (availability.shape[0]))        
@@ -113,8 +112,8 @@ def SNR_metrics(concierge):
     
         # Loop over rows of the availability dataframe
         for (index, av) in availability.iterrows():
-            # NEW if there is no metadata, then skip to the next row
-            if math.isnan(av.latitude):
+            # if there is no metadata, then skip to the next row
+            if math.isnan(av.latitude) or math.isnan(av.longitude):
                 logger.debug("No metadata for " + av.snclId + ": skipping")
                 continue
 
@@ -123,8 +122,7 @@ def SNR_metrics(concierge):
                 tt = irisseismic.getTraveltime(event.latitude, event.longitude, event.depth, 
                                                av.latitude, av.longitude)
             except Exception as e:
-                logger.debug('Skipping because getTravelTime failed: %s' % (e))
-                logger.warning('Skipping because getTravelTime failed with an unknown error')
+                logger.warning('Skipping because getTravelTime failed: %s' % (e))
                 continue
         
             # get P arrival or first arrival
@@ -144,9 +142,9 @@ def SNR_metrics(concierge):
                 r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, windowStart-1, windowEnd+1, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.warning('No data for %s' % (av.snclId))
+                    logger.info('No data found for %s' % (av.snclId))
                 else:
-                    logger.warning('No data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
+                    logger.info('No data found for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
                 # TODO:  Create appropriate empty dataframe
                 df = pd.DataFrame({'metricName': 'SNR',
                                    'value': 0,
@@ -160,12 +158,12 @@ def SNR_metrics(concierge):
 
             # Run the SNR metric
             if len(r_stream.do_slot('traces')) > 1:
-                logger.debug('Skipping %s becuase it has gaps' % (av.snclId)) 
+                logger.info('Skipping %s becuase it has gaps' % (av.snclId)) 
                 continue
             
             else:
                 if (utils.get_slot(r_stream, 'starttime') > windowStart) or (utils.get_slot(r_stream,'endtime') < windowEnd):
-                    logger.debug('Skipping %s becuase it is missing data in the SNR window' % (av.snclId)) 
+                    logger.info('Skipping %s becuase it is missing data in the SNR window' % (av.snclId)) 
                     continue
                 else:
                     logger.info('Calculating SNR metrics for %s' % (av.snclId))

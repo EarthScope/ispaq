@@ -236,7 +236,7 @@ def transferFunction_metrics(concierge):
 	
 		    # Bail if there is only one Z channel
 		    if channelAvailability.shape[0] <= 1:
-			logger.debug('Skipping %s because there are no other channels for comparison' % (channelAvailability.snclId[0]))
+			logger.info('Skipping %s because there are no other channels for comparison' % (channelAvailability.snclId[0]))
 			continue
 	
 		    # NOTE:  channelAvailability is a dataframe with one row per location for the current SN.L
@@ -313,7 +313,7 @@ def transferFunction_metrics(concierge):
 	    
 		    # Bail if there are only two horizontal channels
 		    if channelAvailability.shape[0] <= 2:
-			logger.debug('Skipping %s because there are no other channels for comparison' % (channelAvailability.snclId[0]))
+			logger.info('Skipping %s because there are no other channels for comparison' % (channelAvailability.snclId[0]))
 			continue
 		     
 		    # Convert snclId into a snclPrefix that excludes the last character
@@ -627,7 +627,7 @@ def transferFunction_metrics(concierge):
 
 		    # Write warning if dip are neither vertical nor horizontal.
 		    # They would require 3D rotation that isn't available here.
-		    logger.debug('Skipping %s -- dip %f  requires 3D rotation' % (channelAvailability.snclId.iloc[i], channelAvailability.dip.iloc[i]))
+		    logger.info('Skipping %s -- dip %f  requires 3D rotation' % (channelAvailability.snclId.iloc[i], channelAvailability.dip.iloc[i]))
 	    
 		# END of if dip = ...
 		
