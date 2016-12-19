@@ -521,18 +521,21 @@ class Concierge(object):
                 for ii in range(len(df)):
                     lat = df['latitude'].iloc[ii]; 
                     lon = df['longitude'].iloc[ii]; 
-                    if lat and lon:
-                        [dist,AB,BA] = obspy.geodetics.base.gps2dist_azimuth(latitude, longitude, lat, lon)
-                        dist = obspy.geodetics.base.kilometer2degrees(dist/1000)
-                        if (minradius is None) and (maxradius is not None):
-                            if abs(dist) <= maxradius:
-                                df["dist"].iloc[ii] = "KEEP"
-                        elif (maxradius is None) and (minradius is not None):
-                            if abs(dist) >= minradius:
-                                df["dist"].iloc[ii] = "KEEP"
-                        elif (maxradius is not None) and (minradius is not None):
-                            if abs(dist) <= maxradius and  abs(dist) >= minradius:
-                                df["dist"].iloc[ii] = "KEEP"
+                    if (lat and lon):
+                        if not (math.isnan(lon) or math.isnan(lat)):
+                            [dist,AB,BA] = obspy.geodetics.base.gps2dist_azimuth(latitude, longitude, lat, lon)
+                            dist = obspy.geodetics.base.kilometer2degrees(dist/1000)
+                            if (minradius is None) and (maxradius is not None):
+                                if abs(dist) <= maxradius:
+                                    df["dist"].iloc[ii] = "KEEP"
+                            elif (maxradius is None) and (minradius is not None):
+                                if abs(dist) >= minradius:
+                                    df["dist"].iloc[ii] = "KEEP"
+                            elif (maxradius is not None) and (minradius is not None):
+                                if abs(dist) <= maxradius and  abs(dist) >= minradius:
+                                    df["dist"].iloc[ii] = "KEEP"
+                        else:
+                            next
                     else:
                         next
                 df = df[df.dist.str.contains("KEEP")]
