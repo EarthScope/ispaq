@@ -105,13 +105,13 @@ def crossCorrelation_metrics(concierge):
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=eventMinradius, maxradius=eventMaxradius)
         except NoAvailableDataError as e:
-            logger.info('skipping event with no available data')
+            logger.info('Skipping event with no available data')
             continue
         except Exception as e:
-            logger.warning('Skipping event because concierge.get_availability failed: %s' % (e))
+            logger.warning('Skipping event %s %s  because concierge.get_availability failed: %s' % (event.magnitude, event.eventLocationName, e))
             continue
         if availability is None:
-            logger.info("skipping event with no available data")
+            logger.info("Skipping event with no available data")
             continue            
 
         # Apply the channelFilter
@@ -132,7 +132,7 @@ def crossCorrelation_metrics(concierge):
 
             snclId = av1.snclId
             
-            logger.debug('Working on %s' % (snclId))
+            logger.info('Working on %s' % (snclId))
 
             # Get data in a window centered on the event's arrival at station #1
              
@@ -148,7 +148,7 @@ def crossCorrelation_metrics(concierge):
                 r_stream1 = concierge.get_dataselect(av1.network, av1.station, av1.location, av1.channel, windowStart, windowEnd)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.info('No data for %s' % (av1.snclId))
+                    logger.info('No data found for %s' % (av1.snclId))
                 else:
                     logger.warning('No data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
                 continue
@@ -179,19 +179,18 @@ def crossCorrelation_metrics(concierge):
                                                            longitude=av1.longitude, latitude=av1.latitude,
                                                            minradius=snclMinradius, maxradius=snclMaxradius)
             except Exception as e:
-                logger.warning('Skipping SNCL because get_availability failed: %s' % (e))
+                logger.warning('Skipping %s because get_availability failed for nearby SNCLs: %s' % (av1.snclId, e))
                 continue
             if availability2 is None:
-                logger.debug("skipping event with no available data")
+                logger.info("Skipping %s with no available nearby stations" % (av1.snclId))
                 continue
 
             # Sanity check that some SNCLs exist
             if availability2.shape[0] == 0:
-                logger.info('Skipping SNCL because no nearby SNCLs are available')
+                logger.info('Skipping %s because no nearby SNCLs are available' % (av1.snclId))
                 continue
 
             logger.debug('Found %d nearby SNCLs' % (availability2.shape[0]))
-
 
             # Create masks to find any other SNCLs against which we want to cross-correlate
 
@@ -226,7 +225,7 @@ def crossCorrelation_metrics(concierge):
             mask = stationMask & channelMask & sampleRateMask
 
             if not any(mask):
-                logger.info('Skipping SNCL because no nearby SNCLs are compatible')
+                logger.info('Skipping %s because no nearby SNCLs are compatible' % (av1.snclId))
                 continue
             else:
                 avCompatible = availability2[mask].reset_index()
@@ -238,42 +237,69 @@ def crossCorrelation_metrics(concierge):
 
             for (index2, av2) in avCompatible.iterrows():
                 if math.isnan(av2.latitude) or math.isnan(av2.longitude):
-                    logger.info("No metadata for " + av2.snclId + ": skipping")
+                    logger.debug("No metadata for " + av2.snclId + ": skipping")
                     continue
-
-                debug_point = 1
+                
+                lastsncl = avCompatible.snclId[-1:].to_string(index=False)
+                testx = 0
 
                 # Get data in a window centered on the event's arrival at station #2
                 try:
                     tt = irisseismic.getTraveltime(event.latitude, event.longitude, event.depth, 
                                                    av2.latitude, av2.longitude)
                 except Exception as e:
-                    logger.warning('Skipping because getTravelTime failed: %s' % (e))
-                    continue
+                    logger.warning('Skipping %s:%s because getTravelTime failed: %s' % (av1.snclId, av2.snclId, e))
+                    if av2.snclId is lastsncl:
+                        testx = 1
+                    continue                  
                 
                 windowStart = event.time + min(tt.travelTime) - windowSecs/2.0
                 windowEnd = event.time + min(tt.travelTime) + windowSecs/2.0
 
                 try:
-                    logger.info('Trying near neighbor station %s' % (av2.snclId))
+                    logger.debug('%s trying near neighbor station %s' % (av1.snclId, av2.snclId))
                     r_stream2 = concierge.get_dataselect(av2.network, av2.station, av2.location, av2.channel, windowStart, windowEnd)
                 except Exception as e:
                     if str(e).lower().find('no data') > -1:
-                        logger.info('No data for %s' % (av2.snclId))
+                        logger.debug('No data for %s' % (av2.snclId))
                     else:
-                        logger.info('No data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
+                        logger.warning('No data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
+                    if av2.snclId is lastsncl:
+                        testx = 1
                     continue
-                
+                   
+                # Check for actual sample rate compatibility
+                sampler1 = utils.get_slot(r_stream1,'sampling_rate')
+                sampler2 = utils.get_slot(r_stream2,'sampling_rate')
+     
+                if sampler1 >= 1 and sampler2 >= 1: 
+                    sr1 = int(round(sampler1,1))
+                    sr2 = int(round(sampler2,1))
+                    if (sr1 % sr2 != 0 ) and (sr2 % sr1 != 0): 
+                        logger.debug('Skipping %s:%s because actual sample rates are not compatible, %s:%s' % (av1.snclId, av2.snclId, sr1, sr2))
+                        if av2.snclId == lastsncl:
+                            testx = 1
+                        continue
+
+            
                 # NOTE:  This check is missing from IRISMustangUtils/R/generateMetrics_crossCorrelation.R
                 # No metric calculation possible if SNCL has more than one trace
-                if len(utils.get_slot(r_stream2, 'traces')) > 1 :
-                    logger.info('Skipping %s because it has more than one trace' % (av2.snclId))
+                if len(utils.get_slot(r_stream2, 'traces')) > 1:
+                    logger.debug('Skipping %s because it has more than one trace' % (av2.snclId))
+                    if av2.snclId is lastsncl:
+                        testx = 1
                     continue
+
                 else:
                     # Found everything we need so end the loop
                     break
 
             # ----- Second SNCL found.  Now on to calculate cross-correlation ----------
+ 
+            # if last avCompatible snclid doesn't pass checks it will end up here. 
+            if testx == 1:
+                logger.info('Skipping %s because no nearby SNCLs are compatible' % (av1.snclId))
+                continue
 
             # Choose low-pass filtering
             r_filter = irisseismic.butter(defaultFilterArgs[0],defaultFilterArgs[1])

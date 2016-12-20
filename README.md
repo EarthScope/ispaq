@@ -238,7 +238,8 @@ with the following comments in the header:
 #
 ```
 **Metric** aliases can be any of one of the predefined options or any user created *alias: metric* combination, 
-where *metric* can be a single metric name or a comma separated list of valid metric names. 
+where *metric* can be a single metric name or a comma separated list of valid metric names. Aliases cannot be 
+combinations of other aliases. 
 Example, "myMetrics: num_gaps, sample_mean, cross_talk".
 
 **Station_SNCL** aliases are user created *alias: network.station.location.channel* combinations. Station SNCLs 

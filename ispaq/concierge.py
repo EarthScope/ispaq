@@ -676,10 +676,6 @@ class Concierge(object):
                         raise
 
             else:
-                #err_msg = "get_dataselect time request spans day boundary, %s - %s, No local data will be read" % (_starttime,_endtime)
-                #self.logger.error(err_msg)
-                #raise Exception(err_msg + 'def')
-
 		# create tempfile
 		x = tempfile.TemporaryFile()
 
