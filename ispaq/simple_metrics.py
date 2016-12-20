@@ -105,7 +105,7 @@ def simple_metrics(concierge):
                 r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, starttime, endtime)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.warning('No data for %s' % (av.snclId))
+                    logger.info('No data for %s' % (av.snclId))
                 else:
                     logger.warning('No data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
                 continue

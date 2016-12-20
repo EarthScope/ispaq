@@ -21,7 +21,6 @@ from .concierge import NoAvailableDataError
 from . import utils
 from . import irisseismic
 from . import irismustangmetrics
-from . import transferFunction_metrics as transfn
 
 def PSD_metrics(concierge):
     """
@@ -104,7 +103,7 @@ def PSD_metrics(concierge):
             except Exception as e:
                 logger.debug(e)
                 if str(e).lower().find('no data') > -1:
-                    logger.debug('No data for %s' % (av.snclId))
+                    logger.info('No data for %s' % (av.snclId))
                 else:
                     logger.warning('No data for %s from %s' % (av.snclId, concierge.dataselect_url))
                 continue
@@ -116,7 +115,7 @@ def PSD_metrics(concierge):
                     evalresp = None
                     if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
                         sampling_rate = utils.get_slot(r_stream, 'sampling_rate')
-                        evalresp = transfn.getTransferFunctionSpectra(r_stream, sampling_rate, concierge.resp_dir)
+                        evalresp = utils.getSpectra(r_stream, sampling_rate, concierge.resp_dir)
 
                     # get corrected PSDs
                     logger.debug("apply_PSD_metric...")
@@ -170,7 +169,7 @@ def PSD_metrics(concierge):
                     evalresp = None
                     if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
                         logger.debug("Accessing local RESP file...")
-                        evalresp = transfn.getTransferFunctionSpectra(r_stream, av.samplerate, concierge.resp_dir)
+                        evalresp = utils.getSpectra(r_stream, av.samplerate, concierge.resp_dir)
                     status = irismustangmetrics.apply_PSD_plot(r_stream, filepath, evalresp=evalresp)
                     logger.info('Writing PDF plot %s.' % os.path.basename(filepath))
                 except Exception as e:

@@ -154,7 +154,7 @@ def crossTalk_metrics(concierge):
                     if str(e).lower().find('no data') > -1:
                         logger.info('No data for %s' % (av.snclId))
                     else:
-                        logger.info('No data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
+                        logger.warning('No data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
                     continue
                 
                 

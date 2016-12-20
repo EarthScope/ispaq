@@ -23,110 +23,6 @@ from .concierge import NoAvailableDataError
 from . import utils
 from . import irisseismic
 from . import irismustangmetrics
-from . import evalresp as evresp
-
-
-class EvalrespException(Exception):
-    pass
-
-
-
-# ------------------------------------------------------------------------------
-#      BEGIN Utility Function
-#
-
-def getTransferFunctionSpectra(st, sampling_rate, respDir=None):
-    # This function returns an evalresp fap response for trace st using sampling_rate 
-    # to determine frequency limits
-    #
-    # set respDir to the directory containing RESP files to run evalresp locally
-
-    if sampling_rate is None:
-       raise Exception("no sampling_rate was passed to getTransferFunctionSpectra")
-
-    # Min and Max frequencies for evalresp will be those used for the cross spectral binning
-    alignFreq = 0.1
-
-    if (sampling_rate <= 1):
-        loFreq = 0.001
-    elif (sampling_rate > 1 and sampling_rate < 10):
-        loFreq = 0.0025
-    else:
-        loFreq = 0.005
-
-    # No need to exceed the Nyquist frequency after decimation
-    hiFreq = 0.5 * sampling_rate
-
-    log2_alignFreq = math.log(alignFreq,2)
-    log2_loFreq = math.log(loFreq,2)
-    log2_hiFreq = math.log(hiFreq,2)
-
-    if alignFreq >= hiFreq:
-        octaves = []
-        octave = log2_alignFreq
-        while octave >= log2_loFreq:
-            if octave <= log2_hiFreq:
-                octaves.append(octave)
-            octave -= 0.125
-        octaves = pd.Series(octaves).sort_values().reset_index(drop=True)
-    else:
-        octaves = []
-        octave = log2_alignFreq
-        loOctaves = []
-        while octave >= log2_loFreq:
-            loOctaves.append(octave)
-            octave -= 0.125
-        loOctaves = pd.Series(loOctaves)
-            
-        octave = log2_alignFreq
-        hiOctaves = []
-        while octave <= log2_hiFreq:
-            hiOctaves.append(octave)
-            octave += 0.125
-        hiOctaves = pd.Series(hiOctaves)
-            
-        octaves = loOctaves.append(hiOctaves).drop_duplicates().sort_values().reset_index(drop=True)
-        
-    binFreq = pow(2,octaves)
-
-    # Arguments for evalresp
-    minfreq = min(binFreq)
-    maxfreq = max(binFreq)
-    nfreq = len(binFreq)
-    units = 'DEF'
-    output = 'FAP'
-
-    network = utils.get_slot(st,'network')
-    station = utils.get_slot(st,'station')
-    location = utils.get_slot(st,'location')
-    channel = utils.get_slot(st,'channel')
-    starttime = utils.get_slot(st,'starttime')
-  
-    # REC - invoke evalresp either programmatically from a RESP file or by invoking the web service 
-    evalResp = None
-    if (respDir):
-        # calling local evalresp -- generate the target file based on the SNCL identifier
-        # file pattern:  RESP.<NET>.<STA>.<LOC>.<CHA> or RESP.<STA>.<NET>.<LOC>.<CHA>
-        localFile = os.path.join(respDir,".".join(["RESP", network, station, location, channel])) # attempt to find the RESP file
-        localFile2 = os.path.join(respDir,".".join(["RESP", station, network, location, channel])) # alternate pattern
-        for localFiles in (localFile,localFile2):
-            if (os.path.exists(localFiles)):
-                debugMode = False
-                evalResp = evresp.getEvalresp(localFiles, network, station, location, channel, starttime,
-                                       minfreq, maxfreq, nfreq, units.upper(), output.upper(), "LOG", debugMode)
-                if evalResp is not None:
-                    break   # break early from loop if we found a result
-        if evalResp is None:
-            raise EvalrespException('No RESP file found at %s or %s' % (localFile,localFile2))
-    else:    
-        # calling the web service 
-        evalResp = irisseismic.getEvalresp(network, station, location, channel, starttime,
-                                       minfreq, maxfreq, nfreq, units.lower(), output.lower())
-    return(evalResp)
-
-#
-#      END Utility Function
-# ------------------------------------------------------------------------------
 
 
 def transferFunction_metrics(concierge):
@@ -270,7 +166,7 @@ def transferFunction_metrics(concierge):
 			    Zst1 = concierge.get_dataselect(Zav1.network, Zav1.station, Zav1.location, Zav1.channel, windowStart, windowEnd, inclusiveEnd=False)
 			except Exception as e:
 			    if str(e).lower().find('no data') > -1:
-				logger.warning('No data for %s' % (Zav1.snclId))
+				logger.info('No data for %s' % (Zav1.snclId))
 			    else:
 				logger.warning('No data for %s from %s: %s' % (Zav1.snclId, concierge.dataselect_url, e))
 			    continue
@@ -279,7 +175,7 @@ def transferFunction_metrics(concierge):
 			    Zst2 = concierge.get_dataselect(Zav2.network, Zav2.station, Zav2.location, Zav2.channel, windowStart, windowEnd, inclusiveEnd=False)
 			except Exception as e:
 			    if str(e).lower().find('no data') > -1:
-				logger.warning('No data for %s' % (Zav2.snclId))
+				logger.info('No data for %s' % (Zav2.snclId))
 			    else:
 				logger.warning('No data for %s from %s: %s' % (Zav2.snclId, concierge.dataselect_url, e))
 			    continue
@@ -288,10 +184,10 @@ def transferFunction_metrics(concierge):
 		    
 			# Get primary (1), secondary (2) and orthogonal secondary spectra 
 			try:
-			    Zevalresp1 = getTransferFunctionSpectra(Zst1,sampling_rate,concierge.resp_dir)
-			    Zevalresp2 = getTransferFunctionSpectra(Zst2,sampling_rate,concierge.resp_dir) 
+			    Zevalresp1 = utils.getSpectra(Zst1,sampling_rate,concierge.resp_dir)
+			    Zevalresp2 = utils.getSpectra(Zst2,sampling_rate,concierge.resp_dir) 
 			except Exception as e:
-			    logger.debug('"transferFunction_metrics" getTransferFunctionSpectra failed for %s:%s: %s' % (Zav1.snclId, Zav2.snclId, e))
+			    logger.warning('"transferFunction_metrics" getSpectra failed for %s:%s: %s' % (Zav1.snclId, Zav2.snclId, e))
 			    continue
 			
 		    
@@ -449,7 +345,7 @@ def transferFunction_metrics(concierge):
 				    st1 = concierge.get_dataselect(av1.network, av1.station, av1.location, av1.channel, windowStart, windowEnd, inclusiveEnd=False)
 				except Exception as e:
 				    if str(e).lower().find('no data') > -1:
-					logger.warning('No data for %s' % (av1.snclId))
+					logger.info('No data for %s' % (av1.snclId))
 				    else:
 					logger.warning('No data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
 				    continue
@@ -458,7 +354,7 @@ def transferFunction_metrics(concierge):
 				    st2 = concierge.get_dataselect(av2.network, av2.station, av2.location, av2.channel, windowStart, windowEnd, inclusiveEnd=False)
 				except Exception as e:
 				    if str(e).lower().find('no data') > -1:
-					logger.warning('No data for %s' % (av2.snclId))
+					logger.info('No data for %s' % (av2.snclId))
 				    else:
 					logger.warning('No data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
 				    continue
@@ -467,10 +363,10 @@ def transferFunction_metrics(concierge):
 	    
 				# Get primary (1), secondary (2) and orthogonal secondary spectra
 				try:
-				    evalresp1 = getTransferFunctionSpectra(st1, sampling_rate, concierge.resp_dir)
-				    evalresp2 = getTransferFunctionSpectra(st2, sampling_rate, concierge.resp_dir)
+				    evalresp1 = utils.getSpectra(st1, sampling_rate, concierge.resp_dir)
+				    evalresp2 = utils.getSpectra(st2, sampling_rate, concierge.resp_dir)
 				except Exception as e:
-				    logger.debug('"transferFunction_metrics" getTransferFunctionSpectra failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+				    logger.debug('"transferFunction_metrics" getSpectra failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
 				    continue
 				    
 	    
@@ -527,7 +423,7 @@ def transferFunction_metrics(concierge):
 				    st1 = concierge.get_dataselect(av1.network, av1.station, av1.location, av1.channel, windowStart, windowEnd, inclusiveEnd=False)
 				except Exception as e:
 				    if str(e).lower().find('no data') > -1:
-					logger.warning('No data for %s' % (av1.snclId))
+					logger.info('No data for %s' % (av1.snclId))
 				    else:
 					logger.warning('No data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
 				    continue
@@ -536,7 +432,7 @@ def transferFunction_metrics(concierge):
 				    st2 = concierge.get_dataselect(av2.network, av2.station, av2.location, av2.channel, windowStart, windowEnd, inclusiveEnd=False)
 				except Exception as e:
 				    if str(e).lower().find('no data') > -1:
-					logger.warning('No data for %s' % (av2.snclId))
+					logger.info('No data for %s' % (av2.snclId))
 				    else:
 					logger.warning('No data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
 				    continue
@@ -545,7 +441,7 @@ def transferFunction_metrics(concierge):
 				    st3 = concierge.get_dataselect(av3.network, av3.station, av3.location, av3.channel, windowStart, windowEnd, inclusiveEnd=False)
 				except Exception as e:
 				    if str(e).lower().find('no data') > -1:
-					logger.warning('No data for %s' % (av3.snclId))
+					logger.info('No data for %s' % (av3.snclId))
 				    else:
 					logger.warning('No data for %s from %s: %s' % (av3.snclId, concierge.dataselect_url, e))
 				    continue
@@ -554,11 +450,11 @@ def transferFunction_metrics(concierge):
 	    
 				# Get primary (1), secondary (2) and orthogonal secondary spectra 
 				try:
-				    evalresp1 = getTransferFunctionSpectra(st1, sampling_rate, concierge.resp_dir)
-				    evalresp2 = getTransferFunctionSpectra(st2, sampling_rate, concierge.resp_dir)          
-				    evalresp3 = getTransferFunctionSpectra(st3, sampling_rate, concierge.resp_dir)
+				    evalresp1 = utils.getSpectra(st1, sampling_rate, concierge.resp_dir)
+				    evalresp2 = utils.getSpectra(st2, sampling_rate, concierge.resp_dir)          
+				    evalresp3 = utils.getSpectra(st3, sampling_rate, concierge.resp_dir)
 				except Exception as e:
-				    logger.debug('"transferFunction_metrics" getTransferFunctionSpectra failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+				    logger.debug('"transferFunction_metrics" getSpectra failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
 				    continue
 				
 	    

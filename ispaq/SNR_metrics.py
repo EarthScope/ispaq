@@ -144,7 +144,7 @@ def SNR_metrics(concierge):
                 if str(e).lower().find('no data') > -1:
                     logger.info('No data found for %s' % (av.snclId))
                 else:
-                    logger.info('No data found for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
+                    logger.warning('No data found for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
                 # TODO:  Create appropriate empty dataframe
                 df = pd.DataFrame({'metricName': 'SNR',
                                    'value': 0,

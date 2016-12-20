@@ -177,7 +177,7 @@ def orientationCheck_metrics(concierge):
                 if str(e).lower().find('no data') > -1:
                     logger.info('No data for %s' % (Channel_1.snclId))
                 else:
-                    logger.info('No data for %s from %s: %s' % (Channel_1.snclId, concierge.dataselect_url, e))
+                    logger.warning('No data for %s from %s: %s' % (Channel_1.snclId, concierge.dataselect_url, e))
                 continue
         
             try:

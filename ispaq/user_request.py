@@ -217,11 +217,11 @@ class UserRequest(object):
                 raise SystemExit
 
             if "event_url" not in data_access.keys():
-                logger.warning("preference file is missing Data_Access: event_url entry. Defaulting to 'USGS'.")
+                logger.warning("preference file is missing Data_Access: event_url entry. Defaulting to 'USGS' (earthquake.usgs.gov).")
                 data_access['event_url'] = 'USGS'
 
             if data_access['event_url'] is None:
-                logger.warning("preference file Data_Access: event_url is not specified. Defaulting to 'USGS'.")
+                logger.warning("preference file Data_Access: event_url is not specified. Defaulting to 'USGS' (earthquake.usgs.gov).")
                 data_access['event_url'] = 'USGS'
 
             # assign station and metrics aliases 

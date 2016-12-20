@@ -81,7 +81,7 @@ def pressureCorrelation_metrics(concierge):
                 r_pStream = concierge.get_dataselect(pAv.network, pAv.station, pAv.location, pAv.channel, starttime, endtime, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.warning('No data for %s' % (pAv.snclId))
+                    logger.info('No data for %s' % (pAv.snclId))
                 else:
                     logger.warning('No data for %s from %s: %s' % (pAv.snclId, concierge.dataselect_url, e))
                 continue

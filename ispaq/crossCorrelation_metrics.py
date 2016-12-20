@@ -150,7 +150,7 @@ def crossCorrelation_metrics(concierge):
                 if str(e).lower().find('no data') > -1:
                     logger.info('No data for %s' % (av1.snclId))
                 else:
-                    logger.info('No data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
+                    logger.warning('No data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
                 continue
             
             # No metric calculation possible if SNCL has more than one trace

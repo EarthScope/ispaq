@@ -10,10 +10,17 @@ Utility functions for ISPAQ.
 
 from __future__ import (absolute_import, division, print_function)
 
+import math
+import os
 import numpy as np
 import pandas as pd
 
 from obspy import UTCDateTime
+from . import irisseismic
+from . import evalresp as evresp
+
+class EvalrespException(Exception):
+    pass
 
 # Utility functions ------------------------------------------------------------
 
@@ -213,6 +220,97 @@ def get_slot(r_object, prop):
     # Should never get here
     raise('"%s" is not a recognized slot name' % (prop))
         
+def getSpectra(st, sampling_rate, respDir=None):
+    # This function returns an evalresp fap response for trace st using sampling_rate 
+    # to determine frequency limits
+    #
+    # set respDir to the directory containing RESP files to run evalresp locally
+
+    if sampling_rate is None:
+       raise Exception("no sampling_rate was passed to getTransferFunctionSpectra")
+
+    # Min and Max frequencies for evalresp will be those used for the cross spectral binning
+    alignFreq = 0.1
+
+    if (sampling_rate <= 1):
+        loFreq = 0.001
+    elif (sampling_rate > 1 and sampling_rate < 10):
+        loFreq = 0.0025
+    else:
+        loFreq = 0.005
+
+    # No need to exceed the Nyquist frequency after decimation
+    hiFreq = 0.5 * sampling_rate
+
+    log2_alignFreq = math.log(alignFreq,2)
+    log2_loFreq = math.log(loFreq,2)
+    log2_hiFreq = math.log(hiFreq,2)
+
+    if alignFreq >= hiFreq:
+        octaves = []
+        octave = log2_alignFreq
+        while octave >= log2_loFreq:
+            if octave <= log2_hiFreq:
+                octaves.append(octave)
+            octave -= 0.125
+        octaves = pd.Series(octaves).sort_values().reset_index(drop=True)
+    else:
+        octaves = []
+        octave = log2_alignFreq
+        loOctaves = []
+        while octave >= log2_loFreq:
+            loOctaves.append(octave)
+            octave -= 0.125
+        loOctaves = pd.Series(loOctaves)
+            
+        octave = log2_alignFreq
+        hiOctaves = []
+        while octave <= log2_hiFreq:
+            hiOctaves.append(octave)
+            octave += 0.125
+        hiOctaves = pd.Series(hiOctaves)
+            
+        octaves = loOctaves.append(hiOctaves).drop_duplicates().sort_values().reset_index(drop=True)
+        
+    binFreq = pow(2,octaves)
+
+    # Arguments for evalresp
+    minfreq = min(binFreq)
+    maxfreq = max(binFreq)
+    nfreq = len(binFreq)
+    units = 'DEF'
+    output = 'FAP'
+
+    network = get_slot(st,'network')
+    station = get_slot(st,'station')
+    location = get_slot(st,'location')
+    channel = get_slot(st,'channel')
+    starttime = get_slot(st,'starttime')
+  
+    # REC - invoke evalresp either programmatically from a RESP file or by invoking the web service 
+    evalResp = None
+    if (respDir):
+        # calling local evalresp -- generate the target file based on the SNCL identifier
+        # file pattern:  RESP.<NET>.<STA>.<LOC>.<CHA> or RESP.<STA>.<NET>.<LOC>.<CHA>
+        localFile = os.path.join(respDir,".".join(["RESP", network, station, location, channel])) # attempt to find the RESP file
+        localFile2 = os.path.join(respDir,".".join(["RESP", station, network, location, channel])) # alternate pattern
+        for localFiles in (localFile,localFile2):
+            if (os.path.exists(localFiles)):
+                debugMode = False
+                evalResp = evresp.getEvalresp(localFiles, network, station, location, channel, starttime,
+                                       minfreq, maxfreq, nfreq, units.upper(), output.upper(), "LOG", debugMode)
+                if evalResp is not None:
+                    break   # break early from loop if we found a result
+        if evalResp is None:
+            raise EvalrespException('No RESP file found at %s or %s' % (localFile,localFile2))
+    else:    
+        # calling the web service 
+        evalResp = irisseismic.getEvalresp(network, station, location, channel, starttime,
+                                       minfreq, maxfreq, nfreq, units.lower(), output.lower())
+    return(evalResp)
+
+# ------------------------------------------------------------------------------
+
 
 
 if __name__ == '__main__':
