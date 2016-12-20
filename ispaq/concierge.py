@@ -19,6 +19,7 @@ import fileinput
 import tempfile
 
 import pandas as pd
+import numpy as np
 
 import obspy
 from obspy.clients.fdsn import Client
@@ -786,7 +787,7 @@ class Concierge(object):
         ################################################################################
         # getEvent method returns seismic event data from the event webservice:
         #
-        #   http://service.iris.edu/fdsnws/event/1/
+        #   http://earthquake.usgs.gov/fdsnws/event/1/
         #
         # TODO:  The getEvent method could be fleshed out with a more complete list
         # TODO:  of arguments to be used as ws-event parameters.
@@ -884,13 +885,8 @@ class Concierge(object):
                                    'latitude': origin.latitude,
                                    'longitude': origin.longitude,
                                    'depth': origin.depth/1000, # QuakeML convention is meters, convert to kilometers
-                                   'author': origin.creation_info.author,
-                                   'cCatalog': None,
-                                   'contributor': None,
-                                   'contributorId': None,
                                    'magType': magnitude.magnitude_type,
                                    'magnitude': magnitude.mag,
-                                   'magAuthor': magnitude.creation_info.author,
                                    'eventLocationName': event.event_descriptions[0].text},
                                   index=[0])
                 dataframes.append(df)
@@ -912,6 +908,8 @@ class Concierge(object):
             if maxdepth:
                 events = events[events['depth'] <= maxdepth] 
 
+            events.index=np.arange(1,len(events)+1)
+
         else:
             # Read from FDSN web services
             # TODO:  Need to make sure irisseismic.getEvent uses any FDSN site
@@ -929,7 +927,6 @@ class Concierge(object):
                 self.logger.debug(e)
                 self.logger.error(err_msg)
                 raise
-
 
         if events.shape[0] == 0:
             return None # TODO:  raise an exception

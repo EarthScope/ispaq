@@ -121,7 +121,6 @@ def crossTalk_metrics(concierge):
         
         # Add sn_lId to the availability dataframe for easy detection
         availability.loc[:,'sn_lId'] = sn_lIds
- 
 
         # ----- All available SNCLs -------------------------------------------------
 
