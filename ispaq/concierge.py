@@ -113,7 +113,10 @@ class Concierge(object):
                 raise ValueError(err_msg)
 
         # Add event clients and URLs or reference a local file
-        if user_request.event_url in URL_MAPPINGS.keys():
+        if user_request.event_url is None:
+            self.event_url = None  # no event service or xml, some metrics cannot be run
+            self.event_client = None
+        elif user_request.event_url in URL_MAPPINGS.keys():
             self.event_url = URL_MAPPINGS[user_request.event_url]
             self.event_client = Client(user_request.event_url)
         elif ("http://" or "https://") in user_request.event_url:
@@ -274,7 +277,7 @@ class Concierge(object):
                 try:
                     # Get list of all sncls we have  metadata for
                     if self.station_url is None:
-                        self.logger.info("Reading StationXML file: No station_url in preference file")
+                        self.logger.info("Reading station metadata : No station_url specified in preference file")
                     else:
                         self.logger.info("Reading StationXML file %s" % self.station_url)
                         sncl_inventory = obspy.read_inventory(self.station_url)
@@ -552,7 +555,7 @@ class Concierge(object):
         # END of sncl_patterns loop --------------------------------------------
  
         if len(sncl_pattern_dataframes) == 0:
-            err_msg = "No available waveforms matching" + str(self.sncl_patterns)
+            err_msg = "No available waveforms for this event matching " + str(self.sncl_patterns)
             self.logger.info(err_msg)
             #raise NoAvailableDataError(err_msg)
         else:
@@ -858,9 +861,11 @@ class Concierge(object):
         if self.event_client is None:
             # Read local QuakeML file
             try:
+                if self.event_url is None:
+                    self.logger.info("Reading events: No event_url specified in preference file")
                 event_catalog = obspy.read_events(self.event_url)
             except Exception as e:
-                err_msg = "The StationXML file: '%s' is not valid." % self.station_url
+                err_msg = "The QuakeML file: '%s' is not valid" % self.event_url
                 self.logger.debug(e)
                 self.logger.error(err_msg)
                 raise ValueError(err_msg)

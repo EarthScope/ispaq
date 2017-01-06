@@ -13,7 +13,7 @@ import argparse
 import datetime
 import logging
 
-__version__ = "0.8.4"
+__version__ = "0.8.5"
 
 # dictionary of currently defined ISPAQ metric groups and business logic
 # for comparison with R package IRISMustangMetrics/ISPAQUtils.R json
@@ -215,7 +215,7 @@ def main():
         try:
             df = simple_metrics(concierge)
             if df is None:
-                logger.info('No simple metrics were calculated')
+                logger.info('No simple metrics were calculated\n')
             else:
                 try:
                     filepath = concierge.output_file_base + "_simpleMetrics.csv"
@@ -223,12 +223,12 @@ def main():
                     utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
                 except Exception as e:
                     logger.debug(e)
-                    logger.error("Error writing metric results")
+                    logger.error("Error writing 'simple' metric results\n")
         except NoAvailableDataError as e:
-            logger.info("No data available for 'simple' metrics")
+            logger.info("No data available for 'simple' metrics\n")
         except Exception as e:
             logger.debug(e)
-            logger.error("Error calculating 'simple' metrics")
+            logger.error("Error calculating 'simple' metrics\n")
 
 
     # Generate SNR Metrics -----------------------------------------------------
@@ -238,7 +238,7 @@ def main():
         try:
             df = SNR_metrics(concierge)
             if df is None:
-                logger.info('No SNR metrics were calculated')
+                logger.info('No SNR metrics were calculated\n')
             else:
                 try:
                     filepath = concierge.output_file_base + "_SNRMetrics.csv"
@@ -246,12 +246,12 @@ def main():
                     utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
                 except Exception as e:
                     logger.debug(e)
-                    logger.error("Error writing metric results")
+                    logger.error("Error writing 'SNR' metric results\n")
         except NoAvailableDataError as e:
-            logger.info("No data available for 'SNR' metrics")
+            logger.info("No data available for 'SNR' metrics\n")
         except Exception as e:
             logger.debug(e)
-            logger.error("Error calculating 'SNR' metrics")
+            logger.error("Error calculating 'SNR' metrics\n")
 
 
     # Generate PSD Metrics -----------------------------------------------------
@@ -261,7 +261,7 @@ def main():
         try:
             df = PSD_metrics(concierge)
             if df is None:
-                logger.info('No PSD metrics were calculated')
+                logger.info('No PSD metrics were calculated\n')
             elif df.metricName[0] == 'PSDPlot':
                 pass
             else:
@@ -272,12 +272,12 @@ def main():
                     utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
                 except Exception as e:
                     logger.debug(e)
-                    logger.error("Error writing metric results")
+                    logger.error("Error writing 'PSD' metric results\n")
         except NoAvailableDataError as e:
-            logger.info("No data available for 'PSD' metrics")
+            logger.info("No data available for 'PSD' metrics\n")
         except Exception as e:
             logger.debug(e)
-            logger.error("Error calculating 'PSD' metrics")
+            logger.error("Error calculating 'PSD' metrics\n")
 
 
     # Generate Cross Talk Metrics ----------------------------------------------
@@ -287,7 +287,7 @@ def main():
         try:
             df = crossTalk_metrics(concierge)
             if df is None:
-                logger.info('No crossTalk metrics were calculated.')
+                logger.info('No crossTalk metrics were calculated\n')
             else:
                 try:
                     filepath = concierge.output_file_base + "_crossTalkMetrics.csv"
@@ -295,12 +295,12 @@ def main():
                     utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
                 except Exception as e:
                     logger.debug(e)
-                    logger.error("Error writing metric results")
+                    logger.error("Error writing 'crossTalk' metric results\n")
         except NoAvailableDataError as e:
-            logger.info("No data available for 'crossTalk' metrics")
+            logger.info("No data available for 'crossTalk' metrics\n")
         except Exception as e:
             logger.debug(e)
-            logger.error("Error calculating 'crossTalk' metrics")
+            logger.error("Error calculating 'crossTalk' metrics\n")
         
 
     # Generate Pressure Correlation Metrics ----------------------------------------------
@@ -310,7 +310,7 @@ def main():
         try:
             df = pressureCorrelation_metrics(concierge)
             if df is None:
-                logger.info('No pressureCorrelation metrics were calculated')
+                logger.info('No pressureCorrelation metrics were calculated\n')
             else:
                 try:
                     filepath = concierge.output_file_base + "_pressureCorrelationMetrics.csv"
@@ -318,12 +318,12 @@ def main():
                     utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
                 except Exception as e:
                     logger.debug(e)
-                    logger.error("Error writing metric results")
+                    logger.error("Error writing 'pressureCorrelation' metric results\n")
         except NoAvailableDataError as e:
-            logger.info("No data available for 'pressureCorrelation' metrics")
+            logger.info("No data available for 'pressureCorrelation' metrics\n")
         except Exception as e:
             logger.debug(e)
-            logger.error("Error calculating 'pressureCorrelation' metrics")
+            logger.error("Error calculating 'pressureCorrelation' metrics\n")
         
 
     # Generate Cross Correlation Metrics ---------------------------------------
@@ -333,7 +333,7 @@ def main():
         try:
             df = crossCorrelation_metrics(concierge)
             if df is None:
-                logger.info('No crossCorrelation metrics were calculated')
+                logger.info('No crossCorrelation metrics were calculated\n')
             else:
                 try:
                     filepath = concierge.output_file_base + "_crossCorrelationMetrics.csv"
@@ -341,12 +341,12 @@ def main():
                     utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
                 except Exception as e:
                     logger.debug(e)
-                    logger.error("Error writing metric results")
+                    logger.error("Error writing 'crossCorrelation' metric results\n")
         except NoAvailableDataError as e:
-            logger.info("No data available for 'crossCorrelation' metrics")
+            logger.info("No data available for 'crossCorrelation' metrics\n")
         except Exception as e:
             logger.debug(e)
-            logger.error("Error calculating 'crossCorrelation' metrics")
+            logger.error("Error calculating 'crossCorrelation' metrics\n")
                 
 
     # Generate Orientation Check Metrics ---------------------------------------
@@ -356,7 +356,7 @@ def main():
         try:
             df = orientationCheck_metrics(concierge)
             if df is None:
-                logger.info('No orientationCheck metrics were calculated')
+                logger.info('No orientationCheck metrics were calculated\n')
             else:
                 try:
                     filepath = concierge.output_file_base + "_orientationCheckMetrics.csv"
@@ -364,12 +364,12 @@ def main():
                     utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
                 except Exception as e:
                     logger.debug(e)
-                    logger.error("Error writing metric results")
+                    logger.error("Error writing 'orientationCheck' metric results\n")
         except NoAvailableDataError as e:
-            logger.info("No data available for 'orientationCheck' metrics")
+            logger.info("No data available for 'orientationCheck' metrics\n")
         except Exception as e:
             logger.debug(e)
-            logger.error("Error calculating 'orientationCheck' metrics")
+            logger.error("Error calculating 'orientationCheck' metrics\n")
                         
                         
     # Generate Transfer Function Metrics ---------------------------------------
@@ -379,7 +379,7 @@ def main():
         try:
             df = transferFunction_metrics(concierge)
             if df is None:
-                logger.info('No transferFunction metrics were calculated')
+                logger.info('No transferFunction metrics were calculated\n')
             else:
                 try:
                     filepath = concierge.output_file_base + "_transferMetrics.csv"
@@ -387,12 +387,12 @@ def main():
                     utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
                 except Exception as e:
                     logger.debug(e)
-                    logger.error("Error writing metric results")
+                    logger.error("Error writing 'transferFunction' metric results\n")
         except NoAvailableDataError as e:
-            logger.info("No data available for 'transferFunction' metrics")
+            logger.info("No data available for 'transferFunction' metrics\n")
         except Exception as e:
             logger.debug(e)
-            logger.error("Error calculating 'transferFunction' metrics")
+            logger.error("Error calculating 'transferFunction' metrics\n")
 
 
     logger.info('ALL FINISHED!')

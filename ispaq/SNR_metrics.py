@@ -49,7 +49,7 @@ def SNR_metrics(concierge):
         
     # Sanity checck
     if events is None or events.shape[0] == 0:
-        logger.info('No events found for SNR metrics.')
+        logger.info('No events found for SNR metrics')
         return None
         
     # Container for all of the metrics dataframes generated

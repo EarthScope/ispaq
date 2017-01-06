@@ -227,7 +227,7 @@ def getSpectra(st, sampling_rate, respDir=None):
     # set respDir to the directory containing RESP files to run evalresp locally
 
     if sampling_rate is None:
-       raise Exception("no sampling_rate was passed to getTransferFunctionSpectra")
+       raise Exception("no sampling_rate was passed to getSpectra")
 
     # Min and Max frequencies for evalresp will be those used for the cross spectral binning
     alignFreq = 0.1

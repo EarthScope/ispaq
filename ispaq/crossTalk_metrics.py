@@ -157,10 +157,12 @@ def crossTalk_metrics(concierge):
                         logger.warning('No data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
                     continue
                 
+                tracenumber = len(utils.get_slot(r_stream, 'traces'))
                 
-                if len(utils.get_slot(r_stream, 'traces')) > 1 :
+                if tracenumber == 0 :
+                    logger.info('Skipping %s because it has no data for this event' % (av.snclId))
+                elif tracenumber > 1 :
                     logger.info('Skipping %s because it has more than one trace' % (av.snclId))
-                    continue
                 else:
                     streamList.append(r_stream)
                     
@@ -178,7 +180,7 @@ def crossTalk_metrics(concierge):
             # and can now be used in the correlation metric.
             
             logger.debug('Calculating crossTalk metrics for %d streams.' % (len(streamList)))
-            
+
             # 1-2
             try:
                 df = irismustangmetrics.apply_correlation_metric(streamList[0], streamList[1], 'correlation')

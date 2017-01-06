@@ -77,7 +77,7 @@ def transferFunction_metrics(concierge):
 	    raise
 	except Exception as e:
 	    logger.debug(e)
-	    logger.error('concierge.get_availability() failed with an unknown error')
+	    logger.error('concierge.get_availability() failed')
 	    return None
 
 	if availability is None:

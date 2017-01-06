@@ -75,7 +75,7 @@ def PSD_metrics(concierge):
             raise
         except Exception as e:
             logger.debug(e)
-            logger.error('concierge.get_availability() failed with an unknown exception')
+            logger.error('concierge.get_availability() failed')
             return None
 
 
@@ -156,7 +156,11 @@ def PSD_metrics(concierge):
                             logger.error('Unable to write %s' % (filepath))
                             raise
                 except Exception as e:
-                    logger.debug(e)
+                    if str(e).lower().find('could not resolve host: service.iris.edu') > -1:
+                        logger.debug(e)
+                        logger.error('getEvalresp failed to find service.iris.edu')
+                    else:
+                        logger.error(e)
                     logger.warning('"PSD" metric calculation failed for %s' % (av.snclId))
                     continue
                 

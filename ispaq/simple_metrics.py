@@ -77,7 +77,7 @@ def simple_metrics(concierge):
             raise
         except Exception as e:
             logger.debug(e)
-            logger.error('concierge.get_availability() failed with an unknown exception')
+            logger.error('concierge.get_availability() failed')
             return None 
 
         # NEW: If the day has no data, then skip it (used to raise NoAvailableDataError)
