@@ -8,7 +8,7 @@ Users have the ability to create personalized _preference files_ that list combi
 of station specifiers and statistical metrics of interest, such that they can be run
 repeatedly over data from many different time periods.
 
-ISPAQ offers the option for access to [FDSN Web Services](http://www.fdsn.org/webservices/) to get raw 
+ISPAQ offers the option for access to [FDSN Web Services](http://www.fdsn.org/webservices/) to get seismic 
 data and metadata directly from selected data centers supporting the FDSN protocol.  Alternately, users 
 can read local [miniSEED](http://ds.iris.edu/ds/nodes/dmc/data/formats/seed/) files and metadata on 
 their own workstations, possibly sourced directly from instrumentation, and construct on-the-spot data 
@@ -97,7 +97,8 @@ source activate ispaq
 
 Note: if `source activate ispaq` does not work because your shell is csh/tcsh instead of bash
 you will need to add the ispaq environment to your PATH in the terminal window that you are using.
-e.g., `setenv PATH ~/miniconda2/envs/ispaq/bin:$PATH`)
+e.g., `setenv PATH ~/miniconda2/envs/ispaq/bin:$PATH`
+Use this command instead of, not in addition to, `source activate ispaq`.
 
 See what is installed in our (ispaq) environment with:
 
@@ -254,22 +255,31 @@ path to a directory containing miniSEED files (_See: "Using Local Data Files", b
 
 * *station_url:* should indicate a metadata location as an FDSN web service alias, an explicit URL, or a path 
 to a file containing metadata in [StationXML](http://www.fdsn.org/xml/station/) format 
-([schema](http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd)).  
-For web services, this is generally the same entry as _dataselect_url_.
+([schema](http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd)). For web services, this should be the same entry as _dataselect_url_.
+For local metadata use, StationXML is read at the channel level and instrument response information in the XML is ignored.
+Local response information (if used) is assumed to be in RESP file format and specified in the *resp_dir* entry below.
+If neither webservices or StationXMl is available, the station_url entry can be left blank. In this case, only 
+metrics that do not require metadata information will be calculated.
+
+    If you are starting from a dataless SEED you can create StationXML using the 
+[FDSN StationXML-SEED Converter](https://seiscode.iris.washington.edu/projects/stationxml-converter).
 
 * *event_url:* should indicate an event catalog location as an FDSN web service alias (e.g. USGS), an 
 explicit URL, or a path to a file containing metadata in [QuakeML](https://quake.ethz.ch/quakeml) format 
 ([schema](https://quake.ethz.ch/quakeml/docs/xml?action=AttachFile&do=get&target=QuakeML-BED-1.2.xsd)). 
-_Only web service providers that can output text format can be used at this time._  This entry will 
-only be used by metrics that require event information in order to be processed.
+_Only web service providers that can output text format can be used at this time._ This entry will 
+only be used by metrics that require event information in order to be processed. These metrics include
+cross_talk, polarity_check, and orientation_check.
 
 * *resp_dir:* should be unspecified or absent if local response files are not used.  The default behavior is to 
 retrieve response information from [IRIS Evalresp](http://service.iris.edu/irisws/evalresp/1/). To make use of 
 local instrument responses, this parameter should indicate a path to a directory containing response files in 
-[RESP](http://ds.iris.edu/ds/nodes/dmc/data/formats/resp/) format. Local response files are expected to be 
-named RESP.network.station.location.channel or RESP.station.network.location.channel 
-(e.g., RESP.IU.CASY.00.BH1 or RESP.CASY.IU.00.BH1). These are only used when generating PSD related metrics 
+[RESP](http://ds.iris.edu/ds/nodes/dmc/data/formats/resp/) format. Local response files are expected to be named 
+RESP.network.station.location.channel or RESP.station.network.location.channel 
+(e.g., RESP.IU.CASY.00.BH1 or RESP.CASY.IU.00.BH1). Response information is only needed when generating PSD related metrics 
 or PDF plots.
+
+    If you are starting from a dataless SEED you can create RESP files using [rdseed](http://ds.iris.edu/ds/nodes/dmc/manuals/rdseed/).
 
 **Preferences** has three entries describing ispaq output.
 
@@ -287,34 +297,36 @@ More information about using local files can be found below in the section "Usin
 ISPAQ will always create a log file named ```ISPAQ_TRANSCRIPT.log``` to record actions taken
 and messages generated during processing.
 
-Results of metrics calculations will be written to .csv files using the following naming scheme:
+Results of most metrics calculations will be written to .csv files using the following naming scheme:
 
 * *MetricSet*\_*StationSet*\_*date*\__*businessLogic*.csv
 
-or
+when a single day is specified on the command line or
 
 * *MetricSet*\_*StationSet*\_*startdate*\_*enddate*\_*businessLogic*.csv
 
-where _businessLogic_ corresponds to which script is invoked:
+when multiple days are specified from the command line.
+
+_businessLogic_ corresponds to which script is invoked:
 
 | businessLogic | ISPAQ script | metrics |
 | ----------|--------------|---------|
 | simpleMetrics | simple_metrics.py | most metrics |
 | SNRMetrics | SNR_metrics.py | sample_snr   |
-| PSDMetrics | PSD_metrics.py | pct_above_nhnm, pct_below_nlnm, dead_channel_exp/lin/gsn |
+| PSDMetrics | PSD_metrics.py | pct_above_nhnm, pct_below_nlnm, dead_channel_{exp,lin,gsn} |
 | crossTalkMetrics | crossTalk_metrics.py | cross_talk |
 | pressureCorrelationMetrics | pressureCorrelation_metrics.py | pressure_effects | 
 | crossCorrelationMetrics | crossCorrelation_metrics.py | polarity_check | 
 | orientationCheckMetrics | orientationCheck_metrics.py | orientation_check | 
 | transferMetrics | transferFunction_metrics.py | transfer_function |
 
-The MetricSet PSDText (or any user defined set with metrics psd_corrected or pdf_text) will generate 
+The metric set PSDText (or any user defined set with metrics psd_corrected or pdf_text) will generate 
 corrected PSDs and PDFs in files named:
 
 * *MetricSet*\_*StationSet*\_*date*\_*SNCL*\__correctedPSD.csv
 * *MetricSet*\_*StationSet*\_*date*\_*SNCL*\__PDF.csv
 
-while the MetricSet PDF (metric pdf_plot) will generate PDF plot images as:
+while the metric set PDF (metric pdf_plot) will generate PDF plot images as:
 
 * *SNCL*\.*JulianDate*\_PDF.png
 

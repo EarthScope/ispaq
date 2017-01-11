@@ -123,7 +123,7 @@ $(document).ready(function () {
 <h1>ISPAQ - IRIS System for Portable Assessment of Quality</h1>
 <p>ISPAQ is a Python client that allows seismic data scientists and instrumentation operators to run data quality metrics on their own workstation, using much of same code base as is used in IRIS’s MUSTANG data quality web service.</p>
 <p>Users have the ability to create personalized <em>preference files</em> that list combinations of station specifiers and statistical metrics of interest, such that they can be run repeatedly over data from many different time periods.</p>
-<p>ISPAQ offers the option for access to <a href="http://www.fdsn.org/webservices/">FDSN Web Services</a> to get raw data and metadata directly from selected data centers supporting the FDSN protocol. Alternately, users can read local <a href="http://ds.iris.edu/ds/nodes/dmc/data/formats/seed/">miniSEED</a> files and metadata on their own workstations, possibly sourced directly from instrumentation, and construct on-the-spot data quality analyses on that data.</p>
+<p>ISPAQ offers the option for access to <a href="http://www.fdsn.org/webservices/">FDSN Web Services</a> to get seismic data and metadata directly from selected data centers supporting the FDSN protocol. Alternately, users can read local <a href="http://ds.iris.edu/ds/nodes/dmc/data/formats/seed/">miniSEED</a> files and metadata on their own workstations, possibly sourced directly from instrumentation, and construct on-the-spot data quality analyses on that data.</p>
 <p>Output is provided in csv format for tabular metrics and Probability Density Functions (PDF) can be plotted to PNG image files.</p>
 <p>The business logic for MUSTANG metrics is emulated through <a href="https://github.com/obspy/obspy/wiki">ObsPy</a> and custom Python code and the core calculations are performed using the same R packages as used by MUSTANG.</p>
 </div>
@@ -157,7 +157,7 @@ Whereas the results of MUSTANG calculations are stored in a database, and provid
 <p>This method does everything at once.</p>
 <pre><code>conda create -n ispaq --file ispaq-explicit-spec-file.txt
 source activate ispaq</code></pre>
-<p>Note: if <code>source activate ispaq</code> does not work because your shell is csh/tcsh instead of bash you will need to add the ispaq environment to your PATH in the terminal window that you are using. e.g., <code>setenv PATH ~/miniconda2/envs/ispaq/bin:$PATH</code>)</p>
+<p>Note: if <code>source activate ispaq</code> does not work because your shell is csh/tcsh instead of bash you will need to add the ispaq environment to your PATH in the terminal window that you are using. e.g., <code>setenv PATH ~/miniconda2/envs/ispaq/bin:$PATH</code> Use this command instead of, not in addition to, <code>source activate ispaq</code>.</p>
 <p>See what is installed in our (ispaq) environment with:</p>
 <pre><code>conda list
 ...</code></pre>
@@ -247,15 +247,16 @@ as day-long metrics (24 hour windows, see metrics documentation at <a href="http
 # each category heading, all lines containing a colon will be interpreted
 # as key:value and made made available to ISPAQ.
 #</code></pre>
-<p><strong>Metric</strong> aliases can be any of one of the predefined options or any user created <em>alias: metric</em> combination, where <em>metric</em> can be a single metric name or a comma separated list of valid metric names. Example, “myMetrics: num_gaps, sample_mean, cross_talk”.</p>
+<p><strong>Metric</strong> aliases can be any of one of the predefined options or any user created <em>alias: metric</em> combination, where <em>metric</em> can be a single metric name or a comma separated list of valid metric names. Aliases cannot be combinations of other aliases. Example, “myMetrics: num_gaps, sample_mean, cross_talk”.</p>
 <p><strong>Station_SNCL</strong> aliases are user created <em>alias: network.station.location.channel</em> combinations. Station SNCLs can be comma separated lists. * or ? wildcards can be used in any of the network, station, location, channel elements. Example, “myStations: IU.*.00.BH?, IU.ANMO.*.?HZ, II.PFO.??.*”.</p>
 <p><strong>Data_Access</strong> has four entries describing where to find data, metadata, events, and optionally response files.</p>
 <ul>
 <li><p><em>dataselect_url:</em> should indicate a miniseed location as one of the FDSN web service aliases used by ObsPy (e.g. IRIS), an explicit URL pointing to an FDSN web service domain (e.g. <a href="http://service.iris.edu" class="uri">http://service.iris.edu</a>), or a file path to a directory containing miniSEED files (<em>See: “Using Local Data Files”, below</em>).</p></li>
-<li><p><em>station_url:</em> should indicate a metadata location as an FDSN web service alias, an explicit URL, or a path to a file containing metadata in <a href="http://www.fdsn.org/xml/station/">StationXML</a> format (<a href="http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd">schema</a>).<br />
-For web services, this is generally the same entry as <em>dataselect_url</em>.</p></li>
-<li><p><em>event_url:</em> should indicate an event catalog location as an FDSN web service alias (e.g. USGS), an explicit URL, or a path to a file containing metadata in <a href="https://quake.ethz.ch/quakeml">QuakeML</a> format (<a href="https://quake.ethz.ch/quakeml/docs/xml?action=AttachFile&amp;do=get&amp;target=QuakeML-BED-1.2.xsd">schema</a>). <em>Only web service providers that can output text format can be used at this time.</em> This entry will only be used by metrics that require event information in order to be processed.</p></li>
-<li><p><em>resp_dir:</em> should be unspecified or absent if local response files are not used. The default behavior is to retrieve response information from <a href="http://service.iris.edu/irisws/evalresp/1/">IRIS Evalresp</a>. To make use of local instrument responses, this parameter should indicate a path to a directory containing response files in <a href="http://ds.iris.edu/ds/nodes/dmc/data/formats/resp/">RESP</a> format. Local response files are expected to be named RESP.network.station.location.channel or RESP.station.network.location.channel (e.g., RESP.IU.CASY.00.BH1 or RESP.CASY.IU.00.BH1). These are only used when generating PSD related metrics or PDF plots.</p></li>
+<li><p><em>station_url:</em> should indicate a metadata location as an FDSN web service alias, an explicit URL, or a path to a file containing metadata in <a href="http://www.fdsn.org/xml/station/">StationXML</a> format (<a href="http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd">schema</a>). For web services, this should be the same entry as <em>dataselect_url</em>. For local metadata use, StationXML is read at the channel level and instrument response information in the XML is ignored. Local response information (if used) is assumed to be in RESP file format and specified in the <em>resp_dir</em> entry below. If neither webservices or StationXMl is available, the station_url entry can be left blank. In this case, only metrics that do not require metadata information will be calculated.</p>
+<p>If you are starting from a dataless SEED you can create StationXML using the <a href="https://seiscode.iris.washington.edu/projects/stationxml-converter">FDSN StationXML-SEED Converter</a>.</p></li>
+<li><p><em>event_url:</em> should indicate an event catalog location as an FDSN web service alias (e.g. USGS), an explicit URL, or a path to a file containing metadata in <a href="https://quake.ethz.ch/quakeml">QuakeML</a> format (<a href="https://quake.ethz.ch/quakeml/docs/xml?action=AttachFile&amp;do=get&amp;target=QuakeML-BED-1.2.xsd">schema</a>). <em>Only web service providers that can output text format can be used at this time.</em> This entry will only be used by metrics that require event information in order to be processed. These metrics include cross_talk, polarity_check, and orientation_check.</p></li>
+<li><p><em>resp_dir:</em> should be unspecified or absent if local response files are not used. The default behavior is to retrieve response information from <a href="http://service.iris.edu/irisws/evalresp/1/">IRIS Evalresp</a>. To make use of local instrument responses, this parameter should indicate a path to a directory containing response files in <a href="http://ds.iris.edu/ds/nodes/dmc/data/formats/resp/">RESP</a> format. Local response files are expected to be named RESP.network.station.location.channel or RESP.station.network.location.channel (e.g., RESP.IU.CASY.00.BH1 or RESP.CASY.IU.00.BH1). Response information is only needed when generating PSD related metrics or PDF plots.</p>
+<p>If you are starting from a dataless SEED you can create RESP files using <a href="http://ds.iris.edu/ds/nodes/dmc/manuals/rdseed/">rdseed</a>.</p></li>
 </ul>
 <p><strong>Preferences</strong> has three entries describing ispaq output.</p>
 <ul>
@@ -268,15 +269,16 @@ For web services, this is generally the same entry as <em>dataselect_url</em>.</
 <div id="output-files" class="section level3">
 <h3>Output files</h3>
 <p>ISPAQ will always create a log file named <code>ISPAQ_TRANSCRIPT.log</code> to record actions taken and messages generated during processing.</p>
-<p>Results of metrics calculations will be written to .csv files using the following naming scheme:</p>
+<p>Results of most metrics calculations will be written to .csv files using the following naming scheme:</p>
 <ul>
 <li><em>MetricSet</em>_<em>StationSet</em>_<em>date</em>__<em>businessLogic</em>.csv</li>
 </ul>
-<p>or</p>
+<p>when a single day is specified on the command line or</p>
 <ul>
 <li><em>MetricSet</em>_<em>StationSet</em>_<em>startdate</em>_<em>enddate</em>_<em>businessLogic</em>.csv</li>
 </ul>
-<p>where <em>businessLogic</em> corresponds to which script is invoked:</p>
+<p>when multiple days are specified from the command line.</p>
+<p><em>businessLogic</em> corresponds to which script is invoked:</p>
 <table style="width:50%;">
 <colgroup>
 <col width="15%"></col>
@@ -304,7 +306,7 @@ For web services, this is generally the same entry as <em>dataselect_url</em>.</
 <tr class="odd">
 <td align="left">PSDMetrics</td>
 <td align="left">PSD_metrics.py</td>
-<td align="left">pct_above_nhnm, pct_below_nlnm, dead_channel_exp/lin/gsn</td>
+<td align="left">pct_above_nhnm, pct_below_nlnm, dead_channel_{exp,lin,gsn}</td>
 </tr>
 <tr class="even">
 <td align="left">crossTalkMetrics</td>
@@ -333,12 +335,12 @@ For web services, this is generally the same entry as <em>dataselect_url</em>.</
 </tr>
 </tbody>
 </table>
-<p>The MetricSet PSDText (or any user defined set with metrics psd_corrected or pdf_text) will generate corrected PSDs and PDFs in files named:</p>
+<p>The metric set PSDText (or any user defined set with metrics psd_corrected or pdf_text) will generate corrected PSDs and PDFs in files named:</p>
 <ul>
 <li><em>MetricSet</em>_<em>StationSet</em>_<em>date</em>_<em>SNCL</em>__correctedPSD.csv</li>
 <li><em>MetricSet</em>_<em>StationSet</em>_<em>date</em>_<em>SNCL</em>__PDF.csv</li>
 </ul>
-<p>while the MetricSet PDF (metric pdf_plot) will generate PDF plot images as:</p>
+<p>while the metric set PDF (metric pdf_plot) will generate PDF plot images as:</p>
 <ul>
 <li><em>SNCL</em>.<em>JulianDate</em>_PDF.png</li>
 </ul>
