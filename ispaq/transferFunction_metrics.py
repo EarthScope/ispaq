@@ -109,7 +109,7 @@ def transferFunction_metrics(concierge):
 	    stationAvailability = stationAvailability[metaMask]
 
 	    if stationAvailability.shape[0] == 0:
-		logger.info('Network-Station pair %s.%s has data, but no metadata, skipping.' % (network, station))
+		logger.info('Skipping %s.%s,  network-station pair %s.%s has data, but no metadata.' % (network, station))
 		continue
 	    else:
 		logger.debug('Network-Station pair %s.%s has %d channels' % (network, station, stationAvailability.shape[0]))
@@ -166,18 +166,18 @@ def transferFunction_metrics(concierge):
 			    Zst1 = concierge.get_dataselect(Zav1.network, Zav1.station, Zav1.location, Zav1.channel, windowStart, windowEnd, inclusiveEnd=False)
 			except Exception as e:
 			    if str(e).lower().find('no data') > -1:
-				logger.info('No data for %s' % (Zav1.snclId))
+				logger.info('No data available for %s' % (Zav1.snclId))
 			    else:
-				logger.warning('No data for %s from %s: %s' % (Zav1.snclId, concierge.dataselect_url, e))
+				logger.warning('No data available for %s from %s: %s' % (Zav1.snclId, concierge.dataselect_url, e))
 			    continue
 
 			try:
 			    Zst2 = concierge.get_dataselect(Zav2.network, Zav2.station, Zav2.location, Zav2.channel, windowStart, windowEnd, inclusiveEnd=False)
 			except Exception as e:
 			    if str(e).lower().find('no data') > -1:
-				logger.info('No data for %s' % (Zav2.snclId))
+				logger.info('No data available for %s' % (Zav2.snclId))
 			    else:
-				logger.warning('No data for %s from %s: %s' % (Zav2.snclId, concierge.dataselect_url, e))
+				logger.warning('No data available for %s from %s: %s' % (Zav2.snclId, concierge.dataselect_url, e))
 			    continue
 			
 			sampling_rate = min(utils.get_slot(Zst1,'sampling_rate'), utils.get_slot(Zst2,'sampling_rate'))
@@ -345,18 +345,18 @@ def transferFunction_metrics(concierge):
 				    st1 = concierge.get_dataselect(av1.network, av1.station, av1.location, av1.channel, windowStart, windowEnd, inclusiveEnd=False)
 				except Exception as e:
 				    if str(e).lower().find('no data') > -1:
-					logger.info('No data for %s' % (av1.snclId))
+					logger.info('No data available for %s' % (av1.snclId))
 				    else:
-					logger.warning('No data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
+					logger.warning('No data available for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
 				    continue
 	    
 				try:
 				    st2 = concierge.get_dataselect(av2.network, av2.station, av2.location, av2.channel, windowStart, windowEnd, inclusiveEnd=False)
 				except Exception as e:
 				    if str(e).lower().find('no data') > -1:
-					logger.info('No data for %s' % (av2.snclId))
+					logger.info('No data available for %s' % (av2.snclId))
 				    else:
-					logger.warning('No data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
+					logger.warning('No data available for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
 				    continue
 	    
 				sampling_rate = min( utils.get_slot(st1, 'sampling_rate'), utils.get_slot(st2, 'sampling_rate') )
@@ -423,27 +423,27 @@ def transferFunction_metrics(concierge):
 				    st1 = concierge.get_dataselect(av1.network, av1.station, av1.location, av1.channel, windowStart, windowEnd, inclusiveEnd=False)
 				except Exception as e:
 				    if str(e).lower().find('no data') > -1:
-					logger.info('No data for %s' % (av1.snclId))
+					logger.info('No data available for %s' % (av1.snclId))
 				    else:
-					logger.warning('No data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
+					logger.warning('No data available for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
 				    continue
 	    
 				try:
 				    st2 = concierge.get_dataselect(av2.network, av2.station, av2.location, av2.channel, windowStart, windowEnd, inclusiveEnd=False)
 				except Exception as e:
 				    if str(e).lower().find('no data') > -1:
-					logger.info('No data for %s' % (av2.snclId))
+					logger.info('No data available for %s' % (av2.snclId))
 				    else:
-					logger.warning('No data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
+					logger.warning('No data available for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
 				    continue
 				 
 				try:
 				    st3 = concierge.get_dataselect(av3.network, av3.station, av3.location, av3.channel, windowStart, windowEnd, inclusiveEnd=False)
 				except Exception as e:
 				    if str(e).lower().find('no data') > -1:
-					logger.info('No data for %s' % (av3.snclId))
+					logger.info('No data available for %s' % (av3.snclId))
 				    else:
-					logger.warning('No data for %s from %s: %s' % (av3.snclId, concierge.dataselect_url, e))
+					logger.warning('No data available for %s from %s: %s' % (av3.snclId, concierge.dataselect_url, e))
 				    continue
 				 
 				sampling_rate = min( utils.get_slot(st1, 'sampling_rate'), utils.get_slot(st2, 'sampling_rate') )

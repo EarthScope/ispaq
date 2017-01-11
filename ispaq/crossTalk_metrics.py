@@ -72,7 +72,7 @@ def crossTalk_metrics(concierge):
 
     for (index, event) in events.iterrows():
 
-        logger.info('%03d Magnitude %3.1f event: %s' % (index, event.magnitude, event.eventLocationName))
+        logger.info('%03d Magnitude %3.1f event: %s %sT%s:%s:%sZ' % (index, event.magnitude, event.eventLocationName, event.time.date, str(event.time.hour).zfill(2), str(event.time.minute).zfill(2), str(event.time.second).zfill(2)))
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
@@ -152,9 +152,9 @@ def crossTalk_metrics(concierge):
                     r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, halfHourStart-1, halfHourEnd+1, inclusiveEnd=False)
                 except Exception as e:
                     if str(e).lower().find('no data') > -1:
-                        logger.info('No data for %s' % (av.snclId))
+                        logger.info('No data available for %s' % (av.snclId))
                     else:
-                        logger.warning('No data for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
+                        logger.warning('No data available for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
                     continue
                 
                 tracenumber = len(utils.get_slot(r_stream, 'traces'))
@@ -182,27 +182,58 @@ def crossTalk_metrics(concierge):
             logger.debug('Calculating crossTalk metrics for %d streams.' % (len(streamList)))
 
             # 1-2
-            try:
-                df = irismustangmetrics.apply_correlation_metric(streamList[0], streamList[1], 'correlation')
-                dataframes.append(df)
-            except Exception as e:
-                logger.warning('"crossTalk" metric calculation failed for %s: %s' % (av.snclId, e))
+            l0 = utils.get_slot(streamList[0],'npts')
+            c0 = utils.get_slot(streamList[0],'channel')
+            l1 = utils.get_slot(streamList[1],'npts')
+            c1 = utils.get_slot(streamList[1],'channel')
+            
+            if len(streamList) == 2:
+                if( abs(l0 - l1) > 2):
+                    logger.info('Skipping %s because the number of data samples differs between channels. Incompatible lengths %s=%d, %s=%d' % (sn_lId,c0,c1,c0,l0,c1,l1))
+                    continue
+                try:
+                    df = irismustangmetrics.apply_correlation_metric(streamList[0], streamList[1], 'correlation')
+                    dataframes.append(df)
+                except Exception as e:
+                    logger.warning('"crossTalk" metric calculation failed for %s: %s' % (av.snclId, e))
             
             if len(streamList) == 3:
+                l2 = utils.get_slot(streamList[2],'npts')
+                c2 = utils.get_slot(streamList[2],'channel')
+
+                if( abs(l0 - l1) > 2 and abs(l1-l2) > 2 and abs(l0-l2) > 2):
+                    logger.info('Skipping %s because the number of data samples differs between channels. Incompatible lengths %s=%d, %s=%d, %s=%d' % (sn_lId,c0,l0,c1,l1,c2,l2))
+                    continue
+
+                # 1-2
+                if( abs(l0 - l1) <= 2):
+                    try:
+                        df = irismustangmetrics.apply_correlation_metric(streamList[0], streamList[1], 'correlation')
+                        dataframes.append(df)
+                    except Exception as e:
+                        logger.warning('"crossTalk" metric calculation failed for %s: %s' % (av.snclId, e))
+                else:
+                    logger.info('Skipping %s %s:%s because the number of data samples differs between channels. Incompatible lengths %s=%d, %s=%d' % (sn_lId,c0,c1,c0,l0,c1,l1))
 
                 # 1-3
-                try:
-                    df = irismustangmetrics.apply_correlation_metric(streamList[0], streamList[2], 'correlation')
-                    dataframes.append(df)
-                except Exception as e:
-                    logger.warning('"crossTalk" metric calculation failed for %s: %s' % (av.snclId, e))
+                if( abs(l0 - l2) <= 2):
+                    try:
+                        df = irismustangmetrics.apply_correlation_metric(streamList[0], streamList[2], 'correlation')
+                        dataframes.append(df)
+                    except Exception as e:
+                        logger.warning('"crossTalk" metric calculation failed for %s: %s' % (av.snclId, e))
+                else:
+                    logger.info('Skipping %s %s:%s because the number of data samples differs between channels. Incompatible lengths %s=%d, %s=%d' % (sn_lId,c0,c2,c0,l0,c2,l2))
                 
                 # 2-3
-                try:
-                    df = irismustangmetrics.apply_correlation_metric(streamList[1], streamList[2], 'correlation')
-                    dataframes.append(df)
-                except Exception as e:
-                    logger.warning('"crossTalk" metric calculation failed for %s: %s' % (av.snclId, e))
+                if( abs(l1 - l2) <= 2):
+                    try:
+                        df = irismustangmetrics.apply_correlation_metric(streamList[1], streamList[2], 'correlation')
+                        dataframes.append(df)
+                    except Exception as e:
+                        logger.warning('"crossTalk" metric calculation failed for %s: %s' % (av.snclId, e))
+                else:
+                    logger.info('Skipping %s %s:%s because the number of data samples differs between channels. Incompatible lengths %s=%d, %s=%d' % (sn_lId,c1,c2,c1,l1,c2,l2))
                     
 
         # End of sn.lId loop

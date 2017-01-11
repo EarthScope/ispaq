@@ -73,7 +73,7 @@ def orientationCheck_metrics(concierge):
 
     for (index, event) in events.iterrows():
 
-        logger.info('%03d Magnitude %3.1f event: %s' % (index, event.magnitude, event.eventLocationName))
+        logger.info('%03d Magnitude %3.1f event: %s %sT%s:%s:%sZ' % (index, event.magnitude, event.eventLocationName, event.time.date, str(event.time.hour).zfill(2), str(event.time.minute).zfill(2), str(event.time.second).zfill(2)))
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
@@ -175,9 +175,9 @@ def orientationCheck_metrics(concierge):
                                                windowStart, windowEnd, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.info('No data for %s' % (Channel_1.snclId))
+                    logger.info('No data available for %s' % (Channel_1.snclId))
                 else:
-                    logger.warning('No data for %s from %s: %s' % (Channel_1.snclId, concierge.dataselect_url, e))
+                    logger.warning('No data available for %s from %s: %s' % (Channel_1.snclId, concierge.dataselect_url, e))
                 continue
         
             try:
@@ -185,9 +185,9 @@ def orientationCheck_metrics(concierge):
                                                windowStart, windowEnd, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.info('No data for %s' % (Channel_2.snclId))
+                    logger.info('No data available for %s' % (Channel_2.snclId))
                 else:
-                    logger.info('No data for %s from %s: %s' % (Channel_2.snclId, concierge.dataselect_url, e))
+                    logger.info('No data available for %s from %s: %s' % (Channel_2.snclId, concierge.dataselect_url, e))
                 continue
         
             try:
@@ -195,9 +195,9 @@ def orientationCheck_metrics(concierge):
                                                windowStart, windowEnd, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.info('No data for %s' % (ZChannel.snclId))
+                    logger.info('No data available for %s' % (ZChannel.snclId))
                 else:
-                    logger.info('No data for %s from %s: %s' % (ZChannel.snclId, concierge.dataselect_url, e))
+                    logger.info('No data available for %s from %s: %s' % (ZChannel.snclId, concierge.dataselect_url, e))
                 continue
         
         
@@ -205,7 +205,10 @@ def orientationCheck_metrics(concierge):
             if (ZChannel.dip > 0):
                 stZ = irisseismic.multiplyBy(stZ,-1)
         
-            if len(utils.get_slot(stN,'traces')) > 1 or len(utils.get_slot(stE,'traces')) > 1 or len(utils.get_slot(stZ,'traces')) > 1:
+            if len(utils.get_slot(stN,'traces')) == 0 or len(utils.get_slot(stE,'traces')) == 0 or len(utils.get_slot(stZ,'traces')) == 0:
+                logger.info('Skipping %s because at least one of the channels has no data for this event' % (sn_lId))
+                continue
+            elif len(utils.get_slot(stN,'traces')) > 1 or len(utils.get_slot(stE,'traces')) > 1 or len(utils.get_slot(stZ,'traces')) > 1:
                 logger.info('Skipping %s because it has gaps' % (sn_lId)) 
                 continue
         
@@ -215,7 +218,7 @@ def orientationCheck_metrics(concierge):
             l3 = utils.get_slot(stZ,'npts')
       
             if( abs(l1 - l2) > 1  or abs(l1 - l3) > 1 ):
-                logger.info('Incompatible lengths stN=%d, stE=%d, stZ=%d' % (l1,l2,l3))
+                logger.info('Skipping %s because the number of data samples differs between channels. Incompatible lengths stN=%d, stE=%d, stZ=%d' % (sn_lId,l1,l2,l3))
                 continue
             else:
                 max_length = min(l1, l2, l3)

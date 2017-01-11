@@ -103,9 +103,9 @@ def PSD_metrics(concierge):
             except Exception as e:
                 logger.debug(e)
                 if str(e).lower().find('no data') > -1:
-                    logger.info('No data for %s' % (av.snclId))
+                    logger.info('No data available for %s' % (av.snclId))
                 else:
-                    logger.warning('No data for %s from %s' % (av.snclId, concierge.dataselect_url))
+                    logger.warning('No data available for %s from %s' % (av.snclId, concierge.dataselect_url))
                 continue
 
             # Run the PSD metric ----------------------------------------

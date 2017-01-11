@@ -81,9 +81,9 @@ def pressureCorrelation_metrics(concierge):
                 r_pStream = concierge.get_dataselect(pAv.network, pAv.station, pAv.location, pAv.channel, starttime, endtime, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.info('No data for %s' % (pAv.snclId))
+                    logger.info('No data available for %s' % (pAv.snclId))
                 else:
-                    logger.warning('No data for %s from %s: %s' % (pAv.snclId, concierge.dataselect_url, e))
+                    logger.warning('No data available for %s from %s: %s' % (pAv.snclId, concierge.dataselect_url, e))
                 continue
 
             # Merge traces -- gracefully go to next in loop if an error reported
@@ -132,9 +132,9 @@ def pressureCorrelation_metrics(concierge):
                         r_stream = concierge.get_dataselect(lAv.network, lAv.station, lAv.location, lAv.channel, starttime, endtime,inclusiveEnd=False)
                     except Exception as e:
                         if str(e).lower().find('no data') > -1:
-                            logger.debug('No data for %s' % (lAv.snclId))
+                            logger.debug('No data available for %s' % (lAv.snclId))
                         else:
-                            logger.warning('No data for %s from %s: %s' % (lAv.snclId, concierge.dataselect_url, e))
+                            logger.warning('No data available for %s from %s: %s' % (lAv.snclId, concierge.dataselect_url, e))
                         continue
                 
                     # Merge traces -- gracefully go to next in loop if an error reported

@@ -82,7 +82,7 @@ def crossCorrelation_metrics(concierge):
 
     for (index, event) in events.iterrows():
 
-        logger.info('%03d Magnitude %3.1f event: %s' % (index, event.magnitude, event.eventLocationName))
+        logger.info('%03d Magnitude %3.1f event: %s %sT%s:%s:%sZ' % (index, event.magnitude, event.eventLocationName, event.time.date, str(event.time.hour).zfill(2), str(event.time.minute).zfill(2), str(event.time.second).zfill(2)))
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
@@ -148,13 +148,18 @@ def crossCorrelation_metrics(concierge):
                 r_stream1 = concierge.get_dataselect(av1.network, av1.station, av1.location, av1.channel, windowStart, windowEnd)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.info('No data found for %s' % (av1.snclId))
+                    logger.info('No data available for %s' % (av1.snclId))
                 else:
-                    logger.warning('No data for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
+                    logger.warning('No data available for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
                 continue
             
-            # No metric calculation possible if SNCL has more than one trace
-            if len(utils.get_slot(r_stream1, 'traces')) > 1 :
+            # No metric calculation possible if SNCL has more than one trace or no traces
+            tracenumber = len(utils.get_slot(r_stream, 'traces'))
+
+            if tracenumber == 0 :
+                logger.info('Skipping %s because it has no data for this event' % (av.snclId))
+                continue
+            elif tracenumber > 1 :
                 logger.info('Skipping %s because it has more than one trace' % (av1.snclId))
                 continue
 
@@ -261,9 +266,9 @@ def crossCorrelation_metrics(concierge):
                     r_stream2 = concierge.get_dataselect(av2.network, av2.station, av2.location, av2.channel, windowStart, windowEnd)
                 except Exception as e:
                     if str(e).lower().find('no data') > -1:
-                        logger.debug('No data for %s' % (av2.snclId))
+                        logger.debug('No data available for %s' % (av2.snclId))
                     else:
-                        logger.warning('No data for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
+                        logger.warning('No data available for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
                     if av2.snclId is lastsncl:
                         testx = 1
                     continue
