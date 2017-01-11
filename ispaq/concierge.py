@@ -455,7 +455,7 @@ class Concierge(object):
                                                                       level="channel")
                 except Exception as e:
                     err_msg = "No sncls matching %s found at %s" % (_sncl_pattern, self.station_url)
-                    self.logger.debug(e)
+                    self.logger.debug(str(e).strip('\n'))
                     self.logger.warning(err_msg)
                     continue
 
@@ -774,9 +774,8 @@ class Concierge(object):
                 r_stream = irisseismic.R_getDataselect(self.dataselect_url, network, station, location, channel, _starttime, _endtime, quality, inclusiveEnd, ignoreEpoch)
                 sys.stderr = orig_stderr
             except Exception as e:
-                err_msg = "Error reading in waveform from %s webservice" % self.dataselect_client
-                self.logger.debug(e)
-                #self.logger.error(err_msg)# change to debug mode since this is annoying
+                err_msg = "Error reading in waveform from FDSN Webservice client (base url: %s)" % self.dataselect_url
+                self.logger.debug(str(e).strip('\n'))
                 self.logger.debug(err_msg)
                 raise
 
@@ -934,7 +933,7 @@ class Concierge(object):
 
             except Exception as e:
                 err_msg = "The event_url: '%s' returns an error" % (self.event_url)
-                self.logger.debug(e)
+                self.logger.debug(str(e).strip('\n'))
                 self.logger.error(err_msg)
                 raise
 
