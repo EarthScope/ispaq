@@ -158,7 +158,7 @@ def SNR_metrics(concierge):
 
             # Run the SNR metric
             if len(r_stream.do_slot('traces')) > 1:
-                logger.info('Skipping %s becuase it has gaps' % (av.snclId)) 
+                logger.info('Skipping %s because it has gaps' % (av.snclId)) 
                 continue
             
             else:
