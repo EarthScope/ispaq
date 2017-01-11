@@ -175,7 +175,7 @@ def crossTalk_metrics(concierge):
             # At this point, each stream in streamList has only one trace
             # and can now be used in the correlation metric.
             
-            logger.debug('Calculating crossTalk metrics for %d streams.' % (len(streamList)))
+            logger.debug('Calculating crossTalk metrics for %d streams' % (len(streamList)))
 
             # 1-2
             l0 = utils.get_slot(streamList[0],'npts')
@@ -185,7 +185,7 @@ def crossTalk_metrics(concierge):
             
             if len(streamList) == 2:
                 if( abs(l0 - l1) > 2):
-                    logger.info('Skipping %s because the number of data samples differs between channels. Incompatible lengths %s=%d, %s=%d' % (sn_lId,c0,c1,c0,l0,c1,l1))
+                    logger.info('Skipping %s because the number of data samples differs between channels. Incompatible lengths %s=%d, %s=%d' % (sn_lId,c0,l0,c1,l1))
                     continue
                 try:
                     df = irismustangmetrics.apply_correlation_metric(streamList[0], streamList[1], 'correlation')
