@@ -205,10 +205,7 @@ def orientationCheck_metrics(concierge):
             if (ZChannel.dip > 0):
                 stZ = irisseismic.multiplyBy(stZ,-1)
         
-            if len(utils.get_slot(stN,'traces')) == 0 or len(utils.get_slot(stE,'traces')) == 0 or len(utils.get_slot(stZ,'traces')) == 0:
-                logger.info('Skipping %s because at least one of the channels has no data available for this event' % (sn_lId))
-                continue
-            elif len(utils.get_slot(stN,'traces')) > 1 or len(utils.get_slot(stE,'traces')) > 1 or len(utils.get_slot(stZ,'traces')) > 1:
+            if len(utils.get_slot(stN,'traces')) > 1 or len(utils.get_slot(stE,'traces')) > 1 or len(utils.get_slot(stZ,'traces')) > 1:
                 logger.info('Skipping %s because it has gaps' % (sn_lId)) 
                 continue
         

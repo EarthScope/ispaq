@@ -157,21 +157,17 @@ def crossTalk_metrics(concierge):
                         logger.warning('No data available for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
                     continue
                 
-                tracenumber = len(utils.get_slot(r_stream, 'traces'))
-                
-                if tracenumber == 0 :
-                    logger.info('Skipping %s because it has no data available for this event' % (av.snclId))
-                elif tracenumber > 1 :
-                    logger.info('Skipping %s because it has more than one trace' % (av.snclId))
+                if len(utils.get_slot(r_stream, 'traces')) > 1 :
+                    logger.info('Skipping %s because it has gaps' % (av.snclId))
                 else:
                     streamList.append(r_stream)
                     
             if len(streamList) == 0:
-                logger.info('Skipping %s because it has no data' % (sn_lId))
+                logger.info('Skipping %s because it has no usable channels' % (sn_lId))
                 continue
                 
             if len(streamList) == 1:
-                logger.info('Skipping %s because it only has data for one channel' % (sn_lId))
+                logger.info('Skipping %s because it only has usable data for one channel' % (sn_lId))
                 continue   
 
             # Run the correlation metrics -----------------------

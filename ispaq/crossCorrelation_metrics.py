@@ -153,14 +153,9 @@ def crossCorrelation_metrics(concierge):
                     logger.warning('No data available for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
                 continue
             
-            # No metric calculation possible if SNCL has more than one trace or no traces
-            tracenumber = len(utils.get_slot(r_stream, 'traces'))
-
-            if tracenumber == 0 :
-                logger.info('Skipping %s because it has no data available for this event' % (av.snclId))
-                continue
-            elif tracenumber > 1 :
-                logger.info('Skipping %s because it has more than one trace' % (av1.snclId))
+            # No metric calculation possible if SNCL has more than one trace 
+            if len(utils.get_slot(r_stream, 'traces')) > 1 :
+                logger.info('Skipping %s because it has gaps' % (av1.snclId))
                 continue
 
             # If metadata indicates reversed polarity (dip>0), invert the amplitudes (met 2016/03/03)
@@ -290,7 +285,7 @@ def crossCorrelation_metrics(concierge):
                 # NOTE:  This check is missing from IRISMustangUtils/R/generateMetrics_crossCorrelation.R
                 # No metric calculation possible if SNCL has more than one trace
                 if len(utils.get_slot(r_stream2, 'traces')) > 1:
-                    logger.debug('Skipping %s because it has more than one trace' % (av2.snclId))
+                    logger.debug('Skipping %s because it has gaps' % (av2.snclId))
                     if av2.snclId is lastsncl:
                         testx = 1
                     continue

@@ -28,6 +28,7 @@ from obspy.clients.fdsn.header import URL_MAPPINGS
 # ISPAQ modules
 from .user_request import UserRequest
 from . import irisseismic
+from . import utils
 
 
 # Custom exceptions
@@ -678,6 +679,10 @@ class Concierge(object):
                         self.logger.error(err_msg)
                         raise
 
+                    if len(utils.get_slot(r_stream, 'traces')) == 0:
+                        raise Exception("no data available") 
+
+
             else:
 		# create tempfile
 		x = tempfile.TemporaryFile()
@@ -754,6 +759,10 @@ class Concierge(object):
                     self.logger.debug(e)
                     self.logger.error(err_msg)
                     raise
+
+                if len(utils.get_slot(r_stream, 'traces')) == 0:
+                        raise Exception("no data available")
+      
 
         else:
             # Read from FDSN web services
