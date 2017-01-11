@@ -255,31 +255,30 @@ path to a directory containing miniSEED files (_See: "Using Local Data Files", b
 
 * *station_url:* should indicate a metadata location as an FDSN web service alias, an explicit URL, or a path 
 to a file containing metadata in [StationXML](http://www.fdsn.org/xml/station/) format 
-([schema](http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd)). For web services, this should be the same entry as _dataselect_url_.
-For local metadata use, StationXML is read at the channel level and instrument response information in the XML is ignored.
-Local response information (if used) is assumed to be in RESP file format and specified in the *resp_dir* entry below.
-If neither webservices or StationXMl is available, the station_url entry can be left blank. In this case, only 
-metrics that do not require metadata information will be calculated.
+([schema](http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd)). For web services, this should be the same entry as 
+_dataselect_url_. For local metadata, StationXML is read at the channel level and any response information is ignored. 
+Local instrument response (if used) is expected to be in RESP file format and specified in the *resp_dir* entry (see below).
+If neither webservices or StationXML is available, the station_url entry should be left unspecified (blank). In this case, metrics that 
+do not require metadata will still be calculated. Metrics that do require metadata information (cross_talk, polarity_check, 
+orientation_check, transfer_function) will not be calculated and will return a log message stating "No available waveforms". 
 
-    If you are starting from a dataless SEED you can create StationXML using the 
+    If you are starting from a dataless SEED, you can create StationXML using the 
 [FDSN StationXML-SEED Converter](https://seiscode.iris.washington.edu/projects/stationxml-converter).
 
 * *event_url:* should indicate an event catalog location as an FDSN web service alias (e.g. USGS), an 
-explicit URL, or a path to a file containing metadata in [QuakeML](https://quake.ethz.ch/quakeml) format 
+explicit URL, or a path to a file containing event information in [QuakeML](https://quake.ethz.ch/quakeml) format 
 ([schema](https://quake.ethz.ch/quakeml/docs/xml?action=AttachFile&do=get&target=QuakeML-BED-1.2.xsd)). 
 _Only web service providers that can output text format can be used at this time._ This entry will 
-only be used by metrics that require event information in order to be processed. These metrics include
-cross_talk, polarity_check, and orientation_check.
+only be used by metrics that require event information in order to be calculated (cross_talk, polarity_check, 
+orientation_check).
 
-* *resp_dir:* should be unspecified or absent if local response files are not used.  The default behavior is to 
-retrieve response information from [IRIS Evalresp](http://service.iris.edu/irisws/evalresp/1/). To make use of 
-local instrument responses, this parameter should indicate a path to a directory containing response files in 
-[RESP](http://ds.iris.edu/ds/nodes/dmc/data/formats/resp/) format. Local response files are expected to be named 
-RESP.network.station.location.channel or RESP.station.network.location.channel 
-(e.g., RESP.IU.CASY.00.BH1 or RESP.CASY.IU.00.BH1). Response information is only needed when generating PSD related metrics 
-or PDF plots.
+* *resp_dir:* should be unspecified or absent if local response files are not used. Response information is only needed 
+when generating PSD derived metrics or PDF plots.The default behavior is to retrieve response information from [IRIS Evalresp](http://service.iris.edu/irisws/evalresp/1/). To make use of local instrument responses, this parameter should 
+indicate a path to a directory containing response files in [RESP](http://ds.iris.edu/ds/nodes/dmc/data/formats/resp/) format. 
+Local response files are expected to be named RESP.network.station.location.channel or RESP.station.network.location.channel 
+(e.g., RESP.IU.CASY.00.BH1 or RESP.CASY.IU.00.BH1). 
 
-    If you are starting from a dataless SEED you can create RESP files using [rdseed](http://ds.iris.edu/ds/nodes/dmc/manuals/rdseed/).
+    If you are starting from a dataless SEED, you can create RESP files using [rdseed](http://ds.iris.edu/ds/nodes/dmc/manuals/rdseed/).
 
 **Preferences** has three entries describing ispaq output.
 
@@ -332,11 +331,12 @@ while the metric set PDF (metric pdf_plot) will generate PDF plot images as:
 
 ### Command line invocation
 
-Example invocations are found  in the ```EXAMPLES``` file. 
+Example invocations are found  in the ```EXAMPLES``` file and at the end of this `README`. 
 
 You can modify the information printed to the console by modifying the ```--log-level```.
 To see detailed progress information use ```--log-level DEBUG```. To hide everything other
-than an outright crash use ```--log-level CRITICAL```.
+than an outright crash use ```--log-level CRITICAL```. If `--log-level` is not invoked, the default is 
+to print information at the `INFO` level. The other available levels are `WARNING` and `ERROR`.
 
 The following example demonstrates what you should see. Note: Please ignore the warning message from matplotlib. 
 It will only occur on first use. 
