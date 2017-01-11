@@ -160,7 +160,7 @@ def crossTalk_metrics(concierge):
                 tracenumber = len(utils.get_slot(r_stream, 'traces'))
                 
                 if tracenumber == 0 :
-                    logger.info('Skipping %s because it has no data for this event' % (av.snclId))
+                    logger.info('Skipping %s because it has no data available for this event' % (av.snclId))
                 elif tracenumber > 1 :
                     logger.info('Skipping %s because it has more than one trace' % (av.snclId))
                 else:
