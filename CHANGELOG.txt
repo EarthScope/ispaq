@@ -1,3 +1,45 @@
+0.7.23
+ * single metrics and stations can now be specified from command line independent of a preference file
+ * adds nearest_sample=FALSE option to py_stream.slice commands
+
+0.7.22
+ * user can now specify http:// address for web services instead of FDSN service provider name
+
+0.7.21
+ * get_dataselect() now correctly handles start-end times that span day boundary for local miniSEED files
+
+0.7.20
+ * added IRISSeismic_1.3.9.tar.gz
+ * updated documentation
+ * fixes bug in get_dataselect() caused by obspy.merge
+
+0.7.19
+ * fixes indentation bug for spikes metric code in simple_metrics.py
+
+0.7.18
+ * get_event() now has filtering capabilities for time, magnitude, depth
+
+0.7.17
+ * transferFunction_metrics now calculate for an hour window from 12:00-13:00 UTC.
+ * various bug fixes
+
+0.7.16
+ * output file names now contain endtime if multiple days are requested
+ * bug fix in handling of start and endtimes that are not at 00:00:00
+
+0.7.14
+ * transfer function and PSD metrics now work with local RESP files.
+ * addition of resp_dir entry to preference file
+ * bug fix for outputting PDF plots only
+ * metrics that are defined as 24 hours will now run in single day loops when --starttime and --endtime are input from run_ispaq.py
+ * improvements in get_availability() and get_dataselect()
+ * PSD metric channel filter changed to '.[HNL].'
+ * file output column names changed to match MUSTANG
+ * get_availability() now filters by station epoch dates.
+ * improved compatibility with all FDSN web services
+ * bug fixes to updater.py
+ * cross correlation metrics now use ObsPy travel times
+
 0.7.13
  * fixed orientation_check reporting value=nan.
  * requires IRISMustangMetrics version 2.0.0 and IRISSeismic version 1.3.5.
