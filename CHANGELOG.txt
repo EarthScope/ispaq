@@ -1,3 +1,44 @@
+0.8.5
+ * exits cleanly if no metrics can be run
+ * PSD metrics now use sample rate from r_stream instead of get_availability()
+ * bug fix for concierge.availability distance selection when latitude and longitude do not exist
+ * additional sanity checks for metadata and station_url
+ * changes in logger levels for some cases, improves messages
+ * improves error checking for event based metrics, concierge.dataselect
+ * additional documentation
+
+0.8.4
+ * checks whether metric available in R package can be run with current ISPAQ version
+ * when using local miniSEED files, will not return flag metrics for flags that do not exist in ObsPy traces
+ * license changed to GNU Lesser General Public License
+ * bug fix for missing station XML
+
+0.8.3
+ * adds -L options to run_ispaq.py, lists available metrics
+
+0.8.2
+ * added checks for correct miniconda environment
+ * adds more checks for preference file data access content, bug fixes when set to 'None'
+ * fixes bug in handling of travel time
+ * improves log messages
+ * additional documentation
+
+0.8.1
+ * additional error handling for invalid metrics
+ * improvements to command line input of non-aliased metrics and stations
+ * additional documentation
+ * reorders columns for PSDText output
+
+0.8.0
+ * changes ispaq-runner.py name to run_ispaq.py
+ * adds quality code to R trace when converting from ObsPy trace
+
+0.7.25
+ * additional checking for missing or invalid preference file content
+
+0.7.24
+ * fix for bug in ispaq.py validating command line  arguments
+
 0.7.23
  * single metrics and stations can now be specified from command line independent of a preference file
  * adds nearest_sample=FALSE option to py_stream.slice commands
