@@ -112,7 +112,7 @@ Now install the IRIS R packages:
 ```
 R CMD INSTALL seismicRoll_1.1.2.tar.gz 
 R CMD INSTALL IRISSeismic_1.3.9.tar.gz
-R CMD INSTALL IRISMustangMetrics_2.0.2.tar.gz 
+R CMD INSTALL IRISMustangMetrics_2.0.3.tar.gz 
 ```
 
 ### Alternative 2 for MacOSX, Linux, or Windows (untested). Creating an environment by hand
@@ -273,7 +273,7 @@ only be used by metrics that require event information in order to be calculated
 orientation_check).
 
 * *resp_dir:* should be unspecified or absent if local response files are not used. Response information is only needed 
-when generating PSD derived metrics or PDF plots.The default behavior is to retrieve response information from [IRIS Evalresp](http://service.iris.edu/irisws/evalresp/1/). To make use of local instrument responses, this parameter should 
+when generating PSD derived metrics or PDF plots. The default behavior is to retrieve response information from [IRIS Evalresp](http://service.iris.edu/irisws/evalresp/1/). To make use of local instrument responses, this parameter should 
 indicate a path to a directory containing response files in [RESP](http://ds.iris.edu/ds/nodes/dmc/data/formats/resp/) format. 
 Local response files are expected to be named RESP.network.station.location.channel or RESP.station.network.location.channel 
 (e.g., RESP.IU.CASY.00.BH1 or RESP.CASY.IU.00.BH1). 
