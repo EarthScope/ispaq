@@ -97,8 +97,7 @@ source activate ispaq
 
 Note: if `source activate ispaq` does not work because your shell is csh/tcsh instead of bash
 you will need to add the ispaq environment to your PATH in the terminal window that you are using.
-e.g., `setenv PATH ~/miniconda2/envs/ispaq/bin:$PATH`
-Use this command instead of, not in addition to, `source activate ispaq`.
+e.g., `setenv PATH ~/miniconda2/envs/ispaq/bin:$PATH`. Use this command instead of, not in addition to, `source activate ispaq`. Do not add it to your permanent $PATH.
 
 See what is installed in our (ispaq) environment with:
 
@@ -137,7 +136,7 @@ conda install -c bioconda rpy2=2.7.8
 
 Note: if `source activate ispaq` does not work because your shell is csh/tcsh instead of bash
 you will need to add the ispaq environment to your PATH in the terminal window that you are using.
-e.g., `setenv PATH ~/miniconda2/envs/ispaq/bin:$PATH`
+e.g., `setenv PATH ~/miniconda2/envs/ispaq/bin:$PATH`. Use this command instead of, not in addition to, `source activate ispaq`. Do not add it to your permanent $PATH.
 
 See what is installed in our (ispaq) environment with:
 
