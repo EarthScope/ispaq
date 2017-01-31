@@ -163,11 +163,11 @@ source activate ispaq</code></pre>
 ...</code></pre>
 <p>Now install the IRIS R packages:</p>
 <pre><code>R CMD INSTALL seismicRoll_1.1.2.tar.gz 
-R CMD INSTALL IRISSeismic_1.3.9.tar.gz
+R CMD INSTALL IRISSeismic_1.4.0.tar.gz
 R CMD INSTALL IRISMustangMetrics_2.0.3.tar.gz </code></pre>
 </div>
-<div id="alternative-2-for-macosx-linux-or-windows-untested.-creating-an-environment-by-hand" class="section level3">
-<h3>Alternative 2 for MacOSX, Linux, or Windows (untested). Creating an environment by hand</h3>
+<div id="alternative-2-for-macosx-linux-or-windows-untested-on-windows.-creating-an-environment-by-hand" class="section level3">
+<h3>Alternative 2 for MacOSX, Linux, or Windows (untested on Windows). Creating an environment by hand</h3>
 <p>This method requires more user input but lets you see what is being installed.</p>
 <pre><code>conda create --name ispaq python=2.7
 source activate ispaq
@@ -188,8 +188,8 @@ conda install -c bioconda rpy2=2.7.8</code></pre>
 ...</code></pre>
 <p>Now install the IRIS R packages:</p>
 <pre><code>R CMD INSTALL seismicRoll_1.1.2.tar.gz 
-R CMD INSTALL IRISSeismic_1.3.9.tar.gz
-R CMD INSTALL IRISMustangMetrics_2.0.2.tar.gz </code></pre>
+R CMD INSTALL IRISSeismic_1.4.0.tar.gz
+R CMD INSTALL IRISMustangMetrics_2.0.3.tar.gz </code></pre>
 </div>
 </div>
 </div>
@@ -287,51 +287,51 @@ as day-long metrics (24 hour windows, see metrics documentation at <a href="http
 </colgroup>
 <thead>
 <tr class="header">
-<th align="left">businessLogic</th>
-<th align="left">ISPAQ script</th>
-<th align="left">metrics</th>
+<th>businessLogic</th>
+<th>ISPAQ script</th>
+<th>metrics</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">simpleMetrics</td>
-<td align="left">simple_metrics.py</td>
-<td align="left">most metrics</td>
+<td>simpleMetrics</td>
+<td>simple_metrics.py</td>
+<td>most metrics</td>
 </tr>
 <tr class="even">
-<td align="left">SNRMetrics</td>
-<td align="left">SNR_metrics.py</td>
-<td align="left">sample_snr</td>
+<td>SNRMetrics</td>
+<td>SNR_metrics.py</td>
+<td>sample_snr</td>
 </tr>
 <tr class="odd">
-<td align="left">PSDMetrics</td>
-<td align="left">PSD_metrics.py</td>
-<td align="left">pct_above_nhnm, pct_below_nlnm, dead_channel_{exp,lin,gsn}</td>
+<td>PSDMetrics</td>
+<td>PSD_metrics.py</td>
+<td>pct_above_nhnm, pct_below_nlnm, dead_channel_{exp,lin,gsn}</td>
 </tr>
 <tr class="even">
-<td align="left">crossTalkMetrics</td>
-<td align="left">crossTalk_metrics.py</td>
-<td align="left">cross_talk</td>
+<td>crossTalkMetrics</td>
+<td>crossTalk_metrics.py</td>
+<td>cross_talk</td>
 </tr>
 <tr class="odd">
-<td align="left">pressureCorrelationMetrics</td>
-<td align="left">pressureCorrelation_metrics.py</td>
-<td align="left">pressure_effects</td>
+<td>pressureCorrelationMetrics</td>
+<td>pressureCorrelation_metrics.py</td>
+<td>pressure_effects</td>
 </tr>
 <tr class="even">
-<td align="left">crossCorrelationMetrics</td>
-<td align="left">crossCorrelation_metrics.py</td>
-<td align="left">polarity_check</td>
+<td>crossCorrelationMetrics</td>
+<td>crossCorrelation_metrics.py</td>
+<td>polarity_check</td>
 </tr>
 <tr class="odd">
-<td align="left">orientationCheckMetrics</td>
-<td align="left">orientationCheck_metrics.py</td>
-<td align="left">orientation_check</td>
+<td>orientationCheckMetrics</td>
+<td>orientationCheck_metrics.py</td>
+<td>orientation_check</td>
 </tr>
 <tr class="even">
-<td align="left">transferMetrics</td>
-<td align="left">transferFunction_metrics.py</td>
-<td align="left">transfer_function</td>
+<td>transferMetrics</td>
+<td>transferFunction_metrics.py</td>
+<td>transfer_function</td>
 </tr>
 </tbody>
 </table>

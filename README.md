@@ -110,11 +110,11 @@ Now install the IRIS R packages:
 
 ```
 R CMD INSTALL seismicRoll_1.1.2.tar.gz 
-R CMD INSTALL IRISSeismic_1.3.9.tar.gz
+R CMD INSTALL IRISSeismic_1.4.0.tar.gz
 R CMD INSTALL IRISMustangMetrics_2.0.3.tar.gz 
 ```
 
-### Alternative 2 for MacOSX, Linux, or Windows (untested). Creating an environment by hand
+### Alternative 2 for MacOSX, Linux, or Windows (untested on Windows). Creating an environment by hand
 
 This method requires more user input but lets you see what is being installed.
 
@@ -149,8 +149,8 @@ Now install the IRIS R packages:
 
 ```
 R CMD INSTALL seismicRoll_1.1.2.tar.gz 
-R CMD INSTALL IRISSeismic_1.3.9.tar.gz
-R CMD INSTALL IRISMustangMetrics_2.0.2.tar.gz 
+R CMD INSTALL IRISSeismic_1.4.0.tar.gz
+R CMD INSTALL IRISMustangMetrics_2.0.3.tar.gz 
 ```
 
 # Using ISPAQ
