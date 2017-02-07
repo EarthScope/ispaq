@@ -368,12 +368,13 @@ is in the previous day file.
 
 If your miniSEED files are not already split on day boundaries, one tool that can be used for this task is the 
 dataselect command line tool available at 
-[seiscode.iris.washington.edu](https://seiscode.iris.washington.edu/projects/dataselect). The following example 
+[https://github.com/iris-edu/dataselect](https://github.com/iris-edu/dataselect). Follow the "releases" link in the README to download the latest version of the source code. The following example 
 reads the input miniSEED files, prunes the data to the sample level, splits the records on day boundaries, 
 and writes to files named network.station.location.channel.year.julianday.quality.
 
 Example: `dataselect -Ps -Sd -A %n.%s.%l.%c.%Y.%j.%q inputfiles`
 
+Note: If your data contains leap seconds ([Leap Second List](https://www.ietf.org/timezones/data/leap-seconds.list)), please read the section titled "Leap Second List File" in the dataselect documentation before pruning your data.
 
 ### List of Metrics
 
