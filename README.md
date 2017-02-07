@@ -368,7 +368,7 @@ is in the previous day file.
 
 If your miniSEED files are not already split on day boundaries, one tool that can be used for this task is the 
 dataselect command line tool available at 
-[https://github.com/iris-edu/dataselect](https://github.com/iris-edu/dataselect). Follow the "releases" link in the README to download the latest version of the source code. The following example 
+[https://github.com/iris-edu/dataselect](https://github.com/iris-edu/dataselect). Follow the [releases](https://github.com/iris-edu/dataselect/releases) link in the README to download the latest version of the source code. The following example 
 reads the input miniSEED files, prunes the data to the sample level, splits the records on day boundaries, 
 and writes to files named network.station.location.channel.year.julianday.quality.
 
