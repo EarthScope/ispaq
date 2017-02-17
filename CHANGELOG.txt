@@ -1,3 +1,6 @@
+0.8.6
+ * typo fix in crossCorrelation.py that was causing it to fail
+
 0.8.5
  * exits cleanly if no metrics can be run
  * PSD metrics now use sample rate from r_stream instead of get_availability()
