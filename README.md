@@ -87,7 +87,6 @@ we assure that our ISPAQ installation is entirely separate from any other instal
 
 
 ### Alternative 1 for MacOSX. Creating an environment from a 'spec' file.
-#### Not currently working, try Alternative 2 below
 
 This method does everything at once.
 
