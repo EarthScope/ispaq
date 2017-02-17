@@ -152,19 +152,23 @@ Whereas the results of MUSTANG calculations are stored in a database, and provid
 <p><a href="https://www.continuum.io/why-anaconda">Anaconda</a> is quickly becoming the <em>defacto</em> package manager for scientific applications written python or R. The following instructions assume that you have installed <a href="http://conda.pydata.org/miniconda.html">Miniconda</a> for your system.</p>
 <p>We will use conda to simplify installation and ensure that all dependencies are installed with compatible verions.</p>
 <p>By setting up a <a href="http://conda.pydata.org/docs/using/envs.html">conda virtual environment</a>, we assure that our ISPAQ installation is entirely separate from any other installed software.</p>
-<div id="alternative-1-for-macosx.-creating-an-environment-from-a-spec-file" class="section level3">
-<h3>Alternative 1 for MacOSX. Creating an environment from a ‘spec’ file</h3>
+<div id="alternative-1-for-macosx.-creating-an-environment-from-a-spec-file." class="section level3">
+<h3>Alternative 1 for MacOSX. Creating an environment from a ‘spec’ file.</h3>
+<div id="not-currently-working-try-alternative-2-below" class="section level4">
+<h4>Not currently working, try Alternative 2 below</h4>
 <p>This method does everything at once.</p>
 <pre><code>conda create -n ispaq --file ispaq-explicit-spec-file.txt
 source activate ispaq</code></pre>
-<p>Note: if <code>source activate ispaq</code> does not work because your shell is csh/tcsh instead of bash you will need to add the ispaq environment to your PATH in the terminal window that you are using. e.g., <code>setenv PATH ~/miniconda2/envs/ispaq/bin:$PATH</code>. Use this command instead of, not in addition to, <code>source activate ispaq</code>. Do not add it to your permanent $PATH.</p>
+<p>Note: if <code>source activate ispaq</code> does not work because your shell is csh/tcsh instead of bash you will need to start a bash shell for installation. Type <code>bash</code> in a terminal window and then proceed with <code>source activate ispaq</code>.</p>
+<p>After everything is installed you can work out of a csh/tcsh window by adding the ispaq environment to your PATH in the terminal window that you are using. e.g., <code>setenv PATH ~/miniconda2/envs/ispaq/bin:$PATH</code>. Use this command instead of, not in addition to, <code>source activate ispaq</code>. Do not add it to your permanent $PATH.</p>
 <p>See what is installed in our (ispaq) environment with:</p>
 <pre><code>conda list
 ...</code></pre>
 <p>Now install the IRIS R packages:</p>
 <pre><code>R CMD INSTALL seismicRoll_1.1.2.tar.gz 
-R CMD INSTALL IRISSeismic_1.4.1.tar.gz
-R CMD INSTALL IRISMustangMetrics_2.0.4.tar.gz </code></pre>
+R CMD INSTALL IRISSeismic_1.3.9.tar.gz
+R CMD INSTALL IRISMustangMetrics_2.0.5.tar.gz </code></pre>
+</div>
 </div>
 <div id="alternative-2-for-macosx-linux-or-windows-untested-on-windows.-creating-an-environment-by-hand" class="section level3">
 <h3>Alternative 2 for MacOSX, Linux, or Windows (untested on Windows). Creating an environment by hand</h3>
@@ -182,14 +186,15 @@ conda install -c r r-quadprog=1.5.5
 conda install -c bioconda r-signal=0.7.6
 conda install -c bioconda r-pracma=1.8.8
 conda install -c bioconda rpy2=2.7.8</code></pre>
-<p>Note: if <code>source activate ispaq</code> does not work because your shell is csh/tcsh instead of bash you will need to add the ispaq environment to your PATH in the terminal window that you are using. e.g., <code>setenv PATH ~/miniconda2/envs/ispaq/bin:$PATH</code>. Use this command instead of, not in addition to, <code>source activate ispaq</code>. Do not add it to your permanent $PATH.</p>
+<p>Note: if <code>source activate ispaq</code> does not work because your shell is csh/tcsh instead of bash you will need to start a bash shell for installation. Type <code>bash</code> in a terminal window and then proceed with <code>source activate ispaq</code>.</p>
+<p>After everything is installed you can work out of a csh/tcsh window by adding the ispaq environment to your PATH in the terminal window that you are using. e.g., <code>setenv PATH ~/miniconda2/envs/ispaq/bin:$PATH</code>. Use this command instead of, not in addition to, <code>source activate ispaq</code>. Do not add it to your permanent $PATH.</p>
 <p>See what is installed in our (ispaq) environment with:</p>
 <pre><code>conda list
 ...</code></pre>
 <p>Now install the IRIS R packages:</p>
 <pre><code>R CMD INSTALL seismicRoll_1.1.2.tar.gz 
-R CMD INSTALL IRISSeismic_1.4.1.tar.gz
-R CMD INSTALL IRISMustangMetrics_2.0.4.tar.gz </code></pre>
+R CMD INSTALL IRISSeismic_1.3.9.tar.gz
+R CMD INSTALL IRISMustangMetrics_2.0.5.tar.gz </code></pre>
 </div>
 </div>
 </div>
@@ -198,7 +203,6 @@ R CMD INSTALL IRISMustangMetrics_2.0.4.tar.gz </code></pre>
 <p>Every time you use ISPAQ you must ensure that you are running in the proper Anaconda environment. If you followed the instructions above you only need to:</p>
 <pre><code>source activate ispaq</code></pre>
 <p>after which your prompt should begin with <code>(ispaq)</code>.</p>
-<p>Note: if you are using a csh/tcsh shell there will be no prompt change.</p>
 <p>A list of command line options is available with the <code>--help</code> flag:</p>
 <pre><code>(ispaq) $ ./run_ispaq.py --help
 usage: run_ispaq.py [-h] [-V] [--starttime STARTTIME] [--endtime ENDTIME]

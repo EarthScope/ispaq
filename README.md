@@ -86,7 +86,8 @@ By setting up a [conda virtual environment](http://conda.pydata.org/docs/using/e
 we assure that our ISPAQ installation is entirely separate from any other installed software.
 
 
-### Alternative 1 for MacOSX. Creating an environment from a 'spec' file
+### Alternative 1 for MacOSX. Creating an environment from a 'spec' file.
+#### Not currently working, try Alternative 2 below
 
 This method does everything at once.
 
@@ -96,8 +97,13 @@ source activate ispaq
 ```
 
 Note: if `source activate ispaq` does not work because your shell is csh/tcsh instead of bash
-you will need to add the ispaq environment to your PATH in the terminal window that you are using.
-e.g., `setenv PATH ~/miniconda2/envs/ispaq/bin:$PATH`. Use this command instead of, not in addition to, `source activate ispaq`. Do not add it to your permanent $PATH.
+you will need to start a bash shell for installation. Type `bash` in a terminal window and then proceed
+with `source activate ispaq`.
+
+
+After everything is installed you can work out of a csh/tcsh window by adding the ispaq environment to your PATH 
+in the terminal window that you are using. e.g., `setenv PATH ~/miniconda2/envs/ispaq/bin:$PATH`. Use this command instead of, 
+not in addition to, `source activate ispaq`. Do not add it to your permanent $PATH.
 
 See what is installed in our (ispaq) environment with:
 
@@ -110,8 +116,8 @@ Now install the IRIS R packages:
 
 ```
 R CMD INSTALL seismicRoll_1.1.2.tar.gz 
-R CMD INSTALL IRISSeismic_1.4.1.tar.gz
-R CMD INSTALL IRISMustangMetrics_2.0.4.tar.gz 
+R CMD INSTALL IRISSeismic_1.3.9.tar.gz
+R CMD INSTALL IRISMustangMetrics_2.0.5.tar.gz 
 ```
 
 ### Alternative 2 for MacOSX, Linux, or Windows (untested on Windows). Creating an environment by hand
@@ -135,8 +141,13 @@ conda install -c bioconda rpy2=2.7.8
 ```
 
 Note: if `source activate ispaq` does not work because your shell is csh/tcsh instead of bash
-you will need to add the ispaq environment to your PATH in the terminal window that you are using.
-e.g., `setenv PATH ~/miniconda2/envs/ispaq/bin:$PATH`. Use this command instead of, not in addition to, `source activate ispaq`. Do not add it to your permanent $PATH.
+you will need to start a bash shell for installation. Type `bash` in a terminal window and then proceed
+with `source activate ispaq`.
+
+
+After everything is installed you can work out of a csh/tcsh window by adding the ispaq environment to your PATH 
+in the terminal window that you are using. e.g., `setenv PATH ~/miniconda2/envs/ispaq/bin:$PATH`. Use this command instead of, 
+not in addition to, `source activate ispaq`. Do not add it to your permanent $PATH.
 
 See what is installed in our (ispaq) environment with:
 
@@ -149,8 +160,8 @@ Now install the IRIS R packages:
 
 ```
 R CMD INSTALL seismicRoll_1.1.2.tar.gz 
-R CMD INSTALL IRISSeismic_1.4.1.tar.gz
-R CMD INSTALL IRISMustangMetrics_2.0.4.tar.gz 
+R CMD INSTALL IRISSeismic_1.3.9.tar.gz
+R CMD INSTALL IRISMustangMetrics_2.0.5.tar.gz 
 ```
 
 # Using ISPAQ
@@ -163,8 +174,6 @@ source activate ispaq
 ```
 
 after which your prompt should begin with ```(ispaq) ```.
-
-Note: if you are using a csh/tcsh shell there will be no prompt change.
 
 A list of command line options is available with the ```--help``` flag:
 
