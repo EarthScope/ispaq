@@ -154,7 +154,7 @@ def crossCorrelation_metrics(concierge):
                 continue
             
             # No metric calculation possible if SNCL has more than one trace 
-            if len(utils.get_slot(r_stream, 'traces')) > 1 :
+            if len(utils.get_slot(r_stream1, 'traces')) > 1 :
                 logger.info('Skipping %s because it has gaps' % (av1.snclId))
                 continue
 
