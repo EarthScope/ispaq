@@ -582,7 +582,7 @@ class Concierge(object):
 
     def get_dataselect(self,
                        network=None, station=None, location=None, channel=None,
-                       starttime=None, endtime=None, quality=None,
+                       starttime=None, endtime=None, quality=None, repository=None,
                        inclusiveEnd=False, ignoreEpoch=False):
         """
         Returns an R Stream that can be passed to metrics calculation methods.
@@ -771,7 +771,7 @@ class Concierge(object):
                 # we want to suppress the stderr channel briefly to block the unwanted feedback from R
                 orig_stderr = sys.stderr
                 sys.stderr = self.dev_null
-                r_stream = irisseismic.R_getDataselect(self.dataselect_url, network, station, location, channel, _starttime, _endtime, quality, inclusiveEnd, ignoreEpoch)
+                r_stream = irisseismic.R_getDataselect(self.dataselect_url, network, station, location, channel, _starttime, _endtime, quality, repository,inclusiveEnd, ignoreEpoch)
                 sys.stderr = orig_stderr
             except Exception as e:
                 err_msg = "Error reading in waveform from FDSN Webservice client (base url: %s)" % self.dataselect_url

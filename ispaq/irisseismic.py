@@ -465,7 +465,7 @@ def getChannel(client_url="http://service.iris.edu",
 
 def R_getDataselect(client_url="http://service.iris.edu",
                     network=None, station=None, location=None, channel=None,
-                    starttime=None, endtime=None, quality=None,
+                    starttime=None, endtime=None, quality=None, repository=None,
                     inclusiveEnd=True, ignoreEpoch=False):
     """
     Obtain an R Stream using the IRISSeismic::getDataselect function.
@@ -476,6 +476,10 @@ def R_getDataselect(client_url="http://service.iris.edu",
     :param channel: sncl channel (string)
     :param starttime: ObsPy UTCDateTime object.
     :param endtime: ObsPy UTCDateTime object.
+    :param quality: miniseed quality code (string)
+    :param reposity: "realtime" or "primary" (string)
+    :param inclusiveEnd: include sample at endtime (logical)
+    :param ignoreEpoch: don't stop for multiple metadata epochs (logical)
     :return: R Stream object
     :return: pandas dataframe of channel metadata.
     """
@@ -485,10 +489,10 @@ def R_getDataselect(client_url="http://service.iris.edu",
     # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    (quality, inclusiveEnd, ignoreEpoch)=_R_args(quality, inclusiveEnd, ignoreEpoch)
+    (quality, repository, inclusiveEnd, ignoreEpoch)=_R_args(quality, repository, inclusiveEnd, ignoreEpoch)
        
     # Call the function and return an R Stream
-    r_stream = _R_getDataselect(r_client, network, station, location, channel, starttime, endtime, quality, inclusiveEnd, ignoreEpoch)
+    r_stream = _R_getDataselect(r_client, network, station, location, channel, starttime, endtime, quality, repository, inclusiveEnd, ignoreEpoch)
     
     return r_stream
 
@@ -635,13 +639,18 @@ def getNetwork(client_url="http://service.iris.edu",
     
     
 def R_getSNCL(client_url="http://service.iris.edu", sncl=None, starttime=None, endtime=None,
-              quality="B"):
+              quality=None, repository=None, inclusiveEnd=True, ignoreEpoch=False):
+
     """
     Obtain an R Stream using the IRISSeismic::getSNCL function.
     :param client_url: FDSN web services site URL
     :param sncl: SNCL (e.g. "US.OXF..BHZ")
     :param starttime: ObsPy UTCDateTime object.
     :param endtime: ObsPy UTCDateTime object.
+    :param quality: miniseed quality code (string)
+    :param reposity: "realtime" or "primary" (string)
+    :param inclusiveEnd: include sample at endtime (logical)
+    :param ignoreEpoch: don't stop for multiple metadata epochs (logical)
     :return: R Stream object
     """
     cmd = 'new("IrisClient", site="' + client_url + '")'
@@ -650,9 +659,10 @@ def R_getSNCL(client_url="http://service.iris.edu", sncl=None, starttime=None, e
     # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
+    (quality, repository, inclusiveEnd, ignoreEpoch)=_R_args(quality, repository, inclusiveEnd, ignoreEpoch)
         
     # Call the function and return a pandas dataframe with the results
-    r_stream = _R_getSNCL(r_client, sncl, starttime, endtime, quality)
+    r_stream = _R_getSNCL(r_client, sncl, starttime, endtime)
     return r_stream
     
     
