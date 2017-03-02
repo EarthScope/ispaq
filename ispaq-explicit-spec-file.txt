@@ -23,7 +23,7 @@ https://conda.anaconda.org/conda-forge/osx-64/matplotlib-1.5.2-np111py27_4.tar.b
 https://repo.continuum.io/pkgs/free/osx-64/mkl-11.3.3-0.tar.bz2
 https://conda.anaconda.org/conda-forge/osx-64/ncurses-5.9-8.tar.bz2
 https://repo.continuum.io/pkgs/free/osx-64/numpy-1.11.1-py27_0.tar.bz2
-https://conda.anaconda.org/conda-forge/osx-64/obspy-1.0.2-py27_0.tar.bz2
+https://conda.anaconda.org/conda-forge/osx-64/obspy-1.0.3-py27_0.tar.bz2
 https://repo.continuum.io/pkgs/free/osx-64/openssl-1.0.2h-2.tar.bz2
 https://repo.continuum.io/pkgs/free/osx-64/pandas-0.18.1-np111py27_0.tar.bz2
 https://repo.continuum.io/pkgs/free/osx-64/pcre-8.39-0.tar.bz2

@@ -557,7 +557,7 @@ def getEvalresp(network=None, station=None, location=None, channel=None,
     return df
     
     
-def getEvent(client_url="http://earthquake.usgs.gov", starttime=None, endtime=None,
+def getEvent(client_url="https://earthquake.usgs.gov", starttime=None, endtime=None,
              minmag=None, maxmag=None, magtype=None,
              mindepth=None, maxdepth=None):
     """

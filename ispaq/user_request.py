@@ -36,7 +36,7 @@ class UserRequest(object):
      * requested_sncl_set -- alias for a list of SNCLs in the preferences file
      * metric_sets -- dictionary of available metric sets
      * sncl_sets -- dictionary of available sncl sets
-     * event_url -- resource to use for event meatadata
+     * event_url -- resource to use for event metadata
      * station_url -- resource to use for station metadata
      * dataselect_url -- resource to use for seismic data
 
@@ -82,7 +82,7 @@ class UserRequest(object):
             self.metrics = ['sample_min', 'sample_rms']
             self.sncls = ['US.OXF..BH?']
             # Data access information from the preferences file
-            self.event_url = "IRIS"
+            self.event_url = "USGS"
             self.station_url = "IRIS"
             self.dataselect_url = "IRIS"
             # Metric functions determined by querying the R package
@@ -244,6 +244,7 @@ class UserRequest(object):
 
             self.dataselect_url = data_access['dataselect_url']
             self.event_url = data_access['event_url']
+
             self.station_url = data_access['station_url']
 
             #     Additional metadata for local access   ----------------------

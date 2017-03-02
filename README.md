@@ -110,7 +110,7 @@ Now install the IRIS R packages:
 
 ```
 R CMD INSTALL seismicRoll_1.1.2.tar.gz 
-R CMD INSTALL IRISSeismic_1.4.1.tar.gz
+R CMD INSTALL IRISSeismic_1.4.3.tar.gz
 R CMD INSTALL IRISMustangMetrics_2.0.5.tar.gz 
 ```
 
@@ -122,7 +122,7 @@ This method requires more user input but lets you see what is being installed.
 conda create --name ispaq python=2.7
 source activate ispaq
 conda install pandas=0.18.1
-conda install -c conda-forge obspy=1.0.2
+conda install -c conda-forge obspy=1.0.3
 conda install -c r r=3.2.2
 conda install -c r r-devtools=1.9.1
 conda install -c r r-rcurl=1.95_4.7
@@ -149,7 +149,7 @@ Now install the IRIS R packages:
 
 ```
 R CMD INSTALL seismicRoll_1.1.2.tar.gz 
-R CMD INSTALL IRISSeismic_1.4.1.tar.gz
+R CMD INSTALL IRISSeismic_1.4.3.tar.gz
 R CMD INSTALL IRISMustangMetrics_2.0.5.tar.gz 
 ```
 

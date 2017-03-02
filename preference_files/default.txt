@@ -102,7 +102,7 @@ Station_SNCLs:
 Data_Access:
   dataselect_url: IRIS
   station_url: IRIS
-  event_url: USGS   
+  event_url: IRIS
   resp_dir:
   
 

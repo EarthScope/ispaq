@@ -1,3 +1,7 @@
+0.8.8
+ * fixed bug whwen specifying FDSN webservices url that begins with https
+ * when USGS is specified as event_url, bypass ObsPy URL_MAPPINGS and map to https:/earthquake.usgs.gov
+
 0.8.7
  * adds repository argument to get_dataselect, to work with IRISSeismic_1.4.1.tar.gz
  * not backwards compatible with IRISSeismic versions < 1.4.0

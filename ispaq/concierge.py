@@ -100,7 +100,7 @@ class Concierge(object):
             # Get data from FDSN dataselect service
             self.dataselect_url = URL_MAPPINGS[user_request.dataselect_url]
             self.dataselect_client = Client(user_request.dataselect_url)
-        elif ("http://" or "https://") in user_request.dataselect_url:
+        elif "http://" in user_request.dataselect_url or "https://" in user_request.dataselect_url:
             self.dataselect_url = user_request.dataselect_url
             self.dataselect_client = Client(user_request.dataselect_url)
         else:
@@ -117,10 +117,13 @@ class Concierge(object):
         if user_request.event_url is None:
             self.event_url = None  # no event service or xml, some metrics cannot be run
             self.event_client = None
+        elif user_request.event_url == "USGS":
+            self.event_url = "https://earthquake.usgs.gov"
+            self.event_client = Client(user_request.event_url)
         elif user_request.event_url in URL_MAPPINGS.keys():
             self.event_url = URL_MAPPINGS[user_request.event_url]
             self.event_client = Client(user_request.event_url)
-        elif ("http://" or "https://") in user_request.event_url:
+        elif "http://" in user_request.event_url or "https://" in user_request.event_url:
             self.event_url = user_request.event_url
             self.event_client = Client(user_request.event_url)
         else:
@@ -140,7 +143,7 @@ class Concierge(object):
         elif user_request.station_url in URL_MAPPINGS.keys():
             self.station_url = URL_MAPPINGS[user_request.station_url]
             self.station_client = Client(user_request.station_url)
-        elif ("http://" or "https://") in user_request.station_url:
+        elif "http://" in user_request.station_url or "https://" in user_request.station_url:
             self.station_url = user_request.station_url
             self.station_client = Client(user_request.station_url)
         else:
@@ -206,7 +209,7 @@ class Concierge(object):
         By default, information in the `user_request` is used to generate
         a FDSN webservices request for station data. Where arguments are
         provided, these are used to override the information found in
-        `user_request.
+        `user_request`.
 
         :type network: str
         :param network: Select one or more network codes. Can be SEED network
@@ -794,13 +797,13 @@ class Concierge(object):
         ################################################################################
         # getEvent method returns seismic event data from the event webservice:
         #
-        #   http://earthquake.usgs.gov/fdsnws/event/1/
+        #   https://earthquake.usgs.gov/fdsnws/event/1/
         #
         # TODO:  The getEvent method could be fleshed out with a more complete list
         # TODO:  of arguments to be used as ws-event parameters.
         ################################################################################
         
-        # http://service.iris.edu/fdsnws/event/1/query?starttime=2013-02-01T00:00:00&endtime=2013-02-02T00:00:00&minmag=5&format=text
+        # https://service.iris.edu/fdsnws/event/1/query?starttime=2013-02-01T00:00:00&endtime=2013-02-02T00:00:00&minmag=5&format=text
         #
         # #EventID | Time | Latitude | Longitude | Depth | Author | Catalog | Contributor | ContributorID | MagType | Magnitude | MagAuthor | EventLocationName
         # 4075900|2013-02-01T22:18:33|-11.12|165.378|10.0|NEIC|NEIC PDE|NEIC PDE-Q||MW|6.4|GCMT|SANTA CRUZ ISLANDS
@@ -865,7 +868,6 @@ class Concierge(object):
         else:
             _endtime = endtime
 
-
         if self.event_client is None:
             # Read local QuakeML file
             try:
@@ -921,9 +923,9 @@ class Concierge(object):
 
         else:
             # Read from FDSN web services
-            # TODO:  Need to make sure irisseismic.getEvent uses any FDSN site
             try:
-                events = irisseismic.getEvent(starttime=_starttime,
+                events = irisseismic.getEvent(self.event_url,
+                                              starttime=_starttime,
                                               endtime=_endtime,
                                               minmag=minmag,
                                               maxmag=maxmag,
