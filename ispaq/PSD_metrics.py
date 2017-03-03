@@ -11,7 +11,7 @@ ISPAQ Business Logic for PSD Metrics.
 from __future__ import (absolute_import, division, print_function)
 
 import os
-
+import math
 import pandas as pd
 
 from obspy import UTCDateTime
@@ -40,7 +40,7 @@ def PSD_metrics(concierge):
     logger = concierge.logger
     
     # Default parameters 
-    channelFilter = '.[HNL].' 
+    channelFilter = '.[HNLXY].' 
 
     # Container for all of the metrics dataframes generated
     dataframes = []
@@ -173,6 +173,10 @@ def PSD_metrics(concierge):
                     evalresp = None
                     if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
                         logger.debug("Accessing local RESP file...")
+                        if(math.isnan(av.samplerate)):
+                            logger.error("No sample rate found for %s", av.snclId)
+                            logger.warning('"PSD" metric calculation failed for %s' % (av.snclId))
+                            continue
                         evalresp = utils.getSpectra(r_stream, av.samplerate, concierge.resp_dir)
                     status = irismustangmetrics.apply_PSD_plot(r_stream, filepath, evalresp=evalresp)
                     logger.info('Writing PDF plot %s.' % os.path.basename(filepath))
