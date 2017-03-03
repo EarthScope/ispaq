@@ -229,6 +229,9 @@ def getSpectra(st, sampling_rate, respDir=None):
     if sampling_rate is None:
        raise Exception("no sampling_rate was passed to getSpectra")
 
+    if (math.isnan(sampling_rate)):
+       raise Exception("no sampling_rate was passed to getSpectra")   
+
     # Min and Max frequencies for evalresp will be those used for the cross spectral binning
     alignFreq = 0.1
 
