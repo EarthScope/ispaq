@@ -3,7 +3,7 @@
 # Preferences fall into four categories:
 #  * Metrics -- aliases for user defined combinations of metrics
 #  * Station_SNCLs -- aliases for user defined combinations of SNCL patterns
-#                     SNCL patterns are station names formatted as network.station.location.channel
+#                     SNCL patterns are station names formatted as Network.Station.Location.Channel
 #                     wildcards * and ? are allowed (*.*.*.*)
 #  * Data_Access -- FDSN web services or local files
 #  * Preferences -- additional user preferences

@@ -174,7 +174,7 @@ def PSD_metrics(concierge):
                     if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
                         logger.debug("Accessing local RESP file...")
                         if(math.isnan(av.samplerate)):
-                            logger.error("No sample rate found for %s", av.snclId)
+                            logger.error("No metadata sample rate found for %s", av.snclId)
                             logger.warning('"PSD" metric calculation failed for %s' % (av.snclId))
                             continue
                         evalresp = utils.getSpectra(r_stream, av.samplerate, concierge.resp_dir)

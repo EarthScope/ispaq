@@ -225,7 +225,7 @@ with the following comments in the header:
 # Preferences fall into four categories:
 #  * Metrics -- aliases for user defined combinations of metrics (Use with -M)
 #  * Station_SNCLs -- aliases for user defined combinations of SNCL patterns (Use with -S)
-#                     SNCL patterns are station names formatted as network.station.location.channel
+#                     SNCL patterns are station names formatted as Network.Station.Location.Channel
 #                     wildcards * and ? are allowed (*.*.*.*)
 #  * Data_Access -- FDSN web services or local files
 #  * Preferences -- additional user preferences
@@ -240,9 +240,9 @@ where *metric* can be a single metric name or a comma separated list of valid me
 combinations of other aliases. 
 Example, "myMetrics: num_gaps, sample_mean, cross_talk".
 
-**Station_SNCL** aliases are user created *alias: network.station.location.channel* combinations. Station SNCLs 
-can be comma separated lists. \* or ? wildcards can be used in any of the network, station, location, channel 
-elements. Example, "myStations: IU.\*.00.BH?, IU.ANMO.\*.?HZ, II.PFO.??.\*".
+**Station_SNCL** aliases are user created *alias: Network.Station.Location.Channel* combinations. Station SNCLs 
+can be comma separated lists. \* or ? wildcards can be used in any of the network, station, location, channel elements. 
+Aliases must be formatted as Network.Station.Location.Channel; other combinations such as Station.Network.Location.Channel are not supported in ISPAQ. Example, "myStations: IU.\*.00.BH?, IU.ANMO.\*.?HZ, II.PFO.??.\*".
 
 **Data_Access** has four entries describing where to find data, metadata, events, and optionally response files.
 
@@ -356,7 +356,7 @@ It will only occur on first use.
 ### Using Local Data Files
 
 Local data files should be in miniSEED format and organized in station-channel-day files 
-with naming convention network.station.channel.year.julianday.quality where quality is optional 
+with naming convention Network.Station.Channel.Year.Julianday.Quality where quality is optional 
 (e.g., TA.P19K..BHZ.2016.214.M or TA.P19K..BHZ.2016.214). The files should all exist in the same directory.
 
 Note: All data is expected to be in the day file that matches its timestamp; if records do not break on the 
