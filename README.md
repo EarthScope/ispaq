@@ -241,8 +241,7 @@ combinations of other aliases.
 Example, "myMetrics: num_gaps, sample_mean, cross_talk".
 
 **Station_SNCL** aliases are user created *alias: Network.Station.Location.Channel* combinations. Station SNCLs 
-can be comma separated lists. \* or ? wildcards can be used in any of the network, station, location, channel elements. 
-Aliases must be formatted as Network.Station.Location.Channel; other combinations such as Station.Network.Location.Channel are not supported in ISPAQ. Example, "myStations: IU.\*.00.BH?, IU.ANMO.\*.?HZ, II.PFO.??.\*".
+can be comma separated lists. \* or ? wildcards can be used in any of the network, station, location, channel elements. Example, "myStations: IU.ANMO.10.BHZ, IU.\*.00.BH?, IU.ANMO.\*.?HZ, II.PFO.??.\*". Aliases must be formatted as Network.Station.Location.Channel (however, if you instead use a Station.Network.Location.Channel format and your local miniSEED has file names matching that format, then most metrics will run with the exception of metrics that require metadata).
 
 **Data_Access** has four entries describing where to find data, metadata, events, and optionally response files.
 
@@ -355,9 +354,9 @@ It will only occur on first use.
 
 ### Using Local Data Files
 
-Local data files should be in miniSEED format and organized in station-channel-day files 
+Local data files should be in miniSEED format and organized in network-station-channel-day files 
 with naming convention Network.Station.Channel.Year.Julianday.Quality where quality is optional 
-(e.g., TA.P19K..BHZ.2016.214.M or TA.P19K..BHZ.2016.214). The files should all exist in the same directory.
+(e.g., TA.P19K..BHZ.2016.214.M or TA.P19K..BHZ.2016.214). The miniSEED files should all exist in the same directory.
 
 Note: All data is expected to be in the day file that matches its timestamp; if records do not break on the 
 day boundary, data that is not in the correct day file will not be used in the metrics calculation. This can 
@@ -367,12 +366,12 @@ is in the previous day file.
 If your miniSEED files are not already split on day boundaries, one tool that can be used for this task is the 
 dataselect command line tool available at 
 [https://github.com/iris-edu/dataselect](https://github.com/iris-edu/dataselect). Follow the [releases](https://github.com/iris-edu/dataselect/releases) link in the README to download the latest version of the source code. The following example 
-reads the input miniSEED files, prunes the data to the sample level, splits the records on day boundaries, 
+reads the input miniSEED files, prunes the data to the sample level (removes overlaps), splits the records on day boundaries, 
 and writes to files named network.station.location.channel.year.julianday.quality.
 
 Example: `dataselect -Ps -Sd -A %n.%s.%l.%c.%Y.%j.%q inputfiles`
 
-Note: If your data contains leap seconds ([Leap Second List](https://www.ietf.org/timezones/data/leap-seconds.list)), please read the section titled "Leap Second List File" in the dataselect documentation before pruning your data.
+Note: If you decide to prune your data using dataselect and it contains leap seconds ([Leap Second List](https://www.ietf.org/timezones/data/leap-seconds.list)), please read the section titled "Leap Second List File" in the dataselect documentation.
 
 ### List of Metrics
 

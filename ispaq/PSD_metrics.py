@@ -173,11 +173,8 @@ def PSD_metrics(concierge):
                     evalresp = None
                     if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
                         logger.debug("Accessing local RESP file...")
-                        if(math.isnan(av.samplerate)):
-                            logger.error("No metadata sample rate found for %s", av.snclId)
-                            logger.warning('"PSD" metric calculation failed for %s' % (av.snclId))
-                            continue
-                        evalresp = utils.getSpectra(r_stream, av.samplerate, concierge.resp_dir)
+                        sampling_rate = utils.get_slot(r_stream, 'sampling_rate')
+                        evalresp = utils.getSpectra(r_stream, sampling_rate, concierge.resp_dir)
                     status = irismustangmetrics.apply_PSD_plot(r_stream, filepath, evalresp=evalresp)
                     logger.info('Writing PDF plot %s.' % os.path.basename(filepath))
                 except Exception as e:

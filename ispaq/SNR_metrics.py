@@ -84,6 +84,7 @@ def SNR_metrics(concierge):
             availability = concierge.get_availability(starttime=halfHourStart, endtime=halfHourEnd,
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=0, maxradius=maxradius)
+
         except NoAvailableDataError as e:
             logger.info('Skipping event with no available data')
             continue
