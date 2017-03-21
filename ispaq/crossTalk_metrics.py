@@ -23,6 +23,9 @@ from . import irisseismic
 from . import irismustangmetrics
 
 pd.options.mode.chained_assignment = None
+# chained_assignment added to skip "SettingWithCopyWarning: 
+# A value is trying to be set on a copy of a slice from a DataFrame."
+# for line 126: availability.loc[:,'sn_lId'] = sn_lIds 
 
 def crossTalk_metrics(concierge):
     """

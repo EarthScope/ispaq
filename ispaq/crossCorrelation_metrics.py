@@ -203,6 +203,8 @@ def crossCorrelation_metrics(concierge):
             stationMask = availability2.station != av1.station
 
             # Sample rate compatibility, sample rates must be  multiples of each other  (assumes sample rate >= 1, pracma::rem requires integer values)
+            # FutureWarning: in the future, np.full(3, 40) will return an array of dtype('int64')
+
             a = availability2.samplerate.apply(lambda x: int(x))
             b = pd.Series(np.full(len(a),int(av1.samplerate)))
             sampleRateMask = (a >= np.ones(len(a))) & ( (a % b == 0) | (b % a == 0) )
