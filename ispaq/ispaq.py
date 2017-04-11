@@ -13,7 +13,7 @@ import argparse
 import datetime
 import logging
 
-__version__ = "0.8.9"
+__version__ = "0.9.0"
 
 # dictionary of currently defined ISPAQ metric groups and business logic
 # for comparison with R package IRISMustangMetrics/ISPAQUtils.R json
@@ -46,16 +46,24 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__.strip())
     parser.add_argument('-V', '--version', action='version',
                         version='%(prog)s ' + __version__)
+    parser.add_argument('-P', '--preferences-file', default=os.path.expanduser('./preference_files/default.txt'),
+                        type=argparse.FileType('r'), help='path to preference file')
+    parser.add_argument('-M', '--metrics', required=False,
+                        help='metric alias as defined in preference file, or metric name')
+    parser.add_argument('-S', '--stations', action='store', required=False,
+                        help='stations alias as defined in preference file, or station SNCL')
     parser.add_argument('--starttime', action='store', required=False,
                         help='starttime in ISO 8601 format')
     parser.add_argument('--endtime', action='store', required=False,
                         help='endtime in ISO 8601 format')
-    parser.add_argument('-M', '--metrics', required=False,
-                        help='metric alias, defined in preference file')
-    parser.add_argument('-S', '--stations', action='store', required=False,
-                        help='stations alias, defined in preference file')
-    parser.add_argument('-P', '--preferences-file', default=os.path.expanduser('./preference_files/default.txt'),
-                        type=argparse.FileType('r'), help='path to preference file')
+    parser.add_argument('--dataselect_url', required=False,
+                        help='override preference file entry, FDSN webservice or path to directory with miniSEED files')
+    parser.add_argument('--station_url', required=False,
+                        help='override preference file entry, FDSN webservice or path to stationXML file')
+    parser.add_argument('--event_url', required=False,
+                        help='override preference file entry, FDSN webservice or path to QuakeML file')
+    parser.add_argument('--resp_dir', required=False,
+                        help='override preference file entry, path to directory with RESP files')
     parser.add_argument('--log-level', action='store', default='INFO',
                         choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],
                         help='log level printed to console')

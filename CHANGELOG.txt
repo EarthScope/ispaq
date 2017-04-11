@@ -1,3 +1,12 @@
+0.9.0
+ * additional error handling
+ * added optional arguments dataselect_url, station_url, event_url that override preference file entries
+ * added sncl_format entry to preferences file. Specifies which order of network, station, location, channel
+   to use when looking for miniSEED files and station aliases.
+ * bug fixes for crashes when internet connection not available
+ * when output directory does not exist, defaults to current directory 
+ * searches for miniSEED files down directory structure
+
 0.8.8
  * fixed bug whwen specifying FDSN webservices url that begins with https
  * when USGS is specified as event_url, bypass ObsPy URL_MAPPINGS and map to https:/earthquake.usgs.gov

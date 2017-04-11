@@ -110,8 +110,8 @@ Now install the IRIS R packages:
 
 ```
 R CMD INSTALL seismicRoll_1.1.2.tar.gz 
-R CMD INSTALL IRISSeismic_1.4.3.tar.gz
-R CMD INSTALL IRISMustangMetrics_2.0.5.tar.gz 
+R CMD INSTALL IRISSeismic_1.4.5.tar.gz
+R CMD INSTALL IRISMustangMetrics_2.0.7.tar.gz 
 ```
 
 ### Alternative 2 for MacOSX, Linux, or Windows (untested on Windows). Creating an environment by hand
@@ -149,8 +149,8 @@ Now install the IRIS R packages:
 
 ```
 R CMD INSTALL seismicRoll_1.1.2.tar.gz 
-R CMD INSTALL IRISSeismic_1.4.3.tar.gz
-R CMD INSTALL IRISMustangMetrics_2.0.5.tar.gz 
+R CMD INSTALL IRISSeismic_1.4.5.tar.gz
+R CMD INSTALL IRISMustangMetrics_2.0.7.tar.gz 
 ```
 
 # Using ISPAQ
@@ -200,7 +200,7 @@ For those that prefer to run ISPAQ as a package, you can use the following invoc
 (ispaq) $ python -m ispaq.ispaq --help
 ````
 
-When calculating metrics, valid arguments for -M, -S, and --starttime must be provided. 
+When calculating metrics, valid arguments for -M, -S, and --starttime are required and must be provided.
 If -P is not provided, ISPAQ uses the default preference file located at ispaq/preference_files/default.txt.
 If --log-level is not specified, the default log-level is INFO.
 
@@ -251,8 +251,8 @@ path to a directory containing miniSEED files (_See: "Using Local Data Files", b
 
 * *station_url:* should indicate a metadata location as an FDSN web service alias, an explicit URL, or a path 
 to a file containing metadata in [StationXML](http://www.fdsn.org/xml/station/) format 
-([schema](http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd)). For web services, this should be the same entry as 
-_dataselect_url_. For local metadata, StationXML is read at the channel level and any response information is ignored. 
+([schema](http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd)). For web services, this should point to the same place as 
+_dataselect_url_ (for explicit URLs, this should be the station service interface from the same origin as the dataselect interface). For local metadata, StationXML is read at the channel level and any response information is ignored. 
 Local instrument response (if used) is expected to be in RESP file format and specified in the *resp_dir* entry (see below).
 If neither webservices or StationXML is available, the station_url entry should be left unspecified (blank). In this case, metrics that 
 do not require metadata will still be calculated. Metrics that do require metadata information (cross_talk, polarity_check, 
@@ -271,8 +271,8 @@ orientation_check).
 * *resp_dir:* should be unspecified or absent if local response files are not used. Response information is only needed 
 when generating PSD derived metrics or PDF plots. The default behavior is to retrieve response information from [IRIS Evalresp](http://service.iris.edu/irisws/evalresp/1/). To make use of local instrument responses, this parameter should 
 indicate a path to a directory containing response files in [RESP](http://ds.iris.edu/ds/nodes/dmc/data/formats/resp/) format. 
-Local response files are expected to be named RESP.network.station.location.channel or RESP.station.network.location.channel 
-(e.g., RESP.IU.CASY.00.BH1 or RESP.CASY.IU.00.BH1). 
+Local response files are expected to be named 'RESP.network.station.location.channel' or 'RESP.station.network.location.channel'.
+Filenames with extension '.txt' are also acceptable. E.g., RESP.IU.CASY.00.BH1, RESP.CASY.IU.00.BH1, RESP.IU.CASY.00.BH1.txt. 
 
     If you are starting from a dataless SEED, you can create RESP files using [rdseed](http://ds.iris.edu/ds/nodes/dmc/manuals/rdseed/).
 
@@ -355,7 +355,7 @@ It will only occur on first use.
 ### Using Local Data Files
 
 Local data files should be in miniSEED format and organized in network-station-channel-day files 
-with naming convention Network.Station.Channel.Year.Julianday.Quality where quality is optional 
+with naming convention Network.Station.Location.Channel.Year.JulianDay.Quality where quality is optional 
 (e.g., TA.P19K..BHZ.2016.214.M or TA.P19K..BHZ.2016.214). The miniSEED files should all exist in the same directory.
 
 Note: All data is expected to be in the day file that matches its timestamp; if records do not break on the 
@@ -605,12 +605,12 @@ sensors. [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/tra
 Note: not specifying `-P` in the command line is the same as specifying `-P preference_files/default.txt`
 
 ```
-run_ispaq.py -M basicStats -S basicStats --starttime 2010-04-20
-run_ispaq.py -M gaps -S gaps --starttime 2013-01-05 --endtime 2013-01-08
-run_ispaq.py -M spikes -S spikes --starttime 2013-01-03
-run_ispaq.py -M STALTA -S STALTA --starttime 2013-06-02
+run_ispaq.py -M basicStats -S basicStats --starttime 2010-100              # starttime specified as julian day
+run_ispaq.py -M gaps -S gaps --starttime 2013-01-05                        # starttime specified as calendar day
+run_ispaq.py -M spikes -S spikes --starttime 2013-01-03 --endtime 2013-01-08
+run_ispaq.py -M STALTA -S STALTA --starttime 2013-153
 run_ispaq.py -M SNR -S SNR --starttime 2013-06-02
-run_ispaq.py -M PSD -S PSD --starttime 2011-05-18
+run_ispaq.py -M PSD -S PSD --starttime 2011-138 --endtime 2011-140
 run_ispaq.py -M PSDText -S PSD --starttime 2011-05-18 
 run_ispaq.py -M PDF -S PDF --starttime 2013-06-01
 run_ispaq.py -M crossTalk -S crossTalk --starttime 2013-09-21

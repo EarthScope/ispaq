@@ -38,8 +38,7 @@ def SNR_metrics(concierge):
     # Get the logger from the concierge
     logger = concierge.logger
         
-    # Default parameters from IRISMustangUtils::generateMetrics_SNR
-    channelFilter = '[BH]H.'
+    channelFilter = '[BHLMCDSE][HPLX].'
     minmag = 5.5
     maxradius = 180
     windowSecs = 60

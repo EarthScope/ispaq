@@ -14,6 +14,7 @@ import os
 import math
 import pandas as pd
 
+from obspy.clients.fdsn import Client
 from obspy import UTCDateTime
 
 from .concierge import NoAvailableDataError
@@ -40,13 +41,20 @@ def PSD_metrics(concierge):
     logger = concierge.logger
     
     # Default parameters 
-    channelFilter = '.[HNLXY].' 
+    #channelFilter = '.[DHLNPXY].' 
+    channelFilter = '...'
 
     # Container for all of the metrics dataframes generated
     dataframes = []
 
     if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
         logger.info("Searching for response files in '%s'" % concierge.resp_dir)
+    else:                   # try to connect to irisws/evalresp
+        try:
+            resp_url = Client("IRIS")
+        except Exception as e:
+            logger.error("Could not connect to 'http:/service.iris.edu/evalresp'")
+            return None
 
     # ----- All available SNCLs -------------------------------------------------
 
@@ -115,7 +123,7 @@ def PSD_metrics(concierge):
                     evalresp = None
                     if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
                         sampling_rate = utils.get_slot(r_stream, 'sampling_rate')
-                        evalresp = utils.getSpectra(r_stream, sampling_rate, concierge.resp_dir)
+                        evalresp = utils.getSpectra(r_stream, sampling_rate, concierge)
 
                     # get corrected PSDs
                     logger.debug("apply_PSD_metric...")
@@ -172,9 +180,8 @@ def PSD_metrics(concierge):
                     filepath = concierge.plot_output_dir + '/' + filename
                     evalresp = None
                     if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
-                        logger.debug("Accessing local RESP file...")
                         sampling_rate = utils.get_slot(r_stream, 'sampling_rate')
-                        evalresp = utils.getSpectra(r_stream, sampling_rate, concierge.resp_dir)
+                        evalresp = utils.getSpectra(r_stream, sampling_rate, concierge)
                     status = irismustangmetrics.apply_PSD_plot(r_stream, filepath, evalresp=evalresp)
                     logger.info('Writing PDF plot %s.' % os.path.basename(filepath))
                 except Exception as e:

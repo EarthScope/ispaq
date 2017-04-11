@@ -96,7 +96,8 @@ class UserRequest(object):
                                                                 'streamCount': 1}}}
             self.preferences = {'plot_output_dir': '.',
                                 'csv_output_dir': '.',
-                                'sigfigs': 6}
+                                'sigfigs': 6,
+                                'sncl_format': 'N.S.L.C'}
 
         #     Initialize from JSON     ----------------------------------------
         
@@ -129,19 +130,28 @@ class UserRequest(object):
             if 'resp_dir' in json_dict:
                 self.resp_dir = json_dict['resp_dir'] 
 
+            if 'sncl_format' in json_dict:
+                self.sncl_format = json_dict['sncl_format']
+
         #     Initialize from arguments       ---------------------------------
 
         else:
             # start and end times
             self.requested_starttime = UTCDateTime(args.starttime)
             if args.endtime is None:
-                self.requested_endtime = self.requested_starttime + (24 * 60 * 60)
+                self.requested_endtime = self.requested_starttime + (24*60*60)
             else:
                 self.requested_endtime = UTCDateTime(args.endtime)
 
             # metric and sncl sets
             self.requested_metric_set = args.metrics
             self.requested_sncl_set = args.stations
+
+            # url entries
+            self.station_url = args.station_url
+            self.dataselect_url = args.dataselect_url
+            self.event_url = args.event_url
+            self.resp_dir = args.resp_dir
 
             #     Load preferences from file      -----------------------------
 
@@ -205,19 +215,19 @@ class UserRequest(object):
             #logger.debug('Check for missing URL values')
 
             if "dataselect_url" not in data_access.keys():
-                logger.critical("preference file is missing Data_Access: dataselect_url entry.")
+                logger.critical("Preference file is missing Data_Access: dataselect_url entry.")
                 raise SystemExit
 
             if data_access['dataselect_url'] is None:
-                logger.critical("preference file Data_Access: dataselect_url is not specified.")
+                logger.critical("Preference file Data_Access: dataselect_url is not specified.")
                 raise SystemExit
 
             if "station_url" not in data_access.keys():
-                logger.critical("preference file is missing Data_Access: station_url entry.")
+                logger.critical("Preference file is missing Data_Access: station_url entry.")
                 raise SystemExit
 
             if "event_url" not in data_access.keys():
-                logger.critical("preference file is missing Data_Access: event_url entry.")
+                logger.critical("Preference file is missing Data_Access: event_url entry.")
 
             # assign station and metrics aliases 
             logger.debug('Assign station and metrics aliases')
@@ -241,16 +251,17 @@ class UserRequest(object):
                     logger.critical('Invalid station parameter: %s' % e)
                     raise SystemExit
             
-
-            self.dataselect_url = data_access['dataselect_url']
-            self.event_url = data_access['event_url']
-
-            self.station_url = data_access['station_url']
+            if self.dataselect_url is None:
+                self.dataselect_url = data_access['dataselect_url']
+            if self.event_url is None:
+                self.event_url = data_access['event_url']
+            if self.station_url is None:
+                self.station_url = data_access['station_url']
 
             #     Additional metadata for local access   ----------------------
-            self.resp_dir = None
-            if 'resp_dir' in data_access:
-                self.resp_dir = data_access['resp_dir']
+            if self.resp_dir is None:
+                if 'resp_dir' in data_access:
+                    self.resp_dir = data_access['resp_dir']
 
             #     Add individual preferences     ------------------------------
             logger.debug('Add individual preferences')
@@ -267,6 +278,10 @@ class UserRequest(object):
                 self.sigfigs = preferences['sigfigs']
             else:
                 self.sigfigs = 6
+            if preferences.has_key('sncl_format'):
+                self.sncl_format = preferences['sncl_format']
+            else:
+                self.sncl_format = "N.S.L.C"
 
             #     Find required metric functions     --------------------------
             logger.debug('Find required metric functions ...')

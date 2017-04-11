@@ -16,6 +16,7 @@ import re
 import glob
 import math
 import fileinput
+import fnmatch
 import tempfile
 
 import pandas as pd
@@ -64,26 +65,35 @@ class Concierge(object):
         
         # Copy important UserRequest properties to the Concierge for simpler access
         self.requested_starttime = user_request.requested_starttime
-        self.requested_endtime = user_request.requested_endtime
+        self.requested_endtime = user_request.requested_endtime 
         self.metric_names = user_request.metrics
         self.sncl_patterns = user_request.sncls
         self.function_by_logic = user_request.function_by_logic
         self.logic_types = user_request.function_by_logic.keys()
         
         # Individual elements from the Preferences: section of the preferences file
-        self.csv_output_dir = user_request.csv_output_dir
-        self.plot_output_dir = user_request.plot_output_dir
+        if (os.path.isdir(user_request.csv_output_dir)):
+            self.csv_output_dir = user_request.csv_output_dir
+        else:
+            self.logger.warning("csv_output_dir %s does not exist, defaulting to current directory" % user_request.csv_output_dir)
+            self.csv_output_dir = "."
+        if (os.path.isdir(user_request.plot_output_dir)):
+            self.plot_output_dir = user_request.plot_output_dir
+        else:
+            self.logger.warning("plot_output_dir %s does not exist, defaulting to current directory" % user_request.plot_output_dir)
+            self.plot_output_dir = "."
         self.sigfigs = user_request.sigfigs
-        
+        self.sncl_format = user_request.sncl_format
+ 
         # Output information
         file_base = '%s_%s_%s_' % (self.user_request.requested_metric_set,
                                   self.user_request.requested_sncl_set, 
                                   self.requested_starttime.date)
 
-        inclusiveEndtime = self.requested_endtime-1
+        inclusiveEndtime = self.requested_endtime-1 
         if(inclusiveEndtime.date != self.requested_starttime.date):
             file_base = file_base + '%s' % (inclusiveEndtime.date)
-  
+
         self.output_file_base = self.csv_output_dir + '/' + file_base
         
         # Availability dataframe is stored if it is read from a local file
@@ -99,19 +109,61 @@ class Concierge(object):
         if user_request.dataselect_url in URL_MAPPINGS.keys():
             # Get data from FDSN dataselect service
             self.dataselect_url = URL_MAPPINGS[user_request.dataselect_url]
-            self.dataselect_client = Client(user_request.dataselect_url)
+            try:
+                self.dataselect_client = Client(self.dataselect_url)
+            except Exception as e:
+                err_msg = e
+                self.logger.critical(err_msg)   
+                raise SystemExit
+
+            if user_request.station_url != user_request.dataselect_url:
+                self.logger.warning("Station_url %s is different from dataselect_url %s" % (user_request.station_url, user_request.dataselect_url))
+
         elif "http://" in user_request.dataselect_url or "https://" in user_request.dataselect_url:
             self.dataselect_url = user_request.dataselect_url
-            self.dataselect_client = Client(user_request.dataselect_url)
+            try:
+                self.dataselect_client = Client(self.dataselect_url)
+            except Exception as e:
+                err_msg = e
+                self.logger.critical(err_msg)   
+                raise SystemExit
+
+            if user_request.station_url != user_request.dataselect_url:
+                self.logger.warning("Station_url %s is different from dataselect_url %s" % (user_request.station_url, user_request.dataselect_url))
         else:
             if os.path.exists(os.path.abspath(user_request.dataselect_url)):
                 # Get data from local miniseed files
                 self.dataselect_url = os.path.abspath(user_request.dataselect_url)
                 self.dataselect_client = None
             else:
-                err_msg = "Cannot find preference file dataselect_url: '%s'" % user_request.dataselect_url
-                self.logger.error(err_msg)
-                raise ValueError(err_msg)
+                err_msg = "Cannot find dataselect_url: '%s'" % user_request.dataselect_url
+                self.logger.critical(err_msg)
+                raise SystemExit
+
+        # Add station clients and URLs or reference a local file
+        if user_request.station_url is None and ("http://" in self.dataselect_url or "https://" in self.dataselect_url):
+            self.station_url = self.dataselect_url
+            self.station_client = Client(self.station_url)
+            self.logger.info("Using station_url = %s" % self.dataselect_url)
+        elif user_request.station_url is None:
+            self.station_url = None
+            self.station_client = None
+        elif user_request.station_url in URL_MAPPINGS.keys():
+            self.station_url = URL_MAPPINGS[user_request.station_url]
+            self.station_client = Client(self.station_url)
+        elif "http://" in user_request.station_url or "https://" in user_request.station_url:
+            self.station_url = user_request.station_url
+            self.station_client = Client(self.station_url)
+        else:
+            if os.path.exists(os.path.abspath(user_request.station_url)):
+                # Get data from local StationXML files
+                self.station_url = os.path.abspath(user_request.station_url)
+                self.station_client = None
+            else:
+                err_msg = "Cannot find station_url: '%s'" % user_request.station_url
+                self.logger.warning("Cannot find station_url: '%s'" % user_request.station_url)
+                self.station_url = None
+                self.station_client = None
 
         # Add event clients and URLs or reference a local file
         if user_request.event_url is None:
@@ -119,56 +171,59 @@ class Concierge(object):
             self.event_client = None
         elif user_request.event_url == "USGS":
             self.event_url = "https://earthquake.usgs.gov"
-            self.event_client = Client(user_request.event_url)
+            try:
+               self.event_client = Client(self.event_url)
+            except Exception as e:
+               self.logger.warning(e)
+               self.event_client = None
         elif user_request.event_url in URL_MAPPINGS.keys():
             self.event_url = URL_MAPPINGS[user_request.event_url]
-            self.event_client = Client(user_request.event_url)
+            try:
+                self.event_client = Client(self.event_url)
+            except Exception as e:
+                self.logger.warning(e)
+                self.event_client = None
         elif "http://" in user_request.event_url or "https://" in user_request.event_url:
             self.event_url = user_request.event_url
-            self.event_client = Client(user_request.event_url)
+            try:
+                self.event_client = Client(self.event_url)
+            except Exception as e:
+                self.logger.warning(e)
+                self.event_client = None
         else:
             if os.path.exists(os.path.abspath(user_request.event_url)):
                 # Get data from local QUAKEML files
                 self.event_url = os.path.abspath(user_request.event_url)
                 self.event_client = None
             else:
-                err_msg = "Cannot find preference file event_url: '%s'" % user_request.event_url
-                self.logger.error(err_msg)
-                raise ValueError(err_msg)
-
-        # Add station clients and URLs or reference a local file
-        if user_request.station_url is None:
-            self.station_url = None  # no metadata exists, some metrics cannot be run
-            self.station_client = None
-        elif user_request.station_url in URL_MAPPINGS.keys():
-            self.station_url = URL_MAPPINGS[user_request.station_url]
-            self.station_client = Client(user_request.station_url)
-        elif "http://" in user_request.station_url or "https://" in user_request.station_url:
-            self.station_url = user_request.station_url
-            self.station_client = Client(user_request.station_url)
-        else:
-            if os.path.exists(os.path.abspath(user_request.station_url)):
-                # Get data from local StationXML files
-                self.station_url = os.path.abspath(user_request.station_url)
-                self.station_client = None
-            else:
-                err_msg = "Cannot find preference file station_url: '%s'" % user_request.station_url
-                self.logger.error(err_msg)
-                raise ValueError(err_msg)
+                self.logger.warning("Cannot find event_url: '%s'" % user_request.event_url)
+                self.logger.warning("Metrics that require event information cannot be calculated")
+                self.event_url = None
+                self.event_client = None
 
         # Add local response files if used
-        if user_request.resp_dir is None:                # use irisws/evalresp
-            self.resp_dir = None  # use irisws/evalresp
+        if user_request.resp_dir is None:                  # use irisws/evalresp
+            self.resp_dir = None                           # use irisws/evalresp
         elif user_request.resp_dir in URL_MAPPINGS.keys(): # use irisws/evalresp
             self.resp_dir = None 
         else:
             if os.path.exists(os.path.abspath(user_request.resp_dir)):   
-                self.resp_dir = os.path.abspath(user_request.resp_dir)  # directory where RESP files are located - REC
+                self.resp_dir = os.path.abspath(user_request.resp_dir)  # directory where RESP files are located 
                                                                         # file pattern:  RESP.<NET>.<STA>.<LOC>.<CHA> or RESP.<STA>.<NET>.<LOC>.<CHA>
             else:
-                err_msg = "Cannot find preference file resp_dir: '%s'" % user_request.resp_dir
+                err_msg = "Cannot find resp_dir: '%s'" % user_request.resp_dir
                 self.logger.error(err_msg)
-                raise ValueError(err_msg)
+                raise ValueError
+
+    def get_sncl_pattern(self,netOrder, staOrder, locOrder, chanOrder, netIn, staIn, locIn, chanIn):  
+       snclList = list()
+       snclList.insert(netOrder, netIn)
+       snclList.insert(staOrder, staIn)
+       snclList.insert(locOrder, locIn)
+       snclList.insert(chanOrder, chanIn)
+       
+       sncl_pattern = "%s.%s.%s.%s" % tuple(snclList)
+       return(sncl_pattern)
 
     def get_availability(self,
                          network=None, station=None, location=None, channel=None,
@@ -260,7 +315,6 @@ class Concierge(object):
         # NOTE:  Building the availability dataframe from a large StationXML is time consuming.
         # NOTE:  If we are using local station data then we should only do this once.
         
-
         # Special case when using all defaults helps speed up any metrics making mutiple calls to get_availability
         # NOTE: If future metrics require this, then uncomment here and add concierge.filtered_availability = None to the end of every metric script.
         #if (network is None and
@@ -272,7 +326,13 @@ class Concierge(object):
         #    self.filtered_availability is not None):
         #    return(self.filtered_availability)
         
+        netOrder = int(int(self.sncl_format.index("N"))/2)
+        staOrder = int(int(self.sncl_format.index("S"))/2)
+        locOrder = int(int(self.sncl_format.index("L"))/2)
+        chanOrder = int(int(self.sncl_format.index("C"))/2)
+
         # Read from a local StationXML file one time only -- IE, once this section has been run once in a job, don't run it again... so availability2 wont run this section.
+
         if self.station_client is None:
             # Using Local Data        
 
@@ -281,16 +341,17 @@ class Concierge(object):
                 try:
                     # Get list of all sncls we have  metadata for
                     if self.station_url is None:
-                        self.logger.info("Reading station metadata : No station_url specified in preference file")
+                        self.logger.info("Reading station metadata : No station_url specified")
                     else:
                         self.logger.info("Reading StationXML file %s" % self.station_url)
-                        sncl_inventory = obspy.read_inventory(self.station_url)
+                        sncl_inventory = obspy.read_inventory(self.station_url, format="STATIONXML")
+                        self.logger.debug(sncl_inventory)
 
                 except Exception as e:
                     err_msg = "The StationXML file: '%s' is not valid" % self.station_url
                     self.logger.debug(e)
                     self.logger.error(err_msg)   
-                    raise ValueError(err_msg)
+                    raise ValueError
                 
                 self.logger.debug('Building availability dataframe...')
 
@@ -318,7 +379,7 @@ class Concierge(object):
                         for s in n.stations:
                             for c in s.channels:
                                 if c.start_date < _endtime and c.end_date > _starttime:
-                                    snclId = n.code + "." + s.code + "." + c.location_code + "." + c.code
+                                    snclId = self.get_sncl_pattern(netOrder,staOrder,locOrder,chanOrder, n.code, s.code, c.location_code, c.code)
                                     df.loc[len(df)] = [n.code, s.code, c.location_code, c.code,
                                                        c.latitude, c.longitude, c.elevation, c.depth,
                                                        c.azimuth, c.dip, c.sensor.description,
@@ -333,14 +394,16 @@ class Concierge(object):
                 # Add local data to the dataframe, even if we don't have metadata
                 # Loop through all sncl_patterns in the preferences file ---------------
                 for sncl_pattern in self.sncl_patterns:
-                    # Get "User Request" parameters -- these are from preferences file
-
                     try: 
-                        (UR_network, UR_station, UR_location, UR_channel) = sncl_pattern.split('.')
+                        UR_network = sncl_pattern.split('.')[netOrder]
+                        UR_station = sncl_pattern.split('.')[staOrder]
+                        UR_location = sncl_pattern.split('.')[locOrder]
+                        UR_channel = sncl_pattern.split('.')[chanOrder]
+                        
                     except Exception as e:
                         err_msg = "Could not parse sncl_pattern %s" % (sncl_pattern)
                         self.logger.error(err_msg)
-                        raise ValueError(err_msg)
+                        raise ValueError
 
                     # Allow arguments to override UserRequest parameters
                     if network is None:
@@ -360,26 +423,34 @@ class Concierge(object):
                     else:
                         _channel = channel
 
-                    _sncl_pattern = "%s.%s.%s.%s" % (_network,_station,_location,_channel)
+                    _sncl_pattern = self.get_sncl_pattern(netOrder,staOrder,locOrder,chanOrder,_network,_station,_location,_channel)
+                    self.logger.debug("Adding %s to availability dataframe" % _sncl_pattern)
+
                     if self.station_client is None:	# Local metadata
                         if self.dataselect_client is None:	# Local data
                             # Loop over the available data and add to dataframe if they aren't yet
-                            filename = '%s.%s.%s.%s.%s' % (_network, _station, _location, _channel, _starttime.strftime('%Y.%j'))
-                            filepattern = self.dataselect_url + '/' + filename + '*' # Allow for possible quality codes
-                            matching_files = glob.glob(filepattern)	# all files matching our sncls
+                            
+                            filepattern = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j')) + '*'
+                            self.logger.debug("Looking for files %s" % filepattern)
+
+                            matching_files = []
+                            for root, dirnames, fnames in os.walk(self.dataselect_url):
+                                for fname in fnmatch.filter(fnames, filepattern):
+                                    matching_files.append(os.path.join(root,fname))
+
+                            self.logger.debug("Found files: \n %s" % '\n '.join(matching_files))
 
                             if (len(matching_files) == 0):
-                                err_msg = "No local waveforms matching %s" % filepattern
-                                self.logger.debug(err_msg)
                                 continue
                             else:
                                 # Loop over all files that we have matching our desired sncls
                                 for _file in matching_files:
                                     fileSNCL = _file.split("/")[-1]
-                                    snclId = fileSNCL.split(".")[0] + "." + fileSNCL.split(".")[1] + "." + fileSNCL.split(".")[2] + "." + fileSNCL.split(".")[3]
+                                    snclId = fileSNCL.split(".")[0] + "." + fileSNCL.split(".")[1] + "." + fileSNCL.split(".")[2] + "." + fileSNCL.split(".")[3] 
                                     if not any(df.snclId.str.contains(snclId)):	
                                         # Only add if not already in the df
-                                        df.loc[len(df)] = [fileSNCL.split(".")[0], fileSNCL.split(".")[1], fileSNCL.split(".")[2], fileSNCL.split(".")[3],
+                                        df.loc[len(df)] = [fileSNCL.split(".")[netOrder], fileSNCL.split(".")[staOrder], 
+                                                           fileSNCL.split(".")[locOrder], fileSNCL.split(".")[chanOrder],
                                                            None, None, None, None,
                                                            None, None, None,
                                                            None, None, None,
@@ -388,7 +459,6 @@ class Concierge(object):
 
                         # Now save the dataframe internally
                         self.availability = df
-                        #self.logger.debug('Finished creating availability dataframe')
 
         # Container for all of the individual sncl_pattern dataframes generated
         sncl_pattern_dataframes = []
@@ -405,11 +475,14 @@ class Concierge(object):
 
             # Get "User Request" parameters
             try: 
-                (UR_network, UR_station, UR_location, UR_channel) = sncl_pattern.split('.')
+                UR_network = sncl_pattern.split('.')[netOrder]
+                UR_station = sncl_pattern.split('.')[staOrder]
+                UR_location = sncl_pattern.split('.')[locOrder]
+                UR_channel = sncl_pattern.split('.')[chanOrder]
             except Exception as e:
                 err_msg = "Could not parse sncl_pattern %s" % (sncl_pattern)
                 self.logger.error(err_msg)
-                raise ValueError(err_msg)
+                raise ValueError
 
             # Allow arguments to override UserRequest parameters
             if starttime is None:
@@ -437,7 +510,7 @@ class Concierge(object):
             else:
                 _channel = channel
                
-            _sncl_pattern = "%s.%s.%s.%s" % (_network,_station,_location,_channel)
+            _sncl_pattern = self.get_sncl_pattern(netOrder,staOrder,locOrder,chanOrder, _network, _station, _location, _channel)
 
             # Get availability dataframe ---------------------------------------
             if self.station_client is None:
@@ -476,7 +549,7 @@ class Concierge(object):
                 for n in sncl_inventory.networks:
                     for s in n.stations:
                         for c in s.channels:
-                            snclId = n.code + "." + s.code + "." + c.location_code + "." + c.code
+                            snclId = self.get_sncl_pattern(netOrder, staOrder, locOrder, chanOrder, n.code, s.code, c.location_code, c.code)
                             df.loc[len(df)] = [n.code, s.code, c.location_code, c.code,
                                                c.latitude, c.longitude, c.elevation, c.depth,
                                                c.azimuth, c.dip, c.sensor.description,
@@ -488,7 +561,6 @@ class Concierge(object):
 
             # Subset availability dataframe based on _sncl_pattern -------------
 
-           
             # NOTE:  This shouldn't be necessary for dataframes obtained from FDSN
             # NOTE:  but it's quick so we always do it
             
@@ -501,9 +573,12 @@ class Concierge(object):
 
             # Subset based on locally available data ---------------------------
             if self.dataselect_client is None:
-                filename = '%s.%s.%s.%s.%s' % (_network, _station, _location, _channel, _starttime.strftime('%Y.%j'))
-                filepattern = self.dataselect_url + '/' + filename + '*' # Allow for possible quality codes
-                matching_files = glob.glob(filepattern)
+                filepattern = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j')) + '*'
+                
+                matching_files = []
+                for root, dirnames, fnames in os.walk(self.dataselect_url):
+                   for fname in fnmatch.filter(fnames, filepattern):
+                       matching_files.append(os.path.join(root,fname))
 
                 if (len(matching_files) == 0):
                     err_msg = "No local waveforms matching %s" % filepattern
@@ -518,6 +593,7 @@ class Concierge(object):
                         sncl = match.group(0)
                         py_pattern = sncl.replace('.','\\.')
                         mask = mask | df.snclId.str.contains(py_pattern)
+                        
                 # Subset based on the mask
                 df = df[mask]
 
@@ -575,8 +651,6 @@ class Concierge(object):
             if availability.shape[0] == 0:              
                 err_msg = "No available waveforms matching" + str(self.sncl_patterns)
                 self.logger.info(err_msg)
-                #raise NoAvailableDataError(err_msg)
-                #return availability
             else:
                 # The concierge should remember this dataframe for metrics that
                 # make multiple calls to get_availability with all defaults.
@@ -617,7 +691,10 @@ class Concierge(object):
             specified end time.
         """
 
-
+        netOrder = int(int(self.sncl_format.index("N"))/2)
+        staOrder = int(int(self.sncl_format.index("S"))/2)
+        locOrder = int(int(self.sncl_format.index("L"))/2)
+        chanOrder = int(int(self.sncl_format.index("C"))/2)
 
         # Allow arguments to override UserRequest parameters
         if starttime is None:
@@ -634,17 +711,21 @@ class Concierge(object):
             nday = int((_endtime - .00001).julday - _starttime.julday) + 1   # subtract a short amount of time for 00:00:00 endtimes
 
             if (nday == 1):
-                filename = '%s.%s.%s.%s.%s' % (network, station, location, channel, _starttime.strftime('%Y.%j'))
-                self.logger.debug("read local miniseed file for %s..." % filename)
-                filepattern = self.dataselect_url + '/' + filename + '*' # Allow for possible quality codes
-                matching_files = glob.glob(filepattern)
+                _sncl_pattern = self.get_sncl_pattern(netOrder, staOrder, locOrder, chanOrder, network, station, location, channel)
+                filepattern = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j')) + "*"
+
+                matching_files = []
+                for root, dirnames, fnames in os.walk(self.dataselect_url):
+                    for fname in fnmatch.filter(fnames, filepattern):
+                        matching_files.append(os.path.join(root,fname))
 
                 if (len(matching_files) == 0):
                     self.logger.info("No files found matching '%s'" % (filepattern))
                 else:
                     filepath=matching_files[0]
+
                     if (len(matching_files) > 1):
-                        self.logger.warning("Multiple files found matching" '%s -- using %s' % (filepattern, filepath))
+                        self.logger.warning("Multiple files found matching " '%s -- using %s' % (filepattern, filepath))
                     
                     try:
                         # Get the ObsPy version of the stream
@@ -701,7 +782,8 @@ class Concierge(object):
 		    if end >= _endtime:
 			end = _endtime
 
-		    filename = '%s.%s.%s.%s.%s' % (network, station, location, channel, start.strftime('%Y.%j'))
+                    _sncl_pattern = self.get_sncl_pattern(netOrder, staOrder, locOrder, chanOrder, network, station, location, channel)
+                    filename = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))
                     self.logger.debug("read local miniseed file for %s..." % filename)
 		    filepattern = self.dataselect_url + '/' + filename + '*' # Allow for possible quality codes
 		    matching_files = glob.glob(filepattern)
@@ -878,7 +960,7 @@ class Concierge(object):
                 err_msg = "The QuakeML file: '%s' is not valid" % self.event_url
                 self.logger.debug(e)
                 self.logger.error(err_msg)
-                raise ValueError(err_msg)
+                raise ValueError
             
             # events.columns
             # Index([u'eventId', u'time', u'latitude', u'longitude', u'depth', u'author',
