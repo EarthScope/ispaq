@@ -187,7 +187,7 @@ def crossCorrelation_metrics(concierge):
 
             # Sanity check that some SNCLs exist
             if availability2.shape[0] == 0:
-                logger.info('Skipping %s because no nearby SNCLs are available' % (av1.snclId))
+                logger.info('Skipping %s because no nearby stations are available' % (av1.snclId))
                 continue
 
             logger.debug('Found %d nearby SNCLs' % (availability2.shape[0]))

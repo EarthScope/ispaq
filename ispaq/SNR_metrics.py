@@ -99,7 +99,7 @@ def SNR_metrics(concierge):
 
         # Sanity check that some SNCLs exist
         if availability.shape[0] == 0:
-            logger.info('Skipping event because no SNCLs are available')
+            logger.info('Skipping event with no available data')
             continue
         
         logger.debug('%d SNCLs available for this event' % (availability.shape[0]))        
