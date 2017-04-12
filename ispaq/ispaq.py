@@ -49,11 +49,11 @@ def main():
     parser.add_argument('-P', '--preferences-file', default=os.path.expanduser('./preference_files/default.txt'),
                         type=argparse.FileType('r'), help='path to preference file')
     parser.add_argument('-M', '--metrics', required=False,
-                        help='metric alias as defined in preference file, or metric name')
+                        help='metric alias as defined in preference file, or metric name; required if running metrics.')
     parser.add_argument('-S', '--stations', action='store', required=False,
-                        help='stations alias as defined in preference file, or station SNCL')
+                        help='stations alias as defined in preference file, or station SNCL; required if running metrics.')
     parser.add_argument('--starttime', action='store', required=False,
-                        help='starttime in ISO 8601 format')
+                        help='starttime in ISO 8601 format; required if running metrics')
     parser.add_argument('--endtime', action='store', required=False,
                         help='endtime in ISO 8601 format')
     parser.add_argument('--dataselect_url', required=False,
@@ -64,15 +64,23 @@ def main():
                         help='override preference file entry, FDSN webservice or path to QuakeML file')
     parser.add_argument('--resp_dir', required=False,
                         help='override preference file entry, path to directory with RESP files')
+    parser.add_argument('--csv_output_dir', required=False,
+                        help='override preference file entry, directory to write generated metrics .csv files')
+    parser.add_argument('--plot_output_dir', required=False,
+                        help='override preference file entry, directory to write generated metrics .png files')
+    parser.add_argument('--sncl_format', required=False,
+                        help='override preference file entry, format of sncl aliases and miniSEED file names')
+    parser.add_argument('--sigfigs', required=False,
+                        help='override preference file entry, significant figures used for output metric values (only applicable to columns named "value")')
     parser.add_argument('--log-level', action='store', default='INFO',
                         choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],
                         help='log level printed to console')
     parser.add_argument('-A', '--append', action='store_true', default=True,
                         help='append to TRANSCRIPT file rather than overwriting')
     parser.add_argument('-U', '--update-r', action='store_true', default=False,
-                        help='check CRAN for more recent IRIS Mustang R package versions')
+                        help='used alone to check CRAN for more recent IRIS Mustang R package versions')
     parser.add_argument('-L', '--list-metrics', action='store_true', default=False,
-                        help='list names of available metrics')
+                        help='used alone to list names of available metrics')
 
     try:
         args = parser.parse_args(sys.argv[1:])
@@ -114,17 +122,17 @@ def main():
     if not (args.update_r or args.list_metrics):
         # start and end times
         if args.starttime is None:
-            logger.critical('argument --starttime is required')
+            logger.critical('argument --starttime is required if not using -U or -L')
             raise SystemExit
     
         # metric sets
         if args.metrics is None:
-            logger.critical('argument -M/--metrics is required')
+            logger.critical('argument -M/--metrics is required if not using -U or -L')
             raise SystemExit
             
         # stations sets
         if args.stations is None:
-            logger.critical('argument -S/--stations is required')
+            logger.critical('argument -S/--stations is required if not using -U or -L')
             raise SystemExit
     
     

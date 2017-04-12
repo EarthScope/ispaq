@@ -602,7 +602,7 @@ sensors. [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/tra
 
 ### Examples Using Default.txt Preference File
 
-Note: not specifying `-P` in the command line is the same as specifying `-P preference_files/default.txt`
+Note: not using `-P` in the command line is the same as specifying `-P preference_files/default.txt`
 
 ```
 run_ispaq.py -M basicStats -S basicStats --starttime 2010-100              # starttime specified as julian day

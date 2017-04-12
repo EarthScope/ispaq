@@ -152,6 +152,10 @@ class UserRequest(object):
             self.dataselect_url = args.dataselect_url
             self.event_url = args.event_url
             self.resp_dir = args.resp_dir
+            self.csv_output_dir = args.resp_dir
+            self.plot_output_dir = args.plot_output_dir
+            self.sncl_format = args.sncl_format
+            self.sigfigs = args.sigfigs
 
             #     Load preferences from file      -----------------------------
 
@@ -180,7 +184,7 @@ class UserRequest(object):
                         continue
                     else:  # non-empty line
                         name = entry[0]
-                        #logger.debug("%s len entry: %d" % (name,len(entry)))
+                        logger.debug("%s len entry: %d" % (name,len(entry)))
                         # check for key with empty value entry, implies optional or default, set value to None in array
                         values = None
                         if name is not None and len(entry) > 1:             # we have a value or set of comma separated values
@@ -192,13 +196,13 @@ class UserRequest(object):
                     if name is None:  # sanity check
                         continue
                     if values is None or len(values) == 0:
-                        #logger.debug("force set %s to None" % name)
+                        logger.debug("force set %s to None" % name)
                         currentSection[name] = None  # for optional values
                     elif multiValue:
-                        #logger.debug("set %s to multi %s" % (name,",".join(values)))
+                        logger.debug("set %s to multi %s" % (name,",".join(values)))
                         currentSection[name] = values
                     else:
-                        #logger.debug("set %s to first in %s" % (name,",".join(values)))
+                        logger.debug("set %s to first in %s" % (name,",".join(values)))
                         currentSection[name] = values[0]
                         
             # Check for special keyword to exit after loading preferences
@@ -212,22 +216,33 @@ class UserRequest(object):
                 return
             
             # Check for missing Data_Access values
-            #logger.debug('Check for missing URL values')
 
-            if "dataselect_url" not in data_access.keys():
-                logger.critical("Preference file is missing Data_Access: dataselect_url entry.")
-                raise SystemExit
+            if self.dataselect_url is None:
+                if 'dataselect_url' not in data_access.keys():
+                    logger.critical("Preference file is missing Data_Access: dataselect_url entry.")
+                    raise SystemExit
+                if data_access['dataselect_url'] is None:
+                    logger.critical("Preference file Data_Access: dataselect_url is not specified.")
+                    raise SystemExit
+                else:
+                    self.dataselect_url = data_access['dataselect_url']
 
-            if data_access['dataselect_url'] is None:
-                logger.critical("Preference file Data_Access: dataselect_url is not specified.")
-                raise SystemExit
+            if self.station_url is None:
+                if 'station_url' not in data_access.keys():
+                    logger.critical("Preference file is missing Data_Access: station_url entry.")
+                    raise SystemExit
+                else:
+                    self.station_url = data_access['station_url']
 
-            if "station_url" not in data_access.keys():
-                logger.critical("Preference file is missing Data_Access: station_url entry.")
-                raise SystemExit
+            if self.event_url is None:
+                if 'event_url' not in data_access.keys():
+                    logger.warning("Preference file is missing Data_Access: event_url entry.")
+                else:
+                    self.event_url = data_access['event_url']                   
 
-            if "event_url" not in data_access.keys():
-                logger.critical("Preference file is missing Data_Access: event_url entry.")
+            if self.resp_dir is None:
+                if 'resp_dir' in data_access:
+                    self.resp_dir = data_access['resp_dir']
 
             # assign station and metrics aliases 
             logger.debug('Assign station and metrics aliases')
@@ -251,37 +266,29 @@ class UserRequest(object):
                     logger.critical('Invalid station parameter: %s' % e)
                     raise SystemExit
             
-            if self.dataselect_url is None:
-                self.dataselect_url = data_access['dataselect_url']
-            if self.event_url is None:
-                self.event_url = data_access['event_url']
-            if self.station_url is None:
-                self.station_url = data_access['station_url']
-
-            #     Additional metadata for local access   ----------------------
-            if self.resp_dir is None:
-                if 'resp_dir' in data_access:
-                    self.resp_dir = data_access['resp_dir']
-
             #     Add individual preferences     ------------------------------
             logger.debug('Add individual preferences')
             
-            if preferences.has_key('plot_output_dir'):
-                self.plot_output_dir = os.path.abspath(os.path.expanduser(preferences['plot_output_dir']))
-            else:
-                self.plot_output_dir = os.path.abspath('.')
-            if preferences.has_key('csv_output_dir'):
-                self.csv_output_dir = os.path.abspath(os.path.expanduser(preferences['csv_output_dir']))
-            else:
-                self.csv_output_dir = os.path.abspath('.')
-            if preferences.has_key('sigfigs'):
-                self.sigfigs = preferences['sigfigs']
-            else:
-                self.sigfigs = 6
-            if preferences.has_key('sncl_format'):
-                self.sncl_format = preferences['sncl_format']
-            else:
-                self.sncl_format = "N.S.L.C"
+            if self.plot_output_dir is None:
+                if preferences.has_key('plot_output_dir'):
+                    self.plot_output_dir = os.path.abspath(os.path.expanduser(preferences['plot_output_dir']))
+                else:
+                    self.plot_output_dir = os.path.abspath('.')
+            if self.csv_output_dir is None:
+                if preferences.has_key('csv_output_dir'):
+                    self.csv_output_dir = os.path.abspath(os.path.expanduser(preferences['csv_output_dir']))
+                else:
+                    self.csv_output_dir = os.path.abspath('.')
+            if self.sigfigs is None:
+                if preferences.has_key('sigfigs'):
+                    self.sigfigs = preferences['sigfigs']
+                else:
+                    self.sigfigs = 6
+            if self.sncl_format is None:
+                if preferences.has_key('sncl_format'):
+                    self.sncl_format = preferences['sncl_format']
+                else:
+                    self.sncl_format = "N.S.L.C"
 
             #     Find required metric functions     --------------------------
             logger.debug('Find required metric functions ...')
