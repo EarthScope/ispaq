@@ -96,12 +96,6 @@ class Concierge(object):
 
         self.output_file_base = self.csv_output_dir + '/' + file_base
         
-        # Availability dataframe is stored if it is read from a local file
-        self.availability = None
-        
-        # Filtered availability dataframe is stored for potential reuse
-        self.filtered_availability = None
-        
         # Keep a /dev/null pipe handy in case we want to bit-dump output
         self.dev_null = open(os.devnull,"w")
         
@@ -200,6 +194,12 @@ class Concierge(object):
                 self.logger.warning("Metrics that require event information cannot be calculated")
                 self.event_url = None
                 self.event_client = None
+
+        # Availability dataframe is stored if it is read from a local file
+        self.availability = None
+
+        # Filtered availability dataframe is stored for potential reuse
+        self.filtered_availability = None
 
         # Add local response files if used
         if user_request.resp_dir is None:                  # use irisws/evalresp
@@ -345,7 +345,7 @@ class Concierge(object):
                     else:
                         self.logger.info("Reading StationXML file %s" % self.station_url)
                         sncl_inventory = obspy.read_inventory(self.station_url, format="STATIONXML")
-                        self.logger.debug(sncl_inventory)
+                        #self.logger.debug(sncl_inventory)
 
                 except Exception as e:
                     err_msg = "The StationXML file: '%s' is not valid" % self.station_url
@@ -430,7 +430,7 @@ class Concierge(object):
                         if self.dataselect_client is None:	# Local data
                             # Loop over the available data and add to dataframe if they aren't yet
                             
-                            filepattern = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j')) + '*'
+                            filepattern = '%s' % (_sncl_pattern) + '*'
                             self.logger.debug("Looking for files %s" % filepattern)
 
                             matching_files = []
@@ -457,8 +457,8 @@ class Concierge(object):
                                                            None, None, None,
                                                            snclId]
 
-                        # Now save the dataframe internally
-                        self.availability = df
+                # Now save the dataframe internally
+                self.availability = df
 
         # Container for all of the individual sncl_pattern dataframes generated
         sncl_pattern_dataframes = []
@@ -635,7 +635,7 @@ class Concierge(object):
         # END of sncl_patterns loop --------------------------------------------
  
         if len(sncl_pattern_dataframes) == 0:
-            err_msg = "No available waveforms for this event matching " + str(self.sncl_patterns)
+            err_msg = "No available waveforms for %s matching " % _starttime.strftime('%Y-%m-%d') + str(self.sncl_patterns)
             self.logger.info(err_msg)
             #raise NoAvailableDataError(err_msg)
         else:

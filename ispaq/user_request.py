@@ -184,7 +184,6 @@ class UserRequest(object):
                         continue
                     else:  # non-empty line
                         name = entry[0]
-                        logger.debug("%s len entry: %d" % (name,len(entry)))
                         # check for key with empty value entry, implies optional or default, set value to None in array
                         values = None
                         if name is not None and len(entry) > 1:             # we have a value or set of comma separated values
@@ -196,13 +195,10 @@ class UserRequest(object):
                     if name is None:  # sanity check
                         continue
                     if values is None or len(values) == 0:
-                        logger.debug("force set %s to None" % name)
                         currentSection[name] = None  # for optional values
                     elif multiValue:
-                        logger.debug("set %s to multi %s" % (name,",".join(values)))
                         currentSection[name] = values
                     else:
-                        logger.debug("set %s to first in %s" % (name,",".join(values)))
                         currentSection[name] = values[0]
                         
             # Check for special keyword to exit after loading preferences
@@ -245,7 +241,6 @@ class UserRequest(object):
                     self.resp_dir = data_access['resp_dir']
 
             # assign station and metrics aliases 
-            logger.debug('Assign station and metrics aliases')
             try:
                 self.metrics = metric_sets[self.requested_metric_set]  # list assignment
             except KeyError as e:
@@ -267,7 +262,6 @@ class UserRequest(object):
                     raise SystemExit
             
             #     Add individual preferences     ------------------------------
-            logger.debug('Add individual preferences')
             
             if self.plot_output_dir is None:
                 if preferences.has_key('plot_output_dir'):
@@ -291,7 +285,6 @@ class UserRequest(object):
                     self.sncl_format = "N.S.L.C"
 
             #     Find required metric functions     --------------------------
-            logger.debug('Find required metric functions ...')
 
             # Obtain a dictionary from ispaq.irismustangmetrics of the following form:
             # {metric_function_1: <various metadata including list of metrics>}
