@@ -110,8 +110,10 @@ class Concierge(object):
                 self.logger.critical(err_msg)   
                 raise SystemExit
 
-            if user_request.station_url != user_request.dataselect_url:
-                self.logger.warning("Station_url %s is different from dataselect_url %s" % (user_request.station_url, user_request.dataselect_url))
+            if user_request.station_url is not None:    
+                if user_request.station_url != user_request.dataselect_url:
+                    self.logger.warning("Station_url should be the same as dataselect_url when retreiving data from FDSN webservices. Station_url '%s' does not match dataselect_url '%s'" 
+                                         % (user_request.station_url, user_request.dataselect_url))
 
         elif "http://" in user_request.dataselect_url or "https://" in user_request.dataselect_url:
             self.dataselect_url = user_request.dataselect_url
@@ -122,8 +124,11 @@ class Concierge(object):
                 self.logger.critical(err_msg)   
                 raise SystemExit
 
-            if user_request.station_url != user_request.dataselect_url:
-                self.logger.warning("Station_url %s is different from dataselect_url %s" % (user_request.station_url, user_request.dataselect_url))
+            if user_request.station_url is not None:
+                if user_request.station_url != user_request.dataselect_url:
+                    self.logger.warning("Station_url should be the same as dataselect_url when retreiving data from FDSN webservices. Station_url '%s' does not match dataselect_url '%s'" 
+                                         % (user_request.station_url, user_request.dataselect_url))
+
         else:
             if os.path.exists(os.path.abspath(user_request.dataselect_url)):
                 # Get data from local miniseed files
