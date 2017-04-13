@@ -61,7 +61,10 @@ def PSD_metrics(concierge):
     # NEW: Loop over days
     start = concierge.requested_starttime
     end = concierge.requested_endtime
-    nday = int(end.julday - start.julday) + 1
+
+    delta = (end-start)/(24*60*60)
+    nday=int(delta)+1
+
     for day in range(nday):
         # On the first and last days, use the hour provided, otherwise use 00:00:00
         starttime = (start + day * 86400)

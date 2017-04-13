@@ -59,7 +59,9 @@ def transferFunction_metrics(concierge):
     start = concierge.requested_starttime
     end = concierge.requested_endtime 
 
-    nday = int(end.julday - start.julday) + 1;  # Add one in case we have partial day on end day
+    delta = (end-start)/(24*60*60)
+    nday=int(delta)+1
+ 
     for day in range(nday):
         beginday = (start + day * 86400)
         # start and endtimes should be 1 hour, not 1 day

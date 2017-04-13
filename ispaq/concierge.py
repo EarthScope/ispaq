@@ -525,7 +525,7 @@ class Concierge(object):
                     continue 
             else:
                 # Read from FDSN web services
-                self.logger.debug("read FDSN web services for %s,%s,%s,%s,%s,%s, ..." % (_network, _station, _location, _channel, _starttime.strftime('%Y.%j'), _endtime.strftime('%Y.%j')))
+                self.logger.debug("read FDSN web services for %s,%s,%s,%s,%s,%s" % (_network, _station, _location, _channel, _starttime.strftime('%Y.%j'), _endtime.strftime('%Y.%j')))
                 try:
                     sncl_inventory = self.station_client.get_stations(starttime=_starttime, endtime=_endtime,
                                                                       network=_network, station=_station,
@@ -539,7 +539,6 @@ class Concierge(object):
                     self.logger.debug(str(e).strip('\n'))
                     self.logger.warning(err_msg)
                     continue
-
 
                 self.logger.debug('Adding %s to the availability dataframe' % _sncl_pattern)
 

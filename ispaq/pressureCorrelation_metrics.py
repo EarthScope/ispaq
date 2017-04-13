@@ -48,7 +48,10 @@ def pressureCorrelation_metrics(concierge):
     # Loop over days
     start = concierge.requested_starttime
     end = concierge.requested_endtime
-    nday = int(end.julday - start.julday) + 1 
+    
+    delta = (end-start)/(24*60*60)
+    nday=int(delta)+1
+
     for day in range(nday):
         starttime = (start + day * 86400)
         starttime = UTCDateTime(starttime.strftime("%Y-%m-%d") +"T00:00:00Z")
