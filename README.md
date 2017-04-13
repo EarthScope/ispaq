@@ -408,12 +408,14 @@ fit to an exponential curve by a least squares linear regression of log(PSD mean
 dead_channel_exp metric is the standard deviation of the fit residuals of this regression. Lower numbers 
 indicate a better fit and a higher likelihood that the mean PSD is exponential - an indication of a dead channel.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/dead_channel_exp/)
+    + channels = [BCDHM][HX].  
 
 * **dead_channel_gsn**:
 A boolean measurement providing a TRUE or FALSE indication that the channel exhibits a 5dB deviation below the 
 NLNM in the 4 to 8s period band as measured using a McNamara PDF noise matrix. The TRUE condition is indicated 
 with a numeric representation of '1' and the FALSE condition represented as a '0'.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/dead_channel_gsn/)
+    + channels = [BCDHLM][HX].  
 
 * **dead_channel_lin**:
 Dead channel metric - linear fit. This metric is calculated from the mean of all the PSDs generated (typically 47 
@@ -490,22 +492,26 @@ This metric uses a rolling Hampel filter, a median absolute deviation (MAD) test
 The number of discrete spikes is determined after adjacent outliers have been combined into individual spikes.
 NOTE: not to be confused with the spikes metric, which is an SOH flag only.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/num_spikes/)
+    + channels = [BH]H.  
 
 * **orientation_check**:
 Determine channel orientations by rotating horizontal channels until the resulting radial component maximizes 
 cross-correlation with the Hilbert transform of the vertical component. This metric uses Rayleigh waves from large, 
 shallow events.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/num_spikes/)
+    + channels = [BCHLM][HX]. 
 
 * **pct_above_nhnm**:
 Percent above New High Noise Model. Percentage of Probability Density Function values that are above the New 
 High Noise Model. This value is calculated over the entire time period.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/pct_above_nhnm/)
+    + channels = [BCDHM][HX].  
 
 * **pct_below_nlnm**:
 Percent below New Low Noise Model. Percentage of Probability Density Function values that are below the New Low Noise 
 Model. This value is calculated over the entire time period.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/pct_below_nlnm/)
+    + channels = [BCDHM][HX].  
 
 * **pdf_plot**:
 Probability density function plots. Generates one plot per station-day.
@@ -524,12 +530,14 @@ data for the reported start and end time.
 The signed cross-correlation peak value based on the cross-correlation of two neighboring station channels in 
 proximity to a large earthquake signal. A negative peak close to 1.0 can indicate reversed polarity.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/polarity_check/)
+    + channels = [BCFHLM][HX].   
 
 * **pressure_effects**:
 The correlation coefficient of a seismic channel and an LDO pressure channel. Large correlation coefficients may 
 indicate the presence of atmospheric effects in the seismic data.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/pressure_effects/)
-
+    + channels = LH., LDO  
+  
 * **psd_corrected**:
 Power spectral density values, corrected for instrument response, in text format (starttime, endtime, 
 frequency, power).
@@ -574,7 +582,7 @@ quality flag is set by some dataloggers in the fixed section of the miniSEED hea
 been detected in the data. Because spikes have shorter duration than the natural period of most seismic sensors, 
 spikes often indicate a problem introduced at or after the datalogger.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/spikes/)
-
+  
 * **suspect_time_tag**:
 The number of times that the 'Time tag is questionable' bit in the 'dq_flags' byte is set within a miniSEED file. 
 This metric can be used to identify stations with GPS locking problems and data days with potential timing issues.
@@ -599,6 +607,7 @@ expressed as a percentage of maximum accuracy. Percentage is NULL if not present
 * **transfer_function**:
 Transfer function metric consisting of the gain ratio, phase difference and magnitude squared of two co-located 
 sensors. [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/transfer_function/)
+    + channels = [BCFHLM][HNX].
 
 ### Examples Using Default.txt Preference File
 

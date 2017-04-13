@@ -7,6 +7,7 @@ ISPAQ Business Logic for Cross-Correlation Metrics.
     GNU Lesser General Public License, Version 3
     (http://www.gnu.org/copyleft/lesser.html)
 """
+# output is polarity_check metric
 
 from __future__ import (absolute_import, division, print_function)
 
@@ -46,7 +47,7 @@ def crossCorrelation_metrics(concierge):
     logger = concierge.logger
         
     # Default parameters from IRISMustangUtils::generateMetrics_crossCorrelation or crossCorrelationMetrics_exec.R
-    channelFilter = "[BHLMCDSE][HPL]."    
+    channelFilter = "[CBFHLM][HX]."    
     minmag = 6.5
     eventMinradius = 15
     eventMaxradius = 90
@@ -54,8 +55,6 @@ def crossCorrelation_metrics(concierge):
     snclMaxradius = 15
     windowSecs = 600
     maxLagSecs = 10
-    ch1 = ['B','H']
-    ch2 = ['H']
     defaultFilterArgs = [2,0.01]    
         
     # Sanity check for metadata
@@ -303,17 +302,13 @@ def crossCorrelation_metrics(concierge):
                 logger.info('Skipping %s because no nearby SNCLs are compatible' % (av1.snclId))
                 continue
 
-            # Choose low-pass filtering
-            r_filter = irisseismic.butter(defaultFilterArgs[0],defaultFilterArgs[1])
-
             # Calculate the cross-correlation metrics and append them to the list
             logger.info('Calculating crossCorrelation metrics for %s:%s' % (av1.snclId, av2.snclId))
             try:
-                df = irismustangmetrics.apply_correlation_metric(r_stream1, r_stream2, 'crossCorrelation', maxLagSecs, r_filter)
+                df = irismustangmetrics.apply_correlation_metric(r_stream1, r_stream2, 'crossCorrelation', maxLagSecs)
                 dataframes.append(df)
             except Exception as e:
                 logger.warning('"crossCorrelation" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
-            
 
         # END of SNCL loop
 

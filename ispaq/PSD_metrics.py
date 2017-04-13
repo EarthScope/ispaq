@@ -41,8 +41,7 @@ def PSD_metrics(concierge):
     logger = concierge.logger
     
     # Default parameters 
-    #channelFilter = '.[DHLNPXY].' 
-    channelFilter = '...'
+    channelFilter = '.*'
 
     # Container for all of the metrics dataframes generated
     dataframes = []
