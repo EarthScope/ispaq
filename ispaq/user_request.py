@@ -180,7 +180,6 @@ class UserRequest(object):
             if os.path.isfile(self.preferences_file): 
                 with open(self.preferences_file,"r") as preferences_file:
                     for line in preferences_file:  # parse file
-                        logger.debug(line)
                         line = line.split('#')[0].strip()  # remove comments
                         if line.lower() == "metrics:":  # metric header
                             currentSection = metric_sets
@@ -217,7 +216,6 @@ class UserRequest(object):
                                 currentSection[name] = values
                             else:
                                 currentSection[name] = values[0]
-                preferences_file.close()
             else:
                 logger.warning("Cannot find preference file %s, continuing with program defaults" % self.preferences_file)
                         
