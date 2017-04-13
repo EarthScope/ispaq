@@ -176,6 +176,9 @@ class UserRequest(object):
 
             if self.preferences_file is None:
                 self.preferences_file=os.path.expanduser('./preference_files/default.txt')
+            elif (not os.path.isfile(self.preferences_file)):
+                logger.critical("Cannot find preference file %s" % self.preferences_file)
+                raise SystemExit
 
             if os.path.isfile(self.preferences_file): 
                 with open(self.preferences_file,"r") as preferences_file:
