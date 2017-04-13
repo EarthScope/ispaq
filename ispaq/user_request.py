@@ -178,43 +178,46 @@ class UserRequest(object):
                 self.preferences_file=os.path.expanduser('./preference_files/default.txt')
 
             if os.path.isfile(self.preferences_file): 
-                for line in self.preferences_file:  # parse file
-                    line = line.split('#')[0].strip()  # remove comments
-                    if line.lower() == "metrics:":  # metric header
-                        currentSection = metric_sets
-                        multiValue = True
-                    elif line.lower() in ['sncls:','station_sncls:','stations:']:
-                        currentSection = sncl_sets
-                        multiValue = True
-                    elif line.lower() == "data_access:":
-                        currentSection = data_access
-                        multiValue = False
-                    elif line.lower() == "preferences:":
-                        currentSection = preferences
-                        multiValue = False
-                    elif currentSection is not None:  # line following header
-                        entry = line.split(':',1)
-                        if len(entry) <= 1:  # empty line
-                            name, values = None, None
-                            continue
-                        else:  # non-empty line
-                            name = entry[0]
-                            # check for key with empty value entry, implies optional or default, set value to None in array
-                            values = None
-                            if name is not None and len(entry) > 1:             # we have a value or set of comma separated values
-                                values = entry[1].strip().split(',')
-                                values = [value.strip() for value in values]
-                                values = filter(None, values)  # remove empty strings -- TODO: this can cause index out of range errors on empty entries
+                with open(self.preferences_file,"r") as preferences_file:
+                    for line in preferences_file:  # parse file
+                        logger.debug(line)
+                        line = line.split('#')[0].strip()  # remove comments
+                        if line.lower() == "metrics:":  # metric header
+                            currentSection = metric_sets
+                            multiValue = True
+                        elif line.lower() in ['sncls:','station_sncls:','stations:']:
+                            currentSection = sncl_sets
+                            multiValue = True
+                        elif line.lower() == "data_access:":
+                            currentSection = data_access
+                            multiValue = False
+                        elif line.lower() == "preferences:":
+                            currentSection = preferences
+                            multiValue = False
+                        elif currentSection is not None:  # line following header
+                            entry = line.split(':',1)
+                            if len(entry) <= 1:  # empty line
+                                name, values = None, None
+                                continue
+                            else:  # non-empty line
+                                name = entry[0]
+                                # check for key with empty value entry, implies optional or default, set value to None in array
+                                values = None
+                                if name is not None and len(entry) > 1:             # we have a value or set of comma separated values
+                                    values = entry[1].strip().split(',')
+                                    values = [value.strip() for value in values]
+                                    values = filter(None, values)  # remove empty strings -- TODO: this can cause index out of range errors on empty entries
                                         
-                        # attempt robust assignment of name to value(s) -- currentSection is the current dictionary of interest
-                        if name is None:  # sanity check
-                            continue
-                        if values is None or len(values) == 0:
-                            currentSection[name] = None  # for optional values
-                        elif multiValue:
-                            currentSection[name] = values
-                        else:
-                            currentSection[name] = values[0]
+                            # attempt robust assignment of name to value(s) -- currentSection is the current dictionary of interest
+                            if name is None:  # sanity check
+                                continue
+                            if values is None or len(values) == 0:
+                                currentSection[name] = None  # for optional values
+                            elif multiValue:
+                                currentSection[name] = values
+                            else:
+                                currentSection[name] = values[0]
+                preferences_file.close()
             else:
                 logger.warning("Cannot find preference file %s, continuing with program defaults" % self.preferences_file)
                         
