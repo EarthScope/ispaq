@@ -137,17 +137,27 @@ class UserRequest(object):
 
         else:
             # start and end times
-            self.requested_starttime = UTCDateTime(args.starttime)
+            try:
+                self.requested_starttime = UTCDateTime(args.starttime)
+            except Exception as e:
+                logger.critical("Invalid start time %s" % args.starttime)
+                raise SystemExit
+
             if args.endtime is None:
                 self.requested_endtime = self.requested_starttime + (24*60*60)
             else:
-                self.requested_endtime = UTCDateTime(args.endtime)
+                try:
+                    self.requested_endtime = UTCDateTime(args.endtime)
+                except Exception as e:
+                    logger.critical("Invalid end time %s" % args.endtime)
+                    raise SystemExit
 
             # metric and sncl sets
             self.requested_metric_set = args.metrics
             self.requested_sncl_set = args.stations
 
             # url entries
+            self.preferences_file = args.preferences_file
             self.station_url = args.station_url
             self.dataselect_url = args.dataselect_url
             self.event_url = args.event_url
@@ -163,43 +173,50 @@ class UserRequest(object):
             metric_sets, sncl_sets, data_access, preferences = {}, {}, {}, {}
             currentSection = None
             multiValue = False
-            for line in args.preferences_file:  # parse file
-                line = line.split('#')[0].strip()  # remove comments
-                if line.lower() == "metrics:":  # metric header
-                    currentSection = metric_sets
-                    multiValue = True
-                elif line.lower() in ['sncls:','station_sncls:','stations:']:
-                    currentSection = sncl_sets
-                    multiValue = True
-                elif line.lower() == "data_access:":
-                    currentSection = data_access
-                    multiValue = False
-                elif line.lower() == "preferences:":
-                    currentSection = preferences
-                    multiValue = False
-                elif currentSection is not None:  # line following header
-                    entry = line.split(':',1)
-                    if len(entry) <= 1:  # empty line
-                        name, values = None, None
-                        continue
-                    else:  # non-empty line
-                        name = entry[0]
-                        # check for key with empty value entry, implies optional or default, set value to None in array
-                        values = None
-                        if name is not None and len(entry) > 1:             # we have a value or set of comma separated values
-                                        values = entry[1].strip().split(',')
-                                        values = [value.strip() for value in values]
-                                        values = filter(None, values)  # remove empty strings -- TODO: this can cause index out of range errors on empty entries
+
+            if self.preferences_file is None:
+                self.preferences_file=os.path.expanduser('./preference_files/default.txt')
+
+            if os.path.isfile(self.preferences_file): 
+                for line in self.preferences_file:  # parse file
+                    line = line.split('#')[0].strip()  # remove comments
+                    if line.lower() == "metrics:":  # metric header
+                        currentSection = metric_sets
+                        multiValue = True
+                    elif line.lower() in ['sncls:','station_sncls:','stations:']:
+                        currentSection = sncl_sets
+                        multiValue = True
+                    elif line.lower() == "data_access:":
+                        currentSection = data_access
+                        multiValue = False
+                    elif line.lower() == "preferences:":
+                        currentSection = preferences
+                        multiValue = False
+                    elif currentSection is not None:  # line following header
+                        entry = line.split(':',1)
+                        if len(entry) <= 1:  # empty line
+                            name, values = None, None
+                            continue
+                        else:  # non-empty line
+                            name = entry[0]
+                            # check for key with empty value entry, implies optional or default, set value to None in array
+                            values = None
+                            if name is not None and len(entry) > 1:             # we have a value or set of comma separated values
+                                values = entry[1].strip().split(',')
+                                values = [value.strip() for value in values]
+                                values = filter(None, values)  # remove empty strings -- TODO: this can cause index out of range errors on empty entries
                                         
-                    # attempt robust assignment of name to value(s) -- currentSection is the current dictionary of interest
-                    if name is None:  # sanity check
-                        continue
-                    if values is None or len(values) == 0:
-                        currentSection[name] = None  # for optional values
-                    elif multiValue:
-                        currentSection[name] = values
-                    else:
-                        currentSection[name] = values[0]
+                        # attempt robust assignment of name to value(s) -- currentSection is the current dictionary of interest
+                        if name is None:  # sanity check
+                            continue
+                        if values is None or len(values) == 0:
+                            currentSection[name] = None  # for optional values
+                        elif multiValue:
+                            currentSection[name] = values
+                        else:
+                            currentSection[name] = values[0]
+            else:
+                logger.warning("Cannot find preference file %s, continuing with program defaults" % self.preferences_file)
                         
             # Check for special keyword to exit after loading preferences
             # Be sure to save object instance variables needed from the preference files
@@ -214,26 +231,25 @@ class UserRequest(object):
             # Check for missing Data_Access values
 
             if self.dataselect_url is None:
-                if 'dataselect_url' not in data_access.keys():
-                    logger.critical("Preference file is missing Data_Access: dataselect_url entry.")
-                    raise SystemExit
-                if data_access['dataselect_url'] is None:
-                    logger.critical("Preference file Data_Access: dataselect_url is not specified.")
-                    raise SystemExit
+                if os.path.isfile(self.preferences_file):
+                    if 'dataselect_url' not in data_access.keys():
+                        logger.critical("Preference file is missing Data_Access: dataselect_url entry.")
+                        raise SystemExit
+                    if data_access['dataselect_url'] is None:
+                        logger.critical("Preference file Data_Access: dataselect_url is not specified.")
+                        raise SystemExit
+                    else:
+                        self.dataselect_url = data_access['dataselect_url']
                 else:
-                    self.dataselect_url = data_access['dataselect_url']
+                    logger.critical("Reading user input or preferences: no dataselect_url found")
+                    raise SystemExit
 
             if self.station_url is None:
-                if 'station_url' not in data_access.keys():
-                    logger.critical("Preference file is missing Data_Access: station_url entry.")
-                    raise SystemExit
-                else:
+                if 'station_url' in data_access.keys():
                     self.station_url = data_access['station_url']
 
             if self.event_url is None:
-                if 'event_url' not in data_access.keys():
-                    logger.warning("Preference file is missing Data_Access: event_url entry.")
-                else:
+                if 'event_url' in data_access.keys():
                     self.event_url = data_access['event_url']                   
 
             if self.resp_dir is None:

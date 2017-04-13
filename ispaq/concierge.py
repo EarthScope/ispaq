@@ -346,7 +346,7 @@ class Concierge(object):
                 try:
                     # Get list of all sncls we have  metadata for
                     if self.station_url is None:
-                        self.logger.info("Reading station metadata : No station_url specified")
+                        self.logger.info("Reading station metadata : No station_url found")
                     else:
                         self.logger.info("Reading StationXML file %s" % self.station_url)
                         sncl_inventory = obspy.read_inventory(self.station_url, format="STATIONXML")
@@ -958,7 +958,7 @@ class Concierge(object):
             # Read local QuakeML file
             try:
                 if self.event_url is None:
-                    self.logger.info("Reading events: No event_url specified in preference file")
+                    self.logger.info("Reading events: No event_url found")
                 event_catalog = obspy.read_events(self.event_url)
             except Exception as e:
                 err_msg = "The QuakeML file: '%s' is not valid" % self.event_url

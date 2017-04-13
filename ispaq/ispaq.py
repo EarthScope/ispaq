@@ -46,8 +46,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__.strip())
     parser.add_argument('-V', '--version', action='version',
                         version='%(prog)s ' + __version__)
-    parser.add_argument('-P', '--preferences-file', default=os.path.expanduser('./preference_files/default.txt'),
-                        type=argparse.FileType('r'), help='path to preference file')
+    parser.add_argument('-P', '--preferences-file', required=False, help='path to preference file')
     parser.add_argument('-M', '--metrics', required=False,
                         help='metric alias as defined in preference file, or metric name; required if running metrics.')
     parser.add_argument('-S', '--stations', action='store', required=False,
@@ -85,6 +84,7 @@ def main():
     try:
         args = parser.parse_args(sys.argv[1:])
     except IOError, msg:
+        print(str(msg))
         parser.error(str(msg))   # we may encounter an error accessing the indicated file
         raise SystemExit
     
