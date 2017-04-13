@@ -16,6 +16,7 @@ import math
 import numpy as np
 import pandas as pd
 
+from obspy.clients.fdsn import Client
 from obspy import UTCDateTime
 
 from .concierge import NoAvailableDataError
@@ -51,6 +52,15 @@ def transferFunction_metrics(concierge):
         logger.warning('No station metadata found for transferFunction metrics.')
         return None
 
+    if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
+        logger.info("Searching for response files in '%s'" % concierge.resp_dir)
+    else:                   # try to connect to irisws/evalresp
+        try:
+            resp_url = Client("IRIS")
+        except Exception as e:
+            logger.error("Could not connect to 'http:/service.iris.edu/evalresp'")
+            return None
+    
     # Container for all of the metrics dataframes generated
     dataframes = []
 
@@ -186,8 +196,8 @@ def transferFunction_metrics(concierge):
 		    
 			# Get primary (1), secondary (2) and orthogonal secondary spectra 
 			try:
-			    Zevalresp1 = utils.getSpectra(Zst1,sampling_rate,concierge.resp_dir)
-			    Zevalresp2 = utils.getSpectra(Zst2,sampling_rate,concierge.resp_dir) 
+			    Zevalresp1 = utils.getSpectra(Zst1,sampling_rate,concierge)
+			    Zevalresp2 = utils.getSpectra(Zst2,sampling_rate,concierge) 
 			except Exception as e:
 			    logger.warning('"transferFunction_metrics" getSpectra failed for %s:%s: %s' % (Zav1.snclId, Zav2.snclId, e))
 			    continue
@@ -365,8 +375,8 @@ def transferFunction_metrics(concierge):
 	    
 				# Get primary (1), secondary (2) and orthogonal secondary spectra
 				try:
-				    evalresp1 = utils.getSpectra(st1, sampling_rate, concierge.resp_dir)
-				    evalresp2 = utils.getSpectra(st2, sampling_rate, concierge.resp_dir)
+				    evalresp1 = utils.getSpectra(st1, sampling_rate, concierge)
+				    evalresp2 = utils.getSpectra(st2, sampling_rate, concierge)
 				except Exception as e:
 				    logger.debug('"transferFunction_metrics" getSpectra failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
 				    continue
@@ -452,9 +462,9 @@ def transferFunction_metrics(concierge):
 	    
 				# Get primary (1), secondary (2) and orthogonal secondary spectra 
 				try:
-				    evalresp1 = utils.getSpectra(st1, sampling_rate, concierge.resp_dir)
-				    evalresp2 = utils.getSpectra(st2, sampling_rate, concierge.resp_dir)          
-				    evalresp3 = utils.getSpectra(st3, sampling_rate, concierge.resp_dir)
+				    evalresp1 = utils.getSpectra(st1, sampling_rate, concierge)
+				    evalresp2 = utils.getSpectra(st2, sampling_rate, concierge)          
+				    evalresp3 = utils.getSpectra(st3, sampling_rate, concierge)
 				except Exception as e:
 				    logger.debug('"transferFunction_metrics" getSpectra failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
 				    continue
