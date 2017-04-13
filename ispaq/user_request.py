@@ -304,6 +304,11 @@ class UserRequest(object):
                 else:
                     self.sncl_format = "N.S.L.C"
 
+            sncl_expr = re.compile('[SNCL][\.][SNCL][\.][SNCL][\.][SNCL]')
+            if (not re.match(sncl_expr, self.sncl_format)):
+                logger.critical('sncl_format %s is not valid' % self.sncl_format)
+                raise SystemExit
+
             #     Find required metric functions     --------------------------
 
             # Obtain a dictionary from ispaq.irismustangmetrics of the following form:
