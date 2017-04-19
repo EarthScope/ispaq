@@ -90,6 +90,9 @@ class Concierge(object):
                                   self.user_request.requested_sncl_set, 
                                   self.requested_starttime.date)
 
+        file_base = file_base.replace("*","x")
+        file_base = file_base.replace("?","x")
+  
         inclusiveEndtime = self.requested_endtime-1 
         if(inclusiveEndtime.date != self.requested_starttime.date):
             file_base = file_base + '%s' % (inclusiveEndtime.date)

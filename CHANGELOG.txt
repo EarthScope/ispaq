@@ -6,6 +6,7 @@
  * use of preference file is not required as every entry can be overridden on command line
  * when output directory does not exist, defaults to current directory 
  * searches for miniSEED files down directory structure
+ * output file names replace characters "*,?" with "x"
  * bug fix for crashes when internet connection not available
  * bug fix for day looping when starttime and endtime have different years
  * additional error handling

@@ -48,29 +48,29 @@ def main():
                         version='%(prog)s ' + __version__)
     parser.add_argument('-P', '--preferences-file', required=False, help='path to preference file')
     parser.add_argument('-M', '--metrics', required=False,
-                        help='metric alias as defined in preference file, or metric name; required if running metrics.')
+                        help='metrics alias as defined in preference file or metric name; required if calculating metrics.')
     parser.add_argument('-S', '--stations', action='store', required=False,
-                        help='stations alias as defined in preference file, or station SNCL; required if running metrics.')
+                        help='stations alias as defined in preference file or station SNCL; required if calculating metrics.')
     parser.add_argument('--starttime', action='store', required=False,
-                        help='starttime in ISO 8601 format; required if running metrics')
+                        help='starttime in ISO 8601 format; required if calculating metrics')
     parser.add_argument('--endtime', action='store', required=False,
                         help='endtime in ISO 8601 format')
     parser.add_argument('--dataselect_url', required=False,
-                        help='override preference file entry, FDSN webservice or path to directory with miniSEED files')
+                        help='override preference file entry with FDSN webservice or path to directory with miniSEED files')
     parser.add_argument('--station_url', required=False,
-                        help='override preference file entry, FDSN webservice or path to stationXML file')
+                        help='override preference file entry with FDSN webservice or path to stationXML file')
     parser.add_argument('--event_url', required=False,
-                        help='override preference file entry, FDSN webservice or path to QuakeML file')
+                        help='override preference file entry with FDSN webservice or path to QuakeML file')
     parser.add_argument('--resp_dir', required=False,
-                        help='override preference file entry, path to directory with RESP files')
+                        help='override preference file entry with path to directory with RESP files')
     parser.add_argument('--csv_output_dir', required=False,
-                        help='override preference file entry, directory to write generated metrics .csv files')
+                        help='override preference file entry with directory to write generated metrics .csv files')
     parser.add_argument('--plot_output_dir', required=False,
-                        help='override preference file entry, directory to write generated metrics .png files')
+                        help='override preference file entry with directory to write generated metrics .png files')
     parser.add_argument('--sncl_format', required=False,
-                        help='override preference file entry, format of sncl aliases and miniSEED file names')
+                        help='override preference file entry with format of SNCL aliases and miniSEED file names')
     parser.add_argument('--sigfigs', required=False,
-                        help='override preference file entry, significant figures used for output metric values (only applicable to columns named "value")')
+                        help='override preference file entry with number of significant figures for output values (only applicable to columns named "value")')
     parser.add_argument('--log-level', action='store', default='INFO',
                         choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],
                         help='log level printed to console')

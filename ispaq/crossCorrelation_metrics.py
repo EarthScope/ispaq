@@ -55,7 +55,6 @@ def crossCorrelation_metrics(concierge):
     snclMaxradius = 15
     windowSecs = 600
     maxLagSecs = 10
-    defaultFilterArgs = [2,0.01]    
         
     # Sanity check for metadata
     if concierge.station_url is None:

@@ -4,7 +4,8 @@
 #  * Metrics -- aliases for user defined combinations of metrics
 #  * Station_SNCLs -- aliases for user defined combinations of SNCL patterns
 #                     SNCL patterns are station names formatted as Network.Station.Location.Channel
-#                     wildcards * and ? are allowed (*.*.*.*)
+#                     wildcards * and ? are allowed (*.*.*.*). SNCL pattern format can be modified 
+#                     using the Preferences sncl_format.
 #  * Data_Access -- FDSN web services or local files
 #  * Preferences -- additional user preferences
 #
@@ -72,7 +73,7 @@ Station_SNCLs:
   orientationCheck: IU.BILL.00.*, IU.FURI.00.*
   transferFunction: IU.ANMO.*.BH?
   
-  myStations: IU.ANMO.00.BH?
+  myStations: *.*.*.*
 
 # Data access (FDSN web service providers or local files) -------------------------
  
@@ -113,7 +114,7 @@ Data_Access:
 Preferences:
   csv_output_dir: .     # directory to contain generated metrics .csv files
   plot_output_dir: .    # directory to contain generated plots
-  sigfigs: 6            # significant figures used for output metric values (only applicable to columns named 'value')
+  sigfigs: 6            # significant figures used for output values (only applicable to columns named 'value')
   sncl_format: N.S.L.C  # format of sncl aliases and miniSEED file names, must be some combination of period separated
-                          N=network,S=station, L=location, C=channel (i.e., N.S.L.C or S.N.L.C)
+                          N=network,S=station, L=location, C=channel (e.g., N.S.L.C or S.N.L.C)
 
