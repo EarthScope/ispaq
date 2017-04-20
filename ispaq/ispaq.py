@@ -43,18 +43,18 @@ def main():
         
     # Parse arguments ----------------------------------------------------------
     
-    parser = argparse.ArgumentParser(description=__doc__.strip(),formatter_class=lambda prog: argparse.HelpFormatter(prog,max_help_position=29))
-    parser._optionals.title = "single use arguments"
-    metrics = parser.add_argument_group('run metrics arguments')
-    metrics.add_argument('-P', '--preferences-file', required=False, help='path to preference file')
+    parser = argparse.ArgumentParser(description=__doc__.strip(),formatter_class=lambda prog: argparse.HelpFormatter(prog,max_help_position=29, width=82))
+    parser._optionals.title = "single arguments"
+    metrics = parser.add_argument_group('arguments for running metrics')
+    metrics.add_argument('-P', '--preferences-file', required=False, help='path to preference file, default=./preference_files/default.txt')
     metrics.add_argument('-M', '--metrics', required=False,
-                        help='metrics alias as defined in preference file or metric name')
+                        help='metrics alias as defined in preference file or metric name, required')
     metrics.add_argument('-S', '--stations', required=False,
-                        help='stations alias as defined in preference file or station SNCL')
+                        help='stations alias as defined in preference file or station SNCL, required')
     metrics.add_argument('--starttime', required=False,
-                        help='starttime in ISO 8601 format')
+                        help='starttime in ISO 8601 format, required')
     metrics.add_argument('--endtime',  required=False,
-                        help='endtime in ISO 8601 format')
+                        help='endtime in ISO 8601 format, default=starttime + 1 day')
     metrics.add_argument('--dataselect_url', required=False,
                         help='FDSN webservice or path to directory with miniSEED files, override preference file')
     metrics.add_argument('--station_url', required=False,
@@ -70,7 +70,7 @@ def main():
     metrics.add_argument('--sncl_format', required=False,
                         help='format of SNCL aliases and miniSEED file names, override preference file')
     metrics.add_argument('--sigfigs', required=False,
-                        help='number of significant figures for output column "value", override preference file')
+                        help='number of significant figures used for output column "value", override preference file')
     metrics.add_argument('--log-level', action='store', default='INFO',
                         choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],
                         help='log level printed to console')
@@ -79,9 +79,9 @@ def main():
     parser.add_argument('-V', '--version', action='version',
                         version='%(prog)s ' + __version__)
     parser.add_argument('-U', '--update-r', action='store_true', default=False,
-                        help='check CRAN for more recent IRIS Mustang R package versions')
+                        help='check for and install newer CRAN IRIS Mustang packages, and exit')
     parser.add_argument('-L', '--list-metrics', action='store_true', default=False,
-                        help='list names of available metrics')
+                        help='list names of available metrics and exit')
 
     try:
         args = parser.parse_args(sys.argv[1:])
