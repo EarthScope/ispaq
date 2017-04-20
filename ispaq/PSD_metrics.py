@@ -152,7 +152,7 @@ def PSD_metrics(concierge):
 
                     if "pdf_text" in concierge.metric_names :
                     # Write out the PDFs
-                        filepath = concierge.csv_output_dir + '/' + file_base_psd + "_" + av.snclId + "_PDF.csv"
+                        filepath = concierge.csv_dir + '/' + file_base_psd + "_" + av.snclId + "_PDF.csv"
                         logger.info('Writing PDF text to %s.' % os.path.basename(filepath))
                         try:
                             # Add target, start- and endtimes
