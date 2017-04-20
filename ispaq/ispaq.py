@@ -44,8 +44,8 @@ def main():
     # Parse arguments ----------------------------------------------------------
     
     parser = argparse.ArgumentParser(description=__doc__.strip(),formatter_class=lambda prog: argparse.HelpFormatter(prog,max_help_position=29))
-    parser._optionals.title = "single arguments"
-    metrics = parser.add_argument_group('run metrics')
+    parser._optionals.title = "single use arguments"
+    metrics = parser.add_argument_group('run metrics arguments')
     metrics.add_argument('-P', '--preferences-file', required=False, help='path to preference file')
     metrics.add_argument('-M', '--metrics', required=False,
                         help='metrics alias as defined in preference file or metric name')
