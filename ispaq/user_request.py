@@ -162,7 +162,7 @@ class UserRequest(object):
             self.dataselect_url = args.dataselect_url
             self.event_url = args.event_url
             self.resp_dir = args.resp_dir
-            self.csv_dir = args.resp_dir
+            self.csv_dir = args.csv_dir
             self.png_dir = args.png_dir
             self.sncl_format = args.sncl_format
             self.sigfigs = args.sigfigs
@@ -179,6 +179,10 @@ class UserRequest(object):
             elif (not os.path.isfile(self.preferences_file)):
                 logger.critical("Cannot find preference file %s" % self.preferences_file)
                 raise SystemExit
+            else:
+                self.preferences_file = os.path.abspath(os.path.expanduser(self.preferences_file))   
+
+            logger.debug("preferences_file %s" % self.preferences_file)
 
             if os.path.isfile(self.preferences_file): 
                 with open(self.preferences_file,"r") as preferences_file:
@@ -288,11 +292,17 @@ class UserRequest(object):
                     self.png_dir = os.path.abspath(os.path.expanduser(preferences['png_dir']))
                 else:
                     self.png_dir = os.path.abspath('.')
+            else:
+                self.png_dir = os.path.abspath(os.path.expanduser(self.png_dir))
+
             if self.csv_dir is None:
                 if preferences.has_key('csv_dir'):
                     self.csv_dir = os.path.abspath(os.path.expanduser(preferences['csv_dir']))
                 else:
                     self.csv_dir = os.path.abspath('.')
+            else:
+                self.csv_dir = os.path.abspath(os.path.expanduser(self.csv_dir))
+
             if self.sigfigs is None:
                 if preferences.has_key('sigfigs'):
                     self.sigfigs = preferences['sigfigs']

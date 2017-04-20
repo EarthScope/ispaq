@@ -56,21 +56,21 @@ def main():
     metrics.add_argument('--endtime',  required=False,
                         help='endtime in ISO 8601 format, default=starttime + 1 day')
     metrics.add_argument('--dataselect_url', required=False,
-                        help='FDSN webservice or path to directory with miniSEED files, override preference file')
+                        help='FDSN webservice or path to directory with miniSEED files, overrides preference file')
     metrics.add_argument('--station_url', required=False,
-                        help='FDSN webservice or path to stationXML file, override preference file')
+                        help='FDSN webservice or path to stationXML file, overrides preference file')
     metrics.add_argument('--event_url', required=False,
-                        help='FDSN webservice or path to QuakeML file, override preference file')
+                        help='FDSN webservice or path to QuakeML file, overrides preference file')
     metrics.add_argument('--resp_dir', required=False,
-                        help='path to directory with RESP files, override preference file')
+                        help='path to directory with RESP files, overrides preference file')
     metrics.add_argument('--csv_dir', required=False,
-                        help='directory to write generated metrics .csv files, override preference file')
+                        help='directory to write generated metrics .csv files, overrides preference file')
     metrics.add_argument('--png_dir', required=False,
-                        help='directory to write generated metrics .png files, override preference file')
+                        help='directory to write generated metrics .png files, overrides preference file')
     metrics.add_argument('--sncl_format', required=False,
-                        help='format of SNCL aliases and miniSEED file names, override preference file')
+                        help='format of SNCL aliases and miniSEED file names, overrides preference file')
     metrics.add_argument('--sigfigs', required=False,
-                        help='number of significant figures used for output column "value", override preference file')
+                        help='number of significant figures used for output column "value", overrides preference file')
     metrics.add_argument('--log-level', action='store', default='INFO',
                         choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],
                         help='log level printed to console')
@@ -116,7 +116,6 @@ def main():
 
     logger.info('Running ISPAQ version %s on %s\n' % (__version__, datetime.datetime.now().strftime('%c')))
 
-
     # Validate the args --------------------------------------------------------
     
     # We can't use required=True in argpase because folks should be able to type only -U
@@ -124,17 +123,17 @@ def main():
     if not (args.update_r or args.list_metrics):
         # start and end times
         if args.starttime is None:
-            logger.critical('argument --starttime is required if not using -U or -L')
+            logger.critical('argument --starttime is required to run metrics')
             raise SystemExit
     
         # metric sets
         if args.metrics is None:
-            logger.critical('argument -M/--metrics is required if not using -U or -L')
+            logger.critical('argument -M/--metrics is required to run metrics')
             raise SystemExit
             
         # stations sets
         if args.stations is None:
-            logger.critical('argument -S/--stations is required if not using -U or -L')
+            logger.critical('argument -S/--stations is required to run metrics')
             raise SystemExit
     
     

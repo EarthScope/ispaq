@@ -43,6 +43,9 @@ def PSD_metrics(concierge):
     # Default parameters 
     channelFilter = '.*'
 
+    # function metadata dictionary
+    function_metadata = concierge.function_by_logic['PSD']
+
     # Container for all of the metrics dataframes generated
     dataframes = []
 
@@ -89,15 +92,12 @@ def PSD_metrics(concierge):
             return None
 
 
-        # NEW: If the day has no data, then skip it (used to raise NoAvailableDataError)
+        # If the day has no data, then skip it (used to raise NoAvailableDataError)
         if availability is None:
             continue
 
         # Apply the channelFilter
         availability = availability[availability.channel.str.contains(channelFilter)]      
-
-        # function metadata dictionary
-        function_metadata = concierge.function_by_logic['PSD']
 
         logger.info('Calculating PSD metrics for %d SNCLs on %s' % (availability.shape[0],str(starttime).split('T')[0]))
     

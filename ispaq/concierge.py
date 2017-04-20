@@ -75,13 +75,25 @@ class Concierge(object):
         if (os.path.isdir(user_request.csv_dir)):
             self.csv_dir = user_request.csv_dir
         else:
-            self.logger.warning("csv_dir %s does not exist, defaulting to current directory" % user_request.csv_dir)
-            self.csv_dir = "."
+            self.logger.warning("csv_dir %s does not exist, creating" % user_request.csv_dir)
+            try:
+                os.makedirs(user_request.csv_dir)
+                self.csv_dir = user_request.csv_dir
+            except OSError as exc:
+                self.logger.warning("Cannot create csv_dir %s, defaulting to current directory" % user_request.csv_dir)
+                self.csv_dir = "."
+
         if (os.path.isdir(user_request.png_dir)):
             self.png_dir = user_request.png_dir
         else:
-            self.logger.warning("png_dir %s does not exist, defaulting to current directory" % user_request.png_dir)
-            self.png_dir = "."
+            self.logger.warning("png_dir %s does not exist, creating" % user_request.png_dir)
+            try:
+                os.makedirs(user_request.png_dir)
+                self.png_dir = user_request.png_dir
+            except OSError as exc:
+                self.logger.warning("Cannot create png_dir %s, defaulting to current directory" % user_request.png_dir)
+                self.png_dir = "."
+
         self.sigfigs = user_request.sigfigs
         self.sncl_format = user_request.sncl_format
  
@@ -222,6 +234,17 @@ class Concierge(object):
                 err_msg = "Cannot find resp_dir: '%s'" % user_request.resp_dir
                 self.logger.error(err_msg)
                 raise ValueError
+
+        logger.debug("starttime %s, endtime %s", self.requested_starttime, self.requested_endtime)
+        logger.debug("metric_names %s", self.metric_names)
+        logger.debug("sncl_patterns %s", self.sncl_patterns)
+        logger.debug("dataselect_url %s", self.dataselect_url)
+        logger.debug("event_url %s", self.event_url)
+        logger.debug("resp_dir %s", self.resp_dir)
+        logger.debug("csv_dir %s", self.csv_dir)
+        logger.debug("png_dir %s", self.png_dir)
+        logger.debug("sigfigs %s", self.sigfigs)
+        logger.debug("sncl_format %s", self.sncl_format)
 
     def get_sncl_pattern(self,netOrder, staOrder, locOrder, chanOrder, netIn, staIn, locIn, chanIn):  
        snclList = list()
