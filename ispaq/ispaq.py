@@ -70,7 +70,7 @@ def main():
     metrics.add_argument('--sncl_format', required=False,
                         help='format of SNCL aliases and miniSEED file names, overrides preference file')
     metrics.add_argument('--sigfigs', required=False,
-                        help='number of significant figures used for output column "value", overrides preference file')
+                        help='number of significant figures used for output columns named "value", overrides preference file')
     metrics.add_argument('--log-level', action='store', default='INFO',
                         choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],
                         help='log level printed to console')

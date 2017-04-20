@@ -245,8 +245,8 @@ arguments for running metrics:
                              overrides preference file
   --sncl_format SNCL_FORMAT  format of SNCL aliases and miniSEED file names,
                              overrides preference file
-  --sigfigs SIGFIGS          number of significant figures used for output column
-                             &quot;value&quot;, override preference file
+  --sigfigs SIGFIGS          number of significant figures used for output columns
+                             named &quot;value&quot;, override preference file
   --log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
                              log level printed to console
   -A, --append               append to TRANSCRIPT file rather than overwriting</code></pre>
@@ -286,10 +286,11 @@ as day-long metrics (24 hour windows, see metrics documentation at <a href="http
 <ul>
 <li><p><em>csv_output_dir:</em> should be followed by a directory path for output of generated metric text files (CSV). If the direcotry does not exist, then it defaults to the current working directory.</p></li>
 <li><p><em>plot_output_dir:</em> should be followed by a directory path for output of generated PDF plots (PNG). If the direcotry does not exist, then it defaults to the current working directory.</p></li>
-<li><p><em>sigfigs:</em> should indicate the number of significant figures used to output metric values (only applicable to columns named ‘value’). Default is 6.</p></li>
+<li><p><em>sigfigs:</em> should indicate the number of significant figures used for output columns named “value”. Default is 6.</p></li>
 <li><p><em>sncl_format:</em> should be the format of sncl aliases and miniSEED file names, must be some combination of period separated N=network,S=station, L=location, C=channel (e.g., N.S.L.C, S.N.L.C). If no sncl_format exists, it defaults to N.S.L.C.</p></li>
 </ul>
 <p>Any of these preference file entries can be overridden by command line arguments: <code>-M &quot;metric name&quot;</code>, <code>-S &quot;station SNCL&quot;</code>, <code>--dataselect_url</code>, <code>--station_url</code>, <code>--event_url</code>, <code>--resp_dir</code>, <code>--csv_output_dir</code>, <code>--plot_output_dir</code>, <code>--sigfigs</code>, <code>--sncl_format</code></p>
+<p>Note: When using <code>-S</code>, SNCL patterns containing wildcards should be enclosed by quotes to avoid a possible error.</p>
 <p>More information about using local files can be found below in the section “Using Local Data Files”.</p>
 </div>
 <div id="output-files" class="section level3">

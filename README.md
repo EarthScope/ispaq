@@ -212,8 +212,8 @@ arguments for running metrics:
                              overrides preference file
   --sncl_format SNCL_FORMAT  format of SNCL aliases and miniSEED file names,
                              overrides preference file
-  --sigfigs SIGFIGS          number of significant figures used for output column
-                             "value", override preference file
+  --sigfigs SIGFIGS          number of significant figures used for output columns
+                             named "value", override preference file
   --log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
                              log level printed to console
   -A, --append               append to TRANSCRIPT file rather than overwriting
@@ -311,8 +311,7 @@ If the direcotry does not exist, then it defaults to the current working directo
 * *plot_output_dir:* should be followed by a directory path for output of generated PDF plots (PNG).
 If the direcotry does not exist, then it defaults to the current working directory.
 
-* *sigfigs:* should indicate the number of significant figures used to output metric values (only applicable 
-to columns named 'value'). Default is 6.
+* *sigfigs:* should indicate the number of significant figures used for output columns named "value". Default is 6.
 
 * *sncl_format:* should be the format of sncl aliases and miniSEED file names, must be some combination of period separated 
 N=network,S=station, L=location, C=channel (e.g., N.S.L.C, S.N.L.C). If no sncl_format exists, it defaults to N.S.L.C.
@@ -320,6 +319,8 @@ N=network,S=station, L=location, C=channel (e.g., N.S.L.C, S.N.L.C). If no sncl_
 Any of these preference file entries can be overridden by command line arguments:
 `-M "metric name"`, `-S "station SNCL"`, `--dataselect_url`, `--station_url`, `--event_url`, `--resp_dir`, 
 `--csv_output_dir`, `--plot_output_dir`, `--sigfigs`, `--sncl_format`
+
+Note: When using `-S`, SNCL patterns containing wildcards should be enclosed by quotes to avoid a possible error.
 
 More information about using local files can be found below in the section "Using Local Data Files".
 

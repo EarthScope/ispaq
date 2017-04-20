@@ -114,7 +114,7 @@ Data_Access:
 Preferences:
   csv_dir: .     # directory to contain generated metrics .csv files
   png_dir: .    # directory to contain generated plots
-  sigfigs: 6            # significant figures used for output values (only applicable to columns named 'value')
+  sigfigs: 6            # significant figures used for output columns named 'value'
   sncl_format: N.S.L.C  # format of sncl aliases and miniSEED file names, must be some combination of period separated
                           N=network,S=station, L=location, C=channel (e.g., N.S.L.C or S.N.L.C)
 
