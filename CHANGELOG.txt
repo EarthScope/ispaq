@@ -2,11 +2,12 @@
  * adds sncl_format entry to preferences file. Specifies which order of network, station, location, channel
    to use when looking for miniSEED files and station aliases.
  * adds optional arguments dataselect_url, station_url, event_url, csv_ouput_dir, plot_output_dir, 
-   sigifigs, sncl_format that override preference file entries
+   sigfigs, sncl_format that override preference file entries
  * use of preference file is not required as every entry can be overridden on command line
- * when output directory does not exist, defaults to current directory 
+ * when output directory does not exist, ispaq tries to create it. If that fails, it defaults to current directory 
  * searches for miniSEED files down directory structure
  * output file names replace characters "*,?" with "x"
+ * makes channel filters less restrictive
  * bug fix for crashes when internet connection not available
  * bug fix for day looping when starttime and endtime have different years
  * additional error handling

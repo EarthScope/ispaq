@@ -248,7 +248,7 @@ with the following comments in the header:
 #  * Metrics -- aliases for user defined combinations of metrics (Use with -M)
 #  * Station_SNCLs -- aliases for user defined combinations of SNCL patterns (Use with -S)
 #                     SNCL patterns are station names formatted as Network.Station.Location.Channel
-#                     wildcards * and ? are allowed (*.*.*.*). SNCL pattern format can be modified 
+#                     wildcards * and ? are allowed. SNCL pattern format can be modified 
 #                     using the Preferences sncl_format.          
 #  * Data_Access -- FDSN web services or local files
 #  * Preferences -- additional user preferences
@@ -400,7 +400,8 @@ Local data files should be in miniSEED format and organized in network-station-c
 with naming convention Network.Station.Location.Channel.Year.JulianDay.Quality where quality is optional 
 (e.g., TA.P19K..BHZ.2016.214.M or TA.P19K..BHZ.2016.214). Ispaq will search any directories within the
 specified directory for miniSEED files with names matching the requested stations. To request all data
-files, use preference file Station_SNCL alias: \*.\*.\*.\*, or -S "\*.\*.\*.\*".
+files, use preference file Station_SNCL alias: \*.\*.\*.\*, or -S "\*.\*.\*.\*". Wildcarding every element is 
+strongly discouraged when using FDSN webservices instead of local files.
 
 Note: All data is expected to be in the day file that matches its timestamp; if records do not break on the 
 day boundary, data that is not in the correct day file will not be used in the metrics calculation. This can 
