@@ -166,64 +166,57 @@ after which your prompt should begin with ```(ispaq) ```.
 A list of command line options is available with the ```--help``` flag:
 
 ```
-(ispaq) $ ./run_ispaq.py --help
-usage: run_ispaq.py [-h] [-V] [-P PREFERENCES_FILE] [-M METRICS] [-S STATIONS]
+(ispaq) bash-3.2$ ./run_ispaq.py -h
+usage: run_ispaq.py [-h] [-P PREFERENCES_FILE] [-M METRICS] [-S STATIONS]
                     [--starttime STARTTIME] [--endtime ENDTIME]
-                    [--dataselect_url DATASELECT_URL]
-                    [--station_url STATION_URL] [--event_url EVENT_URL]
-                    [--resp_dir RESP_DIR] [--csv_output_dir CSV_OUTPUT_DIR]
-                    [--plot_output_dir PLOT_OUTPUT_DIR]
+                    [--dataselect_url DATASELECT_URL] [--station_url STATION_URL]
+                    [--event_url EVENT_URL] [--resp_dir RESP_DIR]
+                    [--csv_dir CSV_DIR] [--png_dir PNG_DIR]
                     [--sncl_format SNCL_FORMAT] [--sigfigs SIGFIGS]
-                    [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-A]
+                    [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-A] [-V]
                     [-U] [-L]
 
 ispaq.ispaq: provides entry point main().
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -V, --version         show program's version number and exit
-  -P PREFERENCES_FILE, --preferences-file PREFERENCES_FILE
-                        path to preference file
-  -M METRICS, --metrics METRICS
-                        metrics alias as defined in preference file or metric
-                        name; required if calculating metrics.
-  -S STATIONS, --stations STATIONS
-                        stations alias as defined in preference file or
-                        station SNCL; required if calculating metrics.
-  --starttime STARTTIME
-                        starttime in ISO 8601 format; required if calculating
-                        metrics
-  --endtime ENDTIME     endtime in ISO 8601 format
-  --dataselect_url DATASELECT_URL
-                        override preference file entry with FDSN webservice or
-                        path to directory with miniSEED files
-  --station_url STATION_URL
-                        override preference file entry with FDSN webservice or
-                        path to stationXML file
-  --event_url EVENT_URL
-                        override preference file entry with FDSN webservice or
-                        path to QuakeML file
-  --resp_dir RESP_DIR   override preference file entry with path to directory
-                        with RESP files
-  --csv_output_dir CSV_OUTPUT_DIR
-                        override preference file entry with directory to write
-                        generated metrics .csv files
-  --plot_output_dir PLOT_OUTPUT_DIR
-                        override preference file entry with directory to write
-                        generated metrics .png files
-  --sncl_format SNCL_FORMAT
-                        override preference file entry with format of SNCL
-                        aliases and miniSEED file names
-  --sigfigs SIGFIGS     override preference file entry with number of
-                        significant figures for output values (only applicable
-                        to columns named "value")
-  --log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
-                        log level printed to console
-  -A, --append          append to TRANSCRIPT file rather than overwriting
-  -U, --update-r        used alone to check CRAN for more recent IRIS Mustang
-                        R package versions
-  -L, --list-metrics    used alone to list names of available metrics
+single arguments:
+  -h, --help                 show this help message and exit
+  -V, --version              show program's version number and exit
+  -U, --update-r             check for and install newer CRAN IRIS Mustang
+                             packages, and exit
+  -L, --list-metrics         list names of available metrics and exit
 
+arguments for running metrics:
+  -P PREFERENCES_FILE, --preferences-file PREFERENCES_FILE
+                             path to preference file,
+                             default=./preference_files/default.txt
+  -M METRICS, --metrics METRICS
+                             metrics alias as defined in preference file or metric
+                             name, required
+  -S STATIONS, --stations STATIONS
+                             stations alias as defined in preference file or
+                             station SNCL, required
+  --starttime STARTTIME      starttime in ISO 8601 format, required
+  --endtime ENDTIME          endtime in ISO 8601 format, default=starttime + 1 day
+  --dataselect_url DATASELECT_URL
+                             FDSN webservice or path to directory with miniSEED
+                             files, override preference file
+  --station_url STATION_URL  FDSN webservice or path to stationXML file, override
+                             preference file
+  --event_url EVENT_URL      FDSN webservice or path to QuakeML file, override
+                             preference file
+  --resp_dir RESP_DIR        path to directory with RESP files, override
+                             preference file
+  --csv_dir CSV_DIR          directory to write generated metrics .csv files,
+                             override preference file
+  --png_dir PNG_DIR          directory to write generated metrics .png files,
+                             override preference file
+  --sncl_format SNCL_FORMAT  format of SNCL aliases and miniSEED file names,
+                             override preference file
+  --sigfigs SIGFIGS          number of significant figures used for output column
+                             "value", override preference file
+  --log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
+                             log level printed to console
+  -A, --append               append to TRANSCRIPT file rather than overwriting
 ```
 
 For those that prefer to run ISPAQ as a package, you can use the following invocation (using help example):
@@ -241,9 +234,7 @@ as day-long metrics (24 hour windows, see metrics documentation at
 will be calculated for the time period 00:00:00-23:59:59.9999. An endtime of YYYY-DD-MM is interpreted as 
 YYYY-DD-MM 00:00:00 so that e.g., --starttime=2016-01-01 --endtime=2016-01-02 will also calculate one day 
 of metrics. When an endtime greater than one day is requested, metrics will be calculated by cycling through 
-multiple single days. 
-
-The options -U and -L should be used alone. No metrics are calculated when these options are invoked.
+multiple single days to produce a measurement for each day. 
 
 ### Preference files
 
