@@ -72,16 +72,16 @@ class Concierge(object):
         self.logic_types = user_request.function_by_logic.keys()
         
         # Individual elements from the Preferences: section of the preferences file
-        if (os.path.isdir(user_request.csv_output_dir)):
-            self.csv_output_dir = user_request.csv_output_dir
+        if (os.path.isdir(user_request.csv_dir)):
+            self.csv_dir = user_request.csv_dir
         else:
-            self.logger.warning("csv_output_dir %s does not exist, defaulting to current directory" % user_request.csv_output_dir)
-            self.csv_output_dir = "."
-        if (os.path.isdir(user_request.plot_output_dir)):
-            self.plot_output_dir = user_request.plot_output_dir
+            self.logger.warning("csv_dir %s does not exist, defaulting to current directory" % user_request.csv_dir)
+            self.csv_dir = "."
+        if (os.path.isdir(user_request.png_dir)):
+            self.png_dir = user_request.png_dir
         else:
-            self.logger.warning("plot_output_dir %s does not exist, defaulting to current directory" % user_request.plot_output_dir)
-            self.plot_output_dir = "."
+            self.logger.warning("png_dir %s does not exist, defaulting to current directory" % user_request.png_dir)
+            self.png_dir = "."
         self.sigfigs = user_request.sigfigs
         self.sncl_format = user_request.sncl_format
  
@@ -97,7 +97,7 @@ class Concierge(object):
         if(inclusiveEndtime.date != self.requested_starttime.date):
             file_base = file_base + '%s' % (inclusiveEndtime.date)
 
-        self.output_file_base = self.csv_output_dir + '/' + file_base
+        self.output_file_base = self.csv_dir + '/' + file_base
         
         # Keep a /dev/null pipe handy in case we want to bit-dump output
         self.dev_null = open(os.devnull,"w")

@@ -43,43 +43,45 @@ def main():
         
     # Parse arguments ----------------------------------------------------------
     
-    parser = argparse.ArgumentParser(description=__doc__.strip())
-    parser.add_argument('-V', '--version', action='version',
-                        version='%(prog)s ' + __version__)
-    parser.add_argument('-P', '--preferences-file', required=False, help='path to preference file')
-    parser.add_argument('-M', '--metrics', required=False,
-                        help='metrics alias as defined in preference file or metric name; required if calculating metrics.')
-    parser.add_argument('-S', '--stations', action='store', required=False,
-                        help='stations alias as defined in preference file or station SNCL; required if calculating metrics.')
-    parser.add_argument('--starttime', action='store', required=False,
-                        help='starttime in ISO 8601 format; required if calculating metrics')
-    parser.add_argument('--endtime', action='store', required=False,
+    parser = argparse.ArgumentParser(description=__doc__.strip(),formatter_class=lambda prog: argparse.HelpFormatter(prog,max_help_position=29))
+    parser._optionals.title = "single arguments"
+    metrics = parser.add_argument_group('run metrics')
+    metrics.add_argument('-P', '--preferences-file', required=False, help='path to preference file')
+    metrics.add_argument('-M', '--metrics', required=False,
+                        help='metrics alias as defined in preference file or metric name')
+    metrics.add_argument('-S', '--stations', required=False,
+                        help='stations alias as defined in preference file or station SNCL')
+    metrics.add_argument('--starttime', required=False,
+                        help='starttime in ISO 8601 format')
+    metrics.add_argument('--endtime',  required=False,
                         help='endtime in ISO 8601 format')
-    parser.add_argument('--dataselect_url', required=False,
+    metrics.add_argument('--dataselect_url', required=False,
                         help='override preference file entry with FDSN webservice or path to directory with miniSEED files')
-    parser.add_argument('--station_url', required=False,
+    metrics.add_argument('--station_url', required=False,
                         help='override preference file entry with FDSN webservice or path to stationXML file')
-    parser.add_argument('--event_url', required=False,
+    metrics.add_argument('--event_url', required=False,
                         help='override preference file entry with FDSN webservice or path to QuakeML file')
-    parser.add_argument('--resp_dir', required=False,
+    metrics.add_argument('--resp_dir', required=False,
                         help='override preference file entry with path to directory with RESP files')
-    parser.add_argument('--csv_output_dir', required=False,
+    metrics.add_argument('--csv_dir', required=False,
                         help='override preference file entry with directory to write generated metrics .csv files')
-    parser.add_argument('--plot_output_dir', required=False,
+    metrics.add_argument('--png-dir', required=False,
                         help='override preference file entry with directory to write generated metrics .png files')
-    parser.add_argument('--sncl_format', required=False,
+    metrics.add_argument('--sncl_format', required=False,
                         help='override preference file entry with format of SNCL aliases and miniSEED file names')
-    parser.add_argument('--sigfigs', required=False,
+    metrics.add_argument('--sigfigs', required=False,
                         help='override preference file entry with number of significant figures for output values (only applicable to columns named "value")')
-    parser.add_argument('--log-level', action='store', default='INFO',
+    metrics.add_argument('--log-level', action='store', default='INFO',
                         choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],
                         help='log level printed to console')
-    parser.add_argument('-A', '--append', action='store_true', default=True,
+    metrics.add_argument('-A', '--append', action='store_true', default=True,
                         help='append to TRANSCRIPT file rather than overwriting')
+    parser.add_argument('-V', '--version', action='version',
+                        version='%(prog)s ' + __version__)
     parser.add_argument('-U', '--update-r', action='store_true', default=False,
-                        help='used alone to check CRAN for more recent IRIS Mustang R package versions')
+                        help='check CRAN for more recent IRIS Mustang R package versions')
     parser.add_argument('-L', '--list-metrics', action='store_true', default=False,
-                        help='used alone to list names of available metrics')
+                        help='list names of available metrics')
 
     try:
         args = parser.parse_args(sys.argv[1:])

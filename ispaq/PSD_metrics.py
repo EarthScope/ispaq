@@ -138,7 +138,7 @@ def PSD_metrics(concierge):
                         file_base_psd = '%s_%s_%s' % (concierge.user_request.requested_metric_set,
                                                       concierge.user_request.requested_sncl_set,
                                                       starttime.date)
-                        filepath = concierge.csv_output_dir + '/' + file_base_psd + "_" + av.snclId + "_PSDcorrected.csv"
+                        filepath = concierge.csv_dir + '/' + file_base_psd + "_" + av.snclId + "_PSDcorrected.csv"
                         logger.info('Writing corrected PSD to %s' % os.path.basename(filepath))
                         try:
                             # Add target
@@ -179,7 +179,7 @@ def PSD_metrics(concierge):
             if 'PSDPlot' in function_metadata :
                 try:  
                     filename = '%s.%s_PDF.png' % (av.snclId, starttime.date)
-                    filepath = concierge.plot_output_dir + '/' + filename
+                    filepath = concierge.png_dir + '/' + filename
                     evalresp = None
                     if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
                         sampling_rate = utils.get_slot(r_stream, 'sampling_rate')

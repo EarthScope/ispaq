@@ -94,8 +94,8 @@ class UserRequest(object):
                                                                 'outputType': 'GeneralValue',
                                                                 'speed': 'fast',
                                                                 'streamCount': 1}}}
-            self.preferences = {'plot_output_dir': '.',
-                                'csv_output_dir': '.',
+            self.preferences = {'png_dir': '.',
+                                'csv_dir': '.',
                                 'sigfigs': 6,
                                 'sncl_format': 'N.S.L.C'}
 
@@ -162,8 +162,8 @@ class UserRequest(object):
             self.dataselect_url = args.dataselect_url
             self.event_url = args.event_url
             self.resp_dir = args.resp_dir
-            self.csv_output_dir = args.resp_dir
-            self.plot_output_dir = args.plot_output_dir
+            self.csv_dir = args.resp_dir
+            self.png_dir = args.png_dir
             self.sncl_format = args.sncl_format
             self.sigfigs = args.sigfigs
 
@@ -283,16 +283,16 @@ class UserRequest(object):
             
             #     Add individual preferences     ------------------------------
             
-            if self.plot_output_dir is None:
-                if preferences.has_key('plot_output_dir'):
-                    self.plot_output_dir = os.path.abspath(os.path.expanduser(preferences['plot_output_dir']))
+            if self.png_dir is None:
+                if preferences.has_key('png_dir'):
+                    self.png_dir = os.path.abspath(os.path.expanduser(preferences['png_dir']))
                 else:
-                    self.plot_output_dir = os.path.abspath('.')
-            if self.csv_output_dir is None:
-                if preferences.has_key('csv_output_dir'):
-                    self.csv_output_dir = os.path.abspath(os.path.expanduser(preferences['csv_output_dir']))
+                    self.png_dir = os.path.abspath('.')
+            if self.csv_dir is None:
+                if preferences.has_key('csv_dir'):
+                    self.csv_dir = os.path.abspath(os.path.expanduser(preferences['csv_dir']))
                 else:
-                    self.csv_output_dir = os.path.abspath('.')
+                    self.csv_dir = os.path.abspath('.')
             if self.sigfigs is None:
                 if preferences.has_key('sigfigs'):
                     self.sigfigs = preferences['sigfigs']
