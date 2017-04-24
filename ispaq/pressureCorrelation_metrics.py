@@ -52,6 +52,13 @@ def pressureCorrelation_metrics(concierge):
     delta = (end-start)/(24*60*60)
     nday=int(delta)+1
 
+    if nday > 1:
+        try:
+            initialAvailability = concierge.get_availability(location=pressureLocation, channel=pressureChannel,starttime=start,endtime=end)
+        except Exception as e:
+            logger.error('Metric calculation failed because concierge.get_availability failed: %s' % (e))
+            return None
+
     for day in range(nday):
         starttime = (start + day * 86400)
         starttime = UTCDateTime(starttime.strftime("%Y-%m-%d") +"T00:00:00Z")

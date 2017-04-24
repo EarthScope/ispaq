@@ -122,9 +122,9 @@ def main():
     
     if not (args.update_r or args.list_metrics):
         # start and end times
-        if args.starttime is None:
-            logger.critical('argument --starttime is required to run metrics')
-            raise SystemExit
+        #if args.starttime is None:
+        #    logger.critical('argument --starttime is required to run metrics')
+        #    raise SystemExit
     
         # metric sets
         if args.metrics is None:

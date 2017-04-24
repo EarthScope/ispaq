@@ -25,6 +25,7 @@ import numpy as np
 import obspy
 from obspy.clients.fdsn import Client
 from obspy.clients.fdsn.header import URL_MAPPINGS
+from obspy import UTCDateTime
 
 # ISPAQ modules
 from .user_request import UserRequest
@@ -96,21 +97,12 @@ class Concierge(object):
 
         self.sigfigs = user_request.sigfigs
         self.sncl_format = user_request.sncl_format
+
+        self.netOrder = int(int(self.sncl_format.index("N"))/2)
+        self.staOrder = int(int(self.sncl_format.index("S"))/2)
+        self.locOrder = int(int(self.sncl_format.index("L"))/2)
+        self.chanOrder = int(int(self.sncl_format.index("C"))/2)
  
-        # Output information
-        file_base = '%s_%s_%s_' % (self.user_request.requested_metric_set,
-                                  self.user_request.requested_sncl_set, 
-                                  self.requested_starttime.date)
-
-        file_base = file_base.replace("*","x")
-        file_base = file_base.replace("?","x")
-  
-        inclusiveEndtime = self.requested_endtime-1 
-        if(inclusiveEndtime.date != self.requested_starttime.date):
-            file_base = file_base + '%s' % (inclusiveEndtime.date)
-
-        self.output_file_base = self.csv_dir + '/' + file_base
-        
         # Keep a /dev/null pipe handy in case we want to bit-dump output
         self.dev_null = open(os.devnull,"w")
         
@@ -215,6 +207,57 @@ class Concierge(object):
                 self.event_url = None
                 self.event_client = None
 
+        # Deal with potential start = None
+        if self.requested_starttime is None:
+            self.logger.info("No start time requested. Start and end time will be determined from local data file extents")
+            self.fileDates = []
+            for sncl_pattern in self.sncl_patterns:
+                matching_files = []
+                fpattern1 = '%s' % (sncl_pattern + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
+                fpattern2 = '%s' % (fpattern1 + '.[A-Z]')
+                for root, dirnames, fnames in os.walk(self.dataselect_url):
+                    for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
+                        matching_files.append(os.path.join(root,fname))
+                if (len(matching_files) == 0):
+                    continue
+                else:
+                    for _file in matching_files:
+                        try:
+                            _fileSNCL = _file.split("/")[-1]
+                            _fileYear = _fileSNCL.split(".")[4]
+                            _fileJday = _fileSNCL.split(".")[5]
+                            _fileDate = UTCDateTime("-".join([_fileYear,_fileJday]))
+                            self.fileDates.append([_fileDate])
+                        except Exception as e:
+                            logger.debug(e)
+                            logger.debug("Can't extract date from %s, %s" % (_file,e))
+                            continue
+            if (len(self.fileDates) == 0):
+                self.logger.critical("No start date could be determined. No files found")
+                raise SystemExit
+            else:
+                self.requested_starttime = min(self.fileDates)[0]
+                if self.requested_endtime is None:
+                    self.requested_endtime = max(self.fileDates)[0] +86400  # add one day
+                self.logger.info("Start time %s" % self.requested_starttime)
+                self.logger.info("End time %s" % self.requested_endtime)
+          
+
+        # Output information
+        file_base = '%s_%s_%s_' % (self.user_request.requested_metric_set,
+                                  self.user_request.requested_sncl_set,
+                                  self.requested_starttime.date)
+
+        file_base = file_base.replace("*","x")
+        file_base = file_base.replace("?","x")
+
+        inclusiveEndtime = self.requested_endtime-1
+        if(inclusiveEndtime.date != self.requested_starttime.date):
+            file_base = file_base + '%s' % (inclusiveEndtime.date)
+
+        self.output_file_base = self.csv_dir + '/' + file_base
+
+
         # Availability dataframe is stored if it is read from a local file
         self.availability = None
 
@@ -239,6 +282,7 @@ class Concierge(object):
         logger.debug("metric_names %s", self.metric_names)
         logger.debug("sncl_patterns %s", self.sncl_patterns)
         logger.debug("dataselect_url %s", self.dataselect_url)
+        logger.debug("station_url %s", self.station_url)
         logger.debug("event_url %s", self.event_url)
         logger.debug("resp_dir %s", self.resp_dir)
         logger.debug("csv_dir %s", self.csv_dir)
@@ -246,15 +290,15 @@ class Concierge(object):
         logger.debug("sigfigs %s", self.sigfigs)
         logger.debug("sncl_format %s", self.sncl_format)
 
-    def get_sncl_pattern(self,netOrder, staOrder, locOrder, chanOrder, netIn, staIn, locIn, chanIn):  
-       snclList = list()
-       snclList.insert(netOrder, netIn)
-       snclList.insert(staOrder, staIn)
-       snclList.insert(locOrder, locIn)
-       snclList.insert(chanOrder, chanIn)
+    def get_sncl_pattern(self, netIn, staIn, locIn, chanIn):  
+        snclList = list()
+        snclList.insert(self.netOrder, netIn)
+        snclList.insert(self.staOrder, staIn)
+        snclList.insert(self.locOrder, locIn)
+        snclList.insert(self.chanOrder, chanIn)
        
-       sncl_pattern = "%s.%s.%s.%s" % tuple(snclList)
-       return(sncl_pattern)
+        sncl_pattern = "%s.%s.%s.%s" % tuple(snclList)
+        return(sncl_pattern)
 
     def get_availability(self,
                          network=None, station=None, location=None, channel=None,
@@ -357,11 +401,6 @@ class Concierge(object):
         #    self.filtered_availability is not None):
         #    return(self.filtered_availability)
         
-        netOrder = int(int(self.sncl_format.index("N"))/2)
-        staOrder = int(int(self.sncl_format.index("S"))/2)
-        locOrder = int(int(self.sncl_format.index("L"))/2)
-        chanOrder = int(int(self.sncl_format.index("C"))/2)
-
         # Read from a local StationXML file one time only -- IE, once this section has been run once in a job, don't run it again... so availability2 wont run this section.
 
         if self.station_client is None:
@@ -410,7 +449,7 @@ class Concierge(object):
                         for s in n.stations:
                             for c in s.channels:
                                 if c.start_date < _endtime and c.end_date > _starttime:
-                                    snclId = self.get_sncl_pattern(netOrder,staOrder,locOrder,chanOrder, n.code, s.code, c.location_code, c.code)
+                                    snclId = self.get_sncl_pattern(n.code, s.code, c.location_code, c.code)
                                     df.loc[len(df)] = [n.code, s.code, c.location_code, c.code,
                                                        c.latitude, c.longitude, c.elevation, c.depth,
                                                        c.azimuth, c.dip, c.sensor.description,
@@ -426,10 +465,10 @@ class Concierge(object):
                 # Loop through all sncl_patterns in the preferences file ---------------
                 for sncl_pattern in self.sncl_patterns:
                     try: 
-                        UR_network = sncl_pattern.split('.')[netOrder]
-                        UR_station = sncl_pattern.split('.')[staOrder]
-                        UR_location = sncl_pattern.split('.')[locOrder]
-                        UR_channel = sncl_pattern.split('.')[chanOrder]
+                        UR_network = sncl_pattern.split('.')[self.netOrder]
+                        UR_station = sncl_pattern.split('.')[self.staOrder]
+                        UR_location = sncl_pattern.split('.')[self.locOrder]
+                        UR_channel = sncl_pattern.split('.')[self.chanOrder]
                         
                     except Exception as e:
                         err_msg = "Could not parse sncl_pattern %s" % (sncl_pattern)
@@ -454,19 +493,18 @@ class Concierge(object):
                     else:
                         _channel = channel
 
-                    _sncl_pattern = self.get_sncl_pattern(netOrder,staOrder,locOrder,chanOrder,_network,_station,_location,_channel)
+                    _sncl_pattern = self.get_sncl_pattern(_network,_station,_location,_channel)
                     self.logger.debug("Adding %s to availability dataframe" % _sncl_pattern)
 
                     if self.station_client is None:	# Local metadata
                         if self.dataselect_client is None:	# Local data
                             # Loop over the available data and add to dataframe if they aren't yet
-                            
-                            filepattern = '%s' % (_sncl_pattern) + '*'
-                            self.logger.debug("Looking for files %s" % filepattern)
+                            fpattern1 = '%s' % (sncl_pattern + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
+                            fpattern2 = '%s' % (fpattern1 + '.[A-Z]')
 
                             matching_files = []
                             for root, dirnames, fnames in os.walk(self.dataselect_url):
-                                for fname in fnmatch.filter(fnames, filepattern):
+                                for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
                                     matching_files.append(os.path.join(root,fname))
 
                             self.logger.debug("Found files: \n %s" % '\n '.join(matching_files))
@@ -480,8 +518,8 @@ class Concierge(object):
                                     snclId = fileSNCL.split(".")[0] + "." + fileSNCL.split(".")[1] + "." + fileSNCL.split(".")[2] + "." + fileSNCL.split(".")[3] 
                                     if not any(df.snclId.str.contains(snclId)):	
                                         # Only add if not already in the df
-                                        df.loc[len(df)] = [fileSNCL.split(".")[netOrder], fileSNCL.split(".")[staOrder], 
-                                                           fileSNCL.split(".")[locOrder], fileSNCL.split(".")[chanOrder],
+                                        df.loc[len(df)] = [fileSNCL.split(".")[self.netOrder], fileSNCL.split(".")[self.staOrder], 
+                                                           fileSNCL.split(".")[self.locOrder], fileSNCL.split(".")[self.chanOrder],
                                                            None, None, None, None,
                                                            None, None, None,
                                                            None, None, None,
@@ -506,10 +544,10 @@ class Concierge(object):
 
             # Get "User Request" parameters
             try: 
-                UR_network = sncl_pattern.split('.')[netOrder]
-                UR_station = sncl_pattern.split('.')[staOrder]
-                UR_location = sncl_pattern.split('.')[locOrder]
-                UR_channel = sncl_pattern.split('.')[chanOrder]
+                UR_network = sncl_pattern.split('.')[self.netOrder]
+                UR_station = sncl_pattern.split('.')[self.staOrder]
+                UR_location = sncl_pattern.split('.')[self.locOrder]
+                UR_channel = sncl_pattern.split('.')[self.chanOrder]
             except Exception as e:
                 err_msg = "Could not parse sncl_pattern %s" % (sncl_pattern)
                 self.logger.error(err_msg)
@@ -541,7 +579,7 @@ class Concierge(object):
             else:
                 _channel = channel
                
-            _sncl_pattern = self.get_sncl_pattern(netOrder,staOrder,locOrder,chanOrder, _network, _station, _location, _channel)
+            _sncl_pattern = self.get_sncl_pattern(_network, _station, _location, _channel)
 
             # Get availability dataframe ---------------------------------------
             if self.station_client is None:
@@ -579,7 +617,7 @@ class Concierge(object):
                 for n in sncl_inventory.networks:
                     for s in n.stations:
                         for c in s.channels:
-                            snclId = self.get_sncl_pattern(netOrder, staOrder, locOrder, chanOrder, n.code, s.code, c.location_code, c.code)
+                            snclId = self.get_sncl_pattern(n.code, s.code, c.location_code, c.code)
                             df.loc[len(df)] = [n.code, s.code, c.location_code, c.code,
                                                c.latitude, c.longitude, c.elevation, c.depth,
                                                c.azimuth, c.dip, c.sensor.description,
@@ -603,15 +641,16 @@ class Concierge(object):
 
             # Subset based on locally available data ---------------------------
             if self.dataselect_client is None:
-                filepattern = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j')) + '*'
+                fpattern1 = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))
+                fpattern2 = '%s' % (fpattern1 + '.[A-Z]')
                 
                 matching_files = []
                 for root, dirnames, fnames in os.walk(self.dataselect_url):
-                   for fname in fnmatch.filter(fnames, filepattern):
+                   for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
                        matching_files.append(os.path.join(root,fname))
 
                 if (len(matching_files) == 0):
-                    err_msg = "No local waveforms matching %s" % filepattern
+                    err_msg = "No local waveforms matching %s" % fpattern1
                     self.logger.debug(err_msg)
                     continue
                 else:
@@ -721,11 +760,6 @@ class Concierge(object):
             specified end time.
         """
 
-        netOrder = int(int(self.sncl_format.index("N"))/2)
-        staOrder = int(int(self.sncl_format.index("S"))/2)
-        locOrder = int(int(self.sncl_format.index("L"))/2)
-        chanOrder = int(int(self.sncl_format.index("C"))/2)
-
         # Allow arguments to override UserRequest parameters
         if starttime is None:
             _starttime = self.requested_starttime
@@ -741,21 +775,23 @@ class Concierge(object):
             nday = int((_endtime - .00001).julday - _starttime.julday) + 1   # subtract a short amount of time for 00:00:00 endtimes
 
             if (nday == 1):
-                _sncl_pattern = self.get_sncl_pattern(netOrder, staOrder, locOrder, chanOrder, network, station, location, channel)
-                filepattern = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j')) + "*"
+                _sncl_pattern = self.get_sncl_pattern(network, station, location, channel)
+                fpattern1 = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))
+                fpattern2 = '%s' % (fpattern1 + '.[A-Z]')
 
                 matching_files = []
                 for root, dirnames, fnames in os.walk(self.dataselect_url):
-                    for fname in fnmatch.filter(fnames, filepattern):
+                    for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
                         matching_files.append(os.path.join(root,fname))
 
                 if (len(matching_files) == 0):
-                    self.logger.info("No files found matching '%s'" % (filepattern))
+                    self.logger.info("No files found matching '%s'" % (fpattern1))
                 else:
                     filepath=matching_files[0]
 
                     if (len(matching_files) > 1):
-                        self.logger.warning("Multiple files found matching " '%s -- using %s' % (filepattern, filepath))
+                        self.logger.debug("Multiple files found: %s" % " ".join(matching_files))
+                        self.logger.warning("Multiple files found matching " '%s -- using %s' % (fpattern1, filepath))
                     
                     try:
                         # Get the ObsPy version of the stream
@@ -812,21 +848,22 @@ class Concierge(object):
 		    if end >= _endtime:
 			end = _endtime
 
-                    _sncl_pattern = self.get_sncl_pattern(netOrder, staOrder, locOrder, chanOrder, network, station, location, channel)
+                    _sncl_pattern = self.get_sncl_pattern(network, station, location, channel)
                     filename = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))
                     self.logger.debug("read local miniseed file for %s..." % filename)
-		    filepattern = self.dataselect_url + '/' + filename + '*' # Allow for possible quality codes
-		    matching_files = glob.glob(filepattern)
+		    fpattern1 = self.dataselect_url + '/' + filename + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]'
+                    fpattern2 = fpattern1 + '.[A-Z]'
+		    matching_files = glob.glob(fpattern1) + glob.glob(fpattern2)
 		
 		    if (len(matching_files) == 0):
-                        err_msg = "No files found matching '%s'" % (filepattern)
+                        err_msg = "No files found matching '%s'" % (fpattern1)
                         raise Exception(err_msg)
 		    
 		    else:
 			filepath = matching_files[0]
-             
 			if (len(matching_files) > 1):
-			    self.logger.warning("Multiple files found matching" '%s -- using %s' % (filepattern, filepath))
+                            self.logger.debug("Multiple files found: %s" % " ".join(matching_files))
+			    self.logger.warning("Multiple files found matching" '%s -- using %s' % (fpattern1, filepath))
 
                         # write miniseed to tempfile
                         with open(filepath, 'rb') as f:

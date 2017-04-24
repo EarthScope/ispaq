@@ -51,13 +51,24 @@ def simple_metrics(concierge):
 
     # ----- All available SNCLs -------------------------------------------------
 
-    # Loop over days
+
     start = concierge.requested_starttime
     end = concierge.requested_endtime
-
     delta = (end-start)/(24*60*60)
     nday=int(delta)+1
 
+    #if nday > 1 and concierge.station_client is None:
+    #    try:
+    #        initialAvailability = concierge.get_availability(starttime=start, endtime=end)
+    #    except NoAvailableDataError as e:
+    #        raise
+    #    except Exception as e:
+    #        logger.debug(e)
+    #        logger.error('concierge.get_availability() failed')
+    #        return None
+    #logger.debug(concierge.availability)
+
+    # Loop over days
     for day in range(nday):
         starttime = (start + day * 86400)
         starttime = UTCDateTime(starttime.strftime("%Y-%m-%d") + "T00:00:00Z")
@@ -65,12 +76,6 @@ def simple_metrics(concierge):
 
         if starttime == end:
             continue
-
-        # removed the following so that starttime is rounded down to beginning of day and endtime rounded up to next day
-        #if starttime <= start:
-        #    starttime = start
-        #if endtime >= end:
-        #    endtime = end
 
         try:
             availability = concierge.get_availability(starttime=starttime, endtime=endtime)

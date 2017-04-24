@@ -67,6 +67,18 @@ def PSD_metrics(concierge):
     delta = (end-start)/(24*60*60)
     nday=int(delta)+1
 
+    #if nday > 1 and concierge.station_client is None:
+    #    try:
+    #        initialAvailability = concierge.get_availability(starttime=start,endtime=end)
+    #    except NoAvailableDataError as e:
+    #        raise
+    #    except Exception as e:
+    #        logger.debug(e)
+    #        logger.error('concierge.get_availability() failed')
+    #        return None
+
+    #logger.debug(concierge.availability)
+
     for day in range(nday):
         # On the first and last days, use the hour provided, otherwise use 00:00:00
         starttime = (start + day * 86400)
@@ -75,12 +87,6 @@ def PSD_metrics(concierge):
 
         if starttime == end:
             continue
-
-        # removed the following so that starttime is rounded down to beginning of day and endtime rounded up to next day
-        #if starttime <= start:
-        #    starttime = start
-        #if endtime >= end:
-        #    endtime = end
 
         try:
             availability = concierge.get_availability(starttime=starttime,endtime=endtime)

@@ -136,21 +136,6 @@ class UserRequest(object):
         #     Initialize from arguments       ---------------------------------
 
         else:
-            # start and end times
-            try:
-                self.requested_starttime = UTCDateTime(args.starttime)
-            except Exception as e:
-                logger.critical("Invalid start time %s" % args.starttime)
-                raise SystemExit
-
-            if args.endtime is None:
-                self.requested_endtime = self.requested_starttime + (24*60*60)
-            else:
-                try:
-                    self.requested_endtime = UTCDateTime(args.endtime)
-                except Exception as e:
-                    logger.critical("Invalid end time %s" % args.endtime)
-                    raise SystemExit
 
             # metric and sncl sets
             self.requested_metric_set = args.metrics
@@ -319,6 +304,28 @@ class UserRequest(object):
                 logger.critical('sncl_format %s is not valid' % self.sncl_format)
                 raise SystemExit
 
+            # start and end times
+            if args.starttime is None:
+                self.requested_starttime = None
+            else:
+                try:
+                    self.requested_starttime = UTCDateTime(args.starttime)
+                except Exception as e:
+                    logger.critical("Invalid start time %s" % args.starttime)
+                    raise SystemExit
+
+            if args.endtime is None:
+                if args.starttime is None:
+                    self.requested_endtime = None
+                else:
+                    self.requested_endtime = self.requested_starttime + (24*60*60)
+            else:
+                try:
+                    self.requested_endtime = UTCDateTime(args.endtime)
+                except Exception as e:
+                    logger.critical("Invalid end time %s" % args.endtime)
+                    raise SystemExit
+            
             #     Find required metric functions     --------------------------
 
             # Obtain a dictionary from ispaq.irismustangmetrics of the following form:
