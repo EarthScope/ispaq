@@ -209,6 +209,7 @@ class Concierge(object):
 
         # Deal with potential start = None
         if self.requested_starttime is None and self.station_client is None:
+            
             self.logger.info("No start time requested. Start and end time will be determined from local data file extents")
             self.fileDates = []
             for sncl_pattern in self.sncl_patterns:
@@ -241,6 +242,9 @@ class Concierge(object):
                     self.requested_endtime = max(self.fileDates)[0] +86400  # add one day
                 self.logger.info("Start time %s" % self.requested_starttime)
                 self.logger.info("End time %s" % self.requested_endtime)
+        elif self.requested_starttime is None:
+             logger.critical("--starttime must be specified for station_url %s" % self.station_url)
+             raise SystemExit
           
 
         # Output information
