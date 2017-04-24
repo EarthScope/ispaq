@@ -52,11 +52,13 @@ def pressureCorrelation_metrics(concierge):
     delta = (end-start)/(24*60*60)
     nday=int(delta)+1
 
-    if nday > 1:
+    if nday > 1 and concierge.station_client is None:
         try:
             initialAvailability = concierge.get_availability(location=pressureLocation, channel=pressureChannel,starttime=start,endtime=end)
+        except NoAvailableDataError as e:
+            raise
         except Exception as e:
-            logger.error('Metric calculation failed because concierge.get_availability failed: %s' % (e))
+            logger.error("concierge.get_availability() failed: '%s'" % e)
             return None
 
     for day in range(nday):

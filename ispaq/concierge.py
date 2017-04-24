@@ -166,8 +166,8 @@ class Concierge(object):
                 self.station_url = os.path.abspath(user_request.station_url)
                 self.station_client = None
             else:
-                err_msg = "Cannot find station_url: '%s'" % user_request.station_url
-                self.logger.warning("Cannot find station_url: '%s'" % user_request.station_url)
+                err_msg = "Cannot find station_url '%s'" % user_request.station_url
+                self.logger.warning("Cannot find station_url '%s'" % user_request.station_url)
                 self.station_url = None
                 self.station_client = None
 
@@ -202,7 +202,7 @@ class Concierge(object):
                 self.event_url = os.path.abspath(user_request.event_url)
                 self.event_client = None
             else:
-                self.logger.warning("Cannot find event_url: '%s'" % user_request.event_url)
+                self.logger.warning("Cannot find event_url '%s'" % user_request.event_url)
                 self.logger.warning("Metrics that require event information cannot be calculated")
                 self.event_url = None
                 self.event_client = None
