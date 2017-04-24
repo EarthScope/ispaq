@@ -208,7 +208,7 @@ class Concierge(object):
                 self.event_client = None
 
         # Deal with potential start = None
-        if self.requested_starttime is None:
+        if self.requested_starttime is None and self.station_client is None:
             self.logger.info("No start time requested. Start and end time will be determined from local data file extents")
             self.fileDates = []
             for sncl_pattern in self.sncl_patterns:
