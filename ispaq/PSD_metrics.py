@@ -168,6 +168,7 @@ def PSD_metrics(concierge):
                             logger.debug(e)
                             logger.error('Unable to write %s' % (filepath))
                             raise
+
                 except Exception as e:
                     if str(e).lower().find('could not resolve host: service.iris.edu') > -1:
                         logger.debug(e)
@@ -176,7 +177,9 @@ def PSD_metrics(concierge):
                         logger.error(e)
                     logger.warning('"PSD" metric calculation failed for %s' % (av.snclId))
                     continue
-                
+
+
+
             # Run the PSD plot ------------------------------------------
 
             if 'PSDPlot' in function_metadata :

@@ -146,11 +146,11 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
     evalresp = None
     if 'evalresp' in kwargs:
         evalresp = kwargs['evalresp']
-   
+        
     r_listOfLists = None
     if evalresp is not None:
         r_evalresp = pandas2ri.py2ri(evalresp)  # convert to R dataframe
-        r_listOfLists = R_function(r_stream, r_evalresp)
+        r_listOfLists = R_function(r_stream, evalresp=r_evalresp)
     else:
         r_listOfLists = R_function(r_stream)
 

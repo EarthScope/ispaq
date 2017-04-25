@@ -149,17 +149,35 @@ class Concierge(object):
         # Add station clients and URLs or reference a local file
         if user_request.station_url is None and ("http://" in self.dataselect_url or "https://" in self.dataselect_url):
             self.station_url = self.dataselect_url
-            self.station_client = Client(self.station_url)
+            try:
+                self.station_client = Client(self.station_url)
+            except Exception as e:
+                self.logger.warning(e)
+                self.logger.info("Metrics that require metadata information cannot be calculated")
+                self.station_url = None
+                self.station_client = None
             self.logger.info("Using station_url = %s" % self.dataselect_url)
         elif user_request.station_url is None:
             self.station_url = None
             self.station_client = None
         elif user_request.station_url in URL_MAPPINGS.keys():
             self.station_url = URL_MAPPINGS[user_request.station_url]
-            self.station_client = Client(self.station_url)
+            try:
+                self.station_client = Client(self.station_url)
+            except Exception as e:
+                self.logger.warning(e)
+                self.logger.info("Metrics that require metadata information cannot be calculated")
+                self.station_url = None
+                self.station_client = None
         elif "http://" in user_request.station_url or "https://" in user_request.station_url:
             self.station_url = user_request.station_url
-            self.station_client = Client(self.station_url)
+            try:
+                self.station_client = Client(self.station_url)
+            except Exception as e:
+                self.logger.warning(e)
+                self.logger.info("Metrics that require metadata information cannot be calculated")
+                self.station_url = None
+                self.station_client = None
         else:
             if os.path.exists(os.path.abspath(user_request.station_url)):
                 # Get data from local StationXML files
@@ -168,6 +186,7 @@ class Concierge(object):
             else:
                 err_msg = "Cannot find station_url '%s'" % user_request.station_url
                 self.logger.warning("Cannot find station_url '%s'" % user_request.station_url)
+                self.logger.info("Metrics that require metadata information cannot be calculated")
                 self.station_url = None
                 self.station_client = None
 
@@ -181,6 +200,8 @@ class Concierge(object):
                self.event_client = Client(self.event_url)
             except Exception as e:
                self.logger.warning(e)
+               self.logger.info("Metrics that require event information cannot be calculated")
+               self.event_url = None
                self.event_client = None
         elif user_request.event_url in URL_MAPPINGS.keys():
             self.event_url = URL_MAPPINGS[user_request.event_url]
@@ -188,6 +209,8 @@ class Concierge(object):
                 self.event_client = Client(self.event_url)
             except Exception as e:
                 self.logger.warning(e)
+                self.logger.info("Metrics that require event information cannot be calculated")
+                self.event_url = None
                 self.event_client = None
         elif "http://" in user_request.event_url or "https://" in user_request.event_url:
             self.event_url = user_request.event_url
@@ -195,6 +218,8 @@ class Concierge(object):
                 self.event_client = Client(self.event_url)
             except Exception as e:
                 self.logger.warning(e)
+                self.logger.info("Metrics that require event information cannot be calculated")
+                self.event_url = None
                 self.event_client = None
         else:
             if os.path.exists(os.path.abspath(user_request.event_url)):
@@ -208,8 +233,7 @@ class Concierge(object):
                 self.event_client = None
 
         # Deal with potential start = None
-        if self.requested_starttime is None and self.station_client is None:
-            
+        if self.requested_starttime is None and self.dataselect_client is None:
             self.logger.info("No start time requested. Start and end time will be determined from local data file extents")
             self.fileDates = []
             for sncl_pattern in self.sncl_patterns:
@@ -240,10 +264,10 @@ class Concierge(object):
                 self.requested_starttime = min(self.fileDates)[0]
                 if self.requested_endtime is None:
                     self.requested_endtime = max(self.fileDates)[0] +86400  # add one day
-                self.logger.info("Start time %s" % self.requested_starttime)
-                self.logger.info("End time %s" % self.requested_endtime)
+                self.logger.info("Start time %s" % self.requested_starttime.datetime)
+                self.logger.info("End time %s" % self.requested_endtime.datetime)
         elif self.requested_starttime is None:
-             logger.critical("--starttime must be specified for station_url %s" % self.station_url)
+             logger.critical("--starttime must be specified for dataselect_url %s" % self.station_url)
              raise SystemExit
           
 
@@ -415,7 +439,7 @@ class Concierge(object):
                 try:
                     # Get list of all sncls we have  metadata for
                     if self.station_url is None:
-                        self.logger.info("Reading station metadata : No station_url found")
+                        self.logger.info("Reading station metadata : No metadata found")
                     else:
                         self.logger.info("Reading StationXML file %s" % self.station_url)
                         sncl_inventory = obspy.read_inventory(self.station_url, format="STATIONXML")
@@ -1024,8 +1048,6 @@ class Concierge(object):
         if self.event_client is None:
             # Read local QuakeML file
             try:
-                if self.event_url is None:
-                    self.logger.info("Reading events: No event_url found")
                 event_catalog = obspy.read_events(self.event_url)
             except Exception as e:
                 err_msg = "The QuakeML file: '%s' is not valid" % self.event_url
