@@ -147,19 +147,22 @@ class Concierge(object):
                 raise SystemExit
 
         # Add station clients and URLs or reference a local file
-        if user_request.station_url is None and ("http://" in self.dataselect_url or "https://" in self.dataselect_url):
-            self.station_url = self.dataselect_url
-            try:
-                self.station_client = Client(self.station_url)
-            except Exception as e:
-                self.logger.warning(e)
+        if user_request.station_url is None:
+            if ("http://" in self.dataselect_url or "https://" in self.dataselect_url):
+                self.station_url = self.dataselect_url
+                self.logger.info("Using station_url = %s" % self.dataselect_url)
+                try:
+                    self.station_client = Client(self.station_url)
+                except Exception as e:
+                    self.logger.warning(e)
+                    self.logger.info("Metrics that require metadata information cannot be calculated")
+                    self.station_url = None
+                    self.station_client = None
+            else:
+                self.logger.info("No station_url found")
                 self.logger.info("Metrics that require metadata information cannot be calculated")
                 self.station_url = None
                 self.station_client = None
-            self.logger.info("Using station_url = %s" % self.dataselect_url)
-        elif user_request.station_url is None:
-            self.station_url = None
-            self.station_client = None
         elif user_request.station_url in URL_MAPPINGS.keys():
             self.station_url = URL_MAPPINGS[user_request.station_url]
             try:
@@ -191,7 +194,11 @@ class Concierge(object):
                 self.station_client = None
 
         # Add event clients and URLs or reference a local file
+        event_metrics = ["sample_snr","cross_talk","polarity_check","orientation_check"]
         if user_request.event_url is None:
+            if any(map(lambda x: x in self.metric_names, event_metrics)):  # only warn if calculating event metrics
+                self.logger.warning("event_url is None or not specified")
+                self.logger.info("Metrics that require event information cannot be calculated")
             self.event_url = None  # no event service or xml, some metrics cannot be run
             self.event_client = None
         elif user_request.event_url == "USGS":
@@ -199,8 +206,9 @@ class Concierge(object):
             try:
                self.event_client = Client(self.event_url)
             except Exception as e:
-               self.logger.warning(e)
-               self.logger.info("Metrics that require event information cannot be calculated")
+               if any(map(lambda x: x in self.metric_names, event_metrics)):  # only warn if calculating event metrics 
+                   self.logger.warning(e)
+                   self.logger.info("Metrics that require event information cannot be calculated")
                self.event_url = None
                self.event_client = None
         elif user_request.event_url in URL_MAPPINGS.keys():
@@ -208,8 +216,9 @@ class Concierge(object):
             try:
                 self.event_client = Client(self.event_url)
             except Exception as e:
-                self.logger.warning(e)
-                self.logger.info("Metrics that require event information cannot be calculated")
+                if any(map(lambda x: x in self.metric_names, event_metrics)):  # only warn if calculating event metrics
+                    self.logger.warning(e)
+                    self.logger.info("Metrics that require event information cannot be calculated")
                 self.event_url = None
                 self.event_client = None
         elif "http://" in user_request.event_url or "https://" in user_request.event_url:
@@ -217,8 +226,9 @@ class Concierge(object):
             try:
                 self.event_client = Client(self.event_url)
             except Exception as e:
-                self.logger.warning(e)
-                self.logger.info("Metrics that require event information cannot be calculated")
+                if any(map(lambda x: x in self.metric_names, event_metrics)):  # only warn if calculating event metrics
+                    self.logger.warning(e)
+                    self.logger.info("Metrics that require event information cannot be calculated")
                 self.event_url = None
                 self.event_client = None
         else:
@@ -227,14 +237,18 @@ class Concierge(object):
                 self.event_url = os.path.abspath(user_request.event_url)
                 self.event_client = None
             else:
-                self.logger.warning("Cannot find event_url '%s'" % user_request.event_url)
-                self.logger.warning("Metrics that require event information cannot be calculated")
+                if any(map(lambda x: x in self.metric_names, event_metrics)):  # only warn if calculating event metrics
+                    self.logger.warning("Cannot find event_url '%s'" % user_request.event_url)
+                    self.logger.warning("Metrics that require event information cannot be calculated")
                 self.event_url = None
                 self.event_client = None
 
         # Deal with potential start = None
         if self.requested_starttime is None and self.dataselect_client is None:
-            self.logger.info("No start time requested. Start and end time will be determined from local data file extents")
+            if self.requested_endtime is None:
+               self.logger.info("No start or end time requested. Start and end time will be determined from local data file extents")
+            else:
+               self.logger.info("No start time requested. Start time will be determined from local data file extents")
             self.fileDates = []
             for sncl_pattern in self.sncl_patterns:
                 matching_files = []
@@ -437,13 +451,13 @@ class Concierge(object):
             # Only read/parse if we haven't already done so
             if self.availability is None:
                 try:
-                    # Get list of all sncls we have  metadata for
-                    if self.station_url is None:
-                        self.logger.info("Reading station metadata : No metadata found")
-                    else:
+                    # Get list of all sncls we have metadata for
+                    #if self.station_url is None:
+                        #self.logger.info("Reading station metadata : No metadata found")
+                    #else:
+                    if self.station_url is not None:            
                         self.logger.info("Reading StationXML file %s" % self.station_url)
                         sncl_inventory = obspy.read_inventory(self.station_url, format="STATIONXML")
-                        #self.logger.debug(sncl_inventory)
 
                 except Exception as e:
                     err_msg = "The StationXML file: '%s' is not valid" % self.station_url
