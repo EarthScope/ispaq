@@ -99,6 +99,7 @@ def crossCorrelation_metrics(concierge):
         halfHourEnd = event.time + 60 * 28
 
         try:        
+            logger.info("Looking for data from %s to %s" % (halfHourStart,halfHourEnd))
             availability = concierge.get_availability(starttime=halfHourStart, endtime=halfHourEnd,
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=eventMinradius, maxradius=eventMaxradius)
@@ -180,13 +181,17 @@ def crossCorrelation_metrics(concierge):
                 logger.warning('Skipping %s because get_availability failed for nearby SNCLs: %s' % (av1.snclId, e))
                 continue
             if availability2 is None:
-                logger.info("Skipping %s with no available nearby stations" % (av1.snclId))
+                logger.info("Skipping %s with no available stations within radius %s-%s degrees" % (av1.snclId,snclMinradius,snclMaxradius))
                 continue
 
             # Sanity check that some SNCLs exist
             if availability2.shape[0] == 0:
                 logger.info('Skipping %s because no nearby stations are available' % (av1.snclId))
                 continue
+
+            # Not this station
+            stationMask = availability2.station != av1.station
+            availability2 = availability2[stationMask]
 
             logger.debug('Found %d nearby SNCLs' % (availability2.shape[0]))
 
@@ -196,9 +201,6 @@ def crossCorrelation_metrics(concierge):
             metaMask = availability2.samplerate.isnull().values
             metaMask = metaMask == False
             availability2 = availability2[metaMask]
-
-            # Not this station
-            stationMask = availability2.station != av1.station
 
             # Sample rate compatibility, sample rates must be  multiples of each other  (assumes sample rate >= 1, pracma::rem requires integer values)
             # FutureWarning: in the future, np.full(3, 40) will return an array of dtype('int64')
@@ -222,10 +224,10 @@ def crossCorrelation_metrics(concierge):
                 channelMask = chMask & nonZMask & azimuthMask
                 
             # Bitwise AND to get the final mask
-            mask = stationMask & channelMask & sampleRateMask
+            mask = channelMask & sampleRateMask
 
             if not any(mask):
-                logger.info('Skipping %s because no nearby SNCLs are compatible' % (av1.snclId))
+                logger.info('Skipping %s because no compatible stations found within radius %s-%s degrees' % (av1.snclId, snclMinradius, snclMaxradius))
                 continue
             else:
                 avCompatible = availability2[mask].reset_index()
@@ -298,7 +300,7 @@ def crossCorrelation_metrics(concierge):
  
             # if last avCompatible snclid doesn't pass checks it will end up here. 
             if testx == 1:
-                logger.info('Skipping %s because no nearby SNCLs are compatible' % (av1.snclId))
+                logger.info('Skipping %s because no compatible stations found within radius %s-%s degrees' % (av1.snclId, snclMinradius, snclMaxradius))
                 continue
 
             # Calculate the cross-correlation metrics and append them to the list

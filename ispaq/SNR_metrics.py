@@ -51,6 +51,10 @@ def SNR_metrics(concierge):
         logger.info('No events found for SNR metrics')
         return None
         
+    if concierge.station_url is None:
+        logger.warning('No station metadata found for SNR metrics')
+        return None
+
     # Container for all of the metrics dataframes generated
     dataframes = []
 

@@ -138,6 +138,8 @@ def transferFunction_metrics(concierge):
 	
 		# Find channels with the current dip
 		channelAvailability = stationAvailability[abs(stationAvailability.dip) == dip].reset_index(drop=True)
+
+                logger.debug(channelAvailability)
 	
 		# Treat vertical channels as we've always done
 		if dip == 90:

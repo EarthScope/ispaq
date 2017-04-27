@@ -260,6 +260,7 @@ class Concierge(object):
                 if (len(matching_files) == 0):
                     continue
                 else:
+                    #self.logger.debug("Found files: \n %s" % '\n '.join(matching_files))
                     for _file in matching_files:
                         try:
                             _fileSNCL = _file.split("/")[-1]
@@ -268,8 +269,8 @@ class Concierge(object):
                             _fileDate = UTCDateTime("-".join([_fileYear,_fileJday]))
                             self.fileDates.append([_fileDate])
                         except Exception as e:
-                            logger.debug(e)
-                            logger.debug("Can't extract date from %s, %s" % (_file,e))
+                            self.logger.debug(e)
+                            self.logger.debug("Can't extract date from %s, %s" % (_file,e))
                             continue
             if (len(self.fileDates) == 0):
                 self.logger.critical("No start date could be determined. No files found")
@@ -281,7 +282,7 @@ class Concierge(object):
                 self.logger.info("Start time %s" % self.requested_starttime.datetime)
                 self.logger.info("End time %s" % self.requested_endtime.datetime)
         elif self.requested_starttime is None:
-             logger.critical("--starttime must be specified for dataselect_url %s" % self.station_url)
+             self.logger.critical("--starttime must be specified for dataselect_url %s" % self.station_url)
              raise SystemExit
           
 
@@ -320,17 +321,17 @@ class Concierge(object):
                 self.logger.error(err_msg)
                 raise ValueError
 
-        logger.debug("starttime %s, endtime %s", self.requested_starttime, self.requested_endtime)
-        logger.debug("metric_names %s", self.metric_names)
-        logger.debug("sncl_patterns %s", self.sncl_patterns)
-        logger.debug("dataselect_url %s", self.dataselect_url)
-        logger.debug("station_url %s", self.station_url)
-        logger.debug("event_url %s", self.event_url)
-        logger.debug("resp_dir %s", self.resp_dir)
-        logger.debug("csv_dir %s", self.csv_dir)
-        logger.debug("png_dir %s", self.png_dir)
-        logger.debug("sigfigs %s", self.sigfigs)
-        logger.debug("sncl_format %s", self.sncl_format)
+        self.logger.debug("starttime %s, endtime %s", self.requested_starttime, self.requested_endtime)
+        self.logger.debug("metric_names %s", self.metric_names)
+        self.logger.debug("sncl_patterns %s", self.sncl_patterns)
+        self.logger.debug("dataselect_url %s", self.dataselect_url)
+        self.logger.debug("station_url %s", self.station_url)
+        self.logger.debug("event_url %s", self.event_url)
+        self.logger.debug("resp_dir %s", self.resp_dir)
+        self.logger.debug("csv_dir %s", self.csv_dir)
+        self.logger.debug("png_dir %s", self.png_dir)
+        self.logger.debug("sigfigs %s", self.sigfigs)
+        self.logger.debug("sncl_format %s", self.sncl_format)
 
     def get_sncl_pattern(self, netIn, staIn, locIn, chanIn):  
         snclList = list()
@@ -452,9 +453,6 @@ class Concierge(object):
             if self.availability is None:
                 try:
                     # Get list of all sncls we have metadata for
-                    #if self.station_url is None:
-                        #self.logger.info("Reading station metadata : No metadata found")
-                    #else:
                     if self.station_url is not None:            
                         self.logger.info("Reading StationXML file %s" % self.station_url)
                         sncl_inventory = obspy.read_inventory(self.station_url, format="STATIONXML")
@@ -501,10 +499,10 @@ class Concierge(object):
                                                        c.sample_rate,
                                                        c.start_date, c.end_date, snclId]
 
-                self.logger.info("Searching for data in '%s'" % self.dataselect_url)
-
                 # Add local data to the dataframe, even if we don't have metadata
                 # Loop through all sncl_patterns in the preferences file ---------------
+                self.logger.debug("Searching for data in %s" % self.dataselect_url)
+
                 for sncl_pattern in self.sncl_patterns:
                     try: 
                         UR_network = sncl_pattern.split('.')[self.netOrder]
@@ -631,7 +629,7 @@ class Concierge(object):
                     continue 
             else:
                 # Read from FDSN web services
-                self.logger.debug("read FDSN web services for %s,%s,%s,%s,%s,%s" % (_network, _station, _location, _channel, _starttime.strftime('%Y.%j'), _endtime.strftime('%Y.%j')))
+                self.logger.debug("read FDSN station web services %s for %s,%s,%s,%s,%s,%s" % (self.station_url,_network, _station, _location, _channel, _starttime.strftime('%Y.%j'), _endtime.strftime('%Y.%j')))
                 try:
                     sncl_inventory = self.station_client.get_stations(starttime=_starttime, endtime=_endtime,
                                                                       network=_network, station=_station,
@@ -641,9 +639,12 @@ class Concierge(object):
                                                                       minradius=minradius, maxradius=maxradius,                                                                
                                                                       level="channel")
                 except Exception as e:
-                    err_msg = "No sncls matching %s found at %s" % (_sncl_pattern, self.station_url)
+                    if (minradius):
+                        err_msg = "No stations found for %s within radius %s-%s degrees of latitude,longitude %s,%s" % (_sncl_pattern,minradius,maxradius,latitude,longitude)
+                    else:
+                        err_msg = "No stations found for %s" % (_sncl_pattern)
                     self.logger.debug(str(e).strip('\n'))
-                    self.logger.warning(err_msg)
+                    self.logger.info(err_msg)
                     continue
 
                 self.logger.debug('Adding %s to the availability dataframe' % _sncl_pattern)
@@ -968,7 +969,7 @@ class Concierge(object):
                 r_stream = irisseismic.R_getDataselect(self.dataselect_url, network, station, location, channel, _starttime, _endtime, quality, repository,inclusiveEnd, ignoreEpoch)
                 sys.stderr = orig_stderr
             except Exception as e:
-                err_msg = "Error reading in waveform from FDSN Webservice client (base url: %s)" % self.dataselect_url
+                err_msg = "Error reading in waveform from FDSN dataselect webservice client (base url: %s)" % self.dataselect_url
                 self.logger.debug(str(e).strip('\n'))
                 self.logger.debug(err_msg)
                 raise

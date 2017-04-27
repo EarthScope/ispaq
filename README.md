@@ -268,6 +268,9 @@ can be comma separated lists. \* or ? wildcards can be used in any of the networ
 Example, "myStations: IU.ANMO.10.BHZ, IU.\*.00.BH?, IU.ANMO.\*.?HZ, II.PFO.??.\*". By default, aliases are formatted
 as Network.Station.Location.Channel. This format pattern can be modified using the sncl_format entry discussed below.
 
+Note: When directly specifying a SNCL pattern on the command line, SNCLs containing wildcards should be 
+enclosed by quotes to avoid a possible error of unrecognized arguments.
+
 **Data_Access** has four entries describing where to find data, metadata, events, and optionally response files.
 
 * *dataselect_url:* should indicate a miniseed location as one of the FDSN web service aliases used by ObsPy 
@@ -319,8 +322,6 @@ N=network,S=station, L=location, C=channel (e.g., N.S.L.C, S.N.L.C). If no sncl_
 Any of these preference file entries can be overridden by command line arguments:
 `-M "metric name"`, `-S "station SNCL"`, `--dataselect_url`, `--station_url`, `--event_url`, `--resp_dir`, 
 `--csv_output_dir`, `--plot_output_dir`, `--sigfigs`, `--sncl_format`
-
-Note: When using `-S`, SNCL patterns containing wildcards should be enclosed by quotes to avoid a possible error.
 
 More information about using local files can be found below in the section "Using Local Data Files".
 
@@ -413,14 +414,13 @@ If your miniSEED files are not already split on day boundaries, one tool that ca
 dataselect command line tool available at 
 [https://github.com/iris-edu/dataselect](https://github.com/iris-edu/dataselect). 
 Follow the [releases](https://github.com/iris-edu/dataselect/releases) link in the README to download the latest 
-version of the source code. The following example reads the input miniSEED files, prunes the data to the sample level 
-(removes overlaps), splits the records on day boundaries, and writes to files named 
+version of the source code. The following example reads the input miniSEED files, splits the records on day boundaries, and writes to files named 
 network.station.location.channel.year.julianday.quality.
 
-Example: `dataselect -Ps -Sd -A %n.%s.%l.%c.%Y.%j.%q inputfiles`
+Example: `dataselect -Sd -A %n.%s.%l.%c.%Y.%j.%q inputfiles`
 
-Note: If you decide to prune your data using dataselect and it contains leap seconds 
-([Leap Second List](https://www.ietf.org/timezones/data/leap-seconds.list)), please read the section titled 
+Note: If you decide to prune your data (remove overlaps) using `dataselect -Ps` and it contains leap seconds 
+([Leap Second List](https://www.ietf.org/timezones/data/leap-seconds.list)), please read the section titled
 "Leap Second List File" in the dataselect documentation.
 
 ### Updating CRAN packages
