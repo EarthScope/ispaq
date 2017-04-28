@@ -107,7 +107,7 @@ def transferFunction_metrics(concierge):
 	networkStationPairs = availability.network + '.' + availability.station
 	networkStationPairs = networkStationPairs.drop_duplicates().sort_values().reset_index(drop=True)
 
-        logger.info('Calculating transferFunction metrics for %d SNCLs for %s' % (len(networkStationPairs), str(beginday).split('T')[0]))
+        logger.info('Calculating transferFunction metrics for %d stations for %s - %s' % (len(networkStationPairs), str(windowStart).split('.')[0], str(windowEnd).split('.')[0]))
 	
 	for networkStation in networkStationPairs:
       
@@ -135,20 +135,24 @@ def transferFunction_metrics(concierge):
 	
 	    for dip in dips:
 		logger.debug('Working on dip %f' % (dip))
+                logger.debug(stationAvailability)
 	
 		# Find channels with the current dip
 		channelAvailability = stationAvailability[abs(stationAvailability.dip) == dip].reset_index(drop=True)
 
-                logger.debug(channelAvailability)
-	
 		# Treat vertical channels as we've always done
 		if dip == 90:
 	
-		    # Bail if there is only one Z channel
-		    if channelAvailability.shape[0] <= 1:
-			logger.info('Skipping %s because there are no other channels for comparison' % (channelAvailability.snclId[0]))
-			continue
-	
+                    # Bail if only one location
+                    if len(channelAvailability.location.unique()) == 1:
+                        logger.info('Skipping %s because there are no other channels for comparison' % (channelAvailability.snclId[0]))
+                        continue
+
+                    # Bail if there is only one Z channel
+                    #if channelAvailability.shape[0] <= 1:
+                    #   logger.info('Skipping %s because there are no other channels for comparison' % (channelAvailability.snclId[0]))
+                    #   continue
+
 		    # NOTE:  channelAvailability is a dataframe with one row per location for the current SN.L
 		    # NOTE:  Now we use itertools.combinations to generate all combinations of locations of rows.
 		    
@@ -168,13 +172,17 @@ def transferFunction_metrics(concierge):
 			Zav1 = channelAvailability.iloc[rowMatrix[i,0],]
 			Zav2 = channelAvailability.iloc[rowMatrix[i,1],]
 
+                        # We don't want to compare two different instrument types
+                        if Zav1.channel[1:2] != Zav2.channel[1:2]:
+                            continue
+
 			# We don't want to compare 2 sample rates from the same instrument.
 			# We'll define the same instrument as one where the location code 
 			# and last 2 characters of the channel code match.
-			if ( (Zav1.location == Zav2.location) and (Zav1.channel[1:] == Zav2.channel[1:]) ):
+			if ( (Zav1.location == Zav2.location) and (Zav1.channel[-2:] == Zav2.channel[-2:]) ):
 			    continue
 		    
-		    
+                        logger.info('Calculating transferFunction metrics for %s:%s' % (Zav1.snclId, Zav2.snclId))
 			# Get primary (1) and secondary (2) traces
 			try:
 			    Zst1 = concierge.get_dataselect(Zav1.network, Zav1.station, Zav1.location, Zav1.channel, windowStart, windowEnd, inclusiveEnd=False)
@@ -207,7 +215,6 @@ def transferFunction_metrics(concierge):
 		    
 			# Run the transferFunction metric ----------------------------------------
 		
-			logger.info('%03d Calculating transferFunction metrics for %s:%s' % (i, Zav1.snclId[:-1], Zav2.snclId[:-1]))
 			try:
 			    df = irismustangmetrics.apply_correlation_metric(Zst1, Zst2, 'transferFunction', Zevalresp1, Zevalresp2)
 			    dataframes.append(df)
@@ -221,10 +228,15 @@ def transferFunction_metrics(concierge):
 		    # If azimuths don't agree for primary and secondary horizontal channels, 
 		    # we will first rotate secondary channels to match primary channels.
 	    
+                    # Bail if only one location
+                    if len(channelAvailability.location.unique()) == 1:
+                        logger.info('Skipping %s because there are no other channels for comparison' % (channelAvailability.snclId[0]))
+                        continue
+
 		    # Bail if there are only two horizontal channels
-		    if channelAvailability.shape[0] <= 2:
-			logger.info('Skipping %s because there are no other channels for comparison' % (channelAvailability.snclId[0]))
-			continue
+		    #if channelAvailability.shape[0] <= 2:
+		    #	logger.info('Skipping %s because there are no other channels for comparison' % (channelAvailability.snclId[0]))
+	            #		continue
 		     
 		    # Convert snclId into a snclPrefix that excludes the last character
 		    # Matching scnlPrefixes should be orthogonal Y and X channel pairs
@@ -274,9 +286,11 @@ def transferFunction_metrics(concierge):
 	    
 			# Hard telling why there are so many channels, so mark them "D" for drop
 			# Metadata errors can cause cases like this
+                        #logger.debug(xyAvailability)
+
 			if xyAvailability.shape[0] >= 3:
 			    for i in range(xyAvailability.shape[0]):
-				axisList.append("D")
+		        	axisList.append("D")
 
 			# END if 3 or more rows
 	    
@@ -348,12 +362,18 @@ def transferFunction_metrics(concierge):
 				av1 = availabilityList[i].iloc[int(matrixListNotToRotate[i].iloc[j,0]),]
 				av2 = availabilityList[i].iloc[int(matrixListNotToRotate[i].iloc[j,1]),]
 	    
+                                # We don't want to compare 2 different types of instruments
+                                if av1.channel[1:2] != av2.channel[1:2]:
+                                    continue
+
 				# We don't want to compare 2 sample rates from the same instrument.
 				# We'll define the same instrument as one where the location code 
 				# and last 2 characters of the channel code match.
-				if ( (av1.location == av2.location) and (av1.channel[:-1] == av2.channel[:-1]) ):
+				if ( (av1.location == av2.location) and (av1.channel[-2:] == av2.channel[-2:]) ):
 				    continue
 	    
+                                logger.info('Calculating transferFunction metrics for %s:%s' % (av1.snclId, av2.snclId))
+
 				# Get primary (1) and secondary (2) traces
 				try:
 				    st1 = concierge.get_dataselect(av1.network, av1.station, av1.location, av1.channel, windowStart, windowEnd, inclusiveEnd=False)
@@ -380,12 +400,12 @@ def transferFunction_metrics(concierge):
 				    evalresp1 = utils.getSpectra(st1, sampling_rate, concierge)
 				    evalresp2 = utils.getSpectra(st2, sampling_rate, concierge)
 				except Exception as e:
-				    logger.debug('"transferFunction_metrics" getSpectra failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+				    logger.warning('"transferFunction_metrics" getSpectra failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
 				    continue
 				    
 	    
 				# Calculate the metrics and append them to the current list
-				logger.debug('Calculating transferFunction metrics for %s:%s' % (av1.snclId, av2.snclId))
+				logger.info('Calculating transferFunction metrics for %s:%s' % (av1.snclId, av2.snclId))
 				try:
 				    df = irismustangmetrics.apply_transferFunction_metric(st1, st2, evalresp1, evalresp2)
 				except Exception as e:
@@ -412,10 +432,14 @@ def transferFunction_metrics(concierge):
 				av1 = availabilityList[i].iloc[int(matrixListToRotate[i].iloc[j,0]),]   # Primary trace for Y (i=1) or X (i=2)
 				av2 = availabilityList[i].iloc[int(matrixListToRotate[i].iloc[j,1]),]   # Secondary trace for Y (i=1) or X (i=2)
 	    
+                                # We don't want to compare 2 different types of instruments
+                                if av1.channel[1:2] != av2.channel [1:2]:
+                                    continue
+
 				# We don't want to compare 2 sample rates from the same instrument.
 				# We'll define the same instrument as one where the location code 
 				# and last 2 characters of the channel code match.
-				if ( (av1.location == av2.location) and (av1.channel[:-1] == av2.channel[:-1]) ):
+				if ( (av1.location == av2.location) and (av1.channel[-2:] == av2.channel[-2:]) ):
 				    continue
 	    
 				# Orthogonal mate of av2 - we assume they will have matching snclPrefixes
@@ -432,6 +456,8 @@ def transferFunction_metrics(concierge):
 	    
 				rotAngle = matrixListToRotate[i].iloc[j,2]
 	    
+                                logger.info('Calculating transferFunction metrics for %s:%s' % (av1.snclId, av2.snclId))
+
 				# Get primary (1), secondary (2), and secondary orthogonal traces
 				try:
 				    st1 = concierge.get_dataselect(av1.network, av1.station, av1.location, av1.channel, windowStart, windowEnd, inclusiveEnd=False)
@@ -490,7 +516,7 @@ def transferFunction_metrics(concierge):
 				try:
 				    traceRotList = irisseismic.rotate2D(Yst2, Xst2, rotAngle)
 				except Exception as e:
-				    logger.debug('Trace rotation failed: %s' % (e))
+				    logger.warning('"transferFunction_metrics Trace rotation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
 				    continue
 				
 				RYst2 = traceRotList[0]
@@ -508,7 +534,6 @@ def transferFunction_metrics(concierge):
 
 				# Determine whether primary trace was X or Y
 				if av1.cartAxis == "Y":
-				    logger.debug('Calculating transferFunction metrics for %s:%s' % (av1.snclId, av2.snclId))
 				    try:
 					df = irismustangmetrics.apply_transferFunction_metric(st1, RYst2, evalresp1, RYevalresp2)
 				    except Exception as e:
@@ -518,7 +543,6 @@ def transferFunction_metrics(concierge):
 				    dataframes.append(df)
 				    
 				elif av1.cartAxis == "X":
-				    logger.debug('Calculating transferFunction metrics for %s:%s' % (av1.snclId, av2.snclId))
 				    try:
 					df = irismustangmetrics.apply_transferFunction_metric(st1, RXst2, evalresp1, RXevalresp2)
 				    except Exception as e:
