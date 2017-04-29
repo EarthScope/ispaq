@@ -80,7 +80,7 @@ def crossCorrelation_metrics(concierge):
 
     for (index, event) in events.iterrows():
 
-        logger.info('%03d Magnitude %3.1f event: %s %sT%s:%s:%sZ' % (index, event.magnitude, event.eventLocationName, event.time.date, str(event.time.hour).zfill(2), str(event.time.minute).zfill(2), str(event.time.second).zfill(2)))
+        logger.info('%03d Magnitude %3.1f event: %s %s' % (index, event.magnitude, event.eventLocationName, event.time.strftime("%Y-%m-%dT%H:%M:%S")))
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
@@ -98,7 +98,7 @@ def crossCorrelation_metrics(concierge):
         halfHourStart = event.time - 60 * 2
         halfHourEnd = event.time + 60 * 28
 
-        logger.info("Looking for metadata from %s to %s" % (halfHourStart,halfHourEnd))
+        logger.debug("Looking for metadata from %s to %s" % (halfHourStart,halfHourEnd))
         try:        
             availability = concierge.get_availability(starttime=halfHourStart, endtime=halfHourEnd,
                                                       longitude=event.longitude, latitude=event.latitude,
@@ -131,7 +131,7 @@ def crossCorrelation_metrics(concierge):
 
             snclId = av1.snclId
             
-            logger.info('Working on %s' % (snclId))
+            logger.debug('Working on %s' % (snclId))
 
             # Get data in a window centered on the event's arrival at station #1
              
@@ -143,7 +143,7 @@ def crossCorrelation_metrics(concierge):
             windowStart = event.time + tt - windowSecs/2.0
             windowEnd = event.time + tt + windowSecs/2.0
 
-            logger.info("Looking for data for %s from %s to %s" % (av1.snclId, windowStart, windowEnd))
+            logger.debug("Looking for data for %s from %s to %s" % (av1.snclId, windowStart, windowEnd))
 
             try:
                 r_stream1 = concierge.get_dataselect(av1.network, av1.station, av1.location, av1.channel, windowStart, windowEnd)
@@ -171,7 +171,7 @@ def crossCorrelation_metrics(concierge):
 	    sncl1ch2 = snclId.split('.')[-1][1]
             channelString = "%s%s?" % (sncl1ch1,sncl1ch2)
 
-            logger.info("Looking for metadata for %s to %s within radius %s-%s degrees" % (halfHourStart, halfHourEnd, snclMinradius, snclMaxradius))
+            logger.debug("Looking for metadata for %s to %s within radius %s-%s degrees" % (halfHourStart, halfHourEnd, snclMinradius, snclMaxradius))
 
             # Get the data availability using spatial search parameters
             try:
@@ -180,15 +180,15 @@ def crossCorrelation_metrics(concierge):
                                                            longitude=av1.longitude, latitude=av1.latitude,
                                                            minradius=snclMinradius, maxradius=snclMaxradius)
             except Exception as e:
-                logger.warning('Skipping %s because get_availability failed for nearby SNCLs: %s' % (av1.snclId, e))
+                logger.warning('Skipping %s because get_availability failed for nearby stations: %s' % (av1.snclId, e))
                 continue
             if availability2 is None:
-                logger.info("Skipping %s with no available nearby stations" % (av1.snclId))
+                logger.info("Skipping %s with no available stations" % (av1.snclId))
                 continue
 
             # Sanity check that some SNCLs exist
             if availability2.shape[0] == 0:
-                logger.info('Skipping %s with no available nearby stations' % (av1.snclId))
+                logger.info('Skipping %s with no available stations' % (av1.snclId))
                 continue
 
             # Not this station
@@ -229,7 +229,7 @@ def crossCorrelation_metrics(concierge):
             mask = channelMask & sampleRateMask
 
             if not any(mask):
-                logger.info('Skipping %s because no compatible stations found' % (av1.snclId))
+                logger.info('Skipping %s with no compatible stations' % (av1.snclId))
                 continue
             else:
                 avCompatible = availability2[mask].reset_index()
@@ -260,7 +260,7 @@ def crossCorrelation_metrics(concierge):
                 windowStart = event.time + min(tt.travelTime) - windowSecs/2.0
                 windowEnd = event.time + min(tt.travelTime) + windowSecs/2.0
 
-                logger.info("Looking for near neighbor station %s from %s to %s" % (av2.snclId, windowStart, windowEnd))
+                logger.debug("Looking for near neighbor station %s from %s to %s" % (av2.snclId, windowStart, windowEnd))
 
                 try:
                     r_stream2 = concierge.get_dataselect(av2.network, av2.station, av2.location, av2.channel, windowStart, windowEnd)

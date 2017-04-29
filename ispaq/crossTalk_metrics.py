@@ -75,7 +75,7 @@ def crossTalk_metrics(concierge):
 
     for (index, event) in events.iterrows():
 
-        logger.info('%03d Magnitude %3.1f event: %s %sT%s:%s:%sZ' % (index, event.magnitude, event.eventLocationName, event.time.date, str(event.time.hour).zfill(2), str(event.time.minute).zfill(2), str(event.time.second).zfill(2)))
+        logger.info('%03d Magnitude %3.1f event: %s %s' % (index, event.magnitude, event.eventLocationName, event.time.strftime("%Y-%m-%dT%H:%M:%S")))
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
@@ -93,7 +93,23 @@ def crossTalk_metrics(concierge):
         halfHourStart = event.time - 60 * 2
         halfHourEnd = event.time + 60 * 28
   
-        logger.info("Looking for metadata from %s to %s" % (halfHourStart,halfHourEnd))
+        logger.debug("Looking for metadata from %s to %s" % (halfHourStart.strftime("%Y-%m-%dT%H:%M:%S"),halfHourEnd.strftime("%Y-%m-%dT%H:%M:%S")))
+
+        # crossTalk requires 3 channels, look for all 3 even if input SNCL pattern is for one (i.e., TA.109..BHZ will look for TA.109C..BH?)
+        original_sncl_patterns = concierge.sncl_patterns
+        new_sncl_patterns = []
+        UR=["temp0","temp1","temp2","temp3"]
+        for sncl_pattern in concierge.sncl_patterns:
+            UR[concierge.netOrder] = sncl_pattern.split('.')[concierge.netOrder]
+            UR[concierge.staOrder] = sncl_pattern.split('.')[concierge.staOrder]
+            UR[concierge.locOrder] = sncl_pattern.split('.')[concierge.locOrder]
+            UR[concierge.chanOrder] = sncl_pattern.split('.')[concierge.chanOrder]
+            if len(UR[concierge.chanOrder]) == 3:
+                UR[concierge.chanOrder]=UR[concierge.chanOrder][:-1] + '?'
+            new_sncl_pattern = ".".join(UR)
+            new_sncl_patterns.append(new_sncl_pattern)
+        concierge.sncl_patterns = new_sncl_patterns    
+
 
         try:        
             availability = concierge.get_availability(starttime=halfHourStart, endtime=halfHourEnd,
@@ -109,6 +125,7 @@ def crossTalk_metrics(concierge):
             logger.info("Skipping event with no available data")
             continue
 
+        concierge.sncl_patterns = original_sncl_patterns
                     
         # Apply the channelFilter
         availability = availability[availability.channel.str.contains(channelFilter)]      
@@ -153,7 +170,7 @@ def crossTalk_metrics(concierge):
                     logger.info("No metadata for " + av.snclId + ": skipping")
                     continue                
 
-                logger.info("Looking for data for %s from %s to %s" % (av.snclId, halfHourStart-1, halfHourEnd+1))
+                logger.debug("Looking for data for %s from %s to %s" % (av.snclId, halfHourStart.strftime("%Y-%m-%dT%H:%M:%S"), halfHourEnd.strftime("%Y-%m-%dT%H:%M:%S")))
 
                 try:
                     r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, halfHourStart-1, halfHourEnd+1, inclusiveEnd=False)
