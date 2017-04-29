@@ -419,10 +419,6 @@ network.station.location.channel.year.julianday.quality.
 
 Example: `dataselect -Sd -A %n.%s.%l.%c.%Y.%j.%q inputfiles`
 
-Note: If you decide to prune your data (remove overlaps) using `dataselect -Ps` and it contains leap seconds 
-([Leap Second List](https://www.ietf.org/timezones/data/leap-seconds.list)), please read the section titled
-"Leap Second List File" in the dataselect documentation.
-
 ### Updating CRAN packages
 
 The command line argument `-U`, `--update-r` can be used to check CRAN for newer IRISSeismic, seismicRoll, and
@@ -452,7 +448,7 @@ HTTPS CRAN mirror
 ```
 
 If a newer CRAN package does exist, the `-U` option will then automatically download the package from CRAN and
-install it.
+install it. ISPAQ code can be updated using `git pull origin master`.
 
 ### List of Metrics
 

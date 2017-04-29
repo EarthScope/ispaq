@@ -279,8 +279,8 @@ class Concierge(object):
                 self.requested_starttime = min(self.fileDates)[0]
                 if self.requested_endtime is None:
                     self.requested_endtime = max(self.fileDates)[0] +86400  # add one day
-                self.logger.info("Start time %s" % self.requested_starttime.datetime)
-                self.logger.info("End time %s" % self.requested_endtime.datetime)
+                self.logger.info("Start time %s" % self.requested_starttime.strftime("%Y-%m-%dT%H:%M:%S"))
+                self.logger.info("End time %s" % self.requested_endtime.strftime("%Y-%m-%dT%H:%M:%S"))
         elif self.requested_starttime is None:
              self.logger.critical("--starttime must be specified for dataselect_url %s" % self.station_url)
              raise SystemExit

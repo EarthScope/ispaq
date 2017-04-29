@@ -399,7 +399,6 @@ warnings.warn('Matplotlib is building the font cache using fc-list. This may tak
 <p>Note: All data is expected to be in the day file that matches its timestamp; if records do not break on the day boundary, data that is not in the correct day file will not be used in the metrics calculation. This can lead to cases where, for example, a gap is calculated at the start of a day when the data for that time period is in the previous day file.</p>
 <p>If your miniSEED files are not already split on day boundaries, one tool that can be used for this task is the dataselect command line tool available at <a href="https://github.com/iris-edu/dataselect" class="uri">https://github.com/iris-edu/dataselect</a>. Follow the <a href="https://github.com/iris-edu/dataselect/releases">releases</a> link in the README to download the latest version of the source code. The following example reads the input miniSEED files, splits the records on day boundaries, and writes to files named network.station.location.channel.year.julianday.quality.</p>
 <p>Example: <code>dataselect -Sd -A %n.%s.%l.%c.%Y.%j.%q inputfiles</code></p>
-<p>Note: If you decide to prune your data (remove overlaps) using <code>dataselect -Ps</code> and it contains leap seconds (<a href="https://www.ietf.org/timezones/data/leap-seconds.list">Leap Second List</a>), please read the section titled “Leap Second List File” in the dataselect documentation.</p>
 </div>
 <div id="updating-cran-packages" class="section level3">
 <h3>Updating CRAN packages</h3>
@@ -424,7 +423,7 @@ HTTPS CRAN mirror
 2  IRISMustangMetrics     2.0.7  2.0.4   False
 
 2017-04-18 17:25:07 - INFO - No packages need updating.</code></pre>
-<p>If a newer CRAN package does exist, the <code>-U</code> option will then automatically download the package from CRAN and install it.</p>
+<p>If a newer CRAN package does exist, the <code>-U</code> option will then automatically download the package from CRAN and install it. ISPAQ code can be updated using <code>git pull origin master</code>.</p>
 </div>
 <div id="list-of-metrics" class="section level3">
 <h3>List of Metrics</h3>

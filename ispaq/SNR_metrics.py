@@ -65,7 +65,7 @@ def SNR_metrics(concierge):
     logger.info('Calculating SNR metrics for %d events.' % (events.shape[0]))
 
     for (index, event) in events.iterrows():
-        logger.info('%03d Magnitude %3.1f Time %s event: %s' % (index, event.magnitude, event.time, event.eventLocationName))
+        logger.info('%03d Magnitude %3.1f Time %s event: %s' % (index, event.magnitude, event.time.strftime("%Y-%m-%dT%H:%M:%S"), event.eventLocationName))
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
@@ -83,6 +83,7 @@ def SNR_metrics(concierge):
         halfHourStart = event.time - 60 * 2
         halfHourEnd = event.time + 60 * 28
 
+        logger.debug("Looking for metadata from %s to %s" % (halfHourStart.strftime("%Y-%m-%dT%H:%M:%S"),halfHourEnd.strftime("%Y-%m-%dT%H:%M:%S")))
         try:        
             availability = concierge.get_availability(starttime=halfHourStart, endtime=halfHourEnd,
                                                       longitude=event.longitude, latitude=event.latitude,
@@ -139,8 +140,10 @@ def SNR_metrics(concierge):
             windowStart = event.time + travelTime - windowSecs/2
             windowEnd = event.time + travelTime + windowSecs/2
                 
+            logger.debug("Looking for data for %s from %s to %s" % (av.snclId, windowStart.strftime("%Y-%m-%dT%H:%M:%S"), windowEnd.strftime("%Y-%m-%dT%H:%M:%S")))
+
             # Get the data
-            # NOTE:  Exapand the window by an extra second to guarantee that 
+            # NOTE:  Expand the window by an extra second to guarantee that 
             # NOTE:  windowStart < tr.stats.starttime and windowEnd > tr.stats.endtime
             try:
                 r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, windowStart-1, windowEnd+1, inclusiveEnd=False)

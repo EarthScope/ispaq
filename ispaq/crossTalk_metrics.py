@@ -93,6 +93,8 @@ def crossTalk_metrics(concierge):
         halfHourStart = event.time - 60 * 2
         halfHourEnd = event.time + 60 * 28
   
+        logger.info("Looking for metadata from %s to %s" % (halfHourStart,halfHourEnd))
+
         try:        
             availability = concierge.get_availability(starttime=halfHourStart, endtime=halfHourEnd,
                                                       longitude=event.longitude, latitude=event.latitude,
@@ -150,6 +152,8 @@ def crossTalk_metrics(concierge):
                 if math.isnan(av.latitude):
                     logger.info("No metadata for " + av.snclId + ": skipping")
                     continue                
+
+                logger.info("Looking for data for %s from %s to %s" % (av.snclId, halfHourStart-1, halfHourEnd+1))
 
                 try:
                     r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, halfHourStart-1, halfHourEnd+1, inclusiveEnd=False)
