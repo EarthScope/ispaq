@@ -43,9 +43,9 @@ def main():
         
     # Parse arguments ----------------------------------------------------------
     
-    epilog_text='If no preference file is specified and the default file ./preference_files/default.txt cannot be found:\n--csv_dir defaults to "."\n--png_dir defaults to "."\n--sncl_format defaults to "N.S.C.L"\n--sigfigs defaults to "6".'
+    epilog_text='If no preference file is specified and the default file ./preference_files/default.txt cannot be found:\n--csv_dir defaults to "."\n--png_dir defaults to "."\n--sncl_format defaults to "N.S.C.L"\n--sigfigs defaults to "6"'
     #parser = argparse.ArgumentParser(description=__doc__.strip(),formatter_class=lambda prog: argparse.HelpFormatter(prog,max_help_position=29, width=82))
-    parser = argparse.ArgumentParser(description=" ".join(["version",__version__]), epilog=epilog_text,formatter_class=lambda prog: argparse.RawTextHelpFormatter(prog,max_help_position=29, width=125))
+    parser = argparse.ArgumentParser(description=" ".join(["ISPAQ version",__version__]), epilog=epilog_text,formatter_class=lambda prog: argparse.RawTextHelpFormatter(prog,max_help_position=35))
     parser._optionals.title = "single arguments"
     metrics = parser.add_argument_group('arguments for running metrics')
     metrics.add_argument('-P', '--preferences-file', required=False, help='path to preference file, default=./preference_files/default.txt')
@@ -70,12 +70,12 @@ def main():
     metrics.add_argument('--png_dir', required=False,
                         help='directory to write generated metrics .png files, overrides preference file')
     metrics.add_argument('--sncl_format', required=False,
-                        help='format of SNCL aliases and miniSEED file names, overrides preference file\nExamples:"N.S.L.C","S.N.L.C"\nwhere N=network code, S=station code, L=location code, C=channel code')
+                        help='format of SNCL aliases and miniSEED file names, overrides preference file\nexamples:"N.S.L.C","S.N.L.C"\nwhere N=network code, S=station code, L=location code, C=channel code')
     metrics.add_argument('--sigfigs', required=False,
-                        help='number of significant figures used for output columns named "value", overrides preference file')
+                        help='number of significant figures used for output columns named "value",\noverrides preference file')
     metrics.add_argument('--log-level', action='store', default='INFO',
                         choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],
-                        help='log level printed to console')
+                        help='log level printed to console, default="INFO"')
     metrics.add_argument('-A', '--append', action='store_true', default=True,
                         help='append to TRANSCRIPT file rather than overwriting')
     parser.add_argument('-V', '--version', action='version',
