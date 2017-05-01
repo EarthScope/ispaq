@@ -117,12 +117,15 @@ def crossTalk_metrics(concierge):
                                                       minradius=0, maxradius=maxradius)
         except NoAvailableDataError as e:
             logger.info('Skipping event with no available data')
+            concierge.sncl_patterns = original_sncl_patterns
             continue
         except Exception as e:
             logger.warning('Skipping event because concierge.get_availability failed: %s' % (e))
+            concierge.sncl_patterns = original_sncl_patterns
             continue
         if availability is None:
             logger.info("Skipping event with no available data")
+            concierge.sncl_patterns = original_sncl_patterns
             continue
 
         concierge.sncl_patterns = original_sncl_patterns

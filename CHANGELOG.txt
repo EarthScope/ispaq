@@ -6,10 +6,13 @@
  * use of preference file is not required as every entry can be overridden on command line
  * when output directory does not exist, ispaq tries to create it. If that fails, it defaults to current directory 
  * searches for miniSEED files down directory structure
+ * when local data is used and no starttime is specified, ISPAQ will calculate start and end times from data file names
+ * crossTalk and orientationCheck now search metadata for e.g, BH? when BHZ is the sncl_pattern (metrics require 3 channels)
  * output file names replace characters "*,?" with "x"
  * makes channel filters less restrictive
  * bug fix for crashes when internet connection not available
  * bug fix for day looping when starttime and endtime have different years
+ * bug fix for transferFunction involving channel matching
  * additional error handling
 
 0.8.8
