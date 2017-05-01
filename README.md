@@ -688,7 +688,7 @@ expressed as a percentage of maximum accuracy. Percentage is NULL if not present
 * **transfer_function**:
 Transfer function metric consisting of the gain ratio, phase difference and magnitude squared of two co-located 
 sensors. [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/transfer_function/)
-    + channels = [BCFHLM][HNX].
+    + channels = [BCFHLM][HX].
 
 ### Examples Using Default.txt Preference File
 

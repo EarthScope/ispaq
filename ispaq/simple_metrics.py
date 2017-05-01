@@ -101,6 +101,7 @@ def simple_metrics(concierge):
         for (index, av) in availability.iterrows():
 
             logger.info('%03d Calculating simple metrics for %s' % (index, av.snclId))
+            logger.debug(av)
 
             # Get the data ----------------------------------------------
 
