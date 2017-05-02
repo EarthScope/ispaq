@@ -84,7 +84,7 @@ def simple_metrics(concierge):
             logger.error('concierge.get_availability() failed')
             return None 
 
-        # NEW: If the day has no data, then skip it (used to raise NoAvailableDataError)
+        # NEW: If the station has no data, then skip it (used to raise NoAvailableDataError)
         if availability is None:
             logger.debug("skipping %s with no available data" % (starttime.date))
             continue
@@ -101,13 +101,12 @@ def simple_metrics(concierge):
         for (index, av) in availability.iterrows():
 
             logger.info('%03d Calculating simple metrics for %s' % (index, av.snclId))
-            logger.debug(av)
 
             # Get the data ----------------------------------------------
 
             # NOTE:  Use the requested starttime, not just what is available
             try:
-                r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, starttime, endtime)
+                r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, starttime, endtime, ignoreEpoch=True)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
                     logger.info('No data available for %s' % (av.snclId))
@@ -159,11 +158,22 @@ def simple_metrics(concierge):
             
                 # Limit this metric to BH. and HH. channels
                 if av.channel.startswith('BH') or av.channel.startswith('HH'):
-                    sampling_rate = utils.get_slot(r_stream, 'sampling_rate')
+                    try:
+                        r_stream_stalta = concierge.get_dataselect(av.network, av.station, av.location, av.channel, starttime, endtime)
+                    except Exception as e:
+                        if str(e).lower().find('no data') > -1:
+                            logger.info('No data available for %s' % (av.snclId))
+                        elif str(e).lower().find('multiple epochs') :
+                            logger.info('Skipping %s because multiple metadata epochs are found' % (av.snclId))
+                        else:
+                            logger.warning('No data available for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
+                            continue
+
+                    sampling_rate = utils.get_slot(r_stream_stalta, 'sampling_rate')
                     increment = math.ceil(sampling_rate / 2.0)
                 
                     try:
-                        df = irismustangmetrics.apply_simple_metric(r_stream, 'STALTA', staSecs=3, ltaSecs=30, increment=increment, algorithm='classic_LR')
+                        df = irismustangmetrics.apply_simple_metric(r_stream_stalta, 'STALTA', staSecs=3, ltaSecs=30, increment=increment, algorithm='classic_LR')
                         dataframes.append(df)
                     except Exception as e:
                         logger.warning('"STALTA" metric calculation failed for for %s: %s' % (av.snclId, e))
@@ -200,7 +210,7 @@ def simple_metrics(concierge):
         mask = result.metricName.apply(valid_metric)
         result = result[(mask)] 
         result.reset_index(drop=True, inplace=True)        
-        return(result)
+        return(result.drop_duplicates(['snclq']))
         
 
 # ------------------------------------------------------------------------------

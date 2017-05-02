@@ -200,7 +200,9 @@ def orientationCheck_metrics(concierge):
                                                windowStart, windowEnd, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.info('No data available for %s' % (Channel_1.snclId))
+                    logger.info('No data available for %s' % (Channel_1.snclId[:-1]))
+                elif str(e).lower().find('multiple epochs'):
+                        logger.info('Skipping %s because multiple metadata epochs are found' % (av.snclId))
                 else:
                     logger.warning('No data available for %s from %s: %s' % (Channel_1.snclId, concierge.dataselect_url, e))
                 continue
@@ -210,23 +212,29 @@ def orientationCheck_metrics(concierge):
                                                windowStart, windowEnd, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.info('No data available for %s' % (Channel_2.snclId))
+                    logger.info('No data available for %s' % (Channel_2.snclId[:-1]))
+                elif str(e).lower().find('multiple epochs'):
+                    logger.info('Skipping %s because multiple metadata epochs are found' % (av.snclId))
                 else:
                     logger.info('No data available for %s from %s: %s' % (Channel_2.snclId, concierge.dataselect_url, e))
                 continue
         
+            logger.debug("Looking for data for %s from %s to %s" % (ZChannel.snclId, windowStart.strftime("%Y-%m-%dT%H:%M:%S"), windowEnd.strftime("%Y-%m-%dT%H:%M:%S")))
+
             try:
                 stZ = concierge.get_dataselect(ZChannel.network, ZChannel.station, ZChannel.location, ZChannel.channel,
                                                windowStart, windowEnd, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
-                    logger.info('No data available for %s' % (ZChannel.snclId))
+                    logger.info('No data available for %s' % (ZChannel.snclId[:-1]))
+                elif str(e).lower().find('multiple epochs'):
+                    logger.info('Skipping %s because multiple metadata epochs are found' % (av.snclId))
                 else:
                     logger.info('No data available for %s from %s: %s' % (ZChannel.snclId, concierge.dataselect_url, e))
                 continue
         
         
-            # If metadata indicates reversed polarity (dip>0), invert the amplitudes (met 2016/03/07)
+            # If metadata indicates reversed polarity (dip>0), invert the amplitudes 
             if (ZChannel.dip > 0):
                 stZ = irisseismic.multiplyBy(stZ,-1)
         

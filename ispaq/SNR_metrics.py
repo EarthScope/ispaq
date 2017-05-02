@@ -150,6 +150,8 @@ def SNR_metrics(concierge):
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
                     logger.info('No data found for %s' % (av.snclId))
+                elif str(e).lower().find('multiple epochs') :
+                    logger.info('Skipping %s because multiple metadata epochs are found' % (av.snclId))
                 else:
                     logger.warning('No data found for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
                 # TODO:  Create appropriate empty dataframe

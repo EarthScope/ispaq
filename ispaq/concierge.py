@@ -300,9 +300,9 @@ class Concierge(object):
 
         self.output_file_base = self.csv_dir + '/' + file_base
 
-
         # Availability dataframe is stored if it is read from a local file
         self.availability = None
+        self.initial_availability = None
 
         # Filtered availability dataframe is stored for potential reuse
         self.filtered_availability = None
@@ -321,7 +321,7 @@ class Concierge(object):
                 self.logger.error(err_msg)
                 raise ValueError
 
-        self.logger.debug("starttime %s, endtime %s", self.requested_starttime, self.requested_endtime)
+        self.logger.debug("starttime %s, endtime %s", self.requested_starttime.strftime("%Y-%m-%dT%H:%M:%S"), self.requested_endtime.strftime("%Y-%m-%dT%H:%M:%S"))
         self.logger.debug("metric_names %s", self.metric_names)
         self.logger.debug("sncl_patterns %s", self.sncl_patterns)
         self.logger.debug("dataselect_url %s", self.dataselect_url)
@@ -450,7 +450,8 @@ class Concierge(object):
             # Using Local Data        
 
             # Only read/parse if we haven't already done so
-            if self.availability is None:
+
+            if self.initial_availability is None:
                 try:
                     # Get list of all sncls we have metadata for
                     if self.station_url is not None:            
@@ -567,7 +568,7 @@ class Concierge(object):
                                                            snclId]
 
                 # Now save the dataframe internally
-                self.availability = df
+                self.initial_availability = df
 
         # Container for all of the individual sncl_pattern dataframes generated
         sncl_pattern_dataframes = []
@@ -623,8 +624,9 @@ class Concierge(object):
 
             # Get availability dataframe ---------------------------------------
             if self.station_client is None:
-                # Use pre-existing internal dataframe if we are using local data 
-                df = self.availability
+                # Use pre-existing internal dataframe if we are using local data, filtered by time 
+                df = self.initial_availability
+                df = df[(df['starttime'] < _endtime-1) & (df['endtime'] > _starttime)]
                 if df is None:
                     continue 
             else:
