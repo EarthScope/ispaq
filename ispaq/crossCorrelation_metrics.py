@@ -151,7 +151,7 @@ def crossCorrelation_metrics(concierge):
                 if str(e).lower().find('no data') > -1:
                     logger.info('No data available for %s' % (av1.snclId))
                 elif str(e).lower().find('multiple epochs') :
-                    logger.info('Skipping %s because multiple metadata epochs are found' % (av.snclId))
+                    logger.info('Skipping %s because multiple metadata epochs found' % (av.snclId))
                 else:
                     logger.warning('No data available for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
                 continue

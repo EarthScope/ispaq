@@ -95,7 +95,7 @@ def pressureCorrelation_metrics(concierge):
                 if str(e).lower().find('no data') > -1:
                     logger.info('No data available for %s' % (pAv.snclId))
                 elif str(e).lower().find('multiple epochs'):
-                    logger.info('Skipping %s because multiple metadata epochs are found' % (av.snclId))
+                    logger.info('Skipping %s because multiple metadata epochs found' % (av.snclId))
                 else:
                     logger.warning('No data available for %s from %s: %s' % (pAv.snclId, concierge.dataselect_url, e))
                 continue
@@ -148,7 +148,7 @@ def pressureCorrelation_metrics(concierge):
                         if str(e).lower().find('no data') > -1:
                             logger.debug('No data available for %s' % (lAv.snclId))
                         elif str(e).lower().find('multiple epochs'):
-                            logger.info('Skipping %s because multiple metadata epochs are found' % (av.snclId))
+                            logger.info('Skipping %s because multiple metadata epochs found' % (av.snclId))
                         else:
                             logger.warning('No data available for %s from %s: %s' % (lAv.snclId, concierge.dataselect_url, e))
                         continue

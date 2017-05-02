@@ -89,15 +89,15 @@ def simple_metrics(concierge):
             logger.debug("skipping %s with no available data" % (starttime.date))
             continue
 
-        # Apply the channelFilter
-        availability = availability[availability.channel.str.contains(channelFilter)]      
+        # Apply the channelFilter and drop multiple epochs
+        availability = availability[availability.channel.str.contains(channelFilter)].drop_duplicates(['snclId'])      
 
         # function metadata dictionary
         function_metadata = concierge.function_by_logic['simple']
 
+        # Loop over rows of the availability dataframe
         logger.info('Calculating simple metrics for %d SNCLs on %s' % (availability.shape[0], str(starttime).split('T')[0]))
 
-        # Loop over rows of the availability dataframe
         for (index, av) in availability.iterrows():
 
             logger.info('%03d Calculating simple metrics for %s' % (index, av.snclId))
@@ -123,7 +123,6 @@ def simple_metrics(concierge):
                 except Exception as e:
                     logger.warning('"gaps" metric calculation failed for %s: %s' % (av.snclId, e))
             
-            
             # Run the State-of-Health metric -----------------------------
             if function_metadata.has_key('stateOfHealth'):
                 try:
@@ -131,7 +130,7 @@ def simple_metrics(concierge):
                     # for local miniSEED data, remove invalid state of health metrics
                     if concierge.dataselect_client is None:
                         df = df[~df.metricName.isin(["calibration_signal","clock_locked","event_begin","event_end","event_in_progess","timing_correction","timing_quality"])]
-                    dataframes.append(df.drop_duplicates(['sncl']))
+                    dataframes.append(df)
                 except Exception as e:
                     logger.warning('"stateOfHealth" metric calculation failed for %s: %s' % (av.snclId, e))
                     
@@ -141,7 +140,7 @@ def simple_metrics(concierge):
             if function_metadata.has_key('basicStats'):
                 try:
                     df = irismustangmetrics.apply_simple_metric(r_stream, 'basicStats')
-                    dataframes.append(df.drop_duplicates(['sncl']))
+                    dataframes.append(df)
                 except Exception as e:
                     logger.warning('"basicStats" metric calculation failed for %s: %s' % (av.snclId, e))
                     
@@ -164,15 +163,16 @@ def simple_metrics(concierge):
                         if str(e).lower().find('no data') > -1:
                             logger.info('No data available for %s' % (av.snclId))
                         elif str(e).lower().find('multiple epochs') :
-                            logger.info('Skipping %s because multiple metadata epochs are found' % (av.snclId))
+                            logger.info('Skipping %s because multiple metadata epochs found' % (av.snclId))
                         else:
                             logger.warning('No data available for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
-                            continue
+                        continue
 
                     sampling_rate = utils.get_slot(r_stream_stalta, 'sampling_rate')
                     increment = math.ceil(sampling_rate / 2.0)
                 
                     try:
+                        logger.debug("HERE")
                         df = irismustangmetrics.apply_simple_metric(r_stream_stalta, 'STALTA', staSecs=3, ltaSecs=30, increment=increment, algorithm='classic_LR')
                         dataframes.append(df)
                     except Exception as e:
@@ -192,7 +192,7 @@ def simple_metrics(concierge):
                            
                     try:
                         df = irismustangmetrics.apply_simple_metric(r_stream, 'spikes', windowSize, thresholdMin, fixedThreshold=True)
-                        dataframes.append(df.drop_duplicates(['sncl']))
+                        dataframes.append(df)
                     except Exception as e:
                         logger.warning('"spikes" metric calculation failed for %s: %s' % (av.snclId, e))            
                         

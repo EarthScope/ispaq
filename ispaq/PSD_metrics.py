@@ -99,12 +99,12 @@ def PSD_metrics(concierge):
         if availability is None:
             continue
 
-        # Apply the channelFilter
-        availability = availability[availability.channel.str.contains(channelFilter)]      
+        # Apply the channelFilter and drop multiple metadata epochs
+        availability = availability[availability.channel.str.contains(channelFilter)].drop_duplicates(['snclId'])      
 
-        logger.info('Calculating PSD metrics for %d SNCLs on %s' % (availability.shape[0],str(starttime).split('T')[0]))
-    
         # Loop over rows of the availability dataframe
+        logger.info('Calculating PSD metrics for %d SNCLs on %s' % (availability.shape[0],str(starttime).split('T')[0]))
+
         for (index, av) in availability.iterrows():
             logger.info('%03d Calculating PSD metrics for %s' % (index, av.snclId))
 
@@ -118,7 +118,7 @@ def PSD_metrics(concierge):
                 if str(e).lower().find('no data') > -1:
                     logger.info('No data available for %s' % (av.snclId))
                 elif str(e).lower().find('multiple epochs') :
-                    logger.info('Skipping %s because multiple metadata epochs are found' % (av.snclId))
+                    logger.info('Skipping %s because multiple metadata epochs found' % (av.snclId))
                 else:
                     logger.warning('No data available for %s from %s' % (av.snclId, concierge.dataselect_url))
                 continue

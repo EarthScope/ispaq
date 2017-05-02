@@ -548,7 +548,7 @@ class Concierge(object):
                                 for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
                                     matching_files.append(os.path.join(root,fname))
 
-                            self.logger.debug("Found files: \n %s" % '\n '.join(matching_files))
+                            #self.logger.debug("Found files: \n %s" % '\n '.join(matching_files))
 
                             if (len(matching_files) == 0):
                                 continue
@@ -851,6 +851,11 @@ class Concierge(object):
                         # NOTE:  ObsPy does not store station metadata with each trace.
                         # NOTE:  We need to read them in separately from station metadata.
 			availability = self.get_availability(network, station, location, channel, _starttime, _endtime)
+
+                        if(ignoreEpoch == False):
+                            if (len(availability) > 1):
+                                raise Exception("Multiple metadata epochs found for %s" % _sncl_pattern)
+
 			sensor = availability.instrument[0]
 			scale = availability.scale[0]
 			scalefreq = availability.scalefreq[0]
@@ -868,12 +873,12 @@ class Concierge(object):
 			# Create the IRISSeismic version of the stream
 			r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags,
 							sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
+
                     except Exception as e:
                         err_msg = "Error reading in local waveform from %s" % filepath
                         self.logger.debug(e)
-                        self.logger.error(err_msg)
+                        self.logger.debug(err_msg)
                         raise
-
                     if len(utils.get_slot(r_stream, 'traces')) == 0:
                         raise Exception("no data available") 
 
@@ -932,6 +937,11 @@ class Concierge(object):
 		    # NOTE:  We need to read them in separately from station metadata.
 		    # NOTE:  This should be consistent for each day of data
 		    availability = self.get_availability(network, station, location, channel, _starttime, _endtime)
+
+                    if(ignoreEpoch == False):
+                        if (len(availability) > 1):
+                            raise Exception("Multiple metadata epochs found for %s" % _sncl_pattern)
+
 		    sensor = availability.instrument[0]
 		    scale = availability.scale[0]
 		    scalefreq = availability.scalefreq[0]
@@ -954,7 +964,7 @@ class Concierge(object):
                 except Exception as e:
                     err_msg = "Error reading in local waveform from %s" % filepath
                     self.logger.debug(e)
-                    self.logger.error(err_msg)
+                    self.logger.debug(err_msg)
                     raise
 
                 if len(utils.get_slot(r_stream, 'traces')) == 0:

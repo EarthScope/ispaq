@@ -99,8 +99,8 @@ def SNR_metrics(concierge):
             logger.info("Skipping event with no available data")
             continue
                     
-        # Apply the channelFilter
-        availability = availability[availability.channel.str.contains(channelFilter)]      
+        # Apply the channelFilter and drop multiple metadata epochs
+        availability = availability[availability.channel.str.contains(channelFilter)].drop_duplicates(['snclId'])      
 
         # Sanity check that some SNCLs exist
         if availability.shape[0] == 0:
