@@ -131,7 +131,7 @@ def simple_metrics(concierge):
                     # for local miniSEED data, remove invalid state of health metrics
                     if concierge.dataselect_client is None:
                         df = df[~df.metricName.isin(["calibration_signal","clock_locked","event_begin","event_end","event_in_progess","timing_correction","timing_quality"])]
-                    dataframes.append(df)
+                    dataframes.append(df.drop_duplicates(['sncl']))
                 except Exception as e:
                     logger.warning('"stateOfHealth" metric calculation failed for %s: %s' % (av.snclId, e))
                     
@@ -141,7 +141,7 @@ def simple_metrics(concierge):
             if function_metadata.has_key('basicStats'):
                 try:
                     df = irismustangmetrics.apply_simple_metric(r_stream, 'basicStats')
-                    dataframes.append(df)
+                    dataframes.append(df.drop_duplicates(['sncl']))
                 except Exception as e:
                     logger.warning('"basicStats" metric calculation failed for %s: %s' % (av.snclId, e))
                     
@@ -192,7 +192,7 @@ def simple_metrics(concierge):
                            
                     try:
                         df = irismustangmetrics.apply_simple_metric(r_stream, 'spikes', windowSize, thresholdMin, fixedThreshold=True)
-                        dataframes.append(df)
+                        dataframes.append(df.drop_duplicates(['sncl']))
                     except Exception as e:
                         logger.warning('"spikes" metric calculation failed for %s: %s' % (av.snclId, e))            
                         
@@ -210,7 +210,7 @@ def simple_metrics(concierge):
         mask = result.metricName.apply(valid_metric)
         result = result[(mask)] 
         result.reset_index(drop=True, inplace=True)        
-        return(result.drop_duplicates(['snclq']))
+        return(result)
         
 
 # ------------------------------------------------------------------------------
