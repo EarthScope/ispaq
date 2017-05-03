@@ -172,7 +172,6 @@ def simple_metrics(concierge):
                     increment = math.ceil(sampling_rate / 2.0)
                 
                     try:
-                        logger.debug("HERE")
                         df = irismustangmetrics.apply_simple_metric(r_stream_stalta, 'STALTA', staSecs=3, ltaSecs=30, increment=increment, algorithm='classic_LR')
                         dataframes.append(df)
                     except Exception as e:

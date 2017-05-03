@@ -32,7 +32,6 @@ from rpy2 import robjects
 from rpy2 import rinterface
 from rpy2.robjects import pandas2ri
 
-
 #   R functions called internally     ------------------------------------------
 
 
@@ -188,6 +187,10 @@ def apply_PSD_plot(r_stream, filepath, evalresp=None):
     """
     result = robjects.r('grDevices::png')(filepath)
     r_psdList = robjects.r('IRISSeismic::psdList')(r_stream)    
+   
+    if len(r_psdList) == 0:
+        raise Exception("No PSDs returned")
+   
     pandas2ri.activate()
     
     # convert pandas df to R df as parameter automatically

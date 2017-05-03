@@ -741,7 +741,7 @@ class Concierge(object):
 
             # Append this dataframe
             if df.shape[0] == 0:
-                self.logger.debug("No SNCLS found matching '%s'" % _sncl_pattern)
+                self.logger.debug("No SNCLS found matching '%s' (sncl_format=%s)" % (_sncl_pattern,self.sncl_format))
             else:
                 #if df.snclId not in sncl_pattern_dataframes[:].snclId:
                 sncl_pattern_dataframes.append(df)	# tack the dataframes together

@@ -307,16 +307,23 @@ def getSpectra(st, sampling_rate, concierge):
             if (os.path.exists(localFiles)):
                 logger.debug('Found local RESP file %s' % localFiles)
                 debugMode = False
-                evalResp = evresp.getEvalresp(localFiles, network, station, location, channel, starttime,
+                try:
+                    evalResp = evresp.getEvalresp(localFiles, network, station, location, channel, starttime,
                                        minfreq, maxfreq, nfreq, units.upper(), output.upper(), "LOG", debugMode)
+                except Exception as e:
+                    raise 
+
                 if evalResp is not None:
                     break   # break early from loop if we found a result
         if evalResp is None:
             raise EvalrespException('No RESP file found at %s[.txt] or %s[.txt]' % (localFile,localFile2))
     else:    
         # calling the web service 
-        evalResp = irisseismic.getEvalresp(network, station, location, channel, starttime,
+        try:
+            evalResp = irisseismic.getEvalresp(network, station, location, channel, starttime,
                                        minfreq, maxfreq, nfreq, units.lower(), output.lower())
+        except Exception as e:
+            raise
     return(evalResp)
 
 # ------------------------------------------------------------------------------

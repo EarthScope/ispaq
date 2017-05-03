@@ -133,8 +133,10 @@ def PSD_metrics(concierge):
                         evalresp = utils.getSpectra(r_stream, sampling_rate, concierge)
 
                     # get corrected PSDs
-                    logger.debug("apply_PSD_metric...")
-                    (df, PSDcorrected, PDF) = irismustangmetrics.apply_PSD_metric(r_stream, evalresp=evalresp)
+                    try:
+                        (df, PSDcorrected, PDF) = irismustangmetrics.apply_PSD_metric(r_stream, evalresp=evalresp)
+                    except Exception as e:
+                        raise
                     dataframes.append(df)
 
                     if "psd_corrected" in concierge.metric_names :
@@ -175,6 +177,8 @@ def PSD_metrics(concierge):
                     if str(e).lower().find('could not resolve host: service.iris.edu') > -1:
                         logger.debug(e)
                         logger.error('getEvalresp failed to find service.iris.edu')
+                    elif str(e).lower().find('no psds returned') > -1:
+                        logger.warning("IRISMustangMetrics: No PSDs returned for %s" % (av.snclId))
                     else:
                         logger.error(e)
                     logger.warning('"PSD" metric calculation failed for %s' % (av.snclId))
@@ -195,7 +199,10 @@ def PSD_metrics(concierge):
                     status = irismustangmetrics.apply_PSD_plot(r_stream, filepath, evalresp=evalresp)
                     logger.info('Writing PDF plot %s.' % os.path.basename(filepath))
                 except Exception as e:
-                    logger.warning(e)
+                    if str(e).lower().find('no psds returned') > -1:
+                        logger.warning("IRISMustangMetrics: No PSDs returned for %s" % (av.snclId))
+                    else:
+                        logger.warning(e)
                     logger.warning('"PSD" plot generation failed for %s' % (av.snclId))
                     
     # Concatenate and filter dataframes before returning -----------------------
