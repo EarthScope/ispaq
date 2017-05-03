@@ -9,11 +9,13 @@
  * when local data is used and no starttime is specified, ISPAQ will calculate start and end times from data file names
  * crossTalk and orientationCheck now search metadata for e.g, BH? when BHZ is the sncl_pattern (metrics require 3 channels)
  * output file names replace characters "*,?" with "x"
+ * addition of ignoreEpoch=TRUE for simple metrics, ignoreEpoch argument now works for local files 
  * makes channel filters less restrictive
  * bug fix for crashes when internet connection not available
  * bug fix for day looping when starttime and endtime have different years
  * bug fix for transferFunction involving channel matching
  * additional error handling
+ * improved command line help output
 
 0.8.8
  * fixed bug whwen specifying FDSN webservices url that begins with https
