@@ -59,7 +59,10 @@ def apply_simple_metric(r_stream, metric_function_name, *args, **kwargs):
     :param metric_function_name: the name of the set of metrics
     :return:
     """
-    function = 'IRISMustangMetrics::' + metric_function_name + 'Metric'
+    if metric_function_name is 'numSpikes':
+        function = 'IRISMustangMetrics::spikesMetric'
+    else:
+        function = 'IRISMustangMetrics::' + metric_function_name + 'Metric'
     R_function = robjects.r(function)
     r_metriclist = R_function(r_stream, *args, **kwargs)  
     r_dataframe = _R_metricList2DF(r_metriclist)

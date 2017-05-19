@@ -1,3 +1,8 @@
+1.0.0
+ * modifies channel filters
+ * requires IRISMustangMetrics 2.0.8
+ * "-M spikes" will now run 'spikes' state of health metric instead of 'num_spikes' metric
+
 0.9.0
  * adds sncl_format entry to preferences file. Specifies which order of network, station, location, channel
    to use when looking for miniSEED files and station aliases.
@@ -18,7 +23,7 @@
  * improved command line help output
 
 0.8.8
- * fixed bug whwen specifying FDSN webservices url that begins with https
+ * fixed bug when specifying FDSN webservices url that begins with https
  * when USGS is specified as event_url, bypass ObsPy URL_MAPPINGS and map to https:/earthquake.usgs.gov
 
 0.8.7

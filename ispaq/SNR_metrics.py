@@ -38,7 +38,8 @@ def SNR_metrics(concierge):
     # Get the logger from the concierge
     logger = concierge.logger
         
-    channelFilter = '.*'
+    channelFilter = '.[HLGNPYX].'
+    logger.debug("channelFilter %s" % channelFilter)
     minmag = 5.5
     maxradius = 180
     windowSecs = 60

@@ -444,7 +444,10 @@ HTTPS CRAN mirror
 <ul>
 <li>channels = [BCDHLM][HX].</li>
 </ul></li>
-<li><p><strong>dead_channel_lin</strong>: Dead channel metric - linear fit. This metric is calculated from the mean of all the PSDs generated (typically 47 for a 24 hour period). Values of the PSD mean curve over the band linLoPeriod:linHiPeriod are fit to a linear curve by a least squares linear regression of PSD mean ~ log(period). The dead_channel_lin metric is the standard deviation of the fit residuals of this regression. Lower numbers indicate a better fit and a higher likelihood that the mean PSD is linear - an indication that the sensor is not returning expected seismic energy. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/dead_channel_lin/">Documentation</a></p></li>
+<li><strong>dead_channel_lin</strong>: Dead channel metric - linear fit. This metric is calculated from the mean of all the PSDs generated (typically 47 for a 24 hour period). Values of the PSD mean curve over the band linLoPeriod:linHiPeriod are fit to a linear curve by a least squares linear regression of PSD mean ~ log(period). The dead_channel_lin metric is the standard deviation of the fit residuals of this regression. Lower numbers indicate a better fit and a higher likelihood that the mean PSD is linear - an indication that the sensor is not returning expected seismic energy. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/dead_channel_lin/">Documentation</a>
+<ul>
+<li>channels = [BCDHM][HX].</li>
+</ul></li>
 <li><p><strong>digital_filter_charging</strong>: The number of times that the ‘A digital filter may be charging’ bit in the ‘dq_flags’ byte is set within a miniSEED file. Data samples acquired while a datalogger is loading filter parameters - such as after a reboot - may contain a transient. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/digital_filter_charging/">Documentation</a></p></li>
 <li><p><strong>digitizer_clipping</strong>: The number of times that the ‘Digitizer clipping detected’ bit in the ‘dq_flags’ byte is set within a miniSEED file. This flag indicates that the input voltage has exceeded the maximum range of the ADC. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/digitizer_clipping/">Documentation</a></p></li>
 <li><p><strong>event_begin</strong>: The number of times that the ‘Beginning of an event, station trigger’ bit in the ‘act_flags’ byte is set within a miniSEED file. This metric can be used to quickly identify data days that may have events. It may also indicate when trigger parameters need adjusting at a station. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/event_begin/">Documentation</a></p></li>
@@ -453,13 +456,16 @@ HTTPS CRAN mirror
 <li><p><strong>glitches</strong>: The number of times that the ‘Glitches detected’ bit in the ‘dq_flags’ byte is set within a miniSEED file. This metric can be used to identify data with large filled values that data users may need to handle in a way that they don’t affect their research outcomes. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/glitches/">Documentation</a></p></li>
 <li><p><strong>max_gap</strong>: Indicates the size of the largest gap encountered within a 24-hour window. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/max_gap/">Documentation</a></p></li>
 <li><p><strong>max_overlap</strong>: Indicates the size of the largest overlap in seconds encountered within a 24-hour window. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/max_overlap/">Documentation</a></p></li>
-<li><p><strong>max_stalta</strong>: The STALTAMetric function calculates the maximum of STA/LTA of the incoming seismic signal over a 24 hour period. In order to reduce computation time of the rolling averages, the averaging window is advanced in 1/2 second increments. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/max_stalta/">Documentation</a></p></li>
+<li><strong>max_stalta</strong>: The STALTAMetric function calculates the maximum of STA/LTA of the incoming seismic signal over a 24 hour period. In order to reduce computation time of the rolling averages, the averaging window is advanced in 1/2 second increments. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/max_stalta/">Documentation</a>
+<ul>
+<li>channels = [BH][HX].</li>
+</ul></li>
 <li><p><strong>missing_padded_data</strong>: The number of times that the ‘Missing/padded data present’ bit in the ‘dq_flags’ byte is set within a miniSEED file. This metric can be used to identify data with padded values that data users may need to handle in a way that they don’t affect their research outcomes. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/missing_padded_data/">Documentation</a></p></li>
 <li><p><strong>num_gaps</strong>: This metric reports the number of gaps encountered within a 24-hour window. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/num_gaps/">Documentation</a></p></li>
 <li><p><strong>num_overlaps</strong>: This metric reports the number of overlaps encountered in a 24-hour window. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/num_overlaps/">Documentation</a></p></li>
 <li><strong>num_spikes</strong>: This metric uses a rolling Hampel filter, a median absolute deviation (MAD) test, to find outliers in a timeseries. The number of discrete spikes is determined after adjacent outliers have been combined into individual spikes. NOTE: not to be confused with the spikes metric, which is an SOH flag only. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/num_spikes/">Documentation</a>
 <ul>
-<li>channels = [BH]H.</li>
+<li>channels = [BH][HX].</li>
 </ul></li>
 <li><strong>orientation_check</strong>: Determine channel orientations by rotating horizontal channels until the resulting radial component maximizes cross-correlation with the Hilbert transform of the vertical component. This metric uses Rayleigh waves from large, shallow events. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/num_spikes/">Documentation</a>
 <ul>
@@ -484,13 +490,19 @@ HTTPS CRAN mirror
 <ul>
 <li>channels = LH., LDO</li>
 </ul></li>
-<li><p><strong>psd_corrected</strong>: Power spectral density values, corrected for instrument response, in text format (starttime, endtime, frequency, power). <a href="http://service.iris.edu/mustang/noise-psd/docs/1/help/">Documentation</a></p></li>
+<li><strong>psd_corrected</strong>: Power spectral density values, corrected for instrument response, in text format (starttime, endtime, frequency, power). <a href="http://service.iris.edu/mustang/noise-psd/docs/1/help/">Documentation</a>
+<ul>
+<li>channels = .[HLGNPYX].</li>
+</ul></li>
 <li><p><strong>sample_max</strong>: This metric reports largest amplitude value in counts encountered within a 24-hour window. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/sample_max/">Documentation</a></p></li>
 <li><p><strong>sample_mean</strong>: This metric reports the average amplitude value in counts over a 24-hour window. This mean is one measure of the central tendency of the amplitudes that is calculated from every amplitude value present in the time series. The mean value itself may not occur as an amplitude value in the times series. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/sample_mean/">Documentation</a></p></li>
 <li><p><strong>sample_median</strong>: This metric reports the middle amplitude value in counts of sorted amplitude values from a 24-hour window. This median is one measure of the central tendency of the amplitudes in a time series when values are arranged in sorted order. The median value itself always occurs as an amplitude value in the times series. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/sample_median/">Documentation</a></p></li>
 <li><p><strong>sample_min</strong>: This metric reports smallest amplitude value in counts encountered within a 24-hour window. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/sample_min/">Documentation</a></p></li>
 <li><p><strong>sample_rms</strong>: Displays the RMS variance of trace amplitudes within a 24-hour window. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/sample_rms/">Documentation</a></p></li>
-<li><p><strong>sample_snr</strong>: A ratio of the RMS variance calculated from data 30 seconds before and 30 seconds following the predicted first-arriving P phase. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/sample_snr/">Documentation</a></p></li>
+<li><strong>sample_snr</strong>: A ratio of the RMS variance calculated from data 30 seconds before and 30 seconds following the predicted first-arriving P phase. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/sample_snr/">Documentation</a>
+<ul>
+<li>channels = .[HLGNPYX].</li>
+</ul></li>
 <li><p><strong>sample_unique</strong>: This metric reports the number (count) of unique values in data trace over a 24-hour window. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/sample_unique/">Documentation</a></p></li>
 <li><p><strong>spikes</strong>: The number of times that the ‘Spikes detected’ bit in the ‘dq_flags’ byte is set within a miniSEED file. This data quality flag is set by some dataloggers in the fixed section of the miniSEED header when short-duration spikes have been detected in the data. Because spikes have shorter duration than the natural period of most seismic sensors, spikes often indicate a problem introduced at or after the datalogger. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/spikes/">Documentation</a></p></li>
 <li><p><strong>suspect_time_tag</strong>: The number of times that the ‘Time tag is questionable’ bit in the ‘dq_flags’ byte is set within a miniSEED file. This metric can be used to identify stations with GPS locking problems and data days with potential timing issues. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/suspect_time_tag/">Documentation</a></p></li>

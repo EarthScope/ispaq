@@ -273,7 +273,7 @@ class UserRequest(object):
             #     Add individual preferences     ------------------------------
             
             if self.png_dir is None:
-                if preferences.has_key('png_dir'):
+                if 'png_dir' in preferences:
                     self.png_dir = os.path.abspath(os.path.expanduser(preferences['png_dir']))
                 else:
                     self.png_dir = os.path.abspath('.')
@@ -281,7 +281,7 @@ class UserRequest(object):
                 self.png_dir = os.path.abspath(os.path.expanduser(self.png_dir))
 
             if self.csv_dir is None:
-                if preferences.has_key('csv_dir'):
+                if 'csv_dir' in preferences:
                     self.csv_dir = os.path.abspath(os.path.expanduser(preferences['csv_dir']))
                 else:
                     self.csv_dir = os.path.abspath('.')
@@ -289,7 +289,7 @@ class UserRequest(object):
                 self.csv_dir = os.path.abspath(os.path.expanduser(self.csv_dir))
 
             if self.sigfigs is None:
-                if preferences.has_key('sigfigs'):
+                if 'sigfigs' in preferences:
                     self.sigfigs = preferences['sigfigs']
                 else:
                     self.sigfigs = 6

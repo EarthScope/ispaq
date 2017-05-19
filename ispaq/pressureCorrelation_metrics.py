@@ -41,8 +41,10 @@ def pressureCorrelation_metrics(concierge):
 
     # Default parameters from IRISMustangUtils::generateMetrics_crossTalk
     channelFilter = "LH."
+    logger.debug("channelFilter %s" % channelFilter)
     pressureLocation = "*"
     pressureChannel = "LDO"
+    logger.debug("pressureChannel %s" % pressureChannel)
 
     # ----- All available SNCLs -------------------------------------------------
     # Loop over days

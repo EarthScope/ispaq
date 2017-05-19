@@ -46,6 +46,7 @@ def crossTalk_metrics(concierge):
         
     # Default parameters from IRISMustangUtils::generateMetrics_crossTalk or crossTalkMetrics_exec.R
     channelFilter = '[BH]H.'
+    logger.debug("channelFilter %s" % channelFilter)
     minmag = 5.5
     maxradius = 180
     windowSecs = 60

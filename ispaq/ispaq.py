@@ -13,13 +13,13 @@ import argparse
 import datetime
 import logging
 
-__version__ = "0.9.0"
+__version__ = "1.0.0"
 
 # dictionary of currently defined ISPAQ metric groups and business logic
 # for comparison with R package IRISMustangMetrics/ISPAQUtils.R json
 
 def currentispaq():
-    groups = {'simple': ['basicStats','gaps','spikes','STALTA','stateOfHealth'],
+    groups = {'simple': ['basicStats','gaps','numSpikes','STALTA','stateOfHealth'],
               'SNR': ['SNR'],
               'PSD': ['PSD','PSDText','PSDPlot'],
               'crossCorrelation': ['crossCorrelation'],

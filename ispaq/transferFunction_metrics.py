@@ -46,6 +46,7 @@ def transferFunction_metrics(concierge):
 
     # Default parameters from IRISMustangUtils::generateMetrics_transferFunction or transferFunctionMetrics_exec.R
     channelFilter = '[BCFHLM][HX].' 
+    logger.debug("channelFilter %s" % channelFilter)
     
     # Sanity check for metadata
     if concierge.station_url is None:

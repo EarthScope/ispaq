@@ -41,7 +41,8 @@ def PSD_metrics(concierge):
     logger = concierge.logger
     
     # Default parameters 
-    channelFilter = '.*'
+    channelFilter = '.[HLGNPYX].'
+    logger.debug("channelFilter %s" % channelFilter)
 
     # function metadata dictionary
     function_metadata = concierge.function_by_logic['PSD']
@@ -219,7 +220,7 @@ def PSD_metrics(concierge):
         def valid_metric(x):
             return x in concierge.metric_names
 
-        if function_metadata.has_key('PSD'):                    
+        if 'PSD' in function_metadata:
             # Concatenate dataframes before returning ----------------------------------
             result = pd.concat(dataframes, ignore_index=True)    
             mask = result.metricName.apply(valid_metric)

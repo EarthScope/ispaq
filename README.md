@@ -110,7 +110,7 @@ Now install the IRIS R packages:
 ```
 R CMD INSTALL seismicRoll_1.1.2.tar.gz 
 R CMD INSTALL IRISSeismic_1.4.5.tar.gz
-R CMD INSTALL IRISMustangMetrics_2.0.7.tar.gz 
+R CMD INSTALL IRISMustangMetrics_2.0.8.tar.gz 
 ```
 
 ### Alternative 2 for MacOSX, Linux, or Windows (untested on Windows). Creating an environment by hand
@@ -149,7 +149,7 @@ Now install the IRIS R packages:
 ```
 R CMD INSTALL seismicRoll_1.1.2.tar.gz 
 R CMD INSTALL IRISSeismic_1.4.5.tar.gz
-R CMD INSTALL IRISMustangMetrics_2.0.7.tar.gz 
+R CMD INSTALL IRISMustangMetrics_2.0.8.tar.gz 
 ```
 
 # Using ISPAQ
@@ -505,6 +505,7 @@ by a least squares linear regression of PSD mean ~ log(period). The dead_channel
 of the fit residuals of this regression. Lower numbers indicate a better fit and a higher likelihood that the mean 
 PSD is linear - an indication that the sensor is not returning expected seismic energy.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/dead_channel_lin/)
+    + channels = [BCDHM][HX].
 
 * **digital_filter_charging**:
 The number of times that the 'A digital filter may be charging' bit in the 'dq_flags' byte is set within a miniSEED 
@@ -553,6 +554,7 @@ Indicates the size of the largest overlap in seconds encountered within a 24-hou
 The STALTAMetric function calculates the maximum of STA/LTA of the incoming seismic signal over a 24 hour period. 
 In order to reduce computation time of the rolling averages, the averaging window is advanced in 1/2 second 
 increments. [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/max_stalta/)
+    + channels = [BH][HX].
 
 * **missing_padded_data**:
 The number of times that the 'Missing/padded data present' bit in the 'dq_flags' byte is set within a miniSEED file. 
@@ -573,7 +575,7 @@ This metric uses a rolling Hampel filter, a median absolute deviation (MAD) test
 The number of discrete spikes is determined after adjacent outliers have been combined into individual spikes.
 NOTE: not to be confused with the spikes metric, which is an SOH flag only.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/num_spikes/)
-    + channels = [BH]H.  
+    + channels = [BH][HX].  
 
 * **orientation_check**:
 Determine channel orientations by rotating horizontal channels until the resulting radial component maximizes 
@@ -623,6 +625,7 @@ indicate the presence of atmospheric effects in the seismic data.
 Power spectral density values, corrected for instrument response, in text format (starttime, endtime, 
 frequency, power).
 [Documentation](http://service.iris.edu/mustang/noise-psd/docs/1/help/)
+    + channels = .[HLGNPYX].
 
 * **sample_max**:
 This metric reports largest amplitude value in counts encountered within a 24-hour window.
@@ -652,6 +655,7 @@ Displays the RMS variance of trace amplitudes within a 24-hour window.
 A ratio of the RMS variance calculated from data 30 seconds before and 30 seconds following the predicted 
 first-arriving P phase.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_snr/)
+    + channels = .[HLGNPYX].
 
 * **sample_unique**:
 This metric reports the number (count) of unique values in data trace over a 24-hour window. 

@@ -48,6 +48,7 @@ def crossCorrelation_metrics(concierge):
         
     # Default parameters from IRISMustangUtils::generateMetrics_crossCorrelation or crossCorrelationMetrics_exec.R
     channelFilter = "[CBFHLM][HX]."    
+    logger.debug("channelFilter %s" % channelFilter)
     minmag = 6.5
     eventMinradius = 15
     eventMaxradius = 90

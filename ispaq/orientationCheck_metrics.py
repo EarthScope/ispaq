@@ -39,6 +39,7 @@ def orientationCheck_metrics(concierge):
         
     # Default parameters from IRISMustangUtils::generateMetrics_orientationCheck
     channelFilter = "[BCHLM][HX]."    
+    logger.debug("channelFilter %s" % channelFilter)
     minmag = 7.0
     maxdepth = 100
     eventMinradius = 0

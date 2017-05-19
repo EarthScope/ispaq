@@ -19,7 +19,7 @@
 #
 #   run_ispaq.py -M basicStats -S basicStats --starttime 2010-04-20 --log-level INFO -A
 #   run_ispaq.py -M gaps -S gaps --starttime 2013-01-05 --endtime 2013-01-08 --log-level INFO -A
-#   run_ispaq.py -M spikes -S spikes --starttime 2013-01-03 --log-level INFO -A
+#   run_ispaq.py -M numSpikes -S spikes --starttime 2013-01-03 --log-level INFO -A
 #   run_ispaq.py -M STALTA -S STALTA --starttime 2013-06-02 --log-level INFO -A
 #   run_ispaq.py -M SNR -S SNR --starttime 2013-06-02 --log-level INFO -A
 #   run_ispaq.py -M PSD -S PSD --starttime 2011-05-18 --log-level INFO -A
@@ -40,7 +40,7 @@ Metrics:
   gaps: num_gaps, max_gap, num_overlaps, max_overlap, percent_availability
   stateOfHealth: calibration_signal, timing_correction, event_begin, event_end, event_in_progress, clock_locked, amplifier_saturation, digitizer_clipping, spikes, glitches, missing_padded_data, telemetry_sync_error, digital_filter_charging, suspect_time_tag, timing_quality
   STALTA: max_stalta
-  spikes: num_spikes
+  numSpikes: num_spikes
   SNR: sample_snr
   PSD: pct_above_nhnm, pct_below_nlnm, dead_channel_exp, dead_channel_lin, dead_channel_gsn
   PSDText: psd_corrected, pdf_text

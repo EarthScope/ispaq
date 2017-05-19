@@ -66,6 +66,15 @@ def simple_metrics(concierge):
             logger.error("concierge.get_availability() failed: '%s'" % e)
             return None
 
+    # function metadata dictionary
+    function_metadata = concierge.function_by_logic['simple']
+    if ('numSpikes' or 'STALTA') in function_metadata and len(function_metadata) == 1:
+        channelFilter = '[BH][HX].'
+    elif ('numSpikes' and 'STALTA') in function_metadata and len(function_metadata) == 2:
+        channelFilter = '[BH][HX].'
+
+    logger.debug("channelFilter %s" % channelFilter)
+
     # Loop over days
     for day in range(nday):
         starttime = (start + day * 86400)
@@ -92,9 +101,6 @@ def simple_metrics(concierge):
         # Apply the channelFilter and drop multiple epochs
         availability = availability[availability.channel.str.contains(channelFilter)].drop_duplicates(['snclId'])      
 
-        # function metadata dictionary
-        function_metadata = concierge.function_by_logic['simple']
-
         # Loop over rows of the availability dataframe
         logger.info('Calculating simple metrics for %d SNCLs on %s' % (availability.shape[0], str(starttime).split('T')[0]))
 
@@ -116,7 +122,7 @@ def simple_metrics(concierge):
 
             # Run the Gaps metric ----------------------------------------
 
-            if function_metadata.has_key('gaps'):
+            if 'gaps' in function_metadata:
                 try:
                     df = irismustangmetrics.apply_simple_metric(r_stream, 'gaps')
                     dataframes.append(df)
@@ -124,7 +130,7 @@ def simple_metrics(concierge):
                     logger.warning('"gaps" metric calculation failed for %s: %s' % (av.snclId, e))
             
             # Run the State-of-Health metric -----------------------------
-            if function_metadata.has_key('stateOfHealth'):
+            if 'stateOfHealth' in function_metadata:
                 try:
                     df = irismustangmetrics.apply_simple_metric(r_stream, 'stateOfHealth')
                     # for local miniSEED data, remove invalid state of health metrics
@@ -137,7 +143,7 @@ def simple_metrics(concierge):
             
             # Run the Basic Stats metric ---------------------------------
 
-            if function_metadata.has_key('basicStats'):
+            if 'basicStats' in function_metadata:  
                 try:
                     df = irismustangmetrics.apply_simple_metric(r_stream, 'basicStats')
                     dataframes.append(df)
@@ -153,10 +159,10 @@ def simple_metrics(concierge):
             # NOTE:  An increment that translates to 0.2-0.5 secs seems to be a good compromise
             # NOTE:  between performance and accuracy.
 
-            if function_metadata.has_key('STALTA'):
+            if 'STALTA' in function_metadata:
             
-                # Limit this metric to BH. and HH. channels
-                if av.channel.startswith('BH') or av.channel.startswith('HH'):
+                # Limit this metric to BH. and HH. channels (BX. and HX. channels for OBSIP)
+                if av.channel.startswith(('BH','HH','BX','HX')):
                     try:
                         r_stream_stalta = concierge.get_dataselect(av.network, av.station, av.location, av.channel, starttime, endtime)
                     except Exception as e:
@@ -176,24 +182,27 @@ def simple_metrics(concierge):
                         dataframes.append(df)
                     except Exception as e:
                         logger.warning('"STALTA" metric calculation failed for for %s: %s' % (av.snclId, e))
+                else:
+                    logger.info('Skipping %s because channel not valid for "STALTA" metric' % av.snclId)
                     
                     
-            # Run the Spikes metric --------------------------------------
+            # Run the numSpikes metric --------------------------------------
 
             # NOTE:  Appropriate values for spikesMetric arguments are determined empirically
                     
-            if function_metadata.has_key('spikes'):
-               
+            if 'numSpikes' in function_metadata:
                 # Limit this metric to BH. and HH. channels
-                if av.channel.startswith('BH') or av.channel.startswith('HH'):
+                if av.channel.startswith(('BH','HH','BX','HX')):
                     windowSize = 41
                     thresholdMin = 10
                            
                     try:
-                        df = irismustangmetrics.apply_simple_metric(r_stream, 'spikes', windowSize, thresholdMin, fixedThreshold=True)
+                        df = irismustangmetrics.apply_simple_metric(r_stream, 'numSpikes', windowSize, thresholdMin, fixedThreshold=True)
                         dataframes.append(df)
                     except Exception as e:
-                        logger.warning('"spikes" metric calculation failed for %s: %s' % (av.snclId, e))            
+                        logger.warning('"numSpikes" metric calculation failed for %s: %s' % (av.snclId, e))            
+                else:
+                    logger.info('Skipping %s because channel not valid for "numSpikes" metric' % av.snclId)
                         
     # Concatenate and filter dataframes before returning -----------------------
        
