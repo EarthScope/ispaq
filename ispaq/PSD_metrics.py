@@ -161,7 +161,7 @@ def PSD_metrics(concierge):
                     if "pdf_text" in concierge.metric_names :
                     # Write out the PDFs
                         filepath = concierge.csv_dir + '/' + file_base_psd + "_" + av.snclId + "_PDF.csv"
-                        logger.info('Writing PDF text to %s.' % os.path.basename(filepath))
+                        logger.info('Writing PDF text to %s' % os.path.basename(filepath))
                         try:
                             # Add target, start- and endtimes
                             PDF['target'] = av.snclId
@@ -198,7 +198,7 @@ def PSD_metrics(concierge):
                         sampling_rate = utils.get_slot(r_stream, 'sampling_rate')
                         evalresp = utils.getSpectra(r_stream, sampling_rate, concierge)
                     status = irismustangmetrics.apply_PSD_plot(r_stream, filepath, evalresp=evalresp)
-                    logger.info('Writing PDF plot %s.' % os.path.basename(filepath))
+                    logger.info('Writing PDF plot %s' % os.path.basename(filepath))
                 except Exception as e:
                     if str(e).lower().find('no psds returned') > -1:
                         logger.warning("IRISMustangMetrics: No PSDs returned for %s" % (av.snclId))
