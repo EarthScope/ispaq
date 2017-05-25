@@ -258,7 +258,7 @@ with the following comments in the header:
 # as key:value and made made available to ISPAQ.
 #
 ```
-**Metric** aliases can be any of one of the predefined options or any user created *alias: metric* combination, 
+**Metric** aliases can be any of one of the predefined options or any user-created *alias: metric* combination, 
 where *metric* can be a single metric name or a comma separated list of valid metric names. Aliases cannot be 
 combinations of other aliases. 
 Example, "myMetrics: num_gaps, sample_mean, cross_talk".
@@ -625,7 +625,7 @@ indicate the presence of atmospheric effects in the seismic data.
 Power spectral density values, corrected for instrument response, in text format (starttime, endtime, 
 frequency, power).
 [Documentation](http://service.iris.edu/mustang/noise-psd/docs/1/help/)
-    + channels = .[HLGNPYX].
+    + channels = .[HLGNPYXD].
 
 * **sample_max**:
 This metric reports largest amplitude value in counts encountered within a 24-hour window.
@@ -701,7 +701,7 @@ Note: not using `-P` in the command line is the same as specifying `-P preferenc
 ```
 run_ispaq.py -M basicStats -S basicStats --starttime 2010-100              # starttime specified as julian day
 run_ispaq.py -M gaps -S gaps --starttime 2013-01-05                        # starttime specified as calendar day
-run_ispaq.py -M spikes -S spikes --starttime 2013-01-03 --endtime 2013-01-08
+run_ispaq.py -M numSpikes -S numSpikes --starttime 2013-01-03 --endtime 2013-01-08
 run_ispaq.py -M STALTA -S STALTA --starttime 2013-153
 run_ispaq.py -M SNR -S SNR --starttime 2013-06-02
 run_ispaq.py -M PSD -S PSD --starttime 2011-138 --endtime 2011-140

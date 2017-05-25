@@ -30,8 +30,8 @@ def PSD_metrics(concierge):
     :type concierge: :class:`~ispaq.concierge.Concierge`
     :param concierge: Data access expediter.
     
-    :rtype: pandas dataframe (TODO: change this)
-    :return: Dataframe of PSD metrics. (TODO: change this)
+    :rtype: pandas dataframe 
+    :return: Dataframe of PSD metrics. 
 
     .. rubric:: Example
 
@@ -41,7 +41,7 @@ def PSD_metrics(concierge):
     logger = concierge.logger
     
     # Default parameters 
-    channelFilter = '.[HLGNPYX].'
+    channelFilter = '.[HLGNPYXD].'
     logger.debug("channelFilter %s" % channelFilter)
 
     # function metadata dictionary
@@ -56,7 +56,7 @@ def PSD_metrics(concierge):
         try:
             resp_url = Client("IRIS")
         except Exception as e:
-            logger.error("Could not connect to 'http:/service.iris.edu/evalresp'")
+            logger.error("Could not connect to 'http:/service.iris.edu/irisws/evalresp/1'")
             return None
 
     # ----- All available SNCLs -------------------------------------------------

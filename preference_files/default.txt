@@ -19,7 +19,7 @@
 #
 #   run_ispaq.py -M basicStats -S basicStats --starttime 2010-04-20 --log-level INFO -A
 #   run_ispaq.py -M gaps -S gaps --starttime 2013-01-05 --endtime 2013-01-08 --log-level INFO -A
-#   run_ispaq.py -M numSpikes -S spikes --starttime 2013-01-03 --log-level INFO -A
+#   run_ispaq.py -M numSpikes -S numSpikes --starttime 2013-01-03 --log-level INFO -A
 #   run_ispaq.py -M STALTA -S STALTA --starttime 2013-06-02 --log-level INFO -A
 #   run_ispaq.py -M SNR -S SNR --starttime 2013-06-02 --log-level INFO -A
 #   run_ispaq.py -M PSD -S PSD --starttime 2011-05-18 --log-level INFO -A
@@ -51,7 +51,7 @@ Metrics:
   orientationCheck: orientation_check
   transferFunction: transfer_function
   
-  # Example user defined combination
+  # Example user-defined combination
   customStats: sample_min, max_stalta, psd_corrected
 
 # Station Set Aliases  ---------------------------------------------------
@@ -62,7 +62,7 @@ Station_SNCLs:
   basicStats: IU.ANMO.00.BH?
   gaps: II.KAPI.00.BH?
   stateOfHealth: IU.ANMO.00.BH?
-  spikes: IU.RAO.10.BH?, IM.TX31..BH?
+  numSpikes: IU.RAO.10.BH?, IM.TX31..BH?
   STALTA: IU.ANMO.00.BHZ, US.OXF.??.BHZ, IU.GUMO.00.*
   SNR: IU.GUMO.00.BHZ
   PSD: IU.GRFO..BH?
@@ -73,7 +73,8 @@ Station_SNCLs:
   orientationCheck: IU.BILL.00.*, IU.FURI.00.*
   transferFunction: IU.ANMO.*.BH?
   
-  myStations: *.*.*.*
+  # Example user-defined combination
+  myStations: TA.*..BH?
 
 # Data access (FDSN web service providers or local files) -------------------------
  
@@ -106,7 +107,7 @@ Data_Access:
   dataselect_url: IRIS
   station_url: IRIS
   event_url: USGS
-  resp_dir:
+  resp_dir: IRIS
   
 
 # Additional user preferences --------------------------------------------------

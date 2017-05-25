@@ -59,7 +59,7 @@ def transferFunction_metrics(concierge):
         try:
             resp_url = Client("IRIS")
         except Exception as e:
-            logger.error("Could not connect to 'http:/service.iris.edu/evalresp'")
+            logger.error("Could not connect to 'http:/service.iris.edu/irisws/evalresp/1'")
             return None
     
     # Container for all of the metrics dataframes generated
