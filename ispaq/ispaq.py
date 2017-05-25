@@ -54,7 +54,7 @@ def main():
     metrics.add_argument('-S', '--stations', required=False,
                         help='stations alias as defined in preference file or station SNCL, required')
     metrics.add_argument('--starttime', required=False,
-                        help='starttime in ObsPy UTCDateTime format, required \nexamples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]')
+                        help='starttime in ObsPy UTCDateTime format, required for webservice requests and \ndefaults to earliest data file for local data \nexamples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]')
     metrics.add_argument('--endtime',  required=False,
                         help='endtime in ObsPy UTCDateTime format, default=starttime + 1 day \nexamples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]')
     metrics.add_argument('--dataselect_url', required=False,

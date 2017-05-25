@@ -9,9 +9,8 @@
 #  * Data_Access -- FDSN web services or local files
 #  * Preferences -- additional user preferences
 #
-# This file is in a very simple and somewhat forgiving format.  After
-# each category heading, all lines containing a colon will be interpreted
-# as key:value and made made available to ISPAQ.
+# This file is in a very simple format.  After each category heading, all lines containing a colon 
+# will be interpreted as key:value and made available to ISPAQ.
 #
 # Text to the right of `#` are comments and are ignored by the parser
 
@@ -98,8 +97,8 @@ Station_SNCLs:
 #  * station_url:  path of StationXML file (can also be FDSN service provider)
 #  * resp_dir: directory containing local response RESP files, if used.
 #
-# In the absence of local RESP files, ISPAQ defaults to the IRIS DMC evalresp web service.
-# http://service.iris.edu/irisws/evalresp/1/
+# If resp_dir is left blank with no directory specified, ISPAQ defaults to the IRIS DMC evalresp web 
+# service http://service.iris.edu/irisws/evalresp/1/
 #
 # NOTE: Directory names should not match FDSN provider names.
 
@@ -107,7 +106,7 @@ Data_Access:
   dataselect_url: IRIS
   station_url: IRIS
   event_url: USGS
-  resp_dir: IRIS
+  resp_dir: 
   
 
 # Additional user preferences --------------------------------------------------
