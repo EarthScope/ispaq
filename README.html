@@ -224,7 +224,8 @@ arguments for running metrics:
   --starttime STARTTIME            starttime in ObsPy UTCDateTime format, required for webservice requests and 
                                    defaults to earliest data file for local data 
                                    examples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]
-  --endtime ENDTIME                endtime in ObsPy UTCDateTime format, default=starttime + 1 day 
+  --endtime ENDTIME                endtime in ObsPy UTCDateTime format, default=starttime + 1 day; 
+                                   if starttime is also not specified then it defaults to the latest data file for local data 
                                    examples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]
   --dataselect_url DATASELECT_URL  FDSN webservice or path to directory with miniSEED files, overrides preference file
   --station_url STATION_URL        FDSN webservice or path to stationXML file, overrides preference file
@@ -245,11 +246,12 @@ If no preference file is specified and the default file ./preference_files/defau
 --csv_dir defaults to &quot;.&quot;
 --png_dir defaults to &quot;.&quot;
 --sncl_format defaults to &quot;N.S.C.L&quot;
---sigfigs defaults to &quot;6&quot;</code></pre>
+--sigfigs defaults to &quot;6&quot;
+</code></pre>
 <p>For those that prefer to run ISPAQ as a package, you can use the following invocation (using help example):</p>
 <pre><code>(ispaq) $ python -m ispaq.ispaq --help</code></pre>
 <p>When calculating metrics, valid arguments for <code>-M</code> and <code>-S</code> are required and must be provided. If <code>-P</code> is not provided, ISPAQ uses the default preference file located at ispaq/preference_files/default.txt. However, all entries in the preference file can be overridden by command-line options. If –log-level is not specified, the default log-level is INFO.</p>
-<p>When –starttime is invoked without –endtime, metrics are run for a single day. Metrics that are defined as day-long metrics (24 hour windows, see metrics documentation at <a href="http://services.iris.edu/mustang/measurements/1">MUSTANG</a>) will be calculated for the time period 00:00:00-23:59:59.9999. An endtime of YYYY-DD-MM is interpreted as YYYY-DD-MM 00:00:00 so that e.g., –starttime=2016-01-01 –endtime=2016-01-02 will also calculate one day of metrics. When an end time greater than one day is requested, metrics will be calculated by cycling through multiple single days to produce a measurement for each day. Additionally, and only if using local data files, you can run metrics without specifying a start time. In this case, ISPAQ will use a start time corresponding to the earliest file found that matches the requested station(s).</p>
+<p>When –starttime is invoked without –endtime, metrics are run for a single day. Metrics that are defined as day-long metrics (24 hour windows, see metrics documentation at <a href="http://services.iris.edu/mustang/measurements/1">MUSTANG</a>) will be calculated for the time period 00:00:00-23:59:59.9999. An endtime of YYYY-DD-MM is interpreted as YYYY-DD-MM 00:00:00 so that e.g., –starttime=2016-01-01 –endtime=2016-01-02 will also calculate one day of metrics. When an end time greater than one day is requested, metrics will be calculated by cycling through multiple single days to produce a measurement for each day. Additionally, and only if using local data files, you can run metrics without specifying a start time. In this case, ISPAQ will use a start time corresponding to the earliest file found that matches the requested station(s). Is end time is also not specified, ISPAQ will use an end time corresponding to the latest file found that matches the requested station(s).</p>
 <div id="preference-files" class="section level3">
 <h3>Preference files</h3>
 <p>The ISPAQ system is designed to be configurable through the use of <em>preference files</em>. These are usually located in the <code>preference_files/</code> directory. Not surprisingly, the default preference file is <code>preference_files/default.txt</code>. This file is self describing with the following comments in the header:</p>

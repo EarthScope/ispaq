@@ -56,7 +56,7 @@ def main():
     metrics.add_argument('--starttime', required=False,
                         help='starttime in ObsPy UTCDateTime format, required for webservice requests and \ndefaults to earliest data file for local data \nexamples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]')
     metrics.add_argument('--endtime',  required=False,
-                        help='endtime in ObsPy UTCDateTime format, default=starttime + 1 day \nexamples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]')
+                        help='endtime in ObsPy UTCDateTime format, default=starttime + 1 day; \nif starttime is also not specified then it defaults to the latest data file for local data \nexamples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]')
     metrics.add_argument('--dataselect_url', required=False,
                         help='FDSN webservice or path to directory with miniSEED files, overrides preference file')
     metrics.add_argument('--station_url', required=False,

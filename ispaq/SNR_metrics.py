@@ -173,7 +173,7 @@ def SNR_metrics(concierge):
             
             else:
                 if (utils.get_slot(r_stream, 'starttime') > windowStart) or (utils.get_slot(r_stream,'endtime') < windowEnd):
-                    logger.info('Skipping %s becuase it is missing data in the SNR window' % (av.snclId)) 
+                    logger.info('Skipping %s because it is missing data in the SNR window' % (av.snclId)) 
                     continue
                 else:
                     logger.info('Calculating SNR metrics for %s' % (av.snclId))

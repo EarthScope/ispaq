@@ -192,7 +192,8 @@ arguments for running metrics:
   --starttime STARTTIME            starttime in ObsPy UTCDateTime format, required for webservice requests and 
                                    defaults to earliest data file for local data 
                                    examples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]
-  --endtime ENDTIME                endtime in ObsPy UTCDateTime format, default=starttime + 1 day 
+  --endtime ENDTIME                endtime in ObsPy UTCDateTime format, default=starttime + 1 day; 
+                                   if starttime is also not specified then it defaults to the latest data file for local data 
                                    examples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]
   --dataselect_url DATASELECT_URL  FDSN webservice or path to directory with miniSEED files, overrides preference file
   --station_url STATION_URL        FDSN webservice or path to stationXML file, overrides preference file
@@ -214,6 +215,7 @@ If no preference file is specified and the default file ./preference_files/defau
 --png_dir defaults to "."
 --sncl_format defaults to "N.S.C.L"
 --sigfigs defaults to "6"
+
 ```
 
 For those that prefer to run ISPAQ as a package, you can use the following invocation (using help example):
@@ -233,7 +235,8 @@ YYYY-DD-MM 00:00:00 so that e.g., --starttime=2016-01-01 --endtime=2016-01-02 wi
 of metrics. When an end time greater than one day is requested, metrics will be calculated by cycling through 
 multiple single days to produce a measurement for each day. Additionally, and only if using local data files, you can run metrics
 without specifying a start time. In this case, ISPAQ will use a start time corresponding to the earliest file found that matches the 
-requested station(s). 
+requested station(s). Is end time is also not specified, ISPAQ will use an end time corresponding to the latest file found that
+matches the requested station(s).
 
 ### Preference files
 
