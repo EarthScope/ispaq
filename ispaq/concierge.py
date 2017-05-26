@@ -76,7 +76,7 @@ class Concierge(object):
         if (os.path.isdir(user_request.csv_dir)):
             self.csv_dir = user_request.csv_dir
         else:
-            self.logger.warning("csv_dir %s does not exist, creating" % user_request.csv_dir)
+            self.logger.warning("csv_dir %s does not exist, creating directory" % user_request.csv_dir)
             try:
                 os.makedirs(user_request.csv_dir)
                 self.csv_dir = user_request.csv_dir
@@ -87,7 +87,7 @@ class Concierge(object):
         if (os.path.isdir(user_request.png_dir)):
             self.png_dir = user_request.png_dir
         else:
-            self.logger.warning("png_dir %s does not exist, creating" % user_request.png_dir)
+            self.logger.warning("png_dir %s does not exist, creating directory" % user_request.png_dir)
             try:
                 os.makedirs(user_request.png_dir)
                 self.png_dir = user_request.png_dir
