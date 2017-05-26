@@ -69,8 +69,6 @@ Once cloned, if a new ispaq version becomes available, you can update the Python
 git pull origin master
 ```
 
-Once finished, ```cd ispaq``` before setting up the Anaconda environment.
-
 ## Install the Anaconda Environment
 
 [Anaconda](https://www.continuum.io/why-anaconda) is quickly becoming the *defacto*
@@ -85,51 +83,15 @@ By setting up a [conda virtual environment](http://conda.pydata.org/docs/using/e
 we assure that our ISPAQ installation is entirely separate from any other installed software.
 
 
-### Alternative 1 for MacOSX. Creating an environment from a 'spec' file.
-
-This method does everything at once.
-
-```
-conda create -n ispaq --file ispaq-explicit-spec-file.txt
-source activate ispaq
-```
-
-Note: if `source activate ispaq` does not work because your shell is csh/tcsh instead of bash
-you will need to start a bash shell first. Type `bash` in a terminal window and then proceed
-with `source activate ispaq`.
-
-See what is installed in our (ispaq) environment with:
+### Creating the ispaq environment for MacOSX, Linux, or Windows
+(untested on Windows)
 
 ```
-conda list
-```
-
-Now install the IRIS R packages:
-
-```
-R CMD INSTALL seismicRoll_1.1.2.tar.gz 
-R CMD INSTALL IRISSeismic_1.4.5.tar.gz
-R CMD INSTALL IRISMustangMetrics_2.0.8.tar.gz 
-```
-
-### Alternative 2 for MacOSX, Linux, or Windows (untested on Windows). Creating an environment by hand
-
-This method requires more user input but lets you see what is being installed.
-
-```
+cd ispaq
+conda update conda
 conda create --name ispaq python=2.7
 source activate ispaq
-conda install pandas=0.18.1
-conda install -c conda-forge obspy=1.0.3
-conda install -c r r=3.2.2
-conda install -c r r-devtools=1.9.1
-conda install -c r r-rcurl=1.95_4.7
-conda install -c r r-xml=3.98_1.3 
-conda install -c r r-dplyr=0.4.3
-conda install -c r r-quadprog=1.5.5
-conda install -c bioconda r-signal=0.7.6
-conda install -c bioconda r-pracma=1.8.8
-conda install -c bioconda rpy2=2.7.8
+conda install -c conda-forge -c r -c r-old -c bioconda --file ispaq-conda-install.txt
 ```
 
 Note: if `source activate ispaq` does not work because your shell is csh/tcsh instead of bash
@@ -156,6 +118,7 @@ Every time you use ISPAQ you must ensure that you are running in the proper Anac
 environment. If you followed the instructions above you only need to:
 
 ```
+cd ispaq
 source activate ispaq
 ```
 
@@ -709,21 +672,23 @@ sensors. [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/tra
 Note: not using `-P` in the command line is the same as specifying `-P preference_files/default.txt`
 
 ```
-run_ispaq.py -M basicStats -S basicStats --starttime 2010-100              # starttime specified as julian day
-run_ispaq.py -M gaps -S gaps --starttime 2013-01-05                        # starttime specified as calendar day
-run_ispaq.py -M numSpikes -S numSpikes --starttime 2013-01-03 --endtime 2013-01-08
-run_ispaq.py -M STALTA -S STALTA --starttime 2013-153
-run_ispaq.py -M SNR -S SNR --starttime 2013-06-02
-run_ispaq.py -M PSD -S PSD --starttime 2011-138 --endtime 2011-140
-run_ispaq.py -M PSDText -S PSD --starttime 2011-05-18 
-run_ispaq.py -M PDF -S PDF --starttime 2013-06-01
-run_ispaq.py -M crossTalk -S crossTalk --starttime 2013-09-21
-run_ispaq.py -M pressureCorrelation -S pressureCorrelation --starttime 2013-05-02
-run_ispaq.py -M crossCorrelation -S crossCorrelation --starttime 2011-01-01
-run_ispaq.py -M orientationCheck -S orientationCheck --starttime 2015-11-24
-run_ispaq.py -M transferFunction -S transferFunction --starttime=2012-10-03 --endtime=2012-10-05 
+cd ispaq
+source activate ispaq
+./run_ispaq.py -M basicStats -S basicStats --starttime 2010-100              # starttime specified as julian day
+./run_ispaq.py -M gaps -S gaps --starttime 2013-01-05                        # starttime specified as calendar day
+./run_ispaq.py -M numSpikes -S numSpikes --starttime 2013-01-03 --endtime 2013-01-08
+./run_ispaq.py -M STALTA -S STALTA --starttime 2013-153
+./run_ispaq.py -M SNR -S SNR --starttime 2013-06-02
+./run_ispaq.py -M PSD -S PSD --starttime 2011-138 --endtime 2011-140
+./run_ispaq.py -M PSDText -S PSD --starttime 2011-05-18 
+./run_ispaq.py -M PDF -S PDF --starttime 2013-06-01
+./run_ispaq.py -M crossTalk -S crossTalk --starttime 2013-09-21
+./run_ispaq.py -M pressureCorrelation -S pressureCorrelation --starttime 2013-05-02
+./run_ispaq.py -M crossCorrelation -S crossCorrelation --starttime 2011-01-01
+./run_ispaq.py -M orientationCheck -S orientationCheck --starttime 2015-11-24
+./run_ispaq.py -M transferFunction -S transferFunction --starttime=2012-10-03 --endtime=2012-10-05 
 ```
 ### Example Using Command-line Options to Override Preference File
 ```
-run_ispaq.py -M sample_mean -S II.KAPI.00.BHZ --starttime 2013-01-05 --dataselect_url ./test_data --station_url ./test_data/II.KAPI_station.xml --csv_dir ./test_data
+./run_ispaq.py -M sample_mean -S II.KAPI.00.BHZ --starttime 2013-01-05 --dataselect_url ./test_data --station_url ./test_data/II.KAPI_station.xml --csv_dir ./test_data
 ```

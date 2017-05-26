@@ -1,0 +1,11 @@
+pandas=0.18.1
+obspy=1.0.3
+r=3.2.2
+r-devtools=1.9.1
+r-rcurl=1.95_4.7
+r-xml=3.98_1.3
+r-dplyr=0.4.3
+r-quadprog=1.5_5
+r-signal=0.7_6
+r-pracma=1.8.8
+rpy2=2.7.8
