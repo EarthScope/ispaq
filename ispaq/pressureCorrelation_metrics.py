@@ -81,13 +81,13 @@ def pressureCorrelation_metrics(concierge):
             logger.info('No pressure channels available')
             continue
         else:
-            logger.info('%d pressure channels available' % (pressureAvailability.shape[0]))
+            logger.info('Calculating pressureCorrelation metrics for %d SNCLs on %s' % (pressureAvailability.shape[0], str(starttime).split('T')[0]))
    
  
         # Loop over rows of the availability dataframe
         for (pIndex, pAv) in pressureAvailability.iterrows():
         
-            logger.info('%03d Pressure channel %s' % (pIndex, pAv.snclId))
+            logger.info('%03d Calculating pressureCorrelation metric for %s' % (pIndex, pAv.snclId))
         
             # Get the data ----------------------------------------------
 
