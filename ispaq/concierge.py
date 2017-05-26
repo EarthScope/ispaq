@@ -564,7 +564,7 @@ class Concierge(object):
                                                            None, None, None, None,
                                                            None, None, None,
                                                            None, None, None,
-                                                           None, None, None,
+                                                           None, UTCDateTime("1900-01-01"), UTCDateTime("2599-12-31"),
                                                            snclId]
 
                 # Now save the dataframe internally
