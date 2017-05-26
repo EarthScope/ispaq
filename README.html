@@ -355,18 +355,16 @@ If no preference file is specified and the default file ./preference_files/defau
 <p>You can modify the information printed to the console by modifying the <code>--log-level</code>. To see detailed progress information use <code>--log-level DEBUG</code>. To hide everything other than an outright crash use <code>--log-level CRITICAL</code>. If <code>--log-level</code> is not invoked, the default is to print information at the <code>INFO</code> level. The other available levels are <code>WARNING</code> and <code>ERROR</code>.</p>
 <p>The following example demonstrates what you should see. Note: Please ignore the warning message from matplotlib. It will only occur on first use.</p>
 <pre><code>(ispaq) $ run_ispaq.py -M basicStats -S basicStats --starttime 2010-04-20 --log-level INFO
-2016-08-26 15:50:43 - INFO - Running ISPAQ version 0.7.6 on Fri Aug 26 15:50:43 2016
-
+2017-05-26 13:58:12 - INFO - Running ISPAQ version 1.0.0 on Fri May 26 13:58:12 2017
 ~/miniconda2/envs/ispaq/lib/python2.7/site-packages/matplotlib/font_manager.py:273: UserWarning: Matplotlib is 
 building the font cache using fc-list. This may take a moment. 
 warnings.warn('Matplotlib is building the font cache using fc-list. This may take a moment.')
-2016-08-26 15:51:02 - INFO - Calculating simple metrics for 3 SNCLs.
-2016-08-26 15:51:02 - INFO - 000 Calculating simple metrics for IU.ANMO.00.BH1
-2016-08-26 15:51:04 - INFO - 001 Calculating simple metrics for IU.ANMO.00.BH2
-2016-08-26 15:51:07 - INFO - 002 Calculating simple metrics for IU.ANMO.00.BHZ
-2016-08-26 15:51:09 - INFO - Writing simple metrics to basicStats_basicStats_2010-04-20__simpleMetrics.csv.
-
-2016-08-26 15:51:09 - INFO - ALL FINISHED!
+2017-05-26 13:58:22 - INFO - Calculating simple metrics for 3 SNCLs on 2010-04-20
+2017-05-26 13:58:22 - INFO - 000 Calculating simple metrics for IU.ANMO.00.BH1
+2017-05-26 13:58:24 - INFO - 001 Calculating simple metrics for IU.ANMO.00.BH2
+2017-05-26 13:58:25 - INFO - 002 Calculating simple metrics for IU.ANMO.00.BHZ
+2017-05-26 13:58:26 - INFO - Writing simple metrics to basicStats_basicStats_2010-04-20__simpleMetrics.csv
+2017-05-26 13:58:26 - INFO - ALL FINISHED!
 (ispaq) $</code></pre>
 <p>Additional information about running ISPAQ on the command line can be found by invoking <code>run_ispaq.py --help</code>.</p>
 </div>
@@ -383,7 +381,6 @@ warnings.warn('Matplotlib is building the font cache using fc-list. This may tak
 <p>The command-line argument <code>-U</code>, <code>--update-r</code> can be used to check CRAN for newer IRISSeismic, seismicRoll, and IRISMustangMetrics R packages.</p>
 <pre><code>(ispaq) bash-3.2$ ./run_ispaq.py -U
 2017-05-25 12:37:19 - INFO - Running ISPAQ version 1.0.0 on Thu May 25 12:37:19 2017
-
 2017-05-25 12:37:19 - INFO - Checking for IRIS R package updates...
 --- Please select a CRAN mirror for use in this session ---
 HTTPS CRAN mirror 
@@ -500,8 +497,8 @@ Selection: 1
 <p>Note: not using <code>-P</code> in the command line is the same as specifying <code>-P preference_files/default.txt</code></p>
 <pre><code>cd ispaq
 source activate ispaq
-./run_ispaq.py -M basicStats -S basicStats --starttime 2010-100              # starttime specified as julian day
-./run_ispaq.py -M gaps -S gaps --starttime 2013-01-05                        # starttime specified as calendar day
+./run_ispaq.py -M basicStats -S basicStats --starttime 2010-100             # starttime specified as julian day
+./run_ispaq.py -M gaps -S gaps --starttime 2013-01-05                       # starttime specified as calendar day
 ./run_ispaq.py -M numSpikes -S numSpikes --starttime 2013-01-03 --endtime 2013-01-08
 ./run_ispaq.py -M STALTA -S STALTA --starttime 2013-153
 ./run_ispaq.py -M SNR -S SNR --starttime 2013-06-02
@@ -516,7 +513,7 @@ source activate ispaq
 </div>
 <div id="example-using-command-line-options-to-override-preference-file" class="section level3">
 <h3>Example Using Command-line Options to Override Preference File</h3>
-<pre><code>./run_ispaq.py -M sample_mean -S II.KAPI.00.BHZ --starttime 2013-01-05 --dataselect_url ./test_data --station_url ./test_data/II.KAPI_station.xml --csv_dir ./test_data</code></pre>
+<pre><code>./run_ispaq.py -M sample_mean -S II.KAPI.00.BHZ --starttime 2013-01-05 --dataselect_url ./test_data --station_url ./test_data/II.KAPI_station.xml --csv_dir ./output_files</code></pre>
 </div>
 </div>
 

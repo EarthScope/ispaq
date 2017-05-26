@@ -343,18 +343,16 @@ It will only occur on first use.
 
 ```
 (ispaq) $ run_ispaq.py -M basicStats -S basicStats --starttime 2010-04-20 --log-level INFO
-2016-08-26 15:50:43 - INFO - Running ISPAQ version 0.7.6 on Fri Aug 26 15:50:43 2016
-
+2017-05-26 13:58:12 - INFO - Running ISPAQ version 1.0.0 on Fri May 26 13:58:12 2017
 ~/miniconda2/envs/ispaq/lib/python2.7/site-packages/matplotlib/font_manager.py:273: UserWarning: Matplotlib is 
 building the font cache using fc-list. This may take a moment. 
 warnings.warn('Matplotlib is building the font cache using fc-list. This may take a moment.')
-2016-08-26 15:51:02 - INFO - Calculating simple metrics for 3 SNCLs.
-2016-08-26 15:51:02 - INFO - 000 Calculating simple metrics for IU.ANMO.00.BH1
-2016-08-26 15:51:04 - INFO - 001 Calculating simple metrics for IU.ANMO.00.BH2
-2016-08-26 15:51:07 - INFO - 002 Calculating simple metrics for IU.ANMO.00.BHZ
-2016-08-26 15:51:09 - INFO - Writing simple metrics to basicStats_basicStats_2010-04-20__simpleMetrics.csv.
-
-2016-08-26 15:51:09 - INFO - ALL FINISHED!
+2017-05-26 13:58:22 - INFO - Calculating simple metrics for 3 SNCLs on 2010-04-20
+2017-05-26 13:58:22 - INFO - 000 Calculating simple metrics for IU.ANMO.00.BH1
+2017-05-26 13:58:24 - INFO - 001 Calculating simple metrics for IU.ANMO.00.BH2
+2017-05-26 13:58:25 - INFO - 002 Calculating simple metrics for IU.ANMO.00.BHZ
+2017-05-26 13:58:26 - INFO - Writing simple metrics to basicStats_basicStats_2010-04-20__simpleMetrics.csv
+2017-05-26 13:58:26 - INFO - ALL FINISHED!
 (ispaq) $
 ```
 
@@ -397,7 +395,6 @@ IRISMustangMetrics R packages.
 ```
 (ispaq) bash-3.2$ ./run_ispaq.py -U
 2017-05-25 12:37:19 - INFO - Running ISPAQ version 1.0.0 on Thu May 25 12:37:19 2017
-
 2017-05-25 12:37:19 - INFO - Checking for IRIS R package updates...
 --- Please select a CRAN mirror for use in this session ---
 HTTPS CRAN mirror 
@@ -674,8 +671,8 @@ Note: not using `-P` in the command line is the same as specifying `-P preferenc
 ```
 cd ispaq
 source activate ispaq
-./run_ispaq.py -M basicStats -S basicStats --starttime 2010-100              # starttime specified as julian day
-./run_ispaq.py -M gaps -S gaps --starttime 2013-01-05                        # starttime specified as calendar day
+./run_ispaq.py -M basicStats -S basicStats --starttime 2010-100             # starttime specified as julian day
+./run_ispaq.py -M gaps -S gaps --starttime 2013-01-05                       # starttime specified as calendar day
 ./run_ispaq.py -M numSpikes -S numSpikes --starttime 2013-01-03 --endtime 2013-01-08
 ./run_ispaq.py -M STALTA -S STALTA --starttime 2013-153
 ./run_ispaq.py -M SNR -S SNR --starttime 2013-06-02
