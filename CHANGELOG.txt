@@ -2,6 +2,8 @@
  * modifies channel filters
  * requires IRISMustangMetrics 2.0.8
  * "-M spikes" will now run 'spikes' state of health metric instead of 'num_spikes' metric
+ * bug fix for get_availability when no metadata found
+ * replaced ispaq-explicit-spec-file.txt with ispaq-conda-install.txt
 
 0.9.0
  * adds sncl_format entry to preferences file. Specifies which order of network, station, location, channel
