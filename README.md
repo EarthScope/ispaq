@@ -1,8 +1,8 @@
 # ISPAQ - IRIS System for Portable Assessment of Quality
 
 ISPAQ is a Python client that allows seismic data scientists and instrumentation operators
-to run data quality metrics on their own workstation, using much of same code base as is
-used in IRIS's MUSTANG data quality web service.
+to run data quality metrics on their own workstation, using much of same code as 
+used in IRIS's [MUSTANG](http://service.iris.edu/mustang/) data quality web service.
 
 Users have the ability to create personalized _preference files_ that list combinations
 of station specifiers and statistical metrics of interest, such that they can be run
@@ -14,7 +14,7 @@ data and metadata directly from selected data centers supporting the FDSN protoc
 option to read local [miniSEED](http://ds.iris.edu/ds/nodes/dmc/data/formats/seed/) files and metadata on 
 their own workstations and construct on-the-spot data quality analyses on that data.
 
-Output is provided in csv format for tabular metrics. In addition, Probability Density Functions (PDF) for
+Output is provided in CSV format for tabular metrics. In addition, Probability Density Functions (PDF) for
 single days can be plotted to PNG image files.
 
 The business logic for MUSTANG metrics is emulated through [ObsPy](https://github.com/obspy/obspy/wiki) 
@@ -27,13 +27,13 @@ MUSTANG.
 comprehensive quality assurance system called [MUSTANG](http://service.iris.edu/mustang/).
 
 The MUSTANG system was built to operate at the IRIS DMC and is not generally portable. 
-However, the key MUSTANG component is the Metric Calculators and these are meant to be publicly available. 
+However, the key MUSTANG component is the Metric Calculators and these are publicly available. 
 While the results of MUSTANG calculations are stored in a database and provided to users via web 
-services, ISPAQ is intended to reproduce the process of calculating these metrics locally on the 
+services, ISPAQ is intended to carry out the process of calculating these metrics locally on the 
 user's workstation.  This has the benefit of allowing users to generate just-in-time metrics on data 
-of their choosing, whether stored at IRIS DMC or on the user's own data store.
+of their choosing, whether stored an FDSN data center or on the user's own data store.
 
-IRIS has over 40 MUSTANG algorithms that calculate metrics, most written in R, that are now 
+IRIS has over 40 MUSTANG metrics algorithms, most written in R, that are now 
 available in the CRAN (Comprehensive R Archive Network) repository under the name 
 [IRISMustangMetrics](http://cran.r-project.org/).  ISPAQ comes with the latest version 
 of these packages available in CRAN and ISPAQ has an update capability to allow users to seamlessly upgrade
@@ -45,9 +45,9 @@ and portable version of MUSTANG that users are free to leverage on their own har
 
 # Installation
 
-ISPAQ must be installed on the user's system using very reliable tools for package transfer.  ISPAQ is 
-being distributed through _GitHub_, via IRIS's public repository (_iris-edu_).  You will use a simple 
-command to get a copy of the latest stable release.  In addition, you will use the _miniconda_ python 
+ISPAQ is distributed through _GitHub_, via IRIS's public repository (_iris-edu_).  You will use a 
+```git``` client command to get a copy of the latest stable release.  In addition, you will use 
+the ```miniconda``` python 
 package manager to create a customized Python environment designed to run ISPAQ properly.  This will 
 include a localized installation of ObsPy and R.
 
@@ -55,15 +55,18 @@ Follow the steps below to begin running ISPAQ.
 
 ## Download the Source Code
 
-You must first have ```git``` installed your system (see: [Git Home Page](https://git-scm.com/)).
-After you have git installed, you will download the ISPAQ distribution from GitHub by opening a
-text terminal and typing:
+You must first have ```git``` installed your system.  This is a commonly used source code management system
+and serves well as a mode of software distribution as it is easy to capture updates. See the [Git Home Page](https://git-scm.com/) to begin installation of git before proceeding further.
+
+After you have git installed, you will download the ISPAQ distribution into a directory of your choosing
+ from GitHub by opening a text terminal and typing:
 
 ```
 git clone https://github.com/iris-edu/ispaq.git
 ```
 
-Once cloned, if a new ispaq version becomes available, you can update the Python code by typing:
+This will produce a copy of this code distribution in the directory you have chosen.  When new ispaq versions
+ become available, you can update ISPAQ by typing:
 
 ```
 git pull origin master
@@ -72,12 +75,14 @@ git pull origin master
 ## Install the Anaconda Environment
 
 [Anaconda](https://www.continuum.io/why-anaconda) is quickly becoming the *defacto*
-package manager for scientific applications written python or R. The following instructions
-assume that you have installed [Miniconda](http://conda.pydata.org/miniconda.html) for
-your system.
+package manager for scientific applications written python or R. 
+[Miniconda](http://conda.pydata.org/miniconda.html) is a trimmed down version of Anaconda that contains
+the bare necessities without loading a large list of data science packages up front.  With miniconda,
+you can set up a custom python environment with just the packages you need to run ISPAQ.
 
-We will use conda to simplify installation and ensure that all dependencies
-are installed with compatible verions.
+Proceed to the [Miniconda](http://conda.pydata.org/miniconda.html) web site to find the installer for your
+operating system before proceeding with the instructions below.  If you can run ```conda``` from the command line,
+then you know you have it successfully installed.
 
 By setting up a [conda virtual environment](http://conda.pydata.org/docs/using/envs.html),
 we assure that our ISPAQ installation is entirely separate from any other installed software.
@@ -85,6 +90,10 @@ we assure that our ISPAQ installation is entirely separate from any other instal
 
 ### Creating the ispaq environment for MacOSX, Linux, or Windows
 (untested on Windows)
+
+You will go into the ispaq directory that you created with git, update miniconda, then create an 
+environment specially for ispaq.  You have to ```activate``` the ISPAQ environment whenever you 
+perform installs, updates, or run ISPAQ.
 
 ```
 cd ispaq
@@ -94,7 +103,7 @@ source activate ispaq
 conda install -c conda-forge -c r -c r-old -c bioconda --file ispaq-conda-install.txt
 ```
 
-Note: if `source activate ispaq` does not work because your shell is csh/tcsh instead of bash
+_Note:_ if `source activate ispaq` does not work because your shell is csh/tcsh instead of bash
 you will need to start a bash shell first. Type `bash` in a terminal window and then proceed
 with `source activate ispaq`.
 
@@ -104,7 +113,7 @@ See what is installed in our (ispaq) environment with:
 conda list
 ```
 
-Now install the IRIS R packages:
+Now install the IRIS R packages for ISPAQ.  This will be a good test that R is installed properly:
 
 ```
 R CMD INSTALL seismicRoll_1.1.2.tar.gz 
@@ -122,12 +131,13 @@ cd ispaq
 source activate ispaq
 ```
 
-after which your prompt should begin with ```(ispaq) ```.
+after which your prompt should begin with ```(ispaq) ```.  You run ispaq using the ```run_ispaq.py``` python script.  The example below shows how to get ISPAQ to show the help display.  A leading ```./``` is used to 
+indicate that the script is in the current directory.
 
 A list of command-line options is available with the ```--help``` flag:
 
 ```
-(ispaq) bash-3.2$ ./run_ispaq.py -h
+(ispaq)$ ./run_ispaq.py -h
 usage: run_ispaq.py [-h] [-P PREFERENCES_FILE] [-M METRICS] [-S STATIONS]
                     [--starttime STARTTIME] [--endtime ENDTIME]
                     [--dataselect_url DATASELECT_URL]
@@ -187,19 +197,21 @@ For those that prefer to run ISPAQ as a package, you can use the following invoc
 ````
 
 When calculating metrics, valid arguments for `-M` and `-S` are required and must be provided.
-If `-P` is not provided, ISPAQ uses the default preference file located at ispaq/preference_files/default.txt.
-However, all entries in the preference file can be overridden by command-line options. If --log-level is not specified, 
-the default log-level is INFO.
+If `-P` is not provided, ISPAQ uses the default preference file located at `ispaq/preference_files/default.txt`.
+However, all entries in the preference file can be overridden by command-line options. 
+If `--log-level` is not specified, the default log-level is `INFO`.
 
-When --starttime is invoked without --endtime, metrics are run for a single day. Metrics that are defined 
-as day-long metrics (24 hour windows, see metrics documentation at [MUSTANG](http://services.iris.edu/mustang/measurements/1))
-will be calculated for the time period 00:00:00-23:59:59.9999. An endtime of YYYY-DD-MM is interpreted as 
-YYYY-DD-MM 00:00:00 so that e.g., --starttime=2016-01-01 --endtime=2016-01-02 will also calculate one day 
+When `--starttime` is invoked without `--endtime`, metrics are run for a single day. Metrics that are defined 
+as day-long metrics (24 hour windows, see metrics documentation at
+ [MUSTANG](http://services.iris.edu/mustang/measurements/1))
+will be calculated for the time period `00:00:00-23:59:59.9999`. An endtime of `YYYY-DD-MM` is interpreted as 
+`YYYY-DD-MM 00:00:00` so that e.g., `--starttime=2016-01-01 --endtime=2016-01-02` will also calculate one day 
 of metrics. When an end time greater than one day is requested, metrics will be calculated by cycling through 
-multiple single days to produce a measurement for each day. Additionally, and only if using local data files, you can run metrics
-without specifying a start time. In this case, ISPAQ will use a start time corresponding to the earliest file found that matches the 
-requested station(s). Is end time is also not specified, ISPAQ will use an end time corresponding to the latest file found that
-matches the requested station(s).
+multiple single days to produce a measurement for each day. Additionally, and only if using local
+ data files, you can run metrics without specifying a start time. In this case, ISPAQ will use a
+ start time corresponding to the earliest file found that matches the 
+requested station(s). Is end time is also not specified, ISPAQ will use an end time corresponding
+to the latest file found that matches the requested station(s).
 
 ### Preference files
 
@@ -223,62 +235,75 @@ with the following comments in the header:
 #
 ```
 
-**Metric** aliases can be any of one of the predefined options or any user-created *alias: metric* combination, 
+**Metric** aliases can be any of one of the predefined options or any user-created `alias: metric` combination, 
 where *metric* can be a single metric name or a comma separated list of valid metric names. Aliases cannot be 
 combinations of other aliases. 
-Example, "myMetrics: num_gaps, sample_mean, cross_talk".
+Example: `myMetrics: num_gaps, sample_mean, cross_talk`.
 
-**Station_SNCL** aliases are user created *alias: Network.Station.Location.Channel* combinations. Station SNCLs 
-can be comma separated lists. \* or ? wildcards can be used in any of the network, station, location, channel elements. 
-Example, "myStations: IU.ANMO.10.BHZ, IU.\*.00.BH?, IU.ANMO.\*.?HZ, II.PFO.??.\*". By default, aliases are formatted
-as Network.Station.Location.Channel. This format pattern can be modified using the sncl_format entry discussed below.
+**Station_SNCL** aliases are user created `alias: Network.Station.Location.Channel` combinations. Station SNCLs 
+can be comma separated lists. 
+`\*` or `?` wildcards can be used in any of the network, station, location, channel elements. 
+Example: `"myStations: IU.ANMO.10.BHZ, IU.\*.00.BH?, IU.ANMO.\*.?HZ, II.PFO.??.\*`. By default, aliases are formatted
+as `Network.Station.Location.Channel`. This format pattern can be modified using the `sncl_format`
+entry discussed below.
 
-Note: When directly specifying a SNCL pattern on the command line, SNCLs containing wildcards should be 
+_Note:_ When directly specifying a SNCL pattern on the command line, SNCLs containing wildcards should be 
 enclosed by quotes to avoid a possible error of unrecognized arguments.
 
 **Data_Access** has four entries describing where to find data, metadata, events, and optionally response files.
 
-* *dataselect_url:* should indicate a miniSEED location as one of the FDSN web service aliases used by ObsPy 
-(e.g. IRIS), an explicit URL pointing to an FDSN web service domain (e.g. http://service.iris.edu ), or a file 
+* `dataselect_url:` should indicate a *miniSEED* data resource as one of the *FDSN web service aliases* used by ObsPy 
+(e.g. `IRIS`), an explicit URL pointing to an FDSN web service domain (e.g. `http://service.iris.edu` ), or a file 
 path to a directory containing miniSEED files (_See: "Using Local Data Files", below_).
 
-* *station_url:* should indicate a metadata location as an FDSN web service alias, an explicit URL, or a path 
+* `station_url:` should indicate a metadata location as an FDSN web service alias, an explicit URL, or a path 
 to a file containing metadata in [StationXML](http://www.fdsn.org/xml/station/) format 
-([schema](http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd)). For web services, this should point to the same place as 
-_dataselect_url_ (e.g. http://service.iris.edu) . For local metadata, StationXML is read at the channel level and any response information is ignored. 
-Local instrument response (if used) is expected to be in RESP file format and specified in the *resp_dir* entry (see below).
-If neither webservices or StationXML is available, the station_url entry should be left unspecified (blank). In this case, metrics that 
+([schema](http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd)).
+For web services, this should point to the same place as 
+`dataselect_url` (e.g. `http://service.iris.edu`) .
+For local metadata, StationXML is read at the channel level and any response information is ignored. 
+Local instrument response (if used) is expected to be in RESP file format and specified
+ in the `resp_dir` entry (see below).
+If neither webservices or StationXML is available for metadata, the `station_url` entry should be left
+ unspecified (blank). In this case, metrics that 
 do not require metadata will still be calculated. Metrics that do require metadata information (cross_talk, polarity_check, orientation_check, transfer_function) will not be calculated and will return a log message stating "No available waveforms". 
 
-    If you are starting from a dataless SEED, you can create StationXML using the 
+    If you are starting from a *dataless SEED* metadata file, you can create StationXML from this using the 
 [FDSN StationXML-SEED Converter](https://seiscode.iris.washington.edu/projects/stationxml-converter).
 
-* *event_url:* should indicate an event catalog location as an FDSN web service alias (e.g. USGS), an 
-explicit URL (e.g. https://earthquake.usgs.gov), or a path to a file containing event information in [QuakeML](https://quake.ethz.ch/quakeml) format 
+* `event_url:` should indicate an *event catalog resource* as an FDSN web service alias (e.g. `USGS`), an 
+explicit URL (e.g. `https://earthquake.usgs.gov`), or a path to a file containing event information in 
+[QuakeML](https://quake.ethz.ch/quakeml) format 
 ([schema](https://quake.ethz.ch/quakeml/docs/xml?action=AttachFile&do=get&target=QuakeML-BED-1.2.xsd)). 
 Only web service providers that can output text format can be used at this time. This entry will 
-only be used by metrics that require event information in order to be calculated (cross_talk, polarity_check, 
-orientation_check).
+only be used by metrics that require event information in order to be calculated (*cross_talk, polarity_check, 
+orientation_check*).
 
-* *resp_dir:* should be unspecified or absent if local response files are not used. The default behavior is to retrieve response information from [IRIS Evalresp](http://service.iris.edu/irisws/evalresp/1/). To use local instrument responses instead of [IRIS Evalresp](http://service.iris.edu/irisws/evalresp/1/), this parameter should indicate a path to a directory containing response files 
-in [RESP](http://ds.iris.edu/ds/nodes/dmc/data/formats/resp/) format. Local response files are expected to be named 'RESP.network.station.location.channel' or 'RESP.station.network.location.channel'. Filenames with extension '.txt' are also acceptable. E.g., RESP.IU.CASY.00.BH1, RESP.CASY.IU.00.BH1, RESP.IU.CASY.00.BH1.txt. 
+* `resp_dir:` should be unspecified or absent if local response files are not used. The default behavior
+ is to retrieve response information from [IRIS Evalresp](http://service.iris.edu/irisws/evalresp/1/). 
+To use local instrument responses instead of [IRIS Evalresp](http://service.iris.edu/irisws/evalresp/1/),
+ this parameter should indicate a path to a directory containing response files 
+in [RESP](http://ds.iris.edu/ds/nodes/dmc/data/formats/resp/) format. Local response files are expected to be 
+named `RESP.network.station.location.channel` or `RESP.station.network.location.channel`. Filenames with extension `.txt` are also acceptable. E.g., `RESP.IU.CASY.00.BH1, RESP.CASY.IU.00.BH1, RESP.IU.CASY.00.BH1.txt.` 
 
-    Response information is only needed when generating PSD derived metrics, PDF plots, or the transfer_function metric.    
+    Response information is only needed when generating PSD derived metrics, PDF plots,
+or the transfer_function metric.    
 
     If you are starting from a dataless SEED, you can create RESP files using [rdseed](http://ds.iris.edu/ds/nodes/dmc/manuals/rdseed/).
 
 **Preferences** has four entries describing ispaq output.
 
-* *csv_dir:* should be followed by a directory path for output of generated metric text files (CSV). 
-If the direcotry does not exist, then it defaults to the current working directory.
-
-* *png_dir:* should be followed by a directory path for output of generated PDF plots (PNG).
+* `csv_dir:` should be followed by a directory path for output of generated metric text files (CSV). 
 If the directory does not exist, then it defaults to the current working directory.
 
-* *sigfigs:* should indicate the number of significant figures used for output columns named "value". Default is 6.
+* `png_dir:` should be followed by a directory path for output of generated PDF plots (PNG).
+If the directory does not exist, then it defaults to the current working directory.
 
-* *sncl_format:* should be the format of sncl aliases and miniSEED file names, must be some combination of period separated 
-N=network,S=station, L=location, C=channel (e.g., N.S.L.C, S.N.L.C). If no sncl_format exists, it defaults to N.S.L.C.
+* `sigfigs:` should indicate the number of significant figures used for output columns named "value". Default is 6.
+
+* `sncl_format:` should be the format of sncl aliases and miniSEED file names, must be some combination of
+ period separated `N`=network, `S`=station, `L`=location, `C`=channel (e.g., `N.S.L.C, S.N.L.C`).
+If no `sncl_format` exists, it defaults to `N.S.L.C`.
 
 Any of these preference file entries can be overridden by command-line arguments:
 `-M "metric name"`, `-S "station SNCL"`, `--dataselect_url`, `--station_url`, `--event_url`, `--resp_dir`, 
@@ -293,11 +318,11 @@ and messages generated during processing.
 
 Results of most metrics calculations will be written to .csv files using the following naming scheme:
 
-* *MetricAlias*\_*StationAlias*\_*startdate*\__*businessLogic*.csv
+* `MetricAlias`\_`StationAlias`\_`startdate`\__`businessLogic`.csv
 
 when a single day is specified on the command line or
 
-* *MetricAlias*\_*StationAlias*\_*startdate*\_*enddate*\_*businessLogic*.csv
+* `MetricAlias`\_`StationAlias`\_`startdate`\_`enddate`\_`businessLogic`.csv
 
 when multiple days are specified from the command line.
 
@@ -317,12 +342,12 @@ _businessLogic_ corresponds to which script is invoked:
 The metric alias PSDText (or any user defined set with metrics psd_corrected or pdf_text) will generate 
 corrected PSDs and PDFs in files named:
 
-* *MetricAlias*\_*StationAlias*\_*startdate*\_*SNCL*\__correctedPSD.csv
-* *MetricAlias*\_*StationAlias*\_*startdate*\_*SNCL*\__PDF.csv
+* `MetricAlias`\_`StationAlias`\_`startdate`\_`SNCL`\__correctedPSD.csv
+* `MetricAlias`\_`StationAlias`\_`startdate`\_`SNCL`\__PDF.csv
 
 while the metric alias PDF (metric pdf_plot) will generate PDF plot images as:
 
-* *SNCL*\.*JulianDate*\_PDF.png
+* `SNCL`\.`JulianDate`\_PDF.png
 
 If specifying metrics and station SNCLs from the command line instead of using preference file aliases,
 the metric name and station SNCL will be used instead of the MetricAlias and StationAlias in the output
@@ -338,7 +363,7 @@ To see detailed progress information use ```--log-level DEBUG```. To hide everyt
 than an outright crash use ```--log-level CRITICAL```. If `--log-level` is not invoked, the default is 
 to print information at the `INFO` level. The other available levels are `WARNING` and `ERROR`.
 
-The following example demonstrates what you should see. Note: Please ignore the warning message from matplotlib. 
+The following example demonstrates what you should see. _Note:_ Please ignore the warning message from *matplotlib*. 
 It will only occur on first use. 
 
 ```
@@ -360,30 +385,36 @@ Additional information about running ISPAQ on the command line can be found by i
 
 ### Using Local Data Files
 
-Local data files should be in miniSEED format and organized in network-station-channel-day files 
-with naming convention Network.Station.Location.Channel.Year.JulianDay.Quality where quality is optional 
-(e.g., TA.P19K..BHZ.2016.214.M or TA.P19K..BHZ.2016.214). This naming convention can be modified
-by using the *sncl_format* entry in the preferences file or the `--sncl_format` option on the command line.
-*Sncl_format* allows you to specify a different order for Network.Station.Location.Channel, although all these 
+Local data files should be in *miniSEED* format and organized in *network-station-channel-day* files 
+with naming convention 
+```
+Network.Station.Location.Channel.Year.JulianDay.Quality
+```
+ where `Quality` is optional 
+(e.g., `TA.P19K..BHZ.2016.214.M` or `TA.P19K..BHZ.2016.214`). This naming convention can be modified
+by using the `sncl_format` entry in the preferences file or the `--sncl_format` option on the command line.
+`sncl_format` allows you to specify a different order for `Network.Station.Location.Channel`, although all these 
 elements must be present in the file name. 
 
-Ispaq will search for miniSEED files in the directory specified by *dataselect_url* in the preferences file or 
+ISPAQ will search for miniSEED files in the directory specified by `dataselect_url` in the preferences file or 
 `--dataselect_url` on the command line. Furthermore, it will recursively follow that directory structure and
-look for miniSEED files in directories contained within the *dataselect_url* directory. If more than one file name 
+look for miniSEED files in directories contained within the `dataselect_url` directory. If more than one file name 
 is found that matches the same requested network, station, location, channel, year, and julian day, then the metrics 
-will be run on the first file that is found. To request all data files, use preference file *Station_SNCL* alias: \*.\*.\*.\*, 
-or -S "\*.\*.\*.\*". Wildcarding every element is strongly discouraged when using FDSN webservices instead of local files.
+will be run on the first file that is found. To request all data files, use preference file *Station_SNCL* alias: 
+`\*.\*.\*.\*`, 
+or `-S "\*.\*.\*.\*` from the command line". Wildcarding every element is strongly discouraged when using 
+FDSN webservices instead of local files.
 
-Note: All data is expected to be in the day file that matches its timestamp; if records do not break on the 
+_Note:_ All data is expected to be in the day file that matches its timestamp; if records do not break on the 
 day boundary, data that is not in the correct day file will not be used in the metrics calculation. This can 
 lead to cases where, for example, a gap is calculated at the start of a day when the data for that time period 
 is in the previous day file.
 
 If your miniSEED files are not already split on day boundaries, one tool that can be used for this task is the 
-dataselect command-line tool available at [https://github.com/iris-edu/dataselect](https://github.com/iris-edu/dataselect). 
+*dataselect* command-line tool available at [https://github.com/iris-edu/dataselect](https://github.com/iris-edu/dataselect). 
 Follow the [releases](https://github.com/iris-edu/dataselect/releases) link in the README to download the latest 
-version of the source code. The following example reads the input miniSEED files, splits the records on day boundaries, 
-and writes to files named network.station.location.channel.year.julianday.quality.
+version of the source code. The following example reads the input miniSEED files, splits the records on day
+boundaries, and writes to files named `network.station.location.channel.year.julianday.quality`.
 
 Example: `dataselect -Sd -A %n.%s.%l.%c.%Y.%j.%q inputfiles`
 
@@ -393,7 +424,7 @@ The command-line argument `-U`, `--update-r` can be used to check CRAN for newer
 IRISMustangMetrics R packages.
 
 ```
-(ispaq) bash-3.2$ ./run_ispaq.py -U
+(ispaq) $ ./run_ispaq.py -U
 2017-05-25 12:37:19 - INFO - Running ISPAQ version 1.0.0 on Thu May 25 12:37:19 2017
 2017-05-25 12:37:19 - INFO - Checking for IRIS R package updates...
 --- Please select a CRAN mirror for use in this session ---
@@ -416,15 +447,15 @@ Selection: 1
 ```
 
 If a newer CRAN package does exist, the `-U` option will then automatically download the package from CRAN and
-install it. ISPAQ code can be updated using `git pull origin master`.
+install it. ISPAQ code can be updated using `git pull origin master`.  Sometimes it is necessary to update the ISPAQ python code in conjunction with the CRAN code.
 
 ### List of Metrics
 
 The command-line argument `-L` will list the names of available metrics.
 
-Note: When using local data files, metrics based on miniSEED act_flags, io_flags, and timing blockette 1001 are 
-not valid. These metrics are calibration_signal, clock_locked, event_begin, event_end, event_in_progress, 
-timing_correction, and timing_quality. ISPAQ will not return values for these metrics. 
+_Note:_ When using local data files, metrics based on miniSEED activity flags, I/O flags, and timing blockette 1001
+ are not valid. These metrics are `calibration_signal`, `clock_locked`, `event_begin`, `event_end`, 
+`event_in_progress`, `timing_correction`, and `timing_quality`. ISPAQ will not return values for these metrics. 
 
 #### Brief Descriptions and Links to Documentation
  
