@@ -191,7 +191,7 @@ def PSD_metrics(concierge):
 
             if 'PSDPlot' in function_metadata :
                 try:  
-                    filename = '%s.%s_PDF.png' % (av.snclId, starttime.date)
+                    filename = '%s_%s_PDF.png' % (av.snclId, starttime.date)
                     filepath = concierge.png_dir + '/' + filename
                     evalresp = None
                     if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
