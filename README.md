@@ -341,12 +341,12 @@ _businessLogic_ corresponds to which script is invoked:
 The metric alias PSDText (or any user defined set with metrics psd_corrected or pdf_text) will generate 
 corrected PSDs and PDFs in files named:
 
-* `MetricAlias`\_`StationAlias`\_`startdate`\_`SNCL`\_PSDcorrected.csv
-* `MetricAlias`\_`StationAlias`\_`startdate`\_`SNCL`\_PDF.csv
+* `SNCL`\_`startdate`\_`PSDcorrected`.csv
+* `SNCL`\_`startdate`\_`PDF`.csv
 
 while the metric alias PDF (metric pdf_plot) will generate PDF plot images as:
 
-* `SNCL`\_`startdate`\_PDF.png
+* `SNCL`\_`startdate`\_`PDF`.png
 
 If specifying metrics and station SNCLs from the command line instead of using preference file aliases,
 the metric name and station SNCL will be used instead of the MetricAlias and StationAlias in the output

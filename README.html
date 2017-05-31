@@ -344,12 +344,12 @@ If no preference file is specified and the default file ./preference_files/defau
 </table>
 <p>The metric alias PSDText (or any user defined set with metrics psd_corrected or pdf_text) will generate corrected PSDs and PDFs in files named:</p>
 <ul>
-<li><code>MetricAlias</code>_<code>StationAlias</code>_<code>startdate</code>_<code>SNCL</code>_PSDcorrected.csv</li>
-<li><code>MetricAlias</code>_<code>StationAlias</code>_<code>startdate</code>_<code>SNCL</code>_PDF.csv</li>
+<li><code>SNCL</code>_<code>startdate</code>_<code>PSDcorrected</code>.csv</li>
+<li><code>SNCL</code>_<code>startdate</code>_<code>PDF</code>.csv</li>
 </ul>
 <p>while the metric alias PDF (metric pdf_plot) will generate PDF plot images as:</p>
 <ul>
-<li><code>SNCL</code>_<code>startdate</code>_PDF.png</li>
+<li><code>SNCL</code>_<code>startdate</code>_<code>PDF</code>.png</li>
 </ul>
 <p>If specifying metrics and station SNCLs from the command line instead of using preference file aliases, the metric name and station SNCL will be used instead of the MetricAlias and StationAlias in the output file name. In addition, any instances of command-line wildcards “*&quot; or “?” will be replaced with the letter “x” in the output file name.</p>
 </div>

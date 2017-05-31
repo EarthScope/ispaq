@@ -143,10 +143,8 @@ def PSD_metrics(concierge):
                     if "psd_corrected" in concierge.metric_names :
                         # Write out the corrected PSDs
                         # Do it this way to have each individual day file properly named with starttime.date
-                        file_base_psd = '%s_%s_%s' % (concierge.user_request.requested_metric_set,
-                                                      concierge.user_request.requested_sncl_set,
-                                                      starttime.date)
-                        filepath = concierge.csv_dir + '/' + file_base_psd + "_" + av.snclId + "_PSDcorrected.csv"
+                        filename = '%s_%s_PSDCorrected.csv' % (av.snclId, starttime.date)
+                        filepath = concierge.csv_dir + '/' + filename
                         logger.info('Writing corrected PSD to %s' % os.path.basename(filepath))
                         try:
                             # Add target
@@ -160,7 +158,8 @@ def PSD_metrics(concierge):
 
                     if "pdf_text" in concierge.metric_names :
                     # Write out the PDFs
-                        filepath = concierge.csv_dir + '/' + file_base_psd + "_" + av.snclId + "_PDF.csv"
+                        filename = '%s_%s_PDF.csv' % (av.snclId, starttime.date)
+                        filepath = concierge.csv_dir + '/' + filename
                         logger.info('Writing PDF text to %s' % os.path.basename(filepath))
                         try:
                             # Add target, start- and endtimes
