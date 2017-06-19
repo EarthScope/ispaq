@@ -440,7 +440,7 @@ Selection: 1
 <li><p><strong>max_overlap</strong>: Indicates the size of the largest overlap in seconds encountered within a 24-hour window. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/max_overlap/">Documentation</a></p></li>
 <li><strong>max_stalta</strong>: The STALTAMetric function calculates the maximum of STA/LTA of the incoming seismic signal over a 24 hour period. In order to reduce computation time of the rolling averages, the averaging window is advanced in 1/2 second increments. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/max_stalta/">Documentation</a>
 <ul>
-<li>channels = [BH][HX].</li>
+<li>channels = [BHCDES][HPLX].</li>
 </ul></li>
 <li><p><strong>missing_padded_data</strong>: The number of times that the ‘Missing/padded data present’ bit in the ‘dq_flags’ byte is set within a miniSEED file. This metric can be used to identify data with padded values that data users may need to handle in a way that they don’t affect their research outcomes. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/missing_padded_data/">Documentation</a></p></li>
 <li><p><strong>num_gaps</strong>: This metric reports the number of gaps encountered within a 24-hour window. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/num_gaps/">Documentation</a></p></li>

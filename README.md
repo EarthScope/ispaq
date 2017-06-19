@@ -552,7 +552,7 @@ Indicates the size of the largest overlap in seconds encountered within a 24-hou
 The STALTAMetric function calculates the maximum of STA/LTA of the incoming seismic signal over a 24 hour period. 
 In order to reduce computation time of the rolling averages, the averaging window is advanced in 1/2 second 
 increments. [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/max_stalta/)
-    + channels = [BH][HX].
+    + channels = [BHCDES][HPLX].
 
 * **missing_padded_data**:
 The number of times that the 'Missing/padded data present' bit in the 'dq_flags' byte is set within a miniSEED file. 
