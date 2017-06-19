@@ -331,14 +331,14 @@ _businessLogic_ corresponds to which script is invoked:
 | ----------|--------------|---------|
 | simpleMetrics | simple_metrics.py | most metrics |
 | SNRMetrics | SNR_metrics.py | sample_snr   |
-| PSDMetrics | PSD_metrics.py | pct_above_nhnm, pct_below_nlnm, dead_channel_{exp,lin,gsn} |
+| PSDMetrics | PSD_metrics.py | pct_above_nhnm, pct_below_nlnm, dead_channel_{exp,lin,gsn}, psd_corrected, pdf_text |
 | crossTalkMetrics | crossTalk_metrics.py | cross_talk |
 | pressureCorrelationMetrics | pressureCorrelation_metrics.py | pressure_effects | 
 | crossCorrelationMetrics | crossCorrelation_metrics.py | polarity_check | 
 | orientationCheckMetrics | orientationCheck_metrics.py | orientation_check | 
 | transferMetrics | transferFunction_metrics.py | transfer_function |
 
-The metric alias PSDText (or any user defined set with metrics psd_corrected or pdf_text) will generate 
+The metric alias psdText (or any user defined set with metrics psd_corrected or pdf_text) will generate 
 corrected PSDs and PDFs in files named:
 
 * `SNCL`\_`startdate`\_`PSDcorrected`.csv
@@ -704,11 +704,11 @@ source activate ispaq
 ./run_ispaq.py -M basicStats -S basicStats --starttime 2010-100             # starttime specified as julian day
 ./run_ispaq.py -M gaps -S gaps --starttime 2013-01-05                       # starttime specified as calendar day
 ./run_ispaq.py -M numSpikes -S numSpikes --starttime 2013-01-03 --endtime 2013-01-08
-./run_ispaq.py -M STALTA -S STALTA --starttime 2013-153
-./run_ispaq.py -M SNR -S SNR --starttime 2013-06-02
-./run_ispaq.py -M PSD -S PSD --starttime 2011-138 --endtime 2011-140
-./run_ispaq.py -M PSDText -S PSD --starttime 2011-05-18 
-./run_ispaq.py -M PDF -S PDF --starttime 2013-06-01
+./run_ispaq.py -M stalta -S stalta --starttime 2013-153
+./run_ispaq.py -M snr -S snr --starttime 2013-06-02
+./run_ispaq.py -M psdDerived -S psd --starttime 2011-138 --endtime 2011-140
+./run_ispaq.py -M psdText -S psd --starttime 2011-05-18 
+./run_ispaq.py -M pdf -S pdf --starttime 2013-06-01
 ./run_ispaq.py -M crossTalk -S crossTalk --starttime 2013-09-21
 ./run_ispaq.py -M pressureCorrelation -S pressureCorrelation --starttime 2013-05-02
 ./run_ispaq.py -M crossCorrelation -S crossCorrelation --starttime 2011-01-01

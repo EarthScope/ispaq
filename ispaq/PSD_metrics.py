@@ -138,7 +138,9 @@ def PSD_metrics(concierge):
                         (df, PSDcorrected, PDF) = irismustangmetrics.apply_PSD_metric(r_stream, evalresp=evalresp)
                     except Exception as e:
                         raise
-                    dataframes.append(df)
+
+                    if not df.empty:
+                        dataframes.append(df)
 
                     if "psd_corrected" in concierge.metric_names :
                         # Write out the corrected PSDs

@@ -141,6 +141,7 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
     :param (optional kwarg) evalresp= pandas dataframe of FAP from evalresp (freq,amp,phase)
     :return: tuple of GeneralValueMetrics, corrected PSD, and PDF
     """
+    
     R_function = robjects.r('IRISMustangMetrics::PSDMetric')
     pandas2ri.activate()
 
@@ -157,12 +158,16 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
         r_listOfLists = R_function(r_stream)
 
     r_metriclist = r_listOfLists[0]
-    r_dataframe = _R_metricList2DF(r_metriclist)
-    df = pandas2ri.ri2py(r_dataframe)
-    
-    # Convert columns from R POSIXct to python UTCDateTime
-    df.starttime = df.starttime.apply(UTCDateTime)
-    df.endtime = df.endtime.apply(UTCDateTime)
+    if r_metriclist:
+        r_dataframe = _R_metricList2DF(r_metriclist)
+        df = pandas2ri.ri2py(r_dataframe)
+        # Convert columns from R POSIXct to python UTCDateTime
+        df.starttime = df.starttime.apply(UTCDateTime)
+        df.endtime = df.endtime.apply(UTCDateTime)
+
+    # PSDMetric returns no PSD derived metrics 
+    else:    
+        df = pd.DataFrame()
     
     # correctedPSD is returned as a dataframe
     r_correctedPSD = r_listOfLists[2]
