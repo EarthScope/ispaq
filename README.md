@@ -12,7 +12,7 @@ and metrics can be specified on the command line for simple runs or for use in s
 
 ISPAQ offers the option for access to [FDSN Web Services](http://www.fdsn.org/webservices/) to retrieve 
 seismic data and metadata directly from selected data centers supporting the FDSN protocol. Users also 
-have theoption to read local [miniSEED](http://ds.iris.edu/ds/nodes/dmc/data/formats/seed/) files and 
+have the option to read local [miniSEED](http://ds.iris.edu/ds/nodes/dmc/data/formats/seed/) files and 
 metadata on their own workstations and construct on-the-spot data quality analyses on that data.
 
 Output is provided in CSV format for tabular metrics. In addition, Probability Density Functions (PDF) 
