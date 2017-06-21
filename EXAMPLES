@@ -5,30 +5,22 @@
 # using the -P option
 #
 
-# basicStats
-run_ispaq.py -M basicStats -S basicStats --starttime 2010-04-20 --log-level INFO -A
-# gaps
-run_ispaq.py -M gaps -S gaps --starttime 2013-01-05 --log-level INFO -A
-# Spikes
-run_ispaq.py -M spikes -S spikes --starttime 2013-01-03 --log-level INFO -A
-# STALTA
-run_ispaq.py -M STALTA -S STALTA --starttime 2013-06-02 --log-level INFO -A
-# SNR
-run_ispaq.py -M SNR -S SNR --starttime 2013-06-02 --log-level INFO -A
-# PSD
-run_ispaq.py -M PSD -S PSD --starttime 2011-05-18 --log-level INFO -A
-# PDF
-run_ispaq.py -M PDF -S PDF --starttime 2013-06-01 --log-level INFO -A
-# crossTalk
-run_ispaq.py -M crossTalk -S crossTalk --starttime 2013-09-21 --log-level INFO -A
-# pressureCorrelation
-run_ispaq.py -M pressureCorrelation -S pressureCorrelation --starttime 2013-05-02 --log-level INFO -A
-# crossCorrelation
-run_ispaq.py -M crossCorrelation -S crossCorrelation --starttime 2011-01-01 --log-level INFO -A
-# orientationCheck
-run_ispaq.py -M orientationCheck -S orientationCheck --starttime 2015-11-24 --log-level INFO -A
-# transferFunction
-run_ispaq.py -M transferFunction -S transferFunction --starttime 2012-10-03 --log-level INFO -A
+./run_ispaq.py -M basicStats -S basicStats --starttime 2010-100             
+./run_ispaq.py -M gaps -S gaps --starttime 2013-01-05                       
+./run_ispaq.py -M numSpikes -S numSpikes --starttime 2013-01-03 --endtime 2013-01-08
+./run_ispaq.py -M stalta -S stalta --starttime 2013-153
+./run_ispaq.py -M snr -S snr --starttime 2013-06-02
+./run_ispaq.py -M psdDerived -S psd --starttime 2011-138 --endtime 2011-140
+./run_ispaq.py -M psdText -S psd --starttime 2011-05-18 
+./run_ispaq.py -M pdf -S pdf --starttime 2013-06-01
+./run_ispaq.py -M crossTalk -S crossTalk --starttime 2013-09-21
+./run_ispaq.py -M pressureCorrelation -S pressureCorrelation --starttime 2013-05-02
+./run_ispaq.py -M crossCorrelation -S crossCorrelation --starttime 2011-01-01
+./run_ispaq.py -M orientationCheck -S orientationCheck --starttime 2015-11-24
+./run_ispaq.py -M transferFunction -S transferFunction --starttime=2012-10-03 --endtime=2012-10-05 
+
+# Example using local data and command-line options to override preference file
+./run_ispaq.py -M sample_mean -S II.KAPI.00.BHZ --starttime 2013-01-05 --dataselect_url ./test_data --station_url ./test_data/II.KAPI_station.xml --csv_dir ./output_files
 
 ################################################################################
 
