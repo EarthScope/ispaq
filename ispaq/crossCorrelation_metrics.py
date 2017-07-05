@@ -144,6 +144,9 @@ def crossCorrelation_metrics(concierge):
             windowStart = event.time + tt - windowSecs/2.0
             windowEnd = event.time + tt + windowSecs/2.0
 
+            windowStart = windowStart - windowStart.microsecond/1000000  #remove microseconds
+            windowEnd = windowEnd - windowEnd.microsecond/1000000
+
             logger.debug("Looking for data for %s from %s to %s" % (av1.snclId, windowStart, windowEnd))
 
             try:
@@ -162,7 +165,7 @@ def crossCorrelation_metrics(concierge):
                 logger.info('Skipping %s because it has gaps' % (av1.snclId))
                 continue
 
-            # If metadata indicates reversed polarity (dip>0), invert the amplitudes (met 2016/03/03)
+            # If metadata indicates reversed polarity (dip>0), invert the amplitudes 
             if av1.channel[2] == 'Z' and av1.dip > 0:
                 r_stream1 = irisseismic.multiplyBy(r_stream1, -1.0)
 

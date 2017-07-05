@@ -40,6 +40,7 @@ _R_list = robjects.r('base::list')                                    # creation
 
 # from IRISSeismic
 _R_initialize = robjects.r('IRISSeismic::initialize')                 # initialization of various objects
+_R_slice = robjects.r('IRISSeismic::slice')
 
 # All webservice functions from IRISSeismic
 _R_getAvailability = robjects.r('IRISSeismic::getAvailability')       #
@@ -764,6 +765,21 @@ def getUnavailability(client_url="http://service.iris.edu",
 
 
 #     Python wrappers for R non-webservice functions     -----------------------
+
+def R_slice(x, starttime, endtime):
+    """
+    subset an R trace or stream based on input start and endtimes. Return new R trace or stream object.
+    :param x: R trace or stream object
+    :param starttime: ObsPy UTCDateTime object
+    :param endtime: ObsPy UTCDateTime object
+    :return R trace or stream object
+    """
+
+    starttime = R_POSIXct(starttime)
+    endtime = R_POSIXct(endtime)
+
+    r_stream = _R_slice(x,starttime, endtime)
+    return r_stream
 
 # surfaceDistance is needed in crossCorrelation_metrics.py
 def surfaceDistance(lat1, lon1, lat2, lon2):

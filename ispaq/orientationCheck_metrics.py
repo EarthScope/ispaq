@@ -19,6 +19,7 @@ from . import utils
 from . import irisseismic
 from . import irismustangmetrics
 
+from obspy import UTCDateTime
 
 def orientationCheck_metrics(concierge):
     """
@@ -193,8 +194,11 @@ def orientationCheck_metrics(concierge):
         
             windowStart = event.time + surfaceTravelTime - windowSecsBefore
             windowEnd = event.time + surfaceTravelTime + windowSecsAfter
+
+            windowStart = windowStart - windowStart.microsecond/1000000  #remove microseconds
+            windowEnd = windowEnd - windowEnd.microsecond/1000000
         
-            logger.debug("Looking for data for %s and %s from %s to %s" % (Channel_1.snclId, Channel_2.snclId,  windowStart.strftime("%Y-%m-%dT%H:%M:%S"), windowEnd.strftime("%Y-%m-%dT%H:%M:%S")))
+            logger.debug("Looking for data for %s, %s, %s from %s to %s" % (Channel_1.snclId, Channel_2.snclId, ZChannel.snclId, windowStart.strftime("%Y-%m-%dT%H:%M:%S"), windowEnd.strftime("%Y-%m-%dT%H:%M:%S")))
 
             try:
                 stN = concierge.get_dataselect(Channel_1.network, Channel_1.station, Channel_1.location, Channel_1.channel,
@@ -220,8 +224,6 @@ def orientationCheck_metrics(concierge):
                     logger.info('No data available for %s from %s: %s' % (Channel_2.snclId, concierge.dataselect_url, e))
                 continue
         
-            logger.debug("Looking for data for %s from %s to %s" % (ZChannel.snclId, windowStart.strftime("%Y-%m-%dT%H:%M:%S"), windowEnd.strftime("%Y-%m-%dT%H:%M:%S")))
-
             try:
                 stZ = concierge.get_dataselect(ZChannel.network, ZChannel.station, ZChannel.location, ZChannel.channel,
                                                windowStart, windowEnd, inclusiveEnd=False)

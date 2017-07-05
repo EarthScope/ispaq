@@ -119,7 +119,7 @@ Now install the IRIS R packages for ISPAQ. This will be a good test that R is in
 
 ```
 R CMD INSTALL seismicRoll_1.1.2.tar.gz 
-R CMD INSTALL IRISSeismic_1.4.5.tar.gz
+R CMD INSTALL IRISSeismic_1.4.6.tar.gz
 R CMD INSTALL IRISMustangMetrics_2.0.8.tar.gz 
 ```
 

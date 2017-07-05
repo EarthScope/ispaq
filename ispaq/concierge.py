@@ -986,6 +986,15 @@ class Concierge(object):
                 self.logger.debug(err_msg)
                 raise
 
+            # Some FDSN web services cut on record boundaries instead of samples, so make sure we have correct start/end times
+            try:
+                r_stream = irisseismic.R_slice(r_stream,_starttime, _endtime)
+            except Exception as e:
+                err_msg = "Error cutting R stream for start %s and end %s" % (_starttime, _endtime)
+                self.logger.debug(err_msg)
+                raise
+
+
         # TODO:  Do we need to test for valid R_Stream.
         if False:              
             return None # TODO:  raise an exception

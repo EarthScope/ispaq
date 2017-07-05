@@ -1,3 +1,7 @@
+1.1.0
+ * fixes issue with orientation_check and polarity_check when using data from a SeisComp3 dataselect webservice
+ * requires IRISSeismic 1.4.6
+
 1.0.0
  * modifies channel filters
  * requires IRISMustangMetrics 2.0.8
