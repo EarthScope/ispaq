@@ -1,5 +1,6 @@
 1.1.0
- * fixes issue with orientation_check and polarity_check when using data from a SeisComp3 dataselect webservice
+ * Will now trim data trace to sample level when requesting data from a SeisComP dataselect webservice
+   that returns miniseed cut on record boundaries.
  * requires IRISSeismic 1.4.6
 
 1.0.0
