@@ -101,7 +101,7 @@ perform installs, updates, or run ISPAQ.
 ```
 cd ispaq
 conda update conda
-conda create --name ispaq python=2.7
+conda create --name ispaq python=2.7 readline=6.2
 source activate ispaq
 conda install -c conda-forge -c r -c r-old -c bioconda --file ispaq-conda-install.txt
 ```
