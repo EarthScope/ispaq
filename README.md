@@ -38,7 +38,7 @@ of their choosing, whether stored an FDSN data center or on the user's own data 
 IRIS has over 40 MUSTANG metrics algorithms, most written in R, that are now available in the CRAN 
 (Comprehensive R Archive Network) repository under the name [IRISMustangMetrics](http://cran.r-project.org/). 
 ISPAQ comes with the latest version of these packages available in CRAN and ISPAQ has an update capability to 
-allow users to seamlessly upgradethese R packages as new releases become available.
+allow users to seamlessly upgrade these R packages as new releases become available.
 
 ISPAQ contains business logic similar to MUSTANG, such that the computed metrics produced are identical 
 (or very similar) to the results you will see in MUSTANG. The end result is a lightweight and portable 
@@ -54,6 +54,12 @@ ISPAQ is distributed through _GitHub_, via IRIS's public repository (_iris-edu_)
 client command to get a copy of the latest stable release. In addition, you will use the ```miniconda``` 
 python package manager to create a customized Python environment designed to run ISPAQ properly. This will 
 include a localized installation of ObsPy and R.
+
+If running macOS, Xcode command line tools should be installed. Check for existence and install if 
+missing:
+```
+xcode-select --install
+```
 
 Follow the steps below to begin running ISPAQ.
 
@@ -74,6 +80,7 @@ This will produce a copy of this code distribution in the directory you have cho
 become available, you can update ISPAQ by typing:
 
 ```
+cd ispaq
 git pull origin master
 ```
 
