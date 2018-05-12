@@ -13,7 +13,7 @@ import argparse
 import datetime
 import logging
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 
 # dictionary of currently defined ISPAQ metric groups and business logic
 # for comparison with R package IRISMustangMetrics/ISPAQUtils.R json

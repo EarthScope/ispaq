@@ -1,3 +1,7 @@
+1.1.1
+ * fixed bug introduced by IRISSeismic 1.4.8 that prevented the retrieval of seismic data
+ * requires IRISSeismic 1.4.8
+
 1.1.0
  * Will now trim data trace to sample level when requesting data from a SeisComP dataselect webservice
    that returns miniseed cut on record boundaries.

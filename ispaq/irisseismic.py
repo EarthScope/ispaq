@@ -327,7 +327,8 @@ def _R_args(*args):
     r_args = []
     for arg in args:
         if arg is None:
-            r_args.append(rinterface.MissingArg)
+            #r_args.append(rinterface.MissingArg)
+            r_args.append(rinterface.NULL)
         elif isinstance(arg,newint):
             ###r_args.append(R_integer(arg))
             r_args.append(arg)
@@ -491,9 +492,9 @@ def R_getDataselect(client_url="http://service.iris.edu",
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
     (quality, repository, inclusiveEnd, ignoreEpoch)=_R_args(quality, repository, inclusiveEnd, ignoreEpoch)
-       
+
     # Call the function and return an R Stream
-    r_stream = _R_getDataselect(r_client, network, station, location, channel, starttime, endtime, quality, repository, inclusiveEnd, ignoreEpoch)
+    r_stream = _R_getDataselect(r_client, network, station, location, channel, starttime, endtime, quality=quality, repository=repository, inclusiveEnd=inclusiveEnd, ignoreEpoch=ignoreEpoch)
     
     return r_stream
 
