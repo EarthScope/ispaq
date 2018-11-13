@@ -639,7 +639,7 @@ class Concierge(object):
                                                                       includerestricted=None,
                                                                       latitude=latitude, longitude=longitude,
                                                                       minradius=minradius, maxradius=maxradius,                                                                
-                                                                      level="channel")
+                                                                      level="channel",matchtimeseries=True)
                 except Exception as e:
                     if (minradius):
                         err_msg = "No stations found for %s within radius %s-%s degrees of latitude,longitude %s,%s" % (_sncl_pattern,minradius,maxradius,latitude,longitude)

@@ -1,3 +1,6 @@
+1.1.2
+ * fixed bug in crossCorrelation (polarity_check) that incorrectly calculated distances
+
 1.1.1
  * fixed bug introduced by IRISSeismic 1.4.8 that prevented the retrieval of seismic data
  * requires IRISSeismic 1.4.8

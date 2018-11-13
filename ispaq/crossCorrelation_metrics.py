@@ -47,7 +47,7 @@ def crossCorrelation_metrics(concierge):
     logger = concierge.logger
         
     # Default parameters from IRISMustangUtils::generateMetrics_crossCorrelation or crossCorrelationMetrics_exec.R
-    channelFilter = "[CBFHLM][HX]."    
+    channelFilter = "BH[0-9ENZRT]|CH[0-9ENZRT]|DH[0-9ENZRT]|FH[0-9ENZRT]|HH[0-9ENZRT]|LH[0-9ENZRT]|MH[0-9ENZRT]|BX[12Z]|HX[12Z]"   
     logger.debug("channelFilter %s" % channelFilter)
     minmag = 6.5
     eventMinradius = 15
@@ -144,9 +144,6 @@ def crossCorrelation_metrics(concierge):
             windowStart = event.time + tt - windowSecs/2.0
             windowEnd = event.time + tt + windowSecs/2.0
 
-            windowStart = windowStart - windowStart.microsecond/1000000  #remove microseconds
-            windowEnd = windowEnd - windowEnd.microsecond/1000000
-
             logger.debug("Looking for data for %s from %s to %s" % (av1.snclId, windowStart, windowEnd))
 
             try:
@@ -199,7 +196,7 @@ def crossCorrelation_metrics(concierge):
 
             # Not this station
             stationMask = availability2.station != av1.station
-            availability2 = availability2[stationMask]
+            availability2 = availability2[stationMask].reset_index()
 
             logger.debug('Found %d nearby SNCLs' % (availability2.shape[0]))
 
@@ -208,7 +205,7 @@ def crossCorrelation_metrics(concierge):
             # We only want to include those sncls that have sample rate information
             metaMask = availability2.samplerate.isnull().values
             metaMask = metaMask == False
-            availability2 = availability2[metaMask]
+            availability2 = availability2[metaMask].reset_index()
 
             # Sample rate compatibility, sample rates must be  multiples of each other  (assumes sample rate >= 1, pracma::rem requires integer values)
             # FutureWarning: in the future, np.full(3, 40) will return an array of dtype('int64')
@@ -238,9 +235,13 @@ def crossCorrelation_metrics(concierge):
                 logger.info('Skipping %s with no compatible stations' % (av1.snclId))
                 continue
             else:
-                avCompatible = availability2[mask].reset_index()
+                avCompatible = availability2[mask].reset_index(drop=True)
                 # To find the closest SNCL -- order rows by distance and take the first row
-                avCompatible['dist'] = pd.Series(irisseismic.surfaceDistance(av1.latitude, av1.longitude, avCompatible.latitude, avCompatible.longitude))
+                #avCompatible['dist'] = pd.Series(irisseismic.surfaceDistance(av1.latitude, av1.longitude, avCompatible.latitude, avCompatible.longitude))
+                dist2 = pd.Series()
+                for i in range(0,avCompatible.shape[0]):
+                    dist2.set_value(i,value=obspy.geodetics.base.locations2degrees(av1.latitude, av1.longitude,avCompatible.latitude.iloc[i],avCompatible.longitude.iloc[i]))
+                avCompatible['dist'] = dist2
                 avCompatible = avCompatible.sort_values('dist', ascending=True)
                 
             # ----- Compatible SNCLs found.  Find the closest one with data ------------
@@ -263,13 +264,13 @@ def crossCorrelation_metrics(concierge):
                         testx = 1
                     continue                  
                 
-                windowStart = event.time + min(tt.travelTime) - windowSecs/2.0
-                windowEnd = event.time + min(tt.travelTime) + windowSecs/2.0
+                windowStart2 = event.time + min(tt.travelTime) - windowSecs/2.0
+                windowEnd2 = event.time + min(tt.travelTime) + windowSecs/2.0
 
                 logger.debug("Looking for near neighbor station %s from %s to %s" % (av2.snclId, windowStart, windowEnd))
 
                 try:
-                    r_stream2 = concierge.get_dataselect(av2.network, av2.station, av2.location, av2.channel, windowStart, windowEnd)
+                    r_stream2 = concierge.get_dataselect(av2.network, av2.station, av2.location, av2.channel, windowStart2, windowEnd2)
                 except Exception as e:
                     if str(e).lower().find('no data') > -1:
                         logger.debug('No data available for %s' % (av2.snclId))

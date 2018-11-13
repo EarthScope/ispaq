@@ -179,7 +179,6 @@ def orientationCheck_metrics(concierge):
     
             # Calculate various distances and surface travel time
             distaz = irisseismic.getDistaz(event.latitude,event.longitude,ZChannel.latitude,ZChannel.longitude)
-    
             surfaceDistance = irisseismic.surfaceDistance(event.latitude,event.longitude,ZChannel.latitude,ZChannel.longitude)[0]
             surfaceTravelTime = surfaceDistance / 4.0 # km  / (km/sec)
 
@@ -195,9 +194,6 @@ def orientationCheck_metrics(concierge):
             windowStart = event.time + surfaceTravelTime - windowSecsBefore
             windowEnd = event.time + surfaceTravelTime + windowSecsAfter
 
-            windowStart = windowStart - windowStart.microsecond/1000000  #remove microseconds
-            windowEnd = windowEnd - windowEnd.microsecond/1000000
-        
             logger.debug("Looking for data for %s, %s, %s from %s to %s" % (Channel_1.snclId, Channel_2.snclId, ZChannel.snclId, windowStart.strftime("%Y-%m-%dT%H:%M:%S"), windowEnd.strftime("%Y-%m-%dT%H:%M:%S")))
 
             try:
