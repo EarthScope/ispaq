@@ -12,18 +12,10 @@ import imp
 import argparse
 import datetime
 import logging
-import obspy
 import numpy as np
 import subprocess
 
-from distutils.version import StrictVersion
-from . import updater
-from rpy2 import robjects
-from rpy2 import rinterface
-from rpy2.robjects import pandas2ri
-
-
-__version__ = "1.1.2"
+__version__ = "1.2.0"
 
 # dictionary of currently defined ISPAQ metric groups and business logic
 # for comparison with R package IRISMustangMetrics/ISPAQUtils.R json
@@ -129,6 +121,13 @@ def main():
     logger.info('Running ISPAQ version %s on %s' % (__version__, datetime.datetime.now().strftime('%c')))
 
     # check that IRIS CRAN packages are installed
+
+    import obspy
+    from distutils.version import StrictVersion
+    from . import updater 
+    from rpy2 import robjects 
+    from rpy2 import rinterface 
+    from rpy2.robjects import pandas2ri  
 
     IRIS_packages = ['seismicRoll','IRISSeismic','IRISMustangMetrics']
 
