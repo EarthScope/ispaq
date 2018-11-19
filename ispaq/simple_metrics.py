@@ -13,7 +13,9 @@ from __future__ import (absolute_import, division, print_function)
 import math
 import numpy as np
 import pandas as pd
+import obspy
 
+from distutils.version import StrictVersion
 from obspy import UTCDateTime
 
 from .concierge import NoAvailableDataError
@@ -71,7 +73,7 @@ def simple_metrics(concierge):
     if ('numSpikes') in function_metadata and len(function_metadata) == 1:
         channelFilter = '[BH][HX].'
     if ('STALTA') in function_metadata and len(function_metadata) == 1:
-        channelFilter = '[BHCDES][HPLX].'
+        channelFilter = '[BHCDESLM][HPLGNX].'
 
     logger.debug("channelFilter %s" % channelFilter)
 
@@ -134,7 +136,7 @@ def simple_metrics(concierge):
                 try:
                     df = irismustangmetrics.apply_simple_metric(r_stream, 'stateOfHealth')
                     # for local miniSEED data, remove invalid state of health metrics
-                    if concierge.dataselect_client is None:
+                    if concierge.dataselect_client is None and (StrictVersion(obspy.__version__) < StrictVersion("1.1.0")):
                         df = df[~df.metricName.isin(["calibration_signal","clock_locked","event_begin","event_end","event_in_progess","timing_correction","timing_quality"])]
                     dataframes.append(df)
                 except Exception as e:
@@ -161,7 +163,7 @@ def simple_metrics(concierge):
 
             if 'STALTA' in function_metadata:
             
-                if av.channel.startswith(('BH','HH','CH','DH','EH','SH','DP','EL','BX','HX')):
+                if av.channel.startswith(('BH','HH','CH','DH','EH','SH','LH','MH','DP','SP','LP','EP','EL','HL','LL','BL','SL','BX','HX')):
                     try:
                         r_stream_stalta = concierge.get_dataselect(av.network, av.station, av.location, av.channel, starttime, endtime)
                     except Exception as e:

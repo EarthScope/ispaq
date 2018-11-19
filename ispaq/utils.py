@@ -41,6 +41,8 @@ def write_simple_df(df, filepath, sigfigs=6):
     df.starttime = df.starttime.apply(UTCDateTime, precision=0) # no milliseconds
     df.endtime = df.endtime.apply(UTCDateTime, precision=0) # no milliseconds
     df = df.replace('NULL',np.nan)
+    #df.loc[~df['metricName'].str.match('timing_quality') & df['value'].str.match('NULL'),'value'] = np.nan
+
     # Get pretty values
     pretty_df = format_simple_df(df, sigfigs=sigfigs)
     pretty_df = pretty_df.rename(index=str,columns={'snclq':'target','starttime':'start','endtime':'end'})
@@ -73,6 +75,8 @@ def format_simple_df(df, sigfigs=6):
         df.value = df.value.astype(float)
         format_string = "." + str(sigfigs) + "g"
         df.value = df.value.apply(lambda x: format(x, format_string))
+        df.value = df.value.astype(basestring)
+        df.loc[df['metricName'].str.match('timing_quality') & df['value'].str.match('nan'),'value'] = 'NULL'
     if 'starttime' in df.columns:
         df.starttime = df.starttime.apply(UTCDateTime, precision=0) # no milliseconds
         df.starttime = df.starttime.apply(lambda x: x.strftime("%Y-%m-%dT%H:%M:%S"))

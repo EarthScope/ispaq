@@ -11,11 +11,16 @@ Python module containing for updating R packages.
 from __future__ import (absolute_import, division, print_function)
 
 import pandas as pd
+import os
+import warnings
 
 from rpy2 import robjects
 from rpy2 import rinterface
 from rpy2.robjects import pandas2ri
 
+os.environ['MACOSX_DEPLOYMENT_TARGET'] = "10.9"
+warnings.filterwarnings("ignore", category=RuntimeWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
 
 #     R Initialization     -----------------------------------------------------
 
@@ -32,13 +37,34 @@ robjects.r('options(show.error.messages=FALSE)')
 # NOTE:  R-compatible objects as arguments.
 
 _R_install_packages = robjects.r('utils::install.packages')
+#IRIS_packages = ['seismicRoll','IRISSeismic','IRISMustangMetrics']
+
+def install_IRIS_packages(IRIS_packages,logger):
+    for package in IRIS_packages:
+        try:
+            _R_install_packages(package)
+            logger.info('Installed %s' % (package))
+        except Exception as e:
+            logger.error('Unable to install %s: %s' % (package,e))     
+
+def install_IRIS_packages_missing(IRIS_packages,logger):
+    # Get version information for locally installed and CRAN available IRIS_packages
+    r_installed = robjects.r("installed.packages()")
+    installed_names = pandas2ri.ri2py(r_installed.rownames).tolist()
+    
+    for package in IRIS_packages:
+       if package not in installed_names:
+           try:
+               _R_install_packages(package)
+               logger.info('Installed %s' % (package))
+           except Exception as e:
+               logger.error('Unable to install %s: %s' % (package,e))
 
 
-def get_IRIS_package_versions(logger):
+def get_IRIS_package_versions(IRIS_packages,logger):
     """
     Return a dataframe of version information for IRIS R packages used in ISPAQ.
     """
-    IRIS_packages = ['seismicRoll','IRISSeismic','IRISMustangMetrics']
     
     # Get version information for locally installed and CRAN available IRIS_packages
     r_installed = robjects.r("installed.packages()[c('seismicRoll','IRISSeismic','IRISMustangMetrics'),'Version']")
@@ -67,12 +93,11 @@ def get_IRIS_package_versions(logger):
     return(df)
 
 
-def update_IRIS_packages(logger):
+def update_IRIS_packages(IRIS_packages,logger):
     """
     Automatically upate IRIS R packages used in ISPAQ.    
     """
-    df = get_IRIS_package_versions(logger)
-    
+    df = get_IRIS_package_versions(IRIS_packages,logger)
     packages_to_upgrade = df.package[df.upgrade].tolist()
     
     if len(packages_to_upgrade) == 0:
@@ -81,12 +106,13 @@ def update_IRIS_packages(logger):
     else:
         for package in packages_to_upgrade:
             try:
-                # TODO:  automatic package installation needs to be tested
                 _R_install_packages(package)
                 logger.info('Installed %s' % (package))
             except Exception as e:
                 logger.error('Unable to install %s: %s' % (package,e))
                 
+
+
                 
     
     

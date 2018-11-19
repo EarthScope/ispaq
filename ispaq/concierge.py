@@ -22,6 +22,8 @@ import tempfile
 import pandas as pd
 import numpy as np
 
+from distutils.version import StrictVersion 
+
 import obspy
 from obspy.clients.fdsn import Client
 from obspy.clients.fdsn.header import URL_MAPPINGS
@@ -816,6 +818,7 @@ class Concierge(object):
             _endtime = endtime
 
         if self.dataselect_client is None:
+                   
             # Read local MiniSEED file and convert to R_Stream
             nday = int((_endtime - .00001).julday - _starttime.julday) + 1   # subtract a short amount of time for 00:00:00 endtimes
 
@@ -844,10 +847,28 @@ class Concierge(object):
                             _endtime = _endtime - 0.000001
                         py_stream = obspy.read(filepath)
                         py_stream = py_stream.slice(_starttime, _endtime, nearest_sample=False)
-                        flag_dict = obspy.io.mseed.util.get_timing_and_data_quality(filepath)
-                        act_flags = [0,0,0,0,0,0,0,0] # TODO:  Find a way to read act_flags
-                        io_flags = [0,0,0,0,0,0,0,0] # TODO:  Find a way to read io_flags
-                        dq_flags = flag_dict['data_quality_flags']
+                        if (StrictVersion(obspy.__version__) < StrictVersion("1.1.0")): 
+                            flag_dict = obspy.io.mseed.util.get_timing_and_data_quality(filepath)
+                            act_flags = [0,0,0,0,0,0,0,0] # TODO:  Find a way to read act_flags
+                            io_flags = [0,0,0,0,0,0,0,0] # TODO:  Find a way to read io_flags
+                            dq_flags = flag_dict['data_quality_flags']
+                        else:
+                            flag_dict = obspy.io.mseed.util.get_flags(filepath)
+                            act_flags = []
+                            io_flags = []
+                            dq_flags = []
+                            for k,v in flag_dict['activity_flags_counts'].items():
+                                act_flags.append(v) 
+                            for k,v in flag_dict['io_and_clock_flags_counts'].items():
+                                io_flags.append(v)
+                            for k,v in flag_dict['data_quality_flags_counts'].items():
+                                dq_flags.append(v)
+                        
+                        if flag_dict["timing_quality"]:
+                            timing_qual=flag_dict["timing_quality"]["mean"]
+                        else:
+                            timing_qual=None
+
                         # NOTE:  ObsPy does not store station metadata with each trace.
                         # NOTE:  We need to read them in separately from station metadata.
 			availability = self.get_availability(network, station, location, channel, _starttime, _endtime)
@@ -871,7 +892,7 @@ class Concierge(object):
 			azimuth = availability.azimuth[0]
 			dip = availability.dip[0]
 			# Create the IRISSeismic version of the stream
-			r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags,
+			r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags, timing_qual,
 							sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
 
                     except Exception as e:
@@ -928,10 +949,27 @@ class Concierge(object):
                             _endtime = _endtime - 0.000001
                     py_stream = py_stream.slice(_starttime, _endtime, nearest_sample=False) 
                     # NOTE:  ObsPy does not store state-of-health flags with each stream.
-		    flag_dict = obspy.io.mseed.util.get_timing_and_data_quality(filepath)
-		    act_flags = [0,0,0,0,0,0,0,0] # TODO:  Find a way to read act_flags
-		    io_flags = [0,0,0,0,0,0,0,0] # TODO:  Find a way to read io_flags
-		    dq_flags = flag_dict['data_quality_flags']
+                    if (StrictVersion(obspy.__version__) < StrictVersion("1.1.0")):
+                        flag_dict = obspy.io.mseed.util.get_timing_and_data_quality(filepath)
+                        act_flags = [0,0,0,0,0,0,0,0] 
+                        io_flags = [0,0,0,0,0,0,0,0] 
+                        dq_flags = flag_dict['data_quality_flags']
+                    else:
+                        flag_dict = obspy.io.mseed.util.get_flags(filepath)
+                        act_flags = []
+                        io_flags = []
+                        dq_flags = []
+                        for k,v in flag_dict['activity_flags_counts'].items():
+                            act_flags.append(v)
+                        for k,v in flag_dict['io_and_clock_flags_counts'].items():
+                            io_flags.append(v)
+                        for k,v in flag_dict['data_quality_flags_counts'].items():
+                            dq_flags.append(v)
+
+                    if flag_dict["timing_quality"]:
+                        timing_qual=flag_dict["timing_quality"]["mean"]
+                    else:
+                        timing_qual=None
 
 		    # NOTE:  ObsPy does not store station metadata with each trace.
 		    # NOTE:  We need to read them in separately from station metadata.
@@ -958,7 +996,7 @@ class Concierge(object):
 		    dip = availability.dip[0]
 
 		    # Create the IRISSeismic version of the stream
-		    r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags,
+		    r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags, timing_qual,
 						    sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
 			
                 except Exception as e:

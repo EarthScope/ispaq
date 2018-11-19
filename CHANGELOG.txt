@@ -1,4 +1,13 @@
-1.1.2
+1.2.0
+ * updates the recommended packages for conda environment install, notably to R 3.5.1 and obspy 1.1.0,
+   in the ispaq-conda-install.txt file. If you have an earlier version of ISPAQ installed, please run `run_ispaq.py -U
+ * `run_ispaq.py -U` will now ask if you want to upgrade to the recommended conda package versions
+   if it detects that you are using old versions
+ * `run_ispaq.py -U` will now install the IRIS MUSTANG R-packages if they do not exist in your
+   conda environment instead of failing
+ * with obspy version 1.1.0+, ispaq can calculate the following metrics on local miniseed files:
+   calibration_signal, clock_locked, event_begin, event_end, event_in_progress, timing_correction,
+   clock_locked
  * fixed bug in crossCorrelation (polarity_check) that incorrectly calculated distances
 
 1.1.1

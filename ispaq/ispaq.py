@@ -12,6 +12,16 @@ import imp
 import argparse
 import datetime
 import logging
+import obspy
+import numpy as np
+import subprocess
+
+from distutils.version import StrictVersion
+from . import updater
+from rpy2 import robjects
+from rpy2 import rinterface
+from rpy2.robjects import pandas2ri
+
 
 __version__ = "1.1.2"
 
@@ -30,7 +40,7 @@ def currentispaq():
     return groups
 
 def main():
-    
+
     # Check our Conda environment ----------------------------------------------
     # let's check for our primary supporting python modules
     try:
@@ -40,7 +50,7 @@ def main():
     except ImportError as e:
         print('ERROR: please activate your ispaq environment before running: %s' % e)
         raise SystemExit
-        
+
     # Parse arguments ----------------------------------------------------------
     
     epilog_text='If no preference file is specified and the default file ./preference_files/default.txt cannot be found:\n--csv_dir defaults to "."\n--png_dir defaults to "."\n--sncl_format defaults to "N.S.C.L"\n--sigfigs defaults to "6"'
@@ -118,16 +128,26 @@ def main():
 
     logger.info('Running ISPAQ version %s on %s' % (__version__, datetime.datetime.now().strftime('%c')))
 
+    # check that IRIS CRAN packages are installed
+
+    IRIS_packages = ['seismicRoll','IRISSeismic','IRISMustangMetrics']
+
+    r_installed = robjects.r("installed.packages()")
+    installed_names = pandas2ri.ri2py(r_installed.rownames).tolist()
+    flag=0
+    for package in IRIS_packages:
+        if package not in installed_names:
+            print("IRIS R package " + package + " is not installed")
+            flag=1
+    if (flag == 1):
+        print("\nAttempting to install IRIS R packages from CRAN")
+        updater.install_IRIS_packages_missing(IRIS_packages,logger)
+
     # Validate the args --------------------------------------------------------
     
     # We can't use required=True in argpase because folks should be able to type only -U
     
     if not (args.update_r or args.list_metrics):
-        # start and end times
-        #if args.starttime is None:
-        #    logger.critical('argument --starttime is required to run metrics')
-        #    raise SystemExit
-    
         # metric sets
         if args.metrics is None:
             logger.critical('argument -M/--metrics is required to run metrics')
@@ -140,13 +160,34 @@ def main():
     
     
     # Handle R package upgrades ------------------------------------------------
+
+    _R_install_packages = robjects.r('utils::install.packages')
     
     if args.update_r:
+        logger.info('Checking for recommended conda packages...')
+        x=robjects.r("packageVersion('base')")
+        x_str = ".".join(map(str,np.array(x.rx(1)).flatten()))
+        if ((StrictVersion(obspy.__version__) < StrictVersion("1.1.0")) 
+                or (StrictVersion(x_str) < StrictVersion("3.5.1")) ):
+            logger.info('Updating conda packages...')
+            conda_str = ("conda install -c conda-forge pandas=0.23.4 obspy=1.1.0 r=3.5.1 r-base=3.5.1 r-devtools=2.0.1" +
+                        " r-rcurl=1.95_4.11 r-rcurl=1.95_4.11 r-xml=3.98_1.16 r-dplyr=0.7.6 r-quadprog=1.5_5 r-signal=0.7_6" +
+                        " r-pracma=2.1.5 rpy2=2.8.6 r-stringr=1.3.1")
+            subprocess.call(conda_str, shell=True)
+            logger.info('(Re)installing IRIS R packages from CRAN')
+            try:
+                for package in IRIS_packages:
+                    _R_install_packages(package)
+                    logger.info('Installed %s' % (package))
+            except Exception as e:
+                logger.error('Unable to install %s: %s' % (package,e))
+        else:
+            logger.info('Required conda packages found')
+
         logger.info('Checking for IRIS R package updates...')
-        from . import updater
-        df = updater.get_IRIS_package_versions(logger)
+        df = updater.get_IRIS_package_versions(IRIS_packages,logger)
         print('\n%s\n' % df)
-        updater.update_IRIS_packages(logger)
+        updater.update_IRIS_packages(IRIS_packages,logger)
         sys.exit(0)
 
     if args.list_metrics:
@@ -194,6 +235,22 @@ def main():
     from .crossCorrelation_metrics import crossCorrelation_metrics
     from .orientationCheck_metrics import orientationCheck_metrics
     from .transferFunction_metrics import transferFunction_metrics
+
+    if (StrictVersion(obspy.__version__) < StrictVersion("1.1.0")):
+        print("Please update ObsPy version " + str(obspy.__version__) + " to version 1.1.0")
+        message = "Would you like to update obspy now? [y]/n: "
+        answer = raw_input(message).lower()
+        accepted_answer = ['','yes','y']
+        rejected_answer = ['n','no']
+        while ((answer not in accepted_answer) and (answer not in rejected_answer)):
+            print("Invalid choice: " + answer)
+            message = "Would you like to update obspy now? [y]/n: "
+            answer = raw_input(message).lower()
+        if answer in accepted_answer:
+            subprocess.call("conda install -c conda-forge obspy=1.1.0",shell=True)
+        elif answer in rejected_answer:
+            print("Exiting now without updating conda packages.")
+            raise SystemExit
 
 
     # Create UserRequest object ------------------------------------------------

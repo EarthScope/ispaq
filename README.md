@@ -108,12 +108,12 @@ perform installs, updates, or run ISPAQ.
 ```
 cd ispaq
 conda update conda
-conda create --name ispaq python=2.7 readline=6.2
+conda create --name ispaq python=2.7
 source activate ispaq
-conda install -c conda-forge -c r -c r-old -c bioconda --file ispaq-conda-install.txt
+conda install -c conda-forge -n ispaq --file ispaq-conda-install.txt
 ```
 
-_Note:_ if `source activate ispaq` does not work because your shell is csh/tcsh instead of bash you will need 
+_Note:_ if `source activate ispaq` results in the message "No such file or directory" your shell may be csh/tcsh instead of bash. You will need 
 to start a bash shell first. Type `bash` in a terminal window and then proceed with `source activate ispaq`.
 
 See what is installed in our (ispaq) environment with:
@@ -122,9 +122,14 @@ See what is installed in our (ispaq) environment with:
 conda list
 ```
 
-Now install the IRIS R packages for ISPAQ. This will be a good test that R is installed properly:
-
+Now install the IRIS R packages for ISPAQ by downloading them from CRAN:
 ```
+./run_ispaq.py -U
+```
+
+Alternatively, you can install the local versions of the IRIS R packages:
+```
+export MACOSX_DEPLOYMENT_TARGET=10.9    # this line for macOS only
 R CMD INSTALL seismicRoll_1.1.2.tar.gz 
 R CMD INSTALL IRISSeismic_1.4.9.tar.gz
 R CMD INSTALL IRISMustangMetrics_2.1.2.tar.gz 
@@ -163,7 +168,7 @@ ISPAQ version 1.0.0
 single arguments:
   -h, --help                       show this help message and exit
   -V, --version                    show program's version number and exit
-  -U, --update-r                   check for and install newer CRAN IRIS Mustang packages, and exit
+  -U, --update                     check for and install newer CRAN and recommended conda packages, and exit
   -L, --list-metrics               list names of available metrics and exit
 
 arguments for running metrics:

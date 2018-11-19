@@ -265,6 +265,7 @@ def R_Stream(stream,
              act_flags=[0,0,0,0,0,0,0,0],
              io_flags=[0,0,0,0,0,0,0,0],
              dq_flags=[0,0,0,0,0,0,0,0],
+             timing_qual=None,
              sensor="",
              scale=1.0,
              scalefreq=1.0,
@@ -300,13 +301,25 @@ def R_Stream(stream,
         r_listOfTraces[i] = R_Trace(stream.traces[i], sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
     # Create R Stream object
     r_stream = robjects.r('new("Stream")')
-    r_stream = _R_initialize(r_stream,
-                             requestedStarttime=R_POSIXct(requestedStarttime),
-                             requestedEndtime=R_POSIXct(requestedEndtime),
-                             act_flags=R_integer(act_flags),
-                             io_flags=R_integer(io_flags),
-                             dq_flags=R_integer(dq_flags),
-                             traces=r_listOfTraces)
+        
+    if timing_qual is None:
+        r_stream = _R_initialize(r_stream,
+                                 requestedStarttime=R_POSIXct(requestedStarttime),
+                                 requestedEndtime=R_POSIXct(requestedEndtime),
+                                 act_flags=R_integer(act_flags),
+                                 io_flags=R_integer(io_flags),
+                                 dq_flags=R_integer(dq_flags),
+                                 traces=r_listOfTraces)
+    else:
+        r_stream = _R_initialize(r_stream,
+                                 requestedStarttime=R_POSIXct(requestedStarttime),
+                                 requestedEndtime=R_POSIXct(requestedEndtime),
+                                 act_flags=R_integer(act_flags),
+                                 io_flags=R_integer(io_flags),
+                                 dq_flags=R_integer(dq_flags),
+                                 timing_qual=timing_qual,
+                                 traces=r_listOfTraces)
+
     return(r_stream) 
 
 
