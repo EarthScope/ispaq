@@ -101,7 +101,7 @@ def update_IRIS_packages(IRIS_packages,logger):
     packages_to_upgrade = df.package[df.upgrade].tolist()
     
     if len(packages_to_upgrade) == 0:
-        logger.info('No packages need updating.\n')
+        logger.info('No CRAN packages need updating.\n')
         
     else:
         for package in packages_to_upgrade:

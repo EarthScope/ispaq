@@ -110,7 +110,7 @@ cd ispaq
 conda update conda
 conda create --name ispaq python=2.7
 source activate ispaq
-conda install -c conda-forge -n ispaq --file ispaq-conda-install.txt
+conda install -c conda-forge --file ispaq-conda-install.txt
 ```
 
 _Note:_ if `source activate ispaq` results in the message "No such file or directory" your shell may be csh/tcsh instead of bash. You will need 

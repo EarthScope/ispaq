@@ -15,7 +15,7 @@ import logging
 import numpy as np
 import subprocess
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 # dictionary of currently defined ISPAQ metric groups and business logic
 # for comparison with R package IRISMustangMetrics/ISPAQUtils.R json

@@ -1,3 +1,6 @@
+1.2.1
+ * fixes bug in PSD/PDF metrics that affected output values when local RESP files are used. 
+
 1.2.0
  * updates the recommended packages for conda environment install, notably to R 3.5.1 and obspy 1.1.0,
    in the ispaq-conda-install.txt file. If you have an earlier version of ISPAQ installed, please run `run_ispaq.py -U

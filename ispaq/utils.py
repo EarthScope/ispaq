@@ -287,7 +287,7 @@ def getSpectra(st, sampling_rate, concierge):
     minfreq = min(binFreq)
     maxfreq = max(binFreq)
     nfreq = len(binFreq)
-    units = 'DEF'
+    units = 'ACC'
     output = 'FAP'
 
     network = get_slot(st,'network')
@@ -302,6 +302,7 @@ def getSpectra(st, sampling_rate, concierge):
 
     evalResp = None
     respDir = concierge.resp_dir
+    
     if (respDir):
         # calling local evalresp -- generate the target file based on the SNCL identifier
         # file pattern:  RESP.<NET>.<STA>.<LOC>.<CHA> or RESP.<STA>.<NET>.<LOC>.<CHA>
@@ -311,6 +312,7 @@ def getSpectra(st, sampling_rate, concierge):
             if (os.path.exists(localFiles)):
                 logger.debug('Found local RESP file %s' % localFiles)
                 debugMode = False
+
                 try:
                     evalResp = evresp.getEvalresp(localFiles, network, station, location, channel, starttime,
                                        minfreq, maxfreq, nfreq, units.upper(), output.upper(), "LOG", debugMode)
@@ -321,6 +323,7 @@ def getSpectra(st, sampling_rate, concierge):
                     break   # break early from loop if we found a result
         if evalResp is None:
             raise EvalrespException('No RESP file found at %s[.txt] or %s[.txt]' % (localFile,localFile2))
+
     else:    
         # calling the web service 
         try:
