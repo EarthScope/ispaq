@@ -94,10 +94,14 @@ class UserRequest(object):
                                                                 'outputType': 'GeneralValue',
                                                                 'speed': 'fast',
                                                                 'streamCount': 1}}}
-            self.preferences = {'png_dir': '.',
+            self.preferences = {'pdf_dir': '.',
                                 'csv_dir': '.',
+                                'psd_dir': '.',
                                 'sigfigs': 6,
                                 'sncl_format': 'N.S.L.C'}
+            self.pdf_preferences = {'pdf_type': 'plot, text',
+                                    'pdf_interval': 'daily, aggregated',
+                                    'plot_include':'colorbar, legend'}
 
         #     Initialize from JSON     ----------------------------------------
         
@@ -148,14 +152,20 @@ class UserRequest(object):
             self.event_url = args.event_url
             self.resp_dir = args.resp_dir
             self.csv_dir = args.csv_dir
-            self.png_dir = args.png_dir
             self.sncl_format = args.sncl_format
             self.sigfigs = args.sigfigs
+            
+            self.pdf_type = args.pdf_type
+            self.pdf_interval = args.pdf_interval
+            self.plot_include = args.plot_include
+            self.pdf_dir = args.pdf_dir
+            self.psd_dir = args.psd_dir
+            
 
             #     Load preferences from file      -----------------------------
 
             # Metric and SNCL information from the preferences file
-            metric_sets, sncl_sets, data_access, preferences = {}, {}, {}, {}
+            metric_sets, sncl_sets, data_access, preferences, pdf_preferences = {}, {}, {}, {}, {}
             currentSection = None
             multiValue = False
 
@@ -185,6 +195,9 @@ class UserRequest(object):
                         elif line.lower() == "preferences:":
                             currentSection = preferences
                             multiValue = False
+                        elif line.lower() == "pdf_preferences:":
+                            currentSection = pdf_preferences
+                            multiValue = True
                         elif currentSection is not None:  # line following header
                             entry = line.split(':',1)
                             if len(entry) <= 1:  # empty line
@@ -272,13 +285,14 @@ class UserRequest(object):
             
             #     Add individual preferences     ------------------------------
             
-            if self.png_dir is None:
-                if 'png_dir' in preferences:
-                    self.png_dir = os.path.abspath(os.path.expanduser(preferences['png_dir']))
+            if self.pdf_dir is None:
+                if 'pdf_dir' in preferences:
+                    self.pdf_dir = os.path.abspath(os.path.expanduser(preferences['pdf_dir']))
                 else:
-                    self.png_dir = os.path.abspath('.')
+                    self.pdf_dir = os.path.abspath('.')
             else:
-                self.png_dir = os.path.abspath(os.path.expanduser(self.png_dir))
+                self.pdf_dir = os.path.abspath(os.path.expanduser(self.pdf_dir))
+
 
             if self.csv_dir is None:
                 if 'csv_dir' in preferences:
@@ -287,6 +301,33 @@ class UserRequest(object):
                     self.csv_dir = os.path.abspath('.')
             else:
                 self.csv_dir = os.path.abspath(os.path.expanduser(self.csv_dir))
+
+            if self.psd_dir is None:
+                if 'psd_dir' in preferences:
+                    self.psd_dir = os.path.abspath(os.path.expanduser(preferences['psd_dir']))
+                else:
+                    self.psd_dir = os.path.abspath('.')
+            else:
+                self.psd_dir = os.path.abspath(os.path.expanduser(self.psd_dir))
+
+            if self.pdf_type is None:
+                if 'pdf_type' in pdf_preferences:
+                    self.pdf_type = pdf_preferences['pdf_type']
+                else:
+                    self.pdf_type = 'plot, text'
+            
+            if self.pdf_interval is None:
+                if 'pdf_interval' in pdf_preferences:
+                    self.pdf_interval = pdf_preferences['pdf_interval']
+                else:
+                    self.pdf_interval = 'daily, aggregated'
+
+            if self.plot_include is None:
+                if 'plot_include' in pdf_preferences:
+                    self.plot_include = pdf_preferences['plot_include']
+                else:
+                    self.plot_include = 'legend, colorbar'
+
 
             if self.sigfigs is None:
                 if 'sigfigs' in preferences:

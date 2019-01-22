@@ -1,3 +1,4 @@
+
 """
 ISPAQ Business Logic for PSD Metrics.
 
@@ -11,17 +12,18 @@ ISPAQ Business Logic for PSD Metrics.
 from __future__ import (absolute_import, division, print_function)
 
 import os
-import math
 import pandas as pd
-
+import fnmatch
 from obspy.clients.fdsn import Client
 from obspy import UTCDateTime
-
 from .concierge import NoAvailableDataError
-
 from . import utils
 from . import irisseismic
 from . import irismustangmetrics
+from . import PDF_aggregator
+
+
+#from astropy.io.ascii.tests.test_connect import files
 
 def PSD_metrics(concierge):
     """
@@ -29,9 +31,9 @@ def PSD_metrics(concierge):
 
     :type concierge: :class:`~ispaq.concierge.Concierge`
     :param concierge: Data access expediter.
-    
-    :rtype: pandas dataframe 
-    :return: Dataframe of PSD metrics. 
+
+    :rtype: pandas dataframe
+    :return: Dataframe of PSD metrics.
 
     .. rubric:: Example
 
@@ -49,43 +51,10 @@ def PSD_metrics(concierge):
 
     # Container for all of the metrics dataframes generated
     dataframes = []
+    
 
-    if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
-        logger.info("Searching for response files in '%s'" % concierge.resp_dir)
-    else:                   # try to connect to irisws/evalresp
-        try:
-            resp_url = Client("IRIS")
-        except Exception as e:
-            logger.error("Could not connect to 'http:/service.iris.edu/irisws/evalresp/1'")
-            return None
 
-    # ----- All available SNCLs -------------------------------------------------
-
-    # NEW: Loop over days
-    start = concierge.requested_starttime
-    end = concierge.requested_endtime
-
-    delta = (end-start)/(24*60*60)
-    nday=int(delta)+1
-
-    if nday > 1 and concierge.station_client is None:
-        try:
-            initialAvailability = concierge.get_availability(starttime=start,endtime=end)
-        except NoAvailableDataError as e:
-            raise
-        except Exception as e:
-            logger.error("concierge.get_availability() failed: '%s'" % e)
-            return None
-
-    for day in range(nday):
-        # On the first and last days, use the hour provided, otherwise use 00:00:00
-        starttime = (start + day * 86400)
-        starttime = UTCDateTime(starttime.strftime("%Y-%m-%d") +"T00:00:00Z")
-        endtime = starttime + 86400
-
-        if starttime == end:
-            continue
-
+    def do_psd(concierge,starttime,endtime):
         try:
             availability = concierge.get_availability(starttime=starttime,endtime=endtime)
         except NoAvailableDataError as e:
@@ -95,19 +64,18 @@ def PSD_metrics(concierge):
             logger.error('concierge.get_availability() failed')
             return None
 
-
         # If the day has no data, then skip it (used to raise NoAvailableDataError)
         if availability is None:
-            continue
+            return
 
         # Apply the channelFilter and drop multiple metadata epochs
-        availability = availability[availability.channel.str.contains(channelFilter)].drop_duplicates(['snclId'])      
+        availability = availability[availability.channel.str.contains(channelFilter)].drop_duplicates(['snclId'])
 
         # Loop over rows of the availability dataframe
-        logger.info('Calculating PSD metrics for %d SNCLs on %s' % (availability.shape[0],str(starttime).split('T')[0]))
+        logger.info('Calculating PSD values for %d SNCLs on %s' % (availability.shape[0],str(starttime).split('T')[0]))
 
         for (index, av) in availability.iterrows():
-            logger.info('%03d Calculating PSD metrics for %s' % (index, av.snclId))
+            logger.info('%03d Calculating PSD values for %s' % (index, av.snclId))
 
             # Get the data ----------------------------------------------
 
@@ -125,7 +93,6 @@ def PSD_metrics(concierge):
                 continue
 
             # Run the PSD metric ----------------------------------------
-
             if any(key in function_metadata for key in ("PSD","PSDText")) :
                 try:
                     evalresp = None
@@ -145,9 +112,14 @@ def PSD_metrics(concierge):
                     if "psd_corrected" in concierge.metric_names :
                         # Write out the corrected PSDs
                         # Do it this way to have each individual day file properly named with starttime.date
+                        subFolder = '%s/%s/%s/' % (concierge.psd_dir, av.network, av.station)
+                        if not os.path.isdir(subFolder):
+                            logger.info("psd_dir %s does not exist, creating directory" % subFolder)
+                            os.makedirs(subFolder)
                         filename = '%s_%s_PSDCorrected.csv' % (av.snclId, starttime.date)
-                        filepath = concierge.csv_dir + '/' + filename
-                        logger.info('Writing corrected PSD to %s' % os.path.basename(filepath))
+
+                        filepath = subFolder + filename
+                        logger.info('Writing corrected PSD values to %s' % (filepath))
                         try:
                             # Add target
                             PSDcorrected['target'] = av.snclId
@@ -158,23 +130,7 @@ def PSD_metrics(concierge):
                             logger.error('Unable to write %s' % (filepath))
                             raise
 
-                    if "pdf_text" in concierge.metric_names :
-                    # Write out the PDFs
-                        filename = '%s_%s_PDF.csv' % (av.snclId, starttime.date)
-                        filepath = concierge.csv_dir + '/' + filename
-                        logger.info('Writing PDF text to %s' % os.path.basename(filepath))
-                        try:
-                            # Add target, start- and endtimes
-                            PDF['target'] = av.snclId
-                            PDF['starttime'] = starttime
-                            PDF['endtime'] = endtime
-                            PDF = PDF[['target','starttime','endtime','freq','power','hits']]
-                            utils.write_numeric_df(PDF, filepath, sigfigs=concierge.sigfigs)  
-                        except Exception as e:
-                            logger.debug(e)
-                            logger.error('Unable to write %s' % (filepath))
-                            raise
-
+                    
                 except Exception as e:
                     if str(e).lower().find('could not resolve host: service.iris.edu') > -1:
                         logger.debug(e)
@@ -185,28 +141,141 @@ def PSD_metrics(concierge):
                         logger.error(e)
                     logger.warning('"PSD" metric calculation failed for %s' % (av.snclId))
                     continue
+            
 
 
-
-            # Run the PSD plot ------------------------------------------
-
-            if 'PSDPlot' in function_metadata :
-                try:  
-                    filename = '%s_%s_PDF.png' % (av.snclId, starttime.date)
-                    filepath = concierge.png_dir + '/' + filename
-                    evalresp = None
-                    if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
-                        sampling_rate = utils.get_slot(r_stream, 'sampling_rate')
-                        evalresp = utils.getSpectra(r_stream, sampling_rate, concierge)
-                    status = irismustangmetrics.apply_PSD_plot(r_stream, filepath, evalresp=evalresp)
-                    logger.info('Writing PDF plot %s' % os.path.basename(filepath))
-                except Exception as e:
-                    if str(e).lower().find('no psds returned') > -1:
-                        logger.warning("IRISMustangMetrics: No PSDs returned for %s" % (av.snclId))
-                    else:
-                        logger.warning(e)
-                    logger.warning('"PSD" plot generation failed for %s' % (av.snclId))
+    def do_pdf(concierge, starttime, endtime):
+        
+        
+        fullFileList = list(); fullSnclList = list()
+        fileDF = pd.DataFrame(columns=["SNCL","FILE"])
+        daylist = pd.date_range(start=str(starttime.date), end=str(endtime.date)).tolist()
+        
+        # Get a list of the files that exist in the directory within the sncl and timespan
+        for sncl_pattern in concierge.sncl_patterns:
+            
+            # We need to ignore the quality code, if included
+            if len(sncl_pattern.split('.')) == 5:
+                sncl_pattern = sncl_pattern.rsplit('.', 1)[0]
+                
+            for day in daylist:
+                day = day.strftime("%Y-%m-%d")
+                fnames = sncl_pattern + "_" + str(day) + "_PSDCorrected.csv"
+                files = []
+                for root, dirnames, filenames in os.walk(concierge.psd_dir):
+                    for filename in fnmatch.filter(filenames, fnames):
+                        files.append(os.path.join(root, filename))
+                
+                #files = glob.glob(filename,recursive=True)
+                if files:
+                    for file in files:
+                        fullFileList.append(file)
+                        fullSnclList.append(file.split('/')[-1].split('_')[0])
+                else:
+                    logger.warning('No PSD files found for %s %s' % (sncl_pattern,day))
+                        
                     
+        
+        fileDF['FILE'] = fullFileList
+        fileDF['SNCL'] = fullSnclList            
+        snclList = fileDF['SNCL'].unique()
+        
+        # Extract just the dates
+        start = starttime.date
+        end = endtime.date
+        
+        if start == end:
+            logger.info('Calculating PDFs for %d SNCLs on %s' % (snclList.shape[0],str(start)))
+        else:
+            logger.info('Aggregating PDFs for %d SNCLs for %s to %s' % (snclList.shape[0],str(start), str(end)))
+            
+        for (index, sncl) in enumerate(snclList):
+            logger.info('%03d Calculating PDF values for %s' % (index, sncl))
+                
+            
+            [pdfDF,modesDF, maxDF, minDF] = PDF_aggregator.calculate_PDF(fileDF, sncl, starttime, endtime, concierge)
+
+            if ('plot' in concierge.pdf_type) and not pdfDF.empty:
+                PDF_aggregator.plot_PDF(sncl, starttime, endtime, pdfDF, modesDF, maxDF, minDF, concierge)
+#             
+
+
+
+    # Loop over days and caculate PSDs and/or PDFs -----------------------
+
+    if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
+        logger.info("Searching for response files in '%s'" % concierge.resp_dir)
+    else:                   # try to connect to irisws/evalresp
+        try:
+            resp_url = Client("IRIS")
+        except Exception as e:
+            logger.error("Could not connect to 'http:/service.iris.edu/irisws/evalresp/1'")
+            return None
+
+    # ----- All available SNCLs -------------------------------------------------
+
+    # Get date range
+    start = concierge.requested_starttime
+    end = concierge.requested_endtime
+    # NEW: if more than one day, calculate both daily and full-timespan PSDs
+    delta = (end.date - start.date).days
+    nday=int(delta)+1
+    
+    # Calculate for entire span
+    logger.info('Calculating noise metrics for %s to %s' % (str(start).split('T')[0],str(end).split('T')[0]))
+    
+    if any(key in function_metadata for key in ("PSD","PSDText")):
+
+        if concierge.station_client is None:
+            try:
+                initialAvailability = concierge.get_availability(starttime=start,endtime=end)
+            except NoAvailableDataError as e:
+                raise
+            except Exception as e:
+                logger.error("concierge.get_availability() failed: '%s'" % e)
+                return None
+
+        for day in range(nday):
+            # On the first and last days, use the hour provided, otherwise use 00:00:00
+            starttime = (start + day * 86400)
+            starttime = UTCDateTime(starttime.strftime("%Y-%m-%d") +"T00:00:00Z")
+            endtime = starttime + 86400
+
+            if (endtime-1).date == end.date:
+                endtime = end
+            if starttime.date == start.date:
+                starttime = start
+
+            # Can't have a starttime that matches the end
+            if starttime == end:
+                continue
+            
+            do_psd(concierge,starttime, endtime)
+                
+
+    if ("pdf" in concierge.metric_names) and ('daily' in concierge.pdf_interval):
+
+        for day in range(nday):
+            # On the first and last days, use the hour provided, otherwise use 00:00:00
+            starttime = (start + day * 86400)
+            starttime = UTCDateTime(starttime.strftime("%Y-%m-%d") +"T00:00:00Z")
+            endtime = starttime + 86400
+
+            if (endtime-1).date == end.date:
+                endtime = end
+            if starttime.date == start.date:
+                starttime = start
+
+            # Can't have a starttime that matches the end
+            if starttime == end:
+                continue
+
+            do_pdf(concierge, starttime, endtime-1)
+                
+                 
+    if ("pdf" in concierge.metric_names) and ('aggregated' in concierge.pdf_interval):
+        do_pdf(concierge, start, end - 1)
+    
     # Concatenate and filter dataframes before returning -----------------------
 
     if len(dataframes) == 0 and 'PSD' in function_metadata:
@@ -223,13 +292,12 @@ def PSD_metrics(concierge):
 
         if 'PSD' in function_metadata:
             # Concatenate dataframes before returning ----------------------------------
-            result = pd.concat(dataframes, ignore_index=True)    
+            result = pd.concat(dataframes, ignore_index=True)
             mask = result.metricName.apply(valid_metric)
             result = result[(mask)]
             result.reset_index(drop=True, inplace=True)
-            
-        return(result)
 
+        return(result)
 
 # ------------------------------------------------------------------------------
 

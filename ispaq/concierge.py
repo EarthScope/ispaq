@@ -86,17 +86,32 @@ class Concierge(object):
                 self.logger.warning("Cannot create csv_dir %s, defaulting to current directory" % user_request.csv_dir)
                 self.csv_dir = "."
 
-        if (os.path.isdir(user_request.png_dir)):
-            self.png_dir = user_request.png_dir
+        if (os.path.isdir(user_request.psd_dir)):
+            self.psd_dir = user_request.psd_dir
         else:
-            self.logger.warning("png_dir %s does not exist, creating directory" % user_request.png_dir)
+            self.logger.warning("psd_dir %s does not exist, creating directory" % user_request.psd_dir)
             try:
-                os.makedirs(user_request.png_dir)
-                self.png_dir = user_request.png_dir
+                os.makedirs(user_request.psd_dir)
+                self.psd_dir = user_request.psd_dir
             except OSError as exc:
-                self.logger.warning("Cannot create png_dir %s, defaulting to current directory" % user_request.png_dir)
-                self.png_dir = "."
+                self.logger.warning("Cannot create psd_dir %s, defaulting to current directory" % user_request.psd_dir)
+                self.psd_dir = "."
+        
+        if (os.path.isdir(user_request.pdf_dir)):
+            self.pdf_dir = user_request.pdf_dir
+        else:
+            self.logger.warning("pdf_dir %s does not exist, creating directory" % user_request.pdf_dir)
+            try:
+                os.makedirs(user_request.pdf_dir)
+                self.pdf_dir = user_request.pdf_dir
+            except OSError as exc:
+                self.logger.warning("Cannot create pdf_dir %s, defaulting to current directory" % user_request.pdf_dir)
+                self.pdf_dir = "."
+        
 
+        self.pdf_type = user_request.pdf_type
+        self.pdf_interval = user_request.pdf_interval
+        self.plot_include = user_request.plot_include
         self.sigfigs = user_request.sigfigs
         self.sncl_format = user_request.sncl_format
 
@@ -289,7 +304,16 @@ class Concierge(object):
           
 
         # Output information
-        file_base = '%s_%s_%s_' % (self.user_request.requested_metric_set,
+        filename_metrics = ''
+        if len(self.user_request.requested_metric_set.split(',')) > 1:
+            for metric in sorted(self.user_request.requested_metric_set.split(',')):
+                if metric != 'pdf' and metric != 'psd_corrected':
+                    filename_metrics = filename_metrics + metric + '-'
+            filename_metrics =  filename_metrics[:-1]
+        else:
+            filename_metrics = self.user_request.requested_metric_set
+        
+        file_base = '%s_%s_%s_' % (filename_metrics,
                                   self.user_request.requested_sncl_set,
                                   self.requested_starttime.date)
 
@@ -299,9 +323,10 @@ class Concierge(object):
         inclusiveEndtime = self.requested_endtime-1
         if(inclusiveEndtime.date != self.requested_starttime.date):
             file_base = file_base + '%s' % (inclusiveEndtime.date)
+        else:
+            file_base = file_base[:-1]
 
         self.output_file_base = self.csv_dir + '/' + file_base
-
         # Availability dataframe is stored if it is read from a local file
         self.availability = None
         self.initial_availability = None
@@ -331,7 +356,11 @@ class Concierge(object):
         self.logger.debug("event_url %s", self.event_url)
         self.logger.debug("resp_dir %s", self.resp_dir)
         self.logger.debug("csv_dir %s", self.csv_dir)
-        self.logger.debug("png_dir %s", self.png_dir)
+        self.logger.debug("pdf_dir %s", self.pdf_dir)
+        self.logger.debug("psd_dir %s", self.psd_dir)
+        self.logger.debug("pdf_type %s", self.pdf_type)
+        self.logger.debug("pdf_interval %s", self.pdf_interval)
+        self.logger.debug("plot_include %s", self.plot_include)
         self.logger.debug("sigfigs %s", self.sigfigs)
         self.logger.debug("sncl_format %s", self.sncl_format)
 
@@ -583,7 +612,7 @@ class Concierge(object):
             # availability dataframe with the same sncls repeating #sncl_patterns times
             loopCounter += 1
             if (network is "*" and station is "*" and location is "*" and loopCounter > 1):
-		continue
+                continue
 
             # Get "User Request" parameters
             try: 
@@ -755,7 +784,7 @@ class Concierge(object):
             self.logger.info(err_msg)
             #raise NoAvailableDataError(err_msg)
         else:
-	    # Those dataframes become availability
+            # Those dataframes become availability
             availability = pd.concat(sncl_pattern_dataframes, ignore_index=True, verify_integrity=True)
 
             # Remove duplicates -- starttime/endtime datatypes don't allow drop_duplicates
@@ -817,8 +846,8 @@ class Concierge(object):
         else:
             _endtime = endtime
 
+        
         if self.dataselect_client is None:
-                   
             # Read local MiniSEED file and convert to R_Stream
             nday = int((_endtime - .00001).julday - _starttime.julday) + 1   # subtract a short amount of time for 00:00:00 endtimes
 
@@ -871,29 +900,30 @@ class Concierge(object):
 
                         # NOTE:  ObsPy does not store station metadata with each trace.
                         # NOTE:  We need to read them in separately from station metadata.
-			availability = self.get_availability(network, station, location, channel, _starttime, _endtime)
-
+                        availability = self.get_availability(network, station, location, channel, _starttime, _endtime)
+                        
                         if(ignoreEpoch == False):
                             if (len(availability) > 1):
                                 raise Exception("Multiple metadata epochs found for %s" % _sncl_pattern)
 
-			sensor = availability.instrument[0]
-			scale = availability.scale[0]
-			scalefreq = availability.scalefreq[0]
-			scaleunits = availability.scaleunits[0]
-			if sensor is None: sensor = ""           # default from IRISSeismic Trace class prototype
-			if scale is None: scale = 1.0            # default from IRISSeismic Trace class prototype
-			if scalefreq is None: scalefreq = 1.0    # default from IRISSeismic Trace class prototype
-			if scaleunits is None: scaleunits = ""   # default from IRISSeismic Trace class prototype
-			latitude = availability.latitude[0]
-			longitude = availability.longitude[0]
-			elevation = availability.elevation[0]
-			depth = availability.depth[0]
-			azimuth = availability.azimuth[0]
-			dip = availability.dip[0]
-			# Create the IRISSeismic version of the stream
-			r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags, timing_qual,
+                        sensor = availability.instrument[0]
+                        scale = availability.scale[0]
+                        scalefreq = availability.scalefreq[0]
+                        scaleunits = availability.scaleunits[0]
+                        if sensor is None: sensor = ""           # default from IRISSeismic Trace class prototype
+                        if scale is None: scale = 1.0            # default from IRISSeismic Trace class prototype
+                        if scalefreq is None: scalefreq = 1.0    # default from IRISSeismic Trace class prototype
+                        if scaleunits is None: scaleunits = ""   # default from IRISSeismic Trace class prototype
+                        latitude = availability.latitude[0]
+                        longitude = availability.longitude[0]
+                        elevation = availability.elevation[0]
+                        depth = availability.depth[0]
+                        azimuth = availability.azimuth[0]
+                        dip = availability.dip[0]
+                        # Create the IRISSeismic version of the stream
+                        r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags, timing_qual,
 							sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
+
 
                     except Exception as e:
                         err_msg = "Error reading in local waveform from %s" % filepath
@@ -905,36 +935,36 @@ class Concierge(object):
 
 
             else:
-		# create tempfile
-		x = tempfile.TemporaryFile()
+                # create tempfile
+                x = tempfile.TemporaryFile()
 
                 # begin day loop
-		for day in range(nday):
-		    start = (_starttime + day * 86400)
-		    start = start - (start.hour * 3600 + start.minute * 60 + start.second + start.microsecond * .000001)
-		    end = start + 86400
+                for day in range(nday):
+                    start = (_starttime + day * 86400)
+                    start = start - (start.hour * 3600 + start.minute * 60 + start.second + start.microsecond * .000001)
+                    end = start + 86400
 
-		    if start <= _starttime:
-			start = _starttime
-		    if end >= _endtime:
-			end = _endtime
+                    if start <= _starttime:
+                        start = _starttime
+                    if end >= _endtime:
+                        end = _endtime
 
                     _sncl_pattern = self.get_sncl_pattern(network, station, location, channel)
                     filename = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))
                     self.logger.debug("read local miniseed file for %s..." % filename)
-		    fpattern1 = self.dataselect_url + '/' + filename + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]'
+                    fpattern1 = self.dataselect_url + '/' + filename + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]'
                     fpattern2 = fpattern1 + '.[A-Z]'
-		    matching_files = glob.glob(fpattern1) + glob.glob(fpattern2)
+                    matching_files = glob.glob(fpattern1) + glob.glob(fpattern2)
 		
-		    if (len(matching_files) == 0):
+                    if (len(matching_files) == 0):
                         err_msg = "No files found matching '%s'" % (fpattern1)
                         raise Exception(err_msg)
 		    
-		    else:
-			filepath = matching_files[0]
-			if (len(matching_files) > 1):
+                    else:
+                        filepath = matching_files[0]
+                        if (len(matching_files) > 1):
                             self.logger.debug("Multiple files found: %s" % " ".join(matching_files))
-			    self.logger.warning("Multiple files found matching" '%s -- using %s' % (fpattern1, filepath))
+                            self.logger.warning("Multiple files found matching" '%s -- using %s' % (fpattern1, filepath))
 
                         # write miniseed to tempfile
                         with open(filepath, 'rb') as f:
@@ -942,7 +972,7 @@ class Concierge(object):
                             x.flush()
                         f.close()
 
-		try:
+                try:
                     py_stream = obspy.read(x)
                     x.close()
                     if not inclusiveEnd:
@@ -971,32 +1001,33 @@ class Concierge(object):
                     else:
                         timing_qual=None
 
-		    # NOTE:  ObsPy does not store station metadata with each trace.
-		    # NOTE:  We need to read them in separately from station metadata.
-		    # NOTE:  This should be consistent for each day of data
-		    availability = self.get_availability(network, station, location, channel, _starttime, _endtime)
+                    # NOTE:  ObsPy does not store station metadata with each trace.
+                    # NOTE:  We need to read them in separately from station metadata.
+                    # NOTE:  This should be consistent for each day of data
+                    self.logger.info('%s, %s,%s,%s' % (network,station,location,channel))
+                    availability = self.get_availability(network, station, location, channel, _starttime, _endtime)
 
                     if(ignoreEpoch == False):
                         if (len(availability) > 1):
                             raise Exception("Multiple metadata epochs found for %s" % _sncl_pattern)
 
-		    sensor = availability.instrument[0]
-		    scale = availability.scale[0]
-		    scalefreq = availability.scalefreq[0]
-		    scaleunits = availability.scaleunits[0]
-		    if sensor is None: sensor = ""           # default from IRISSeismic Trace class prototype
-		    if scale is None: scale = 1.0            # default from IRISSeismic Trace class prototype
-		    if scalefreq is None: scalefreq = 1.0    # default from IRISSeismic Trace class prototype
-		    if scaleunits is None: scaleunits = ""   # default from IRISSeismic Trace class prototype
-		    latitude = availability.latitude[0]
-		    longitude = availability.longitude[0]
-		    elevation = availability.elevation[0]
-		    depth = availability.depth[0]
-		    azimuth = availability.azimuth[0]
-		    dip = availability.dip[0]
+                    sensor = availability.instrument[0]
+                    scale = availability.scale[0]
+                    scalefreq = availability.scalefreq[0]
+                    scaleunits = availability.scaleunits[0]
+                    if sensor is None: sensor = ""           # default from IRISSeismic Trace class prototype
+                    if scale is None: scale = 1.0            # default from IRISSeismic Trace class prototype
+                    if scalefreq is None: scalefreq = 1.0    # default from IRISSeismic Trace class prototype
+                    if scaleunits is None: scaleunits = ""   # default from IRISSeismic Trace class prototype
+                    latitude = availability.latitude[0]
+                    longitude = availability.longitude[0]
+                    elevation = availability.elevation[0]
+                    depth = availability.depth[0]
+                    azimuth = availability.azimuth[0]
+                    dip = availability.dip[0]
 
-		    # Create the IRISSeismic version of the stream
-		    r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags, timing_qual,
+                    # Create the IRISSeismic version of the stream
+                    r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags, timing_qual,
 						    sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
 			
                 except Exception as e:

@@ -104,6 +104,25 @@ def write_numeric_df(df, filepath, sigfigs=6):
     
     # No return value
 
+def write_pdf_df(df, filepath, iappend, sigfigs=6):
+    """
+    Write a pretty dataframe with appropriate significant figures to a .csv file.
+    :param df: PSD dataframe.
+    :param filepath: File to be created.
+    :param sigfigs: Number of significant figures to use.
+    :return: status
+    """
+    # Get pretty values
+    pretty_df = format_numeric_df(df, sigfigs=sigfigs)
+    # Write out .csv file
+    if iappend == 'a':
+        pretty_df.to_csv(filepath, mode='a', index=False)
+    else:
+        pretty_df.to_csv(filepath, index=False)
+    
+    # No return value
+
+
 
 def format_numeric_df(df, sigfigs=6):
     """

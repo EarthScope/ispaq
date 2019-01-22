@@ -196,6 +196,9 @@ def apply_PSD_plot(r_stream, filepath, evalresp=None):
     result = robjects.r('grDevices::png')(filepath)
     r_psdList = robjects.r('IRISSeismic::psdList')(r_stream)    
    
+    #print(r_psdList)
+   
+   
     if len(r_psdList) == 0:
         raise Exception("No PSDs returned")
    
