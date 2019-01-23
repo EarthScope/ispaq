@@ -10,11 +10,19 @@ Metrics:
   psdPdf: psd_corrected, pdf, pct_above_nhnm, pct_below_nlnm, dead_channel_lin, dead_channel_gsn
   psdDerived: pct_above_nhnm, pct_below_nlnm, dead_channel_lin, dead_channel_gsn
   stateOfHealth: calibration_signal, timing_correction, event_begin, event_end, event_in_progress, clock_locked, amplifier_saturation, digitizer_clipping, spikes, glitches, missing_padded_data, telemetry_sync_error, digital_filter_charging, suspect_time_tag, timing_quality
+  stalta: max_stalta
+  numSpikes: num_spikes
+  snr: sample_snr
+  crossTalk: cross_talk
+  pressureCorrelation: pressure_effects
+  crossCorrelation: polarity_check
+  orientationCheck: orientation_check
+  transferFunction: transfer_function
   
   # Example user-defined combination
   customStats: sample_min, max_stalta, num_spikes
 
-  # See end of file for list of current metric names
+  # See end of file for complete list of current metric names
  
 # Sets of SNCLs ---------------------------------------------------------------
 SNCLs:
@@ -23,7 +31,7 @@ SNCLs:
   basicStats: IU.ANMO.00.BHZ, US.OXF.??.BHZ, IU.GUMO.00.BH?
   psdPdf: AK.BAL.*.BH*
   ANMO: IU.ANMO.00.BH?
-  II: II.*.*.BH*, II.*.*.HH*
+  IU: IU.*.10.BHZ, IU.*.10.HHZ
 
   # Example user-defined combination
   myStations: TA.*..BH?
@@ -74,7 +82,7 @@ PDF_Preferences:
 # Example invocations that use these default preferences:
 #
 #   run_ispaq.py -M basicStats -S basicStats --starttime 2010-04-20 --log-level DEBUG
-#   run_ispaq.py -M stateOfHealth -S II --starttime 2011-01-01
+#   run_ispaq.py -M stateOfHealth -S IU --starttime 2011-01-01
 #   run_ispaq.py -M gaps -S ANMO --starttime 2013-01-05 --endtime 2013-01-08 --log-level INFO -A
 #   run_ispaq.py -M psdPDF -S psdPDF --starttime 2013-06-01 --endtime 2013-07-01
 
