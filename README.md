@@ -132,7 +132,7 @@ Alternatively, you can install the local versions of the IRIS R packages:
 export MACOSX_DEPLOYMENT_TARGET=10.9    # this line for macOS only
 R CMD INSTALL seismicRoll_1.1.3.tar.gz 
 R CMD INSTALL IRISSeismic_1.4.9.tar.gz
-R CMD INSTALL IRISMustangMetrics_2.1.3.tar.gz 
+R CMD INSTALL IRISMustangMetrics_2.2.0.tar.gz 
 ```
 
 # Using ISPAQ
@@ -491,15 +491,6 @@ GPS has locked with enough satellites to obtain a time/position fix.
 The correlation coefficient of channel pairs from the same sensor. Data windows are defined by seismic events. 
 Correlation coefficients near 1 may indicate cross-talk between those channels.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/cross_talk/)
-
-* **dead_channel_exp**:
-Dead channel metric - exponential fit. This metric is calculated from the mean of all the PSDs generated 
-(typically 47 for a 24 hour period). Values of the PSD mean curve over the band expLoPeriod:expHiPeriod are 
-fit to an exponential curve by a least squares linear regression of log(PSD mean) ~ log(period). The 
-dead_channel_exp metric is the standard deviation of the fit residuals of this regression. Lower numbers 
-indicate a better fit and a higher likelihood that the mean PSD is exponential - an indication of a dead channel.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/dead_channel_exp/)
-    + channels = [BCDHM][HX].  
 
 * **dead_channel_gsn**:
 A boolean measurement providing a TRUE or FALSE indication that the median PSD values of channel exhibit an

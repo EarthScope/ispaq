@@ -1,23 +1,30 @@
 # ISPAQ PREFERENCE FILE
+# See end of file for detailed descriptions of this file format, including list of all current metric names
 
 # User defined sets of metrics ------------------------------------------------
 Metrics:
 
-  pdf: pdf, psd_corrected
-  noise: psd_corrected, pdf, pct_above_nhnm, pct_below_nlnm, dead_channel_lin, dead_channel_gsn
-
+  # Default combinations
+  pdfs: psd_corrected, pdf, pct_above_nhnm, pct_below_nlnm, dead_channel_lin, dead_channel_gsn
+  psdDerived: pct_above_nhnm, pct_below_nlnm, dead_channel_lin, dead_channel_gsn
   basicStats: sample_min, sample_median, sample_mean, sample_max, sample_rms, sample_unique
   gaps: num_gaps, max_gap, num_overlaps, max_overlap, percent_availability
   stateOfHealth: calibration_signal, timing_correction, event_begin, event_end, event_in_progress, clock_locked, amplifier_saturation, digitizer_clipping, spikes, glitches, missing_padded_data, telemetry_sync_error, digital_filter_charging, suspect_time_tag, timing_quality
-
+  
+  # Example user-defined combination
+  customStats: sample_min, max_stalta, num_spikes
  
 # Sets of SNCLs ---------------------------------------------------------------
 SNCLs:
   
-  PDF_test: AK.BAL.*.BH*
+  # Examples for testing default combinations of metrics
+  pdfs: AK.BAL.*.BH*
+  stalta: IU.ANMO.00.BHZ, US.OXF.??.BHZ, IU.GUMO.00.BH?
   ANMO: IU.ANMO.00.BH?
   II: II.*.*.BH*, II.*.*.HH*
 
+  # Example user-defined combination
+  myStations: TA.*..BH?
 
 # Data and Metadata source ----------------------------------------------------
 Data_Access:
@@ -31,8 +38,8 @@ Data_Access:
 Preferences:
 
   csv_dir: ./csv/		# directory to contain generated metrics .csv files
-  psd_dir: ./PSDs/		# directory to find PSD csv files (will have subdirectories based on NET and STA)
-  pdf_dir: ./PDFs/		# directory to contain PDF files (will have subdirectories based on NET and STA)
+  psd_dir: ./PSDs/		# directory to find PSD csv files (will have subdirectories based on network and station code)
+  pdf_dir: ./PDFs/		# directory to contain PDF files (will have subdirectories based on network and station code)
   sigfigs: 6			# significant figures used to output metric values
 
 
@@ -44,9 +51,6 @@ PDF_Preferences:
   plot_include: legend, colorbar	# options to include: legend (for min/max/mode), colorbar, fixed_yaxis_limits
 
 
-
- 
- 
 ## INFORMATION ABOUT THE PREFERENCE FILE --------------------------------------
 
 # Preferences fall into five categories:
@@ -55,8 +59,7 @@ PDF_Preferences:
 #                     SNCL patterns are station names formatted as Network.Station.Location.Channel
 #                     wildcards * and ? are allowed (*.*.*.*). SNCL pattern format can be modified 
 #                     using the Preferences sncl_format. 
-#					  NOTE: Quality codes will be ignored. 
-#					  		For example, IU.ANMO.00.BHZ.M will be treated as IU.ANMO.00.BHZ
+#	              NOTE: Quality codes will be ignored. For example, IU.ANMO.00.BHZ.M will be treated as IU.ANMO.00.BHZ
 #  * Data_Access -- FDSN web services or local files
 #  * Preferences -- additional user preferences
 #  * PDF_Preferences -- preferences specific to PDF calculation
@@ -68,10 +71,10 @@ PDF_Preferences:
 
 # Example invocations that use these default preferences:
 #
-#   run_ispaq.py -M basicStats -S basicStats --starttime 2010-04-20 --log-level DEBUG
-#   run_ispaq.py -M crossCorrelation -S crossCorrelation --starttime 2011-01-01
-#   run_ispaq.py -M gaps -S gaps --starttime 2013-01-05 --endtime 2013-01-08 --log-level INFO -A
-#   run_ispaq.py -M pdf -S pdf --starttime 2013-06-01 --endtime 2013-07-01
+#   run_ispaq.py -M basicStats -S II --starttime 2010-04-20 --log-level DEBUG
+#   run_ispaq.py -M crossCorrelation -S myStations --starttime 2011-01-01
+#   run_ispaq.py -M gaps -S ANMO --starttime 2013-01-05 --endtime 2013-01-08 --log-level INFO -A
+#   run_ispaq.py -M pdfs -S pdfs --starttime 2013-06-01 --endtime 2013-07-01
 
 
 # About the Data_Access Section:
@@ -101,13 +104,12 @@ PDF_Preferences:
 # NOTE: Directory names should not match FDSN provider names.
 
 
-
-# On the PDF_Preferences section:
+# About the PDF_Preferences section:
 # This section is used only when the pdf metric is being calculated
 # 	* pdf_type -- specifies the output format for the PDFs. These files will be written to the pdf_dir. There are two options:
 #			- plot: png file
 #			- text: a text file with a header with start/end information, followed by a list of freq,power,hits
-#	* pdf_interval -- specifies the span of the PDF values calculated. There are two options
+#	* pdf_interval -- specifies the span of the PDF values calculated. There are two options:
 #			- daily: calculate the PDF values for each day of the time range
 #			- aggregated: calculate a single PDF for the entire time range, starting and ending at the specified times
 #	* plot_include -- Where to specify plot options
@@ -130,25 +132,24 @@ PDF_Preferences:
 #			psd_dir/NETWORK/STATION/
 #		
 
-
-
 # All possible metrics:
 #
 #	PSD and PDF:
-#		pct_above_nhnm, pct_below_nlnm, dead_channel_exp, dead_channel_lin, dead_channel_gsn, 
+#		pct_above_nhnm, pct_below_nlnm, dead_channel_lin, dead_channel_gsn, 
 #		psd_corrected, pdf
 #	Basic Statistics:
 #		sample_min, sample_median, sample_mean, sample_max, sample_rms, sample_unique 
 #	Availability and Gaps:
 #		num_gaps, max_gap, num_overlaps, max_overlap, percent_availability
 #	Multi-trace correlations:
-#		polarity_check, cross_talk, orientation_check, pressure_effects
+#		polarity_check, cross_talk, pressure_effects
 #	State of Health flags:
 #		calibration_signal, timing_correction, event_begin, event_end, event_in_progress,
 #		clock_locked, amplifier_saturation, digitizer_clipping, spikes, glitches,
 #		missing_padded_data, telemetry_sync_error, digital_filter_charging, 
 #		suspect_time_tag, timing_quality
 #	Miscellaneous others:
-#		sample_snr, num_spikes, max_stalta, transfer_function
+#		sample_snr, num_spikes, max_stalta, orientation_check, transfer_function
+
 
         
