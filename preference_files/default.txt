@@ -5,21 +5,23 @@
 Metrics:
 
   # Default combinations
-  pdfs: psd_corrected, pdf, pct_above_nhnm, pct_below_nlnm, dead_channel_lin, dead_channel_gsn
-  psdDerived: pct_above_nhnm, pct_below_nlnm, dead_channel_lin, dead_channel_gsn
   basicStats: sample_min, sample_median, sample_mean, sample_max, sample_rms, sample_unique
   gaps: num_gaps, max_gap, num_overlaps, max_overlap, percent_availability
+  psdPdf: psd_corrected, pdf, pct_above_nhnm, pct_below_nlnm, dead_channel_lin, dead_channel_gsn
+  psdDerived: pct_above_nhnm, pct_below_nlnm, dead_channel_lin, dead_channel_gsn
   stateOfHealth: calibration_signal, timing_correction, event_begin, event_end, event_in_progress, clock_locked, amplifier_saturation, digitizer_clipping, spikes, glitches, missing_padded_data, telemetry_sync_error, digital_filter_charging, suspect_time_tag, timing_quality
   
   # Example user-defined combination
   customStats: sample_min, max_stalta, num_spikes
+
+  # See end of file for list of current metric names
  
 # Sets of SNCLs ---------------------------------------------------------------
 SNCLs:
   
   # Examples for testing default combinations of metrics
-  pdfs: AK.BAL.*.BH*
-  stalta: IU.ANMO.00.BHZ, US.OXF.??.BHZ, IU.GUMO.00.BH?
+  basicStats: IU.ANMO.00.BHZ, US.OXF.??.BHZ, IU.GUMO.00.BH?
+  psdPdf: AK.BAL.*.BH*
   ANMO: IU.ANMO.00.BH?
   II: II.*.*.BH*, II.*.*.HH*
 
@@ -46,8 +48,8 @@ Preferences:
 # PDF-specific preferences ----------------------------------------------------
 PDF_Preferences:
 
-  pdf_type: text, plot				# formats for the aggregated PDF: plot, text
-  pdf_interval: daily, aggregated	# whether the pdfs should be calculated daily or over the entire span: daily, aggregated
+  pdf_type: text, plot			# formats for the aggregated PDF: plot, text
+  pdf_interval: aggregated		# whether the pdfs should be calculated daily or over the entire span: daily, aggregated
   plot_include: legend, colorbar	# options to include: legend (for min/max/mode), colorbar, fixed_yaxis_limits
 
 
@@ -71,10 +73,10 @@ PDF_Preferences:
 
 # Example invocations that use these default preferences:
 #
-#   run_ispaq.py -M basicStats -S II --starttime 2010-04-20 --log-level DEBUG
-#   run_ispaq.py -M crossCorrelation -S myStations --starttime 2011-01-01
+#   run_ispaq.py -M basicStats -S basicStats --starttime 2010-04-20 --log-level DEBUG
+#   run_ispaq.py -M stateOfHealth -S II --starttime 2011-01-01
 #   run_ispaq.py -M gaps -S ANMO --starttime 2013-01-05 --endtime 2013-01-08 --log-level INFO -A
-#   run_ispaq.py -M pdfs -S pdfs --starttime 2013-06-01 --endtime 2013-07-01
+#   run_ispaq.py -M psdPDF -S psdPDF --starttime 2013-06-01 --endtime 2013-07-01
 
 
 # About the Data_Access Section:
@@ -144,10 +146,10 @@ PDF_Preferences:
 #	Multi-trace correlations:
 #		polarity_check, cross_talk, pressure_effects
 #	State of Health flags:
-#		calibration_signal, timing_correction, event_begin, event_end, event_in_progress,
-#		clock_locked, amplifier_saturation, digitizer_clipping, spikes, glitches,
-#		missing_padded_data, telemetry_sync_error, digital_filter_charging, 
-#		suspect_time_tag, timing_quality
+#               amplifier_saturation, calibration_signal, clock_locked, digital_filter_charging,
+#               digitizer_clipping, event_begin, event_end, event_in_progress, glitches,
+#               missing_padded_data, spikes, suspect_time_tag, telemetry_sync_error,
+#               timing_correction, timing_quality
 #	Miscellaneous others:
 #		sample_snr, num_spikes, max_stalta, orientation_check, transfer_function
 
