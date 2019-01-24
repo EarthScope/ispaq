@@ -135,6 +135,8 @@ R CMD INSTALL IRISSeismic_1.4.9.tar.gz
 R CMD INSTALL IRISMustangMetrics_2.2.0.tar.gz 
 ```
 
+You should also run `./run_ispaq.py -U` after you update your ISPAQ version.
+
 # Using ISPAQ
 
 Every time you use ISPAQ you must ensure that you are running in the proper Anaconda
@@ -305,10 +307,15 @@ or the transfer_function metric.
 **Preferences** has four entries describing ispaq output.
 
 * `csv_dir:` should be followed by a directory path for output of generated metric text files (CSV). 
-If the directory does not exist, then it defaults to the current working directory.
+If the directory does not exist, then it attempts to create that directory.
 
-* `png_dir:` should be followed by a directory path for output of generated PDF plots (PNG).
-If the directory does not exist, then it defaults to the current working directory.
+* `psd_dir:` should be followed by a directory path for writing and reading PSD csv files.
+If the directory does not exist, then it defaults to the current working directory. PSD csv files generated
+by the 'psd_corrected' metric will be written to a directory structure within 'psd_dir' based on network code and
+station code ('psd_dir'/NET/STA)
+
+* `pdf_dir:` should be followed by a directory path for output of PDF csv and png files. These files will be
+written to a directory structure within 'pdf_dir' based on network code and station code ('pdf_dir'/NET/STA).
 
 * `sigfigs:` should indicate the number of significant figures used for output columns named "value". Default is 6.
 
@@ -343,7 +350,7 @@ _businessLogic_ corresponds to which script is invoked:
 | ----------|--------------|---------|
 | simpleMetrics | simple_metrics.py | most metrics |
 | SNRMetrics | SNR_metrics.py | sample_snr   |
-| PSDMetrics | PSD_metrics.py | pct_above_nhnm, pct_below_nlnm, dead_channel_{exp,lin,gsn}, psd_corrected, pdf_text |
+| PSDMetrics | PSD_metrics.py | pct_above_nhnm, pct_below_nlnm, dead_channel_{lin,gsn}, psd_corrected, pdf_text |
 | crossTalkMetrics | crossTalk_metrics.py | cross_talk |
 | pressureCorrelationMetrics | pressureCorrelation_metrics.py | pressure_effects | 
 | crossCorrelationMetrics | crossCorrelation_metrics.py | polarity_check | 
@@ -460,6 +467,7 @@ If a newer CRAN package does exist, the `-U` option will then automatically down
 install it. ISPAQ code can be updated using `git pull origin master`. Sometimes it is necessary to update the ISPAQ 
 python code in conjunction with the CRAN code.
 
+
 ### List of Metrics
 
 The command-line argument `-L` will list the names of available metrics.
@@ -468,7 +476,8 @@ _Note:_ When using local data files, metrics based on miniSEED activity flags, I
  are not valid. These metrics are `calibration_signal`, `clock_locked`, `event_begin`, `event_end`, 
 `event_in_progress`, `timing_correction`, and `timing_quality`. ISPAQ will not return values for these metrics. 
 
-#### Brief Descriptions and Links to Documentation
+
+#### Brief Metrics Descriptions and Links to Documentation
  
 * **amplifier_saturation**:
 The number of times that the 'Amplifier saturation detected' bit in the 'dq_flags' byte is set within a 
@@ -597,13 +606,12 @@ Model. This value is calculated over the entire time period.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/pct_below_nlnm/)
     + channels = [BCDHM][HX].  
 
-* **pdf_plot**:
-Probability density function plots. Generates one plot per station-day.
-[Reference](https://profile.usgs.gov/myscience/upload_folder/ci2012Feb2217152844121McNamaraBuland_BSSA.pdf)
-
-* **pdf_text**:
-Probability density function text output (frequency, power, hits, target, starttime, endtime)
-[Reference](https://profile.usgs.gov/myscience/upload_folder/ci2012Feb2217152844121McNamaraBuland_BSSA.pdf)
+* **pdf**:
+Probability density function plots and/or text output (controlled by PDF_Preferences in the preference file; or by `--pdf_type`,
+`--pdf_interval`, `--plot_include` on the command line). You must have local PSD files written in the format produced by the 
+'psd_corrected' metric (below) or run it concurrently with 'psd_corrected'. These files should be in a directory specified by the
+'psd_dir' entry in the preference file or by `--psd_dir` on the command line.
+[Reference: Ambient Noise Levels in the Continental United States, McNamara and Buland, 2004](https://doi.org/10.1785/012003001)
 
 * **percent_availability**:
 The portion of data available for each day is represented as a percentage. 100% data available means full coverage of 
@@ -697,7 +705,8 @@ Transfer function metric consisting of the gain ratio, phase difference and magn
 sensors. [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/transfer_function/)
     + channels = [BCFHLM][HX].
 
-### Examples Using Default.txt Preference File
+
+### Examples Using preference_files/default.txt Preference File
 
 Note: not using `-P` in the command line is the same as specifying `-P preference_files/default.txt`
 
@@ -705,23 +714,16 @@ Note: not using `-P` in the command line is the same as specifying `-P preferenc
 cd ispaq
 source activate ispaq
 ./run_ispaq.py -M basicStats -S basicStats --starttime 2010-100             # starttime specified as julian day
-./run_ispaq.py -M gaps -S gaps --starttime 2013-01-05                       # starttime specified as calendar day
-./run_ispaq.py -M numSpikes -S numSpikes --starttime 2013-01-03 --endtime 2013-01-08
-./run_ispaq.py -M stalta -S stalta --starttime 2013-153
-./run_ispaq.py -M snr -S snr --starttime 2013-06-02
-./run_ispaq.py -M psdDerived -S psd --starttime 2011-138 --endtime 2011-140
-./run_ispaq.py -M psdText -S psd --starttime 2011-05-18 
-./run_ispaq.py -M pdf -S pdf --starttime 2013-06-01
-./run_ispaq.py -M crossTalk -S crossTalk --starttime 2013-09-21
-./run_ispaq.py -M pressureCorrelation -S pressureCorrelation --starttime 2013-05-02
-./run_ispaq.py -M crossCorrelation -S crossCorrelation --starttime 2011-01-01
-./run_ispaq.py -M orientationCheck -S orientationCheck --starttime 2015-11-24
-./run_ispaq.py -M transferFunction -S transferFunction --starttime=2012-10-03 --endtime=2012-10-05 
+./run_ispaq.py -M stateOfHealth -S ANMO --starttime 2013-01-05              # starttime specified as calendar day
+./run_ispaq.py -M gaps -S ANMO --starttime 2011-01-01 --endtime 2011-01-08
+./run_ispaq.py -M psdPdf -S psdPdf --starttime 2013-06-01 --endtime 2013-07-01
 ```
 
 ### Example Using Command-line Options to Override Preference File
 ```
-./run_ispaq.py -M sample_mean -S II.KAPI.00.BHZ --starttime 2013-01-05 --dataselect_url ./test_data --station_url ./test_data/II.KAPI_station.xml --csv_dir ./output_files
+./run_ispaq.py -M sample_mean -S II.KAPI.00.BHZ --starttime 2013-01-05 --dataselect_url ./test_data --station_url ./test_data/II.KAPI_station.xml --csv_dir ./test_out
+
+./run_ispaq.py -M psd_corrected,pdf -S II.KAPI.00.BHZ --starttime 2013-01-05 --endtime 2013-01-08 --dataselect_url ./test_data --station_url ./test_data/II.KAPI_station.xml --psd_dir ./test_out --pdf_dir ./test_out --pdf_type plot --pdf_interval aggregated
 ```
 
 
