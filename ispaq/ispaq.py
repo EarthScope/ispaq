@@ -59,40 +59,44 @@ def main():
                         help='starttime in ObsPy UTCDateTime format, required for webservice requests and \ndefaults to earliest data file for local data \nexamples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]')
     metrics.add_argument('--endtime',  required=False,
                         help='endtime in ObsPy UTCDateTime format, default=starttime + 1 day; \nif starttime is also not specified then it defaults to the latest data file for local data \nexamples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]')
-    metrics.add_argument('--dataselect_url', required=False,
+   
+    prefs = parser.add_argument_group('arguments for overriding preference file entries')
+    prefs.add_argument('--dataselect_url', required=False,
                         help='FDSN webservice or path to directory with miniSEED files, overrides preference file')
-    metrics.add_argument('--station_url', required=False,
+    prefs.add_argument('--station_url', required=False,
                         help='FDSN webservice or path to stationXML file, overrides preference file')
-    metrics.add_argument('--event_url', required=False,
+    prefs.add_argument('--event_url', required=False,
                         help='FDSN webservice or path to QuakeML file, overrides preference file')
-    metrics.add_argument('--resp_dir', required=False,
+    prefs.add_argument('--resp_dir', required=False,
                         help='path to directory with RESP files, overrides preference file')
-    metrics.add_argument('--csv_dir', required=False,
+    prefs.add_argument('--csv_dir', required=False,
                         help='directory to write generated metrics .csv files, overrides preference file')
-    metrics.add_argument('--psd_dir', required=False,
+    prefs.add_argument('--psd_dir', required=False,
                         help='directory to write/read existing PSD .csv files, overrides preference file')
-    metrics.add_argument('--pdf_dir', required=False,
+    prefs.add_argument('--pdf_dir', required=False,
                         help='directory to write generated PDF files, overrides preference file')
-    metrics.add_argument('--pdf_type', required=False,
+    prefs.add_argument('--pdf_type', required=False,
                         help='output format of generated PDFs - text and/or plot, overrides preference file')
-    metrics.add_argument('--pdf_interval', required=False,
+    prefs.add_argument('--pdf_interval', required=False,
                         help='Time span for PDFs - daily and/or aggregated over the entire span, overrides preference file')
-    metrics.add_argument('--plot_include', required=False,
+    prefs.add_argument('--plot_include', required=False,
                         help='Whether to include the legend and colorbar in the aggregated PDF plot, overrides preference file')
-    metrics.add_argument('--sncl_format', required=False,
+    prefs.add_argument('--sncl_format', required=False,
                         help='format of SNCL aliases and miniSEED file names, overrides preference file\nexamples:"N.S.L.C","S.N.L.C"\nwhere N=network code, S=station code, L=location code, C=channel code')
-    metrics.add_argument('--sigfigs', required=False,
+    prefs.add_argument('--sigfigs', required=False,
                         help='number of significant figures used for output columns named "value",\noverrides preference file')
-    metrics.add_argument('--log-level', action='store', default='INFO',
+    prefs.add_argument('--log-level', action='store', default='INFO',
                         choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],
                         help='log level printed to console, default="INFO"')
-    metrics.add_argument('-A', '--append', action='store_true', default=True,
+    prefs.add_argument('-A', '--append', action='store_true', default=True,
                         help='append to TRANSCRIPT file rather than overwriting')
-    parser.add_argument('-V', '--version', action='version',
+   
+    other = parser.add_argument_group('other arguments')
+    other.add_argument('-V', '--version', action='version',
                         version='%(prog)s ' + __version__)
-    parser.add_argument('-U', '--update-r', action='store_true', default=False,
+    other.add_argument('-U', '--update-r', action='store_true', default=False,
                         help='check for and install newer CRAN IRIS Mustang packages, and exit')
-    parser.add_argument('-L', '--list-metrics', action='store_true', default=False,
+    other.add_argument('-L', '--list-metrics', action='store_true', default=False,
                         help='list names of available metrics and exit')
     
 
