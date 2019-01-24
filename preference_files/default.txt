@@ -42,6 +42,7 @@ Data_Access:
   dataselect_url: IRIS
   event_url: IRIS
   station_url: IRIS
+  resp_dir: 
  
 
 # User defined preferences ----------------------------------------------------
@@ -51,6 +52,8 @@ Preferences:
   psd_dir: ./PSDs/		# directory to find PSD csv files (will have subdirectories based on network and station code)
   pdf_dir: ./PDFs/		# directory to contain PDF files (will have subdirectories based on network and station code)
   sigfigs: 6			# significant figures used to output metric values
+  sncl_format: N.S.L.C  # format of sncl aliases and miniSEED file names, must be some combination of period separated
+                          N=network,S=station, L=location, C=channel (e.g., N.S.L.C or S.N.L.C)
 
 
 # PDF-specific preferences ----------------------------------------------------

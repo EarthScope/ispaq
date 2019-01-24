@@ -15,7 +15,7 @@ import logging
 import numpy as np
 import subprocess
 
-__version__ = "1.2.1"
+__version__ = "2.0.0"
 
 # dictionary of currently defined ISPAQ metric groups and business logic
 # for comparison with R package IRISMustangMetrics/ISPAQUtils.R json
@@ -85,17 +85,17 @@ def main():
                         help='format of SNCL aliases and miniSEED file names, overrides preference file\nexamples:"N.S.L.C","S.N.L.C"\nwhere N=network code, S=station code, L=location code, C=channel code')
     prefs.add_argument('--sigfigs', required=False,
                         help='number of significant figures used for output columns named "value",\noverrides preference file')
-    prefs.add_argument('--log-level', action='store', default='INFO',
-                        choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],
-                        help='log level printed to console, default="INFO"')
-    prefs.add_argument('-A', '--append', action='store_true', default=True,
-                        help='append to TRANSCRIPT file rather than overwriting')
    
     other = parser.add_argument_group('other arguments')
+    other.add_argument('--log-level', action='store', default='INFO',
+                        choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],
+                        help='log level printed to console, default="INFO"')
+    other.add_argument('-A', '--append', action='store_true', default=True,
+                        help='append to TRANSCRIPT file rather than overwriting')
     other.add_argument('-V', '--version', action='version',
                         version='%(prog)s ' + __version__)
     other.add_argument('-U', '--update-r', action='store_true', default=False,
-                        help='check for and install newer CRAN IRIS Mustang packages, and exit')
+                        help='check for and install newer CRAN IRIS Mustang packages and/or update required conda packages, and exit')
     other.add_argument('-L', '--list-metrics', action='store_true', default=False,
                         help='list names of available metrics and exit')
     
