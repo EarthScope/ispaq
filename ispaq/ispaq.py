@@ -23,7 +23,7 @@ __version__ = "2.0.0"
 def currentispaq():
     groups = {'simple': ['basicStats','gaps','numSpikes','STALTA','stateOfHealth'],
               'SNR': ['SNR'],
-              'PSD': ['PSD','PSDText','PSDPlot'],
+              'PSD': ['PSD','PSDText'],
               'crossCorrelation': ['crossCorrelation'],
               'crossTalk': ['crossTalk'],
               'orientationCheck': ['orientationCheck'],
@@ -349,10 +349,10 @@ def main():
         logger.debug('Inside PSD business logic ...')
         try:
             df = PSD_metrics(concierge)
-            if df is None:
-                logger.info('No PSD metrics were calculated')
-            elif df.metricName[0] == 'PSDPlot':
+            if 'PSD' not in concierge.function_by_logic['PSD']:
                 pass
+            elif df is None:
+                logger.info('No PSD metrics were calculated')
             else:
                 try:
                     # Write out the metrics

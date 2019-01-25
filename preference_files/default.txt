@@ -29,7 +29,7 @@ SNCLs:
   
   # Examples for testing default combinations of metrics
   basicStats: IU.ANMO.00.BHZ, US.OXF.??.BHZ, IU.GUMO.00.BH?
-  psdPdf: AK.BAL.*.BH*
+  psdPdf: IU.GRFO..BHZ
   ANMO: IU.ANMO.00.BH?
   IU: IU.*.10.BHZ, IU.*.10.HHZ
 

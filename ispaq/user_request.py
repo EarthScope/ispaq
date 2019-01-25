@@ -100,7 +100,7 @@ class UserRequest(object):
                                 'sigfigs': 6,
                                 'sncl_format': 'N.S.L.C'}
             self.pdf_preferences = {'pdf_type': 'plot, text',
-                                    'pdf_interval': 'daily, aggregated',
+                                    'pdf_interval': 'aggregated',
                                     'plot_include':'colorbar, legend'}
 
         #     Initialize from JSON     ----------------------------------------

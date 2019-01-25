@@ -103,6 +103,7 @@ def PSD_metrics(concierge):
                     # get corrected PSDs
                     try:
                         (df, PSDcorrected, PDF) = irismustangmetrics.apply_PSD_metric(r_stream, evalresp=evalresp)
+                        #print(PSDcorrected)
                     except Exception as e:
                         raise
 
@@ -201,7 +202,7 @@ def PSD_metrics(concierge):
 
 
 
-    # Loop over days and caculate PSDs and/or PDFs -----------------------
+    # Loop over days and calculate PSDs and/or PDFs -----------------------
 
     if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
         logger.info("Searching for response files in '%s'" % concierge.resp_dir)
@@ -283,8 +284,6 @@ def PSD_metrics(concierge):
         return None
 
     else:
-        # make a dummy data frame in the case of just creating PSDPlots with no supporting DF statistics
-        result = pd.DataFrame({'metricName': ['PSDPlot','PSDPlot'], 'value': [0,1]})
 
         # Create a boolean mask for filtering the dataframe
         def valid_metric(x):
@@ -296,8 +295,7 @@ def PSD_metrics(concierge):
             mask = result.metricName.apply(valid_metric)
             result = result[(mask)]
             result.reset_index(drop=True, inplace=True)
-
-        return(result)
+            return(result)
 
 # ------------------------------------------------------------------------------
 
