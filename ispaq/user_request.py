@@ -320,7 +320,7 @@ class UserRequest(object):
                 if 'pdf_interval' in pdf_preferences:
                     self.pdf_interval = pdf_preferences['pdf_interval']
                 else:
-                    self.pdf_interval = 'daily, aggregated'
+                    self.pdf_interval = 'aggregated'
 
             if self.plot_include is None:
                 if 'plot_include' in pdf_preferences:

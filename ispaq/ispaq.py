@@ -23,7 +23,7 @@ __version__ = "2.0.0"
 def currentispaq():
     groups = {'simple': ['basicStats','gaps','numSpikes','STALTA','stateOfHealth'],
               'SNR': ['SNR'],
-              'PSD': ['PSD','PSDText'],
+              'PSD': ['PSD','PSDText','PDF'],
               'crossCorrelation': ['crossCorrelation'],
               'crossTalk': ['crossTalk'],
               'orientationCheck': ['orientationCheck'],

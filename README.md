@@ -160,18 +160,17 @@ usage: run_ispaq.py [-h] [-P PREFERENCES_FILE] [-M METRICS] [-S STATIONS]
                     [--dataselect_url DATASELECT_URL]
                     [--station_url STATION_URL] [--event_url EVENT_URL]
                     [--resp_dir RESP_DIR] [--csv_dir CSV_DIR]
-                    [--png_dir PNG_DIR] [--sncl_format SNCL_FORMAT]
+                    [--psd_dir PSD_DIR] [--pdf_dir PDF_DIR]
+                    [--pdf_type PDF_TYPE] [--pdf_interval PDF_INTERVAL]
+                    [--plot_include PLOT_INCLUDE] [--sncl_format SNCL_FORMAT]
                     [--sigfigs SIGFIGS]
                     [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-A]
                     [-V] [-U] [-L]
 
-ISPAQ version 1.0.0
+ISPAQ version 2.0.0
 
 single arguments:
   -h, --help                       show this help message and exit
-  -V, --version                    show program's version number and exit
-  -U, --update                     check for and install newer CRAN and recommended conda packages, and exit
-  -L, --list-metrics               list names of available metrics and exit
 
 arguments for running metrics:
   -P PREFERENCES_FILE, --preferences-file PREFERENCES_FILE
@@ -185,26 +184,31 @@ arguments for running metrics:
   --endtime ENDTIME                endtime in ObsPy UTCDateTime format, default=starttime + 1 day; 
                                    if starttime is also not specified then it defaults to the latest data file for local data 
                                    examples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]
+
+arguments for overriding preference file entries:
   --dataselect_url DATASELECT_URL  FDSN webservice or path to directory with miniSEED files, overrides preference file
   --station_url STATION_URL        FDSN webservice or path to stationXML file, overrides preference file
   --event_url EVENT_URL            FDSN webservice or path to QuakeML file, overrides preference file
   --resp_dir RESP_DIR              path to directory with RESP files, overrides preference file
   --csv_dir CSV_DIR                directory to write generated metrics .csv files, overrides preference file
-  --png_dir PNG_DIR                directory to write generated metrics .png files, overrides preference file
+  --psd_dir PSD_DIR                directory to write/read existing PSD .csv files, overrides preference file
+  --pdf_dir PDF_DIR                directory to write generated PDF files, overrides preference file
+  --pdf_type PDF_TYPE              output format of generated PDFs - text and/or plot, overrides preference file
+  --pdf_interval PDF_INTERVAL      Time span for PDFs - daily and/or aggregated over the entire span, overrides preference file
+  --plot_include PLOT_INCLUDE      Whether to include the legend and colorbar in the aggregated PDF plot, overrides preference file
   --sncl_format SNCL_FORMAT        format of SNCL aliases and miniSEED file names, overrides preference file
                                    examples:"N.S.L.C","S.N.L.C"
                                    where N=network code, S=station code, L=location code, C=channel code
   --sigfigs SIGFIGS                number of significant figures used for output columns named "value",
                                    overrides preference file
+
+other arguments:
   --log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
                                    log level printed to console, default="INFO"
   -A, --append                     append to TRANSCRIPT file rather than overwriting
-
-If no preference file is specified and the default file ./preference_files/default.txt cannot be found:
---csv_dir defaults to "."
---png_dir defaults to "."
---sncl_format defaults to "N.S.C.L"
---sigfigs defaults to "6"
+  -V, --version                    show program's version number and exit
+  -U, --update-r                   check for and install newer CRAN IRIS Mustang packages and/or update required conda packages, and exit
+  -L, --list-metrics               list names of available metrics and exit
 
 ```
 
@@ -716,7 +720,7 @@ source activate ispaq
 ./run_ispaq.py -M basicStats -S basicStats --starttime 2010-100             # starttime specified as julian day
 ./run_ispaq.py -M stateOfHealth -S ANMO --starttime 2013-01-05              # starttime specified as calendar day
 ./run_ispaq.py -M gaps -S ANMO --starttime 2011-01-01 --endtime 2011-01-08
-./run_ispaq.py -M psdPdf -S psdPdf --starttime 2013-06-01 --endtime 2013-07-01
+./run_ispaq.py -M psdPdf -S psdPdf --starttime 2013-06-01 --endtime 2013-06-08
 ```
 
 ### Example Using Command-line Options to Override Preference File

@@ -103,7 +103,6 @@ def PSD_metrics(concierge):
                     # get corrected PSDs
                     try:
                         (df, PSDcorrected, PDF) = irismustangmetrics.apply_PSD_metric(r_stream, evalresp=evalresp)
-                        #print(PSDcorrected)
                     except Exception as e:
                         raise
 
@@ -284,6 +283,9 @@ def PSD_metrics(concierge):
         return None
 
     else:
+
+        # make a dummy data frame in the case of just creating PDF with no supporting DF statistics
+        #result = pd.DataFrame({'metricName': ['PDF','PDF'], 'value': [0,1]})
 
         # Create a boolean mask for filtering the dataframe
         def valid_metric(x):

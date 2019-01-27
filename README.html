@@ -243,6 +243,7 @@ conda install -c conda-forge --file ispaq-conda-install.txt</code></pre>
 R CMD INSTALL seismicRoll_1.1.3.tar.gz 
 R CMD INSTALL IRISSeismic_1.4.9.tar.gz
 R CMD INSTALL IRISMustangMetrics_2.2.0.tar.gz </code></pre>
+<p>You should also run <code>./run_ispaq.py -U</code> after you update your ISPAQ version.</p>
 </div>
 </div>
 </div>
@@ -259,18 +260,17 @@ usage: run_ispaq.py [-h] [-P PREFERENCES_FILE] [-M METRICS] [-S STATIONS]
                     [--dataselect_url DATASELECT_URL]
                     [--station_url STATION_URL] [--event_url EVENT_URL]
                     [--resp_dir RESP_DIR] [--csv_dir CSV_DIR]
-                    [--png_dir PNG_DIR] [--sncl_format SNCL_FORMAT]
+                    [--psd_dir PSD_DIR] [--pdf_dir PDF_DIR]
+                    [--pdf_type PDF_TYPE] [--pdf_interval PDF_INTERVAL]
+                    [--plot_include PLOT_INCLUDE] [--sncl_format SNCL_FORMAT]
                     [--sigfigs SIGFIGS]
                     [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-A]
                     [-V] [-U] [-L]
 
-ISPAQ version 1.0.0
+ISPAQ version 2.0.0
 
 single arguments:
   -h, --help                       show this help message and exit
-  -V, --version                    show program's version number and exit
-  -U, --update                     check for and install newer CRAN and recommended conda packages, and exit
-  -L, --list-metrics               list names of available metrics and exit
 
 arguments for running metrics:
   -P PREFERENCES_FILE, --preferences-file PREFERENCES_FILE
@@ -284,26 +284,31 @@ arguments for running metrics:
   --endtime ENDTIME                endtime in ObsPy UTCDateTime format, default=starttime + 1 day; 
                                    if starttime is also not specified then it defaults to the latest data file for local data 
                                    examples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]
+
+arguments for overriding preference file entries:
   --dataselect_url DATASELECT_URL  FDSN webservice or path to directory with miniSEED files, overrides preference file
   --station_url STATION_URL        FDSN webservice or path to stationXML file, overrides preference file
   --event_url EVENT_URL            FDSN webservice or path to QuakeML file, overrides preference file
   --resp_dir RESP_DIR              path to directory with RESP files, overrides preference file
   --csv_dir CSV_DIR                directory to write generated metrics .csv files, overrides preference file
-  --png_dir PNG_DIR                directory to write generated metrics .png files, overrides preference file
+  --psd_dir PSD_DIR                directory to write/read existing PSD .csv files, overrides preference file
+  --pdf_dir PDF_DIR                directory to write generated PDF files, overrides preference file
+  --pdf_type PDF_TYPE              output format of generated PDFs - text and/or plot, overrides preference file
+  --pdf_interval PDF_INTERVAL      Time span for PDFs - daily and/or aggregated over the entire span, overrides preference file
+  --plot_include PLOT_INCLUDE      Whether to include the legend and colorbar in the aggregated PDF plot, overrides preference file
   --sncl_format SNCL_FORMAT        format of SNCL aliases and miniSEED file names, overrides preference file
                                    examples:&quot;N.S.L.C&quot;,&quot;S.N.L.C&quot;
                                    where N=network code, S=station code, L=location code, C=channel code
   --sigfigs SIGFIGS                number of significant figures used for output columns named &quot;value&quot;,
                                    overrides preference file
+
+other arguments:
   --log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
                                    log level printed to console, default=&quot;INFO&quot;
   -A, --append                     append to TRANSCRIPT file rather than overwriting
-
-If no preference file is specified and the default file ./preference_files/default.txt cannot be found:
---csv_dir defaults to &quot;.&quot;
---png_dir defaults to &quot;.&quot;
---sncl_format defaults to &quot;N.S.C.L&quot;
---sigfigs defaults to &quot;6&quot;
+  -V, --version                    show program's version number and exit
+  -U, --update-r                   check for and install newer CRAN IRIS Mustang packages and/or update required conda packages, and exit
+  -L, --list-metrics               list names of available metrics and exit
 </code></pre>
 <p>For those that prefer to run ISPAQ as a package, you can use the following invocation (using help example):</p>
 <pre><code>(ispaq) $ python -m ispaq.ispaq --help</code></pre>
@@ -339,8 +344,9 @@ If no preference file is specified and the default file ./preference_files/defau
 </ul>
 <p><strong>Preferences</strong> has four entries describing ispaq output.</p>
 <ul>
-<li><p><code>csv_dir:</code> should be followed by a directory path for output of generated metric text files (CSV). If the directory does not exist, then it defaults to the current working directory.</p></li>
-<li><p><code>png_dir:</code> should be followed by a directory path for output of generated PDF plots (PNG). If the directory does not exist, then it defaults to the current working directory.</p></li>
+<li><p><code>csv_dir:</code> should be followed by a directory path for output of generated metric text files (CSV). If the directory does not exist, then it attempts to create that directory.</p></li>
+<li><p><code>psd_dir:</code> should be followed by a directory path for writing and reading PSD csv files. If the directory does not exist, then it defaults to the current working directory. PSD csv files generated by the ‘psd_corrected’ metric will be written to a directory structure within ‘psd_dir’ based on network code and station code (‘psd_dir’/NET/STA)</p></li>
+<li><p><code>pdf_dir:</code> should be followed by a directory path for output of PDF csv and png files. These files will be written to a directory structure within ‘pdf_dir’ based on network code and station code (‘pdf_dir’/NET/STA).</p></li>
 <li><p><code>sigfigs:</code> should indicate the number of significant figures used for output columns named “value”. Default is 6.</p></li>
 <li><p><code>sncl_format:</code> should be the format of sncl aliases and miniSEED file names, must be some combination of period separated <code>N</code>=network, <code>S</code>=station, <code>L</code>=location, <code>C</code>=channel (e.g., <code>N.S.L.C, S.N.L.C</code>). If no <code>sncl_format</code> exists, it defaults to <code>N.S.L.C</code>.</p></li>
 </ul>
@@ -531,7 +537,7 @@ Selection: 1
 <ul>
 <li>channels = [BCDHM][HX].</li>
 </ul></li>
-<li><p><strong>pdf</strong>: Probability density function plots and/or text output (controlled by PDF_Preferences in the preference file; or by –pdf_type, –pdf_interval, –plot_include on the command line) <a href="https://doi.org/10.1785/012003001">Reference: Ambient Noise Levels in the Continental United States, McNamara and Buland, 2004</a></p></li>
+<li><p><strong>pdf</strong>: Probability density function plots and/or text output (controlled by PDF_Preferences in the preference file; or by <code>--pdf_type</code>, <code>--pdf_interval</code>, <code>--plot_include</code> on the command line). You must have local PSD files written in the format produced by the ‘psd_corrected’ metric (below) or run it concurrently with ‘psd_corrected’. These files should be in a directory specified by the ‘psd_dir’ entry in the preference file or by <code>--psd_dir</code> on the command line. <a href="https://doi.org/10.1785/012003001">Reference: Ambient Noise Levels in the Continental United States, McNamara and Buland, 2004</a></p></li>
 <li><p><strong>percent_availability</strong>: The portion of data available for each day is represented as a percentage. 100% data available means full coverage of data for the reported start and end time. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/percent_availability/">Documentation</a></p></li>
 <li><strong>polarity_check</strong>: The signed cross-correlation peak value based on the cross-correlation of two neighboring station channels in proximity to a large earthquake signal. A negative peak close to -1.0 can indicate reversed polarity. <a href="http://service.iris.edu/mustang/metrics/docs/1/desc/polarity_check/">Documentation</a>
 <ul>
@@ -575,7 +581,7 @@ source activate ispaq
 ./run_ispaq.py -M basicStats -S basicStats --starttime 2010-100             # starttime specified as julian day
 ./run_ispaq.py -M stateOfHealth -S ANMO --starttime 2013-01-05              # starttime specified as calendar day
 ./run_ispaq.py -M gaps -S ANMO --starttime 2011-01-01 --endtime 2011-01-08
-./run_ispaq.py -M psdPdf -S psdPdf --starttime 2013-06-01 --endtime 2013-07-01</code></pre>
+./run_ispaq.py -M psdPdf -S psdPdf --starttime 2013-06-01 --endtime 2013-06-08</code></pre>
 </div>
 <div id="example-using-command-line-options-to-override-preference-file" class="section level3">
 <h3>Example Using Command-line Options to Override Preference File</h3>
