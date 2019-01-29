@@ -204,6 +204,9 @@ def plot_PDF(sncl, starttime, endtime, pdfDF, modesDF, maxsDF, minsDF, concierge
 
     yticks = [powers.index(i) for i in list(filter(lambda x: (x % 10 == 0), powers))]
     ylabels = [powers[i] for i in yticks]
+
+    if concierge.plot_include is None:
+        concierge.plot_include = "none"
     
     if 'fixed_yaxis_limits' in concierge.plot_include:
         # Need to either extend or truncate the ticks to only range

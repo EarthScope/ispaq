@@ -16,7 +16,7 @@ have the option to read local [miniSEED](http://ds.iris.edu/ds/nodes/dmc/data/fo
 metadata on their own workstations and construct on-the-spot data quality analyses on that data.
 
 Output is provided in CSV format for tabular metrics. In addition, Probability Density Functions (PDF) 
-for single days can be plotted to PNG image files.
+can be plotted to PNG image files. The PDF plots also include the New High Noise Model and the New Low Noise Model curves [Peterson,1993](https://doi.org/10.3133/ofr93322) and the minimum, maximum, and mode PDF statistics curves.
 
 The business logic for MUSTANG metrics is emulated through [ObsPy](https://github.com/obspy/obspy/wiki) 
 and custom Python code and the core calculations are performed using the same R packages as used by 
@@ -135,7 +135,7 @@ R CMD INSTALL IRISSeismic_1.4.9.tar.gz
 R CMD INSTALL IRISMustangMetrics_2.2.0.tar.gz 
 ```
 
-You should also run `./run_ispaq.py -U` after you update your ISPAQ version.
+You should also run `./run_ispaq.py -U` after you update your ISPAQ version to verify that you have the required minimum versions of anaconda packages.
 
 # Using ISPAQ
 
@@ -154,23 +154,26 @@ is used to indicate that the script is in the current directory.
 A list of command-line options is available with the ```--help``` flag:
 
 ```
-(ispaq)$ ./run_ispaq.py -h
+(ispaq) bash-3.2$ ./run_ispaq.py -h
 usage: run_ispaq.py [-h] [-P PREFERENCES_FILE] [-M METRICS] [-S STATIONS]
                     [--starttime STARTTIME] [--endtime ENDTIME]
-                    [--dataselect_url DATASELECT_URL]
-                    [--station_url STATION_URL] [--event_url EVENT_URL]
-                    [--resp_dir RESP_DIR] [--csv_dir CSV_DIR]
-                    [--psd_dir PSD_DIR] [--pdf_dir PDF_DIR]
+                    [--dataselect_url DATASELECT_URL] [--station_url STATION_URL]
+                    [--event_url EVENT_URL] [--resp_dir RESP_DIR]
+                    [--csv_dir CSV_DIR] [--psd_dir PSD_DIR] [--pdf_dir PDF_DIR]
                     [--pdf_type PDF_TYPE] [--pdf_interval PDF_INTERVAL]
                     [--plot_include PLOT_INCLUDE] [--sncl_format SNCL_FORMAT]
                     [--sigfigs SIGFIGS]
-                    [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-A]
-                    [-V] [-U] [-L]
+                    [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-A] [-V]
+                    [-U] [-L]
 
 ISPAQ version 2.0.0
 
 single arguments:
   -h, --help                       show this help message and exit
+  -V, --version                    show program's version number and exit
+  -U, --update-r                   check for and install newer CRAN IRIS Mustang packages 
+                                   and/or update required conda packages, and exit
+  -L, --list-metrics               list names of available metrics and exit
 
 arguments for running metrics:
   -P PREFERENCES_FILE, --preferences-file PREFERENCES_FILE
@@ -178,38 +181,35 @@ arguments for running metrics:
   -M METRICS, --metrics METRICS    metrics alias as defined in preference file or metric name, required
   -S STATIONS, --stations STATIONS
                                    stations alias as defined in preference file or station SNCL, required
-  --starttime STARTTIME            starttime in ObsPy UTCDateTime format, required for webservice requests and 
-                                   defaults to earliest data file for local data 
+  --starttime STARTTIME            starttime in ObsPy UTCDateTime format, required for webservice requests 
+                                   and defaults to earliest data file for local data 
                                    examples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]
   --endtime ENDTIME                endtime in ObsPy UTCDateTime format, default=starttime + 1 day; 
-                                   if starttime is also not specified then it defaults to the latest data file for local data 
+                                   if starttime is also not specified then it defaults to the latest data 
+                                   file for local data 
                                    examples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]
 
-arguments for overriding preference file entries:
-  --dataselect_url DATASELECT_URL  FDSN webservice or path to directory with miniSEED files, overrides preference file
-  --station_url STATION_URL        FDSN webservice or path to stationXML file, overrides preference file
-  --event_url EVENT_URL            FDSN webservice or path to QuakeML file, overrides preference file
-  --resp_dir RESP_DIR              path to directory with RESP files, overrides preference file
-  --csv_dir CSV_DIR                directory to write generated metrics .csv files, overrides preference file
-  --psd_dir PSD_DIR                directory to write/read existing PSD .csv files, overrides preference file
-  --pdf_dir PDF_DIR                directory to write generated PDF files, overrides preference file
-  --pdf_type PDF_TYPE              output format of generated PDFs - text and/or plot, overrides preference file
-  --pdf_interval PDF_INTERVAL      Time span for PDFs - daily and/or aggregated over the entire span, overrides preference file
-  --plot_include PLOT_INCLUDE      Whether to include the legend and colorbar in the aggregated PDF plot, overrides preference file
-  --sncl_format SNCL_FORMAT        format of SNCL aliases and miniSEED file names, overrides preference file
+optional arguments for overriding preference file entries:
+  --dataselect_url DATASELECT_URL  FDSN webservice or path to directory with miniSEED files
+  --station_url STATION_URL        FDSN webservice or path to stationXML file
+  --event_url EVENT_URL            FDSN webservice or path to QuakeML file
+  --resp_dir RESP_DIR              path to directory with RESP files
+  --csv_dir CSV_DIR                directory to write generated metrics .csv files
+  --psd_dir PSD_DIR                directory to write/read existing PSD .csv files
+  --pdf_dir PDF_DIR                directory to write generated PDF files
+  --pdf_type PDF_TYPE              output format of generated PDFs - text and/or plot
+  --pdf_interval PDF_INTERVAL      time span for PDFs - daily and/or aggregated over the entire span
+  --plot_include PLOT_INCLUDE      PDF plot graphics options - legend, colorbar, and/or fixed_axis_limits, 
+                                   or none
+  --sncl_format SNCL_FORMAT        format of SNCL aliases and miniSEED file names 
                                    examples:"N.S.L.C","S.N.L.C"
                                    where N=network code, S=station code, L=location code, C=channel code
-  --sigfigs SIGFIGS                number of significant figures used for output columns named "value",
-                                   overrides preference file
+  --sigfigs SIGFIGS                number of significant figures used for output columns named "value"
 
 other arguments:
   --log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
                                    log level printed to console, default="INFO"
   -A, --append                     append to TRANSCRIPT file rather than overwriting
-  -V, --version                    show program's version number and exit
-  -U, --update-r                   check for and install newer CRAN IRIS Mustang packages and/or update required conda packages, and exit
-  -L, --list-metrics               list names of available metrics and exit
-
 ```
 
 For those that prefer to run ISPAQ as a package, you can use the following invocation (using help example):
@@ -249,6 +249,7 @@ with the following comments in the header:
 #                     using the Preferences sncl_format.          
 #  * Data_Access -- FDSN web services or local files
 #  * Preferences -- additional user preferences
+#  * PDF_Preferences -- preferences specific to PDF calculation
 #
 # This file is in a very simple format.  After each category heading, all lines containing a colon 
 # will be interpreted as key:value and made available to ISPAQ.
@@ -327,9 +328,27 @@ written to a directory structure within 'pdf_dir' based on network code and stat
  period separated `N`=network, `S`=station, `L`=location, `C`=channel (e.g., `N.S.L.C, S.N.L.C`).
 If no `sncl_format` exists, it defaults to `N.S.L.C`.
 
+**PDF_Preferences** has three entries describing PDF output.
+
+* `pdf_type:` should be followed by either "text","plot", or "text,plot".
+"text" will output PDF information in a csv format file with frequency, power, and hits columns.
+"plot" will output a PDF plot in a png format file.
+"text,plot" will output both 
+
+* `pdf_interval:` should be followed by either "daily","aggregate", or "daily,aggregate"
+"daily" will calculate separate PDFs for each 24-hour day between the starttime and endtime.
+"aggregate" will calculate one PDF spanning the starttime to endtime span.
+"daily,aggregate" will calculate both
+
+* `plot_include:` should be followed by any of "legend","colorbar","fixed_yaxis_limits"
+"legend" will include the legend for the minimum/maximum/mode PDF statistics curves
+"colorbar" will include the histogram legend for the PDF
+"fixed_axis_limits" will plot the PDF with y-axis limits of -25 to -225 dB
+"legend,colorbar,fixed_axis_limits" will create a PDF plot with all three features
+
 Any of these preference file entries can be overridden by command-line arguments:
 `-M "metric name"`, `-S "station SNCL"`, `--dataselect_url`, `--station_url`, `--event_url`, `--resp_dir`, 
-`--csv_output_dir`, `--plot_output_dir`, `--sigfigs`, `--sncl_format`
+`--csv_output_dir`, `--plot_output_dir`, `--sigfigs`, `--sncl_format`,`--pdf_type`, `--pdf_interval`, `--plot_include`
 
 More information about using local files can be found below in the section "Using Local Data Files".
 
@@ -346,7 +365,7 @@ when a single day is specified on the command line or
 
 * `MetricAlias`\_`StationAlias`\_`startdate`\_`enddate`\_`businessLogic`.csv
 
-when multiple days are specified from the command line.
+when multiple days are specified from the command line. End date in this context is inclusive of that day.
 
 _businessLogic_ corresponds to which script is invoked:
 
@@ -354,22 +373,30 @@ _businessLogic_ corresponds to which script is invoked:
 | ----------|--------------|---------|
 | simpleMetrics | simple_metrics.py | most metrics |
 | SNRMetrics | SNR_metrics.py | sample_snr   |
-| PSDMetrics | PSD_metrics.py | pct_above_nhnm, pct_below_nlnm, dead_channel_{lin,gsn}, psd_corrected, pdf_text |
+| PSDMetrics | PSD_metrics.py | pct_above_nhnm, pct_below_nlnm, dead_channel_{lin,gsn}, psd_corrected, pdf |
 | crossTalkMetrics | crossTalk_metrics.py | cross_talk |
 | pressureCorrelationMetrics | pressureCorrelation_metrics.py | pressure_effects | 
 | crossCorrelationMetrics | crossCorrelation_metrics.py | polarity_check | 
 | orientationCheckMetrics | orientationCheck_metrics.py | orientation_check | 
 | transferMetrics | transferFunction_metrics.py | transfer_function |
 
-The metric alias psdText (or any user defined set with metrics psd_corrected or pdf_text) will generate 
-corrected PSDs and PDFs in files named:
+The metric alias psdPdf in the default preference file (or any user defined set with metric 'psd_corrected') will 
+generate corrected PSDs in files named:
 
-* `SNCL`\_`startdate`\_`PSDcorrected`.csv
-* `SNCL`\_`startdate`\_`PDF`.csv
+* `SNCL`\_`startdate`\_PSDcorrected.csv
 
-while the metric alias PDF (metric pdf_plot) will generate PDF plot images as:
+The metric alias psdPdf in the default preference file (or any user defined set with metric 'pdf') will generate 
+PDFs in files named:
 
-* `SNCL`\_`startdate`\_`PDF`.png
+* `SNCL`\_`startdate`\_PDF.csv  (for daily PDF text)
+* `SNCL`\_`startdate`\_`enddate`\_PDF.csv (for aggregate PDF text)
+* `SNCL`\_`startdate`\_PDF.png  (for daily PDF plot)
+* `SNCL`\_`startdate`\_`enddate`\_PDF.png  (for aggregate PDF plot)
+
+Note: The metric 'pdf' requires that `SNCL`\_`startdate`\_PSDcorrected.csv files exist in the `psd_dir` specified directory. 
+If you run the metric 'pdf' alone and see the warning 'No PSD files found', then try running metric 'psd_corrected'
+first to generate the PSD files. You will also see the warning 'No PSD files found' if there is no data available for that day.
+These two  metrics can be run simulataneously.
 
 If specifying metrics and station SNCLs from the command line instead of using preference file aliases,
 the metric name and station SNCL will be used instead of the MetricAlias and StationAlias in the output
@@ -400,7 +427,6 @@ warnings.warn('Matplotlib is building the font cache using fc-list. This may tak
 2017-05-26 13:58:25 - INFO - 002 Calculating simple metrics for IU.ANMO.00.BHZ
 2017-05-26 13:58:26 - INFO - Writing simple metrics to basicStats_basicStats_2010-04-20__simpleMetrics.csv
 2017-05-26 13:58:26 - INFO - ALL FINISHED!
-(ispaq) $
 ```
 
 Additional information about running ISPAQ on the command line can be found by invoking `run_ispaq.py --help`.
@@ -445,25 +471,27 @@ The command-line argument `-U`, `--update-r` can be used to check CRAN for newer
 IRISMustangMetrics R packages.
 
 ```
-(ispaq) $ ./run_ispaq.py -U
-2017-05-25 12:37:19 - INFO - Running ISPAQ version 1.0.0 on Thu May 25 12:37:19 2017
-2017-05-25 12:37:19 - INFO - Checking for IRIS R package updates...
+(ispaq) bash-3.2$ ./run_ispaq.py -U
+2019-01-28 15:33:25 - INFO - Running ISPAQ version 2.0.0 on Mon Jan 28 15:33:25 2019
+2019-01-28 15:33:27 - INFO - Checking for recommended conda packages...
+2019-01-28 15:33:27 - INFO - Required conda packages found
+2019-01-28 15:33:27 - INFO - Checking for IRIS R package updates...
 --- Please select a CRAN mirror for use in this session ---
-HTTPS CRAN mirror 
+Secure CRAN mirrors 
 
- 1: 0-Cloud [https]                 2: Algeria [https]              
- 3: Australia (Canberra) [https]    4: Australia (Melbourne) [https]
- 5: Australia (Perth) [https]       6: Austria [https]              
+ 1: 0-Cloud [https]                   2: Algeria [https]                
+ 3: Australia (Canberra) [https]      4: Australia (Melbourne 1) [https]
+ 5: Australia (Melbourne 2) [https]   6: Australia (Perth) [https]             
 ...
 
 Selection: 1
 
-              package installed   CRAN upgrade
-0         seismicRoll     1.1.2  1.1.2   False
-1         IRISSeismic     1.4.5  1.4.3   False
-2  IRISMustangMetrics     2.0.8  2.0.8   False
+              package installed   CRAN  upgrade
+0         seismicRoll     1.1.3  1.1.3    False
+1         IRISSeismic     1.4.9  1.4.9    False
+2  IRISMustangMetrics     2.2.0  2.1.3    False
 
-2017-05-25 12:37:34 - INFO - No packages need updating.
+2019-01-28 15:33:39 - INFO - No CRAN packages need updating.
 
 ```
 
@@ -475,11 +503,6 @@ python code in conjunction with the CRAN code.
 ### List of Metrics
 
 The command-line argument `-L` will list the names of available metrics.
-
-_Note:_ When using local data files, metrics based on miniSEED activity flags, I/O flags, and timing blockette 1001
- are not valid. These metrics are `calibration_signal`, `clock_locked`, `event_begin`, `event_end`, 
-`event_in_progress`, `timing_correction`, and `timing_quality`. ISPAQ will not return values for these metrics. 
-
 
 #### Brief Metrics Descriptions and Links to Documentation
  

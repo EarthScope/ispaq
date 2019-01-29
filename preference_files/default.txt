@@ -61,7 +61,7 @@ PDF_Preferences:
 
   pdf_type: text, plot			# formats for the aggregated PDF: plot, text
   pdf_interval: aggregated		# whether the pdfs should be calculated daily or over the entire span: daily, aggregated
-  plot_include: legend, colorbar	# options to include: legend (for min/max/mode), colorbar, fixed_yaxis_limits
+  plot_include: legend, colorbar	# options to include: legend (for min/max/mode), colorbar, fixed_yaxis_limits, none
 
 
 ## INFORMATION ABOUT THE PREFERENCE FILE --------------------------------------
