@@ -138,7 +138,7 @@ PDF_Preferences:
 # NOTE: 
 #		* The PSD csv files to be used are to be found in the psd_dir specified in the "Preferences" section
 #		* The pdf plots will be placed in in the pdf_dir specified in the "Preferences" section
-# 		* BOTH the pdf_dir and the psd_dir are excepted to have sub directories where the files are. If using
+# 		* BOTH the pdf_dir and the psd_dir are expected to have sub directories where the files are. If using
 #		  ISPAQ to calculate the PSDs and PDFs, then this structure will be created automatically.
 #		* The expected naming scheme:
 #			pdf_dir/NETWORK/STATION/

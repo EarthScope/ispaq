@@ -81,7 +81,7 @@ def main():
     prefs.add_argument('--pdf_interval', required=False,
                         help='time span for PDFs - daily and/or aggregated over the entire span')
     prefs.add_argument('--plot_include', required=False,
-                        help='PDF plot graphics options - legend, colorbar, and/or fixed_axis_limits, \nor none')
+                        help='PDF plot graphics options - legend, colorbar, and/or fixed_yaxis_limits, \nor none')
     prefs.add_argument('--sncl_format', required=False,
                         help='format of SNCL aliases and miniSEED file names \nexamples:"N.S.L.C","S.N.L.C"\nwhere N=network code, S=station code, L=location code, C=channel code')
     prefs.add_argument('--sigfigs', required=False,

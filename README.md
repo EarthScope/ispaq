@@ -199,7 +199,7 @@ optional arguments for overriding preference file entries:
   --pdf_dir PDF_DIR                directory to write generated PDF files
   --pdf_type PDF_TYPE              output format of generated PDFs - text and/or plot
   --pdf_interval PDF_INTERVAL      time span for PDFs - daily and/or aggregated over the entire span
-  --plot_include PLOT_INCLUDE      PDF plot graphics options - legend, colorbar, and/or fixed_axis_limits, 
+  --plot_include PLOT_INCLUDE      PDF plot graphics options - legend, colorbar, and/or fixed_yaxis_limits, 
                                    or none
   --sncl_format SNCL_FORMAT        format of SNCL aliases and miniSEED file names 
                                    examples:"N.S.L.C","S.N.L.C"
@@ -330,21 +330,21 @@ If no `sncl_format` exists, it defaults to `N.S.L.C`.
 
 **PDF_Preferences** has three entries describing PDF output.
 
-* `pdf_type:` should be followed by either "text","plot", or "text,plot".
-"text" will output PDF information in a csv format file with frequency, power, and hits columns.
-"plot" will output a PDF plot in a png format file.
-"text,plot" will output both 
+* `pdf_type:` should be followed by either "text","plot", or "text,plot".  
+"text" will output PDF information in a csv format file with frequency, power, and hits columns.  
+"plot" will output a PDF plot in a png format file.  
+"text,plot" will output both.  
 
-* `pdf_interval:` should be followed by either "daily","aggregate", or "daily,aggregate"
-"daily" will calculate separate PDFs for each 24-hour day between the starttime and endtime.
-"aggregate" will calculate one PDF spanning the starttime to endtime span.
-"daily,aggregate" will calculate both
+* `pdf_interval:` should be followed by either "daily","aggregate", or "daily,aggregate".    
+"daily" will calculate separate PDFs for each day between the starttime and endtime.  
+"aggregate" will calculate one PDF spanning the starttime to endtime span.  
+"daily,aggregate" will calculate both.  
 
-* `plot_include:` should be followed by any of "legend","colorbar","fixed_yaxis_limits"
-"legend" will include the legend for the minimum/maximum/mode PDF statistics curves
-"colorbar" will include the histogram legend for the PDF
-"fixed_axis_limits" will plot the PDF with y-axis limits of -25 to -225 dB
-"legend,colorbar,fixed_axis_limits" will create a PDF plot with all three features
+* `plot_include:` should be followed by any of "legend","colorbar","fixed_yaxis_limits".  
+"legend" will include the legend for the minimum/maximum/mode PDF statistics curves.  
+"colorbar" will include the histogram legend for the PDF.  
+"fixed_axis_limits" will plot the PDF with y-axis limits of -25 to -225 dB (if not specified, the y-axis limits are determined by the data).  
+"legend,colorbar,fixed_axis_limits" will create a PDF plot with all three features.  
 
 Any of these preference file entries can be overridden by command-line arguments:
 `-M "metric name"`, `-S "station SNCL"`, `--dataselect_url`, `--station_url`, `--event_url`, `--resp_dir`, 
