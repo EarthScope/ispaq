@@ -122,12 +122,7 @@ See what is installed in our (ispaq) environment with:
 conda list
 ```
 
-Now install the IRIS R packages for ISPAQ by downloading them from CRAN:
-```
-./run_ispaq.py -U
-```
-
-Alternatively, you can install the local versions of the IRIS R packages:
+Now install the IRIS R packages for ISPAQ:
 ```
 export MACOSX_DEPLOYMENT_TARGET=10.9    # this line for macOS only
 R CMD INSTALL seismicRoll_1.1.3.tar.gz 
@@ -135,7 +130,14 @@ R CMD INSTALL IRISSeismic_1.4.9.tar.gz
 R CMD INSTALL IRISMustangMetrics_2.2.0.tar.gz 
 ```
 
-You should also run `./run_ispaq.py -U` after you update your ISPAQ version to verify that you have the required minimum versions of anaconda packages.
+Or alternatively, install the IRIS R packages from CRAN: 
+```
+./run_ispaq.py -U
+```
+
+You should also run `./run_ispaq.py -U` after you update your ISPAQ version to verify that you have both the required minimum versions of anaconda packages and the most recent IRIS R packages.
+
+Note: If you are using macOS and see the error: "'math.h' file not found" when compiling seismicRoll, then it is likely that your command line tools are missing. Try running `xcode-select --install`.
 
 # Using ISPAQ
 
