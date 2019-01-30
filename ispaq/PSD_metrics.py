@@ -187,7 +187,7 @@ def PSD_metrics(concierge):
         if start == end:
             logger.info('Calculating PDFs for %d SNCLs on %s' % (snclList.shape[0],str(start)))
         else:
-            logger.info('Aggregating PDFs for %d SNCLs for %s to %s' % (snclList.shape[0],str(start), str(end)))
+            logger.info('Aggregating PDFs for %d SNCLs for %s through %s' % (snclList.shape[0],str(start), str(end)))
             
         for (index, sncl) in enumerate(snclList):
             logger.info('%03d Calculating PDF values for %s' % (index, sncl))
