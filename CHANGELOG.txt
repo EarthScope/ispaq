@@ -1,4 +1,5 @@
 2.0.0
+ * requires IRISMustangMetrics 2.2.0. IRISMustangMetrics 2.2.0 is not compatible with previous ISPAQ versions.
  * adds aggregate PDF feature, in addition to the original daily PDF functionality. Aggregate PDFs
    calculate and display PDFs as a single text file or single plot for the entire time period between starttime 
    and endtime.
@@ -7,19 +8,19 @@
    plot_include allows you to specify whether the PDF plot should display the legend, colorbar, or
    fixed_yaxis_limits of -25,-225 dB. 
  * other preference file changes include: 'png_dir' has been removed as a Preferences option and replaced by 
-  'pdf_dir' to specify where to write PDF plot and text files. 'psd_dir' has been added to Preferences as a 
+   'pdf_dir' to specify where to write PDF plot and text files. 'psd_dir' has been added to Preferences as a 
    directory to store PSD text files (in csv format).
- * when using local files, PSD text files are required to calculate PDFs and these can be created by running the metric 'psd_corrected'. They 
-   will be written to the directory specified as 'psd_dir' in the Preferences, with a directory structure of 
-   psd_dir/network/station. If the metric 'pdf' is run, it will look in the 'psd_dir' directory for PSD text files. To run
-   both PSD and PDFs at the same time, use 'psd_corrected,pdf' either in the preference file or 
-   the command line.
  * 'pdf_plot' and 'pdf_text' are no longer metrics options. The metric name is now 'pdf'. To specify pdf plot or text, use
    the pdf_type in PDF_Preferences in the preference files or as `--pdf_type` on the command line.
- * command line options have been changed match the changes to the preference files. These new options override the 
+ * PSD text files are required to calculate PDFs and these can be created by running the metric 'psd_corrected'. They 
+   will be written to the directory specified as 'psd_dir' in the Preferences, with a directory structure of 
+   psd_dir/network/station. If the metric 'pdf' is run, it will look in the 'psd_dir' directory for PSD text files. To run
+   both PSD and PDFs at the same time, use 'psd_corrected,pdf' either in the preference file or the command line.
+ * command line options have been changed to match the changes to the preference files. These new options override the 
    preference files.
  * dead_channel_exp has been retired and is no longer available as a metric. 
- * requires IRISMustangMetrics 2.2.0
+ * custom preference files from previous ISPAQ versions will need to be modified to replace 'pdf_plot' and 'pdf_text' with 'pdf',
+   and to remove dead_channel_exp
 
 1.2.1
  * fixed bug in PSD/PDF metrics that affected output values when local RESP files are used. 
