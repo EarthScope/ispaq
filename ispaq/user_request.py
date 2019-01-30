@@ -390,7 +390,7 @@ class UserRequest(object):
             for function_name in default_function_dict:
                 default_function = default_function_dict[function_name]
                 for metric in self.metrics:
-                    if metric in default_function['metrics']:
+                    if metric in default_function['metrics'] and metric not in ['pdf_text','pdf_plot']:
                         valid_function_names.add(function_name)
                         valid_logic_types.add(default_function['businessLogic'])
                         valid_metrics.add(metric)

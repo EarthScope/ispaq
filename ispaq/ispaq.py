@@ -213,16 +213,15 @@ def main():
         for function_name in default_function_dict:
             default_function = default_function_dict[function_name]
             bLogic = default_function['businessLogic']
-            if bLogic not in ispaq_dict:    
-                for metric_name in default_function['metrics']:
-                    metricList.append(metric_name + "  *metric will not run with this version of ISPAQ*")
-            else:
-                if function_name not in ispaq_dict[bLogic]:
-                    for metric_name in default_function['metrics']:
+            for metric_name in default_function['metrics']:
+                if metric_name not in ['pdf_plot','pdf_text']:
+                    if bLogic not in ispaq_dict:    
                         metricList.append(metric_name + "  *metric will not run with this version of ISPAQ*")
-                else:
-                    for metric_name in default_function['metrics']:
-                        metricList.append(metric_name)
+                    else:
+                        if function_name not in ispaq_dict[bLogic]:
+                            metricList.append(metric_name + "  *metric will not run with this version of ISPAQ*")
+                        else:
+                            metricList.append(metric_name)
         for line in sorted(metricList):
             print(line)
         sys.exit(0)
