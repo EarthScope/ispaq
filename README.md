@@ -435,16 +435,21 @@ Additional information about running ISPAQ on the command line can be found by i
 
 ### Using Local Data Files
 
-Local data files should be in *miniSEED* format and organized in *network-station-channel-day* files 
-with naming convention 
+Local data files should be in *miniSEED* format and organized in *network-station-channel-day* files. By default, 
+ISPAQ recognizes the following file naming convention:
+
 ```
 Network.Station.Location.Channel.Year.JulianDay.Quality
 ```
- where `Quality` is optional 
-(e.g., `TA.P19K..BHZ.2016.214.M` or `TA.P19K..BHZ.2016.214`). This naming convention can be modified
-by using the `sncl_format` entry in the preferences file or the `--sncl_format` option on the command line.
-`sncl_format` allows you to specify a different order for `Network.Station.Location.Channel`, although all these 
-elements must be present in the file name. 
+where `Quality` is optional (e.g., `TA.P19K..BHZ.2016.214.M` or `TA.P19K..BHZ.2016.214`).   
+
+This naming convention can be modified by using the `sncl_format` entry in the preferences file or 
+the `--sncl_format` option on the command line. `sncl_format` allows you to specify a different order for `Network.Station.Location.Channel`, although all these elements must be present in the file name. For example, sncl_format `S.N.L.C` will change the file naming convention that ISPAQ uses to:
+
+```
+Station.Network.Location.Channel.Year.JulianDay.Quality
+```
+where `Quality` is again optional (e.g. `P19K.TA..BHZ.2016.214.M` or `P19K.TA..BHZ.2016.214`).
 
 ISPAQ will search for miniSEED files in the directory specified by `dataselect_url` in the preferences file or 
 `--dataselect_url` on the command line. Furthermore, it will recursively follow that directory structure and
