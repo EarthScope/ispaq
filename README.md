@@ -86,7 +86,7 @@ git pull origin master
 
 ## Install the Anaconda Environment
 
-[Anaconda](https://www.continuum.io/why-anaconda) is quickly becoming the *defacto* package manager for 
+[Anaconda](https://www.anaconda.com) is quickly becoming the *defacto* package manager for 
 scientific applications written python or R. [Miniconda](http://conda.pydata.org/miniconda.html) is a trimmed 
 down version of Anaconda that contains the bare necessities without loading a large list of data science packages 
 up front. With miniconda, you can set up a custom python environment with just the packages you need to run ISPAQ.
@@ -95,7 +95,7 @@ Proceed to the [Miniconda](http://conda.pydata.org/miniconda.html) web site to f
 operating system before proceeding with the instructions below. If you can run ```conda``` from the command 
 line, then you know you have it successfully installed.
 
-By setting up a [conda virtual environment](http://conda.pydata.org/docs/using/envs.html), we assure that our 
+By setting up a [conda virtual environment](https://conda.io/projects/conda/en/latest/user-guide/concepts.html#conda-environments), we assure that our 
 ISPAQ installation is entirely separate from any other installed software.
 
 
