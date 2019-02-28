@@ -15,7 +15,7 @@ import logging
 import numpy as np
 import subprocess
 
-__version__ = "2.0.0"
+__version__ = "2.0.1"
 
 # dictionary of currently defined ISPAQ metric groups and business logic
 # for comparison with R package IRISMustangMetrics/ISPAQUtils.R json
@@ -181,10 +181,10 @@ def main():
         logger.info('Checking for recommended conda packages...')
         x=robjects.r("packageVersion('base')")
         x_str = ".".join(map(str,np.array(x.rx(1)).flatten()))
-        if ((StrictVersion(obspy.__version__) < StrictVersion("1.1.0")) 
+        if ((StrictVersion(obspy.__version__) < StrictVersion("1.1.1")) 
                 or (StrictVersion(x_str) < StrictVersion("3.5.1")) ):
             logger.info('Updating conda packages...')
-            conda_str = ("conda install -c conda-forge pandas=0.23.4 obspy=1.1.0 r=3.5.1 r-base=3.5.1 r-devtools=2.0.1" +
+            conda_str = ("conda install -c conda-forge pandas=0.23.4 obspy=1.1.1 r=3.5.1 r-base=3.5.1 r-devtools=2.0.1" +
                         " r-rcurl=1.95_4.11 r-rcurl=1.95_4.11 r-xml=3.98_1.16 r-dplyr=0.7.6 r-quadprog=1.5_5 r-signal=0.7_6" +
                         " r-pracma=2.1.5 rpy2=2.8.6 r-stringr=1.3.1")
             subprocess.call(conda_str, shell=True)

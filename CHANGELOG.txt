@@ -1,3 +1,6 @@
+2.0.1
+ * updates recommended conda ObsPy package version to 1.1.1. Run `run_ispaq.py -U` to install ObsPy 1.1.1.
+
 2.0.0
  * adds aggregate PDF feature, in addition to the original daily PDF functionality. Aggregate PDFs
    calculate and display PDFs as a single text file or single plot for the entire time period between starttime
