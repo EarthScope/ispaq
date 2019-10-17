@@ -100,10 +100,13 @@ def crossCorrelation_metrics(concierge):
         halfHourEnd = event.time + 60 * 28
 
         logger.debug("Looking for metadata from %s to %s" % (halfHourStart,halfHourEnd))
+
         try:        
             availability = concierge.get_availability(starttime=halfHourStart, endtime=halfHourEnd,
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=eventMinradius, maxradius=eventMaxradius)
+
+
         except NoAvailableDataError as e:
             logger.info('Skipping event with no available data')
             continue
@@ -182,6 +185,7 @@ def crossCorrelation_metrics(concierge):
                                                            starttime=halfHourStart, endtime=halfHourEnd,
                                                            longitude=av1.longitude, latitude=av1.latitude,
                                                            minradius=snclMinradius, maxradius=snclMaxradius)
+
             except Exception as e:
                 logger.warning('Skipping %s because get_availability failed for nearby stations: %s' % (av1.snclId, e))
                 continue

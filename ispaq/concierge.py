@@ -507,6 +507,7 @@ class Concierge(object):
                 else:
                     _endtime = endtime
                 
+
                 # Set up empty dataframe
                 df = pd.DataFrame(columns=("network", "station", "location", "channel",
                                            "latitude", "longitude", "elevation", "depth" ,
@@ -579,7 +580,7 @@ class Concierge(object):
                                 for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
                                     matching_files.append(os.path.join(root,fname))
 
-                            #self.logger.debug("Found files: \n %s" % '\n '.join(matching_files))
+                            self.logger.debug("Found %s files matching %s (sncl_format=%s)" % (len(matching_files), sncl_pattern,self.sncl_format))
 
                             if (len(matching_files) == 0):
                                 continue
@@ -600,6 +601,7 @@ class Concierge(object):
 
                 # Now save the dataframe internally
                 self.initial_availability = df
+
 
         # Container for all of the individual sncl_pattern dataframes generated
         sncl_pattern_dataframes = []
@@ -662,7 +664,7 @@ class Concierge(object):
                     continue 
             else:
                 # Read from FDSN web services
-                self.logger.debug("read FDSN station web services %s for %s,%s,%s,%s,%s,%s" % (self.station_url,_network, _station, _location, _channel, _starttime.strftime('%Y.%j'), _endtime.strftime('%Y.%j')))
+                self.logger.debug("read FDSN station web services %s for %s, %s, %s, %s, %s, %s" % (self.station_url,_network, _station, _location, _channel, _starttime.strftime('%Y.%j'), _endtime.strftime('%Y.%j')))
                 try:
                     sncl_inventory = self.station_client.get_stations(starttime=_starttime, endtime=_endtime,
                                                                       network=_network, station=_station,
@@ -741,7 +743,6 @@ class Concierge(object):
                         
                 # Subset based on the mask
                 df = df[mask]
-
             # Subset based on distance
             # Create a temporary column that has the distances, use to subset
             df.insert(0,'dist',"EMPTY")
@@ -772,7 +773,10 @@ class Concierge(object):
 
             # Append this dataframe
             if df.shape[0] == 0:
-                self.logger.debug("No SNCLS found matching '%s' (sncl_format=%s)" % (_sncl_pattern,self.sncl_format))
+                if maxradius is not None or minradius is not None:
+                    self.logger.info("No stations found for "  + str(_sncl_pattern) + " within radius %s-%s degrees of latitude,longitude %s,%s" % (minradius,maxradius,latitude,longitude))
+                else:
+                    self.logger.info("No stations found for " + str(_sncl_pattern) )
             else:
                 #if df.snclId not in sncl_pattern_dataframes[:].snclId:
                 sncl_pattern_dataframes.append(df)	# tack the dataframes together
@@ -780,7 +784,10 @@ class Concierge(object):
         # END of sncl_patterns loop --------------------------------------------
  
         if len(sncl_pattern_dataframes) == 0:
-            err_msg = "No available waveforms for %s matching " % _starttime.strftime('%Y-%m-%d') + str(self.sncl_patterns)
+            if maxradius is not None or minradius is not None:
+                err_msg = "No available waveforms for %s matching " % _starttime.strftime('%Y-%m-%d') + str(self.sncl_patterns) + " within radius %s-%s degrees of latitude,longitude %s,%s" % (minradius,maxradius,latitude,longitude)
+            else:
+                err_msg = "No available waveforms for %s matching " % _starttime.strftime('%Y-%m-%d') + str(self.sncl_patterns)
             self.logger.info(err_msg)
             #raise NoAvailableDataError(err_msg)
         else:
