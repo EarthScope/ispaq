@@ -109,12 +109,9 @@ perform installs, updates, or run ISPAQ.
 cd ispaq
 conda update conda
 conda create --name ispaq python=2.7
-source activate ispaq
+conda activate ispaq
 conda install -c conda-forge --file ispaq-conda-install.txt
 ```
-
-_Note:_ if `source activate ispaq` results in the message "No such file or directory" your shell may be csh/tcsh instead of bash. You will need 
-to start a bash shell first. Type `bash` in a terminal window and then proceed with `source activate ispaq`.
 
 See what is installed in our (ispaq) environment with:
 
