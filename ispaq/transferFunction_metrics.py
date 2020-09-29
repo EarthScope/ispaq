@@ -136,7 +136,7 @@ def transferFunction_metrics(concierge):
 	
 	    for dip in dips:
 		logger.debug('Working on dip %f' % (dip))
-                logger.debug(stationAvailability)
+                #logger.debug(stationAvailability)
 	
 		# Find channels with the current dip
 		channelAvailability = stationAvailability[abs(stationAvailability.dip) == dip].reset_index(drop=True)
@@ -173,6 +173,9 @@ def transferFunction_metrics(concierge):
 			Zav1 = channelAvailability.iloc[rowMatrix[i,0],]
 			Zav2 = channelAvailability.iloc[rowMatrix[i,1],]
 
+                        if Zav1.location == "":
+                            Zav1,Zav2 = Zav2,Zav1  # swap order to be consistent with MUSTANG output
+
                         # We don't want to compare two different instrument types
                         if Zav1.channel[1:2] != Zav2.channel[1:2]:
                             continue
@@ -183,7 +186,7 @@ def transferFunction_metrics(concierge):
 			if ( (Zav1.location == Zav2.location) and (Zav1.channel[-2:] == Zav2.channel[-2:]) ):
 			    continue
 		    
-                        logger.info('Calculating transferFunction metrics for %s:%s' % (Zav1.snclId, Zav2.snclId))
+                        logger.info('Calculating transferFunction metrics for %s:%s' % (Zav2.snclId, Zav1.snclId))
 			# Get primary (1) and secondary (2) traces
 			try:
 			    Zst1 = concierge.get_dataselect(Zav1.network, Zav1.station, Zav1.location, Zav1.channel, windowStart, windowEnd, inclusiveEnd=False)
@@ -211,8 +214,8 @@ def transferFunction_metrics(concierge):
 		    
 			# Get primary (1), secondary (2) and orthogonal secondary spectra 
 			try:
-			    Zevalresp1 = utils.getSpectra(Zst1,sampling_rate,concierge)
-			    Zevalresp2 = utils.getSpectra(Zst2,sampling_rate,concierge) 
+			    Zevalresp1 = utils.getSpectra(Zst1,sampling_rate,"transferFunction",concierge)
+			    Zevalresp2 = utils.getSpectra(Zst2,sampling_rate,"transferFunction",concierge) 
 			except Exception as e:
 			    logger.warning('"transferFunction_metrics" getSpectra failed for %s:%s: %s' % (Zav1.snclId, Zav2.snclId, e))
 			    continue
@@ -221,7 +224,8 @@ def transferFunction_metrics(concierge):
 			# Run the transferFunction metric ----------------------------------------
 		
 			try:
-			    df = irismustangmetrics.apply_correlation_metric(Zst1, Zst2, 'transferFunction', Zevalresp1, Zevalresp2)
+			    #df = irismustangmetrics.apply_correlation_metric(Zst1, Zst2, 'transferFunction', Zevalresp1, Zevalresp2)
+                            df = irismustangmetrics.apply_transferFunction_metric(Zst1, Zst2, Zevalresp1, Zevalresp2)
 			    dataframes.append(df)
 			except Exception as e:
 			    logger.warning('"transfer_function" metric calculation failed for %s:%s: %s' % (Zav1.snclId, Zav2.snclId, e))
@@ -366,6 +370,9 @@ def transferFunction_metrics(concierge):
 	    
 				av1 = availabilityList[i].iloc[int(matrixListNotToRotate[i].iloc[j,0]),]
 				av2 = availabilityList[i].iloc[int(matrixListNotToRotate[i].iloc[j,1]),]
+
+                                if av1.location == "":
+                                    av1,av2 = av2,av1  # swap order to be consistent with MUSTANG output
 	    
                                 # We don't want to compare 2 different types of instruments
                                 if av1.channel[1:2] != av2.channel[1:2]:
@@ -377,7 +384,7 @@ def transferFunction_metrics(concierge):
 				if ( (av1.location == av2.location) and (av1.channel[-2:] == av2.channel[-2:]) ):
 				    continue
 	    
-                                logger.info('Calculating transferFunction metrics for %s:%s' % (av1.snclId, av2.snclId))
+                                logger.info('Calculating transferFunction metrics for %s:%s' % (av2.snclId, av1.snclId))
 
 				# Get primary (1) and secondary (2) traces
 				try:
@@ -406,15 +413,15 @@ def transferFunction_metrics(concierge):
 	    
 				# Get primary (1), secondary (2) and orthogonal secondary spectra
 				try:
-				    evalresp1 = utils.getSpectra(st1, sampling_rate, concierge)
-				    evalresp2 = utils.getSpectra(st2, sampling_rate, concierge)
+				    evalresp1 = utils.getSpectra(st1, sampling_rate, "transferFunction", concierge)
+				    evalresp2 = utils.getSpectra(st2, sampling_rate, "transferFunction", concierge)
 				except Exception as e:
 				    logger.warning('"transferFunction_metrics" getSpectra failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
 				    continue
 				    
 	    
 				# Calculate the metrics and append them to the current list
-				logger.info('Calculating transferFunction metrics for %s:%s' % (av1.snclId, av2.snclId))
+				logger.info('Calculating transferFunction metrics for %s:%s' % (av2.snclId, av1.snclId))
 				try:
 				    df = irismustangmetrics.apply_transferFunction_metric(st1, st2, evalresp1, evalresp2)
 				except Exception as e:
@@ -440,6 +447,9 @@ def transferFunction_metrics(concierge):
 		 
 				av1 = availabilityList[i].iloc[int(matrixListToRotate[i].iloc[j,0]),]   # Primary trace for Y (i=1) or X (i=2)
 				av2 = availabilityList[i].iloc[int(matrixListToRotate[i].iloc[j,1]),]   # Secondary trace for Y (i=1) or X (i=2)
+
+                                if av1.location == "":
+                                    av1,av2 = av2,av1  # swap order to be consistent with MUSTANG output
 	    
                                 # We don't want to compare 2 different types of instruments
                                 if av1.channel[1:2] != av2.channel [1:2]:
@@ -465,7 +475,7 @@ def transferFunction_metrics(concierge):
 	    
 				rotAngle = matrixListToRotate[i].iloc[j,2]
 	    
-                                logger.info('Calculating transferFunction metrics for %s:%s' % (av1.snclId, av2.snclId))
+                                logger.info('Calculating transferFunction metrics for %s:%s' % (av2.snclId, av1.snclId))
 
 				# Get primary (1), secondary (2), and secondary orthogonal traces
 				try:
@@ -505,9 +515,9 @@ def transferFunction_metrics(concierge):
 	    
 				# Get primary (1), secondary (2) and orthogonal secondary spectra 
 				try:
-				    evalresp1 = utils.getSpectra(st1, sampling_rate, concierge)
-				    evalresp2 = utils.getSpectra(st2, sampling_rate, concierge)          
-				    evalresp3 = utils.getSpectra(st3, sampling_rate, concierge)
+				    evalresp1 = utils.getSpectra(st1, sampling_rate, "transferFunction", concierge)
+				    evalresp2 = utils.getSpectra(st2, sampling_rate, "transferFunction", concierge)          
+				    evalresp3 = utils.getSpectra(st3, sampling_rate, "transferFunction", concierge)
 				except Exception as e:
 				    logger.debug('"transferFunction_metrics" getSpectra failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
 				    continue

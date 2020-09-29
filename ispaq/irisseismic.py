@@ -15,6 +15,8 @@ from obspy import UTCDateTime
 from rpy2 import robjects
 from rpy2 import rinterface
 from rpy2.robjects import pandas2ri
+from rpy2.robjects.packages import importr
+IRISSeismic = importr('IRISSeismic')
 import numpy as np
 
 #     R Initialization     -----------------------------------------------------
@@ -22,6 +24,7 @@ import numpy as np
 # Global R options are set here
 
 # Do not show error messages generated inside of the R packages
+
 robjects.r('options(show.error.messages=FALSE)')
 
 

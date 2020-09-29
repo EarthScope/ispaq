@@ -495,6 +495,7 @@ class Concierge(object):
                     self.logger.error(err_msg)   
                     raise ValueError
                 
+
                 self.logger.debug('Building availability dataframe...')
 
                 # Allow arguments to override UserRequest parameters

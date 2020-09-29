@@ -245,9 +245,12 @@ def get_slot(r_object, prop):
     # Should never get here
     raise('"%s" is not a recognized slot name' % (prop))
         
-def getSpectra(st, sampling_rate, concierge):
+def getSpectra(st, sampling_rate, metric, concierge):
     # This function returns an evalresp fap response for trace st using sampling_rate 
     # to determine frequency limits
+    #
+    # metric=transferFunction sets units="def" 
+    # metric=PSD sets units="acc" 
     #
     # set respDir to the directory containing RESP files to run evalresp locally
 
@@ -306,7 +309,10 @@ def getSpectra(st, sampling_rate, concierge):
     minfreq = min(binFreq)
     maxfreq = max(binFreq)
     nfreq = len(binFreq)
-    units = 'ACC'
+    if (metric == "transferFunction"):
+        units = 'DEF'
+    if (metric == "PSD"):
+        units = 'ACC'
     output = 'FAP'
 
     network = get_slot(st,'network')

@@ -98,7 +98,7 @@ def PSD_metrics(concierge):
                     evalresp = None
                     if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
                         sampling_rate = utils.get_slot(r_stream, 'sampling_rate')
-                        evalresp = utils.getSpectra(r_stream, sampling_rate, concierge)
+                        evalresp = utils.getSpectra(r_stream, sampling_rate, "PSD", concierge)
 
                     # get corrected PSDs
                     try:
