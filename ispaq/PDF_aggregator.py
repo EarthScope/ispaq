@@ -1,8 +1,9 @@
 import pandas as pd
 import numpy as np
-import noise_models
+from . import noise_models
 from . import utils
 import os
+
 
 
 def find_nearest(array, value):
@@ -19,51 +20,75 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
     start = starttime.date
     end = endtime.date
             
-    # Convert datetime for dataframe manipulation
-    #starttime = np.datetime64(starttime)
-    #endtime = np.datetime64(endtime)
-    starttime = starttime.datetime
-    endtime = endtime.datetime
-    
-    # Subset fileDF to only this sncl
-    snclFiles = fileDF[fileDF['SNCL'] == sncl]['FILE']
-    
-    # Initiate dataframe to hold hit values 
-    index = pd.MultiIndex(levels=[[],[]], labels=[[],[]], names=[u'freq', u'power'])
-    pdfDF = pd.DataFrame(columns=['freq', 'power','hits'], index=index)
-    
-    for snclFile in snclFiles:
-        logger.debug('Collecting PSD values from %s' % (snclFile))
 
-        psd = pd.read_csv(snclFile, parse_dates=['starttime','endtime'])
-        psd.dropna(inplace=True)
+    if concierge.output == 'csv':
+        # Convert datetime for dataframe manipulation
+        starttime = starttime.datetime
+        endtime = endtime.datetime
 
-        # Only include PSDs that are within the time range
-        psd=psd[(psd['starttime'] >= starttime) & (psd['endtime'] <= endtime)]
-
-        # Pre-calculate how many hits each frequency-power bin has for the day
-        psd['freqPow'] = zip(psd['freq'], [int(round(i)) for i in psd['power']])
-        freqPows = psd.freqPow.value_counts(sort=False).keys().tolist()
-        counts = psd.freqPow.value_counts(sort=False).tolist()
-        freqPowCounts = zip(freqPows, counts)
+    
+        # Subset fileDF to only this sncl
+        snclFiles = fileDF[fileDF['SNCL'] == sncl]['FILE']
         
-        # Loop over each frequency-power bin, adding the number of daily hits to the running total
-        for freqPow in freqPowCounts:
-            freq = freqPow[0][0]
-            power = freqPow[0][1]
-            count = freqPow[1]
+        
+        
+        for snclFile in snclFiles:
+            logger.debug('Collecting PSD values from %s' % (snclFile))
     
-            if freqPow[0] in pdfDF.index:
-                # We already know of this freq-power combination, add to hit and total counts
-                pdfDF['hits'].loc[[freqPow[0]]] += count
+            psd = pd.read_csv(snclFile, parse_dates=['starttime','endtime'])
+            psd.dropna(inplace=True)
+    
+            # Only include PSDs that are within the time range
+            psd=psd[(psd['starttime'] >= starttime) & (psd['endtime'] <= endtime)]
+    
+            
 
-            else:
-                # New frequency-power combination, add to dataframe
-                newRow = [freq, power, count]
-                ind = len(pdfDF)
-                pdfDF.loc[ind] = newRow
-                pdfDF.rename(index={ind:freqPow[0]}, inplace=True)
-
+    elif concierge.output == 'db':
+        import sqlite3
+        
+        # get the values for the sncl and timerange, load into a dataframe
+        # Read sqlite query results into a pandas DataFrame
+        sqlstarttime = str(starttime).split('.')[0]
+        sqlendtime = str(endtime).split('.')[0]
+        con = sqlite3.connect(concierge.db_name)
+        select_sql = "SELECT * from psd_day WHERE target = '" + sncl +"'"
+        if not starttime == "":
+            select_sql = select_sql + " AND start >= '" + sqlstarttime + "'"
+        if not endtime == "":
+            select_sql = select_sql + " AND end <= '" + sqlendtime + "'"
+        
+        select_sql = select_sql + " AND power != 'nan';"
+        logger.debug(select_sql)
+        
+        psd = pd.read_sql_query(select_sql, con)
+        con.close()
+    
+    # Initiate dataframe to hold hit values
+    index = pd.MultiIndex(levels=[[],[]], labels=[[],[]], names=[u'frequency', u'power'])
+    pdfDF = pd.DataFrame(columns=['frequency', 'power','hits'], index=index)
+        
+    # Pre-calculate how many hits each frequency-power bin has for the day
+    psd['freqPow'] = list(zip(psd['frequency'], [int(round(i)) for i in psd['power']]))
+    freqPows = psd.freqPow.value_counts(sort=False).keys().tolist()
+    counts = psd.freqPow.value_counts(sort=False).tolist()
+    freqPowCounts = list(zip(freqPows, counts))
+            
+    # Loop over each frequency-power bin, adding the number of daily hits to the running total
+    for freqPow in freqPowCounts:
+        freq = freqPow[0][0]
+        power = freqPow[0][1]
+        count = freqPow[1]
+        
+        if freqPow[0] in pdfDF.index:
+            # We already know of this freq-power combination, add to hit and total counts
+            pdfDF['hits'].loc[[freqPow[0]]] += count
+    
+        else:
+            # New frequency-power combination, add to dataframe
+            newRow = [freq, power, count]
+            ind = len(pdfDF)
+            pdfDF.loc[ind] = newRow
+            pdfDF.rename(index={ind:freqPow[0]}, inplace=True)
 
 
     if pdfDF.empty:
@@ -71,67 +96,75 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
         return pdfDF, None, None, None
     
     # Sort the dataframe, mostly for plotting purposes
-    pdfDF.sort_values(by=['freq','power'], inplace=True)
+    pdfDF.sort_values(by=['frequency','power'], inplace=True)
     
     # We used (freq, pow) as the index for ease during construction, but can reset them for the rest of the process
     pdfDF.reset_index(inplace=True,drop=True)
     
     # Set up dataframes for the max, min, modes for plotting later
-    modesDF = pd.DataFrame(columns=['Freq','Power'])
-    minsDF = pd.DataFrame(columns=['Freq','Power']) 
-    maxsDF = pd.DataFrame(columns=['Freq','Power']);
+    modesDF = pd.DataFrame(columns=['Frequency','Power'])
+    minsDF = pd.DataFrame(columns=['Frequency','Power']) 
+    maxsDF = pd.DataFrame(columns=['Frequency','Power']);
     
 
     # For each *frequency*, sum up the total hits, as well as min, max, mode values
-    for frequency in pdfDF['freq'].unique():
+    for frequency in pdfDF['frequency'].unique():
         # Sum hits for total column
-        pdfDF.loc[pdfDF['freq'] == frequency, 'total'] = sum(pdfDF[pdfDF['freq'] == frequency]['hits'])
+        pdfDF.loc[pdfDF['frequency'] == frequency, 'total'] = sum(pdfDF[pdfDF['frequency'] == frequency]['hits'])
         
         # Find the min, max, mode
-        powerInd = pdfDF[pdfDF['freq'] == frequency]['hits'].idxmax()
+        powerInd = pdfDF[pdfDF['frequency'] == frequency]['hits'].idxmax()
         mode = pdfDF.loc[powerInd, 'power']
         modesDF.loc[len(modesDF)] = [frequency, mode]
 
-        indWithHits = pdfDF['hits'][pdfDF['freq'] == frequency].dropna().index
+        indWithHits = pdfDF['hits'][pdfDF['frequency'] == frequency].dropna().index
         values = pdfDF['power'][indWithHits].sort_values().reset_index()
         maxVal = values['power'].iloc[-1]
         minVal = values['power'][0]
 
         maxsDF.loc[len(maxsDF)] = [frequency, maxVal]
         minsDF.loc[len(minsDF)] = [frequency, minVal]  
-        
+    
     pdfDF['percent'] = pdfDF['hits'] / pdfDF['total'] * 100 
+    printDF = pdfDF[['frequency', 'power','hits']]  
+    sortedDF = printDF.sort_values(['frequency','power'])
     
     if 'text' in concierge.pdf_type:
-        # Write to file
-        printDF = pdfDF[['freq', 'power','hits']]  
-        subFolder = '%s/%s/%s/' % (concierge.pdf_dir, sncl.split('.')[0],  sncl.split('.')[1])
-        if not os.path.isdir(subFolder):
-            logger.info("pdf_dir %s does not exist, creating directory" % subFolder)
-            os.makedirs(subFolder)
-
-        if str(start) != str(end):      
-            filename = sncl + '.' + str(start) + '_' + str(end) + '_PDF.csv'
-        else:
-            filename = sncl + '.' + str(start) + '_PDF.csv'
-        filepath = subFolder + filename
-
         
-        logger.info('Writing PDF values to %s' % (filepath))
+        if concierge.output == "csv":
+            logger.info("Write to csv")
+            # Write to file
+            
+            subFolder = '%s/%s/%s/' % (concierge.pdf_dir, sncl.split('.')[0],  sncl.split('.')[1])
+            if not os.path.isdir(subFolder):
+                logger.info("pdf_dir %s does not exist, creating directory" % subFolder)
+                os.makedirs(subFolder)
+    
+            if str(start) != str(end):      
+                filename = sncl + '.' + str(start) + '_' + str(end) + '_PDF.csv'
+            else:
+                filename = sncl + '.' + str(start) + '_PDF.csv'
+            filepath = subFolder + filename
+    
+            
+            logger.info('Writing PDF values to %s' % (filepath))
+            
+            # start with header, mimicing output from http://service.iris.edu/mustang/noise-pdf/1/query?
+            hdr = ('#\n' 
+                  '# start=%s\n'
+                  '# end=%s\n'
+                  '#\n'
+                  '#\n' % (starttime,endtime))
         
-        # start with header, mimicing output from http://service.iris.edu/mustang/noise-pdf/1/query?
-        hdr = ('#\n' 
-              '# start=%s\n'
-              '# end=%s\n'
-              '#\n'
-              '#' % (starttime,endtime))
-              
-        with open(filepath, mode='w') as f:
-            f.write(hdr)
-        sortedDF = printDF.sort_values(['freq','power'])
-
-        utils.write_pdf_df(sortedDF, filepath, 'a', sigfigs=concierge.sigfigs)
+            
+            with open(filepath, mode='w') as f:
+                f.write(hdr)
+            utils.write_pdf_df(sortedDF, filepath, 'a', sncl, starttime, endtime, concierge, sigfigs=concierge.sigfigs)
         
+        elif concierge.output == "db":
+            logger.info('Writing PDF values to %s' % concierge.db_name)
+            utils.write_pdf_df(sortedDF, "unused", "unused", sncl, starttime, endtime, concierge, sigfigs=concierge.sigfigs)
+            
         
 
     return pdfDF, modesDF, maxsDF, minsDF
@@ -153,14 +186,14 @@ def plot_PDF(sncl, starttime, endtime, pdfDF, modesDF, maxsDF, minsDF, concierge
         
     
     powers = sorted(range(p1,p2+1), reverse=True)
-    freqs = sorted(pdfDF['freq'].unique(),reverse = True)
+    freqs = sorted(pdfDF['frequency'].unique(),reverse = True)
     plotDF = pd.DataFrame(0,index=powers,columns=freqs)
 
     # Create a new dataframe for plotting: rows are powers, columns are periods, value is percent of hits
     nonZeroFreqs=[]
     for power in powers:
         for freq in freqs:
-            value = pdfDF[(pdfDF['freq']==freq) & (pdfDF['power']== power)]['percent'].values
+            value = pdfDF[(pdfDF['frequency']==freq) & (pdfDF['power']== power)]['percent'].values
             try:
                 plotDF.loc[power,freq] = value[0]
                 if value[0] != 0:
@@ -257,17 +290,17 @@ def plot_PDF(sncl, starttime, endtime, pdfDF, modesDF, maxsDF, minsDF, concierge
     plt.imshow(plotList, cmap=cmap,  vmin=0, vmax=30, aspect=.4, interpolation='bilinear')
 
     # Add mode
-    xmodes = [freqs.index(freqPos) for freqPos in modesDF['Freq'].tolist()]
+    xmodes = [freqs.index(freqPos) for freqPos in modesDF['Frequency'].tolist()]
     ymodes = [powers.index(freqPos) for freqPos in modesDF['Power'].tolist()]
     hmode, = plt.plot(xmodes, ymodes, c='k', linewidth=1, label="mode")
     
     # Add min
-    xmins = [freqs.index(freqPos) for freqPos in minsDF['Freq'].tolist()]
+    xmins = [freqs.index(freqPos) for freqPos in minsDF['Frequency'].tolist()]
     ymins = [powers.index(freqPos) for freqPos in minsDF['Power'].tolist()]
     hmin, = plt.plot(xmins, ymins, c='r', linewidth=1, label="min")
 
     # Add max
-    xmaxs = [freqs.index(freqPos) for freqPos in maxsDF['Freq'].tolist()]
+    xmaxs = [freqs.index(freqPos) for freqPos in maxsDF['Frequency'].tolist()]
     ymaxs = [powers.index(freqPos) for freqPos in maxsDF['Power'].tolist()]
     hmax, = plt.plot(xmaxs, ymaxs, c='b', linewidth=1, label="max")
     
@@ -319,7 +352,7 @@ def plot_PDF(sncl, starttime, endtime, pdfDF, modesDF, maxsDF, minsDF, concierge
         filename = sncl + '.' + str(start) + '_PDF.png'
     filepath = subFolder + filename
     
-    logger.info('Saving PDF plot to %s' % (filepath))
+    logger.debug('Saving PDF plot to %s' % (filepath))
     plt.savefig(filepath)
 
 

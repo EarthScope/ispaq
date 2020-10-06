@@ -21,6 +21,8 @@ from future.utils import native_str
 from obspy.core.util.base import NamedTemporaryFile
 
 
+
+
 def getEvalresp(filename, network, station, location, channel, starttime,
                 minfreq, maxfreq, nfreq, units, output, spacing, debug=False):
     """
@@ -76,16 +78,18 @@ def getEvalresp(filename, network, station, location, channel, starttime,
     # parameters translated to Obspy-style and ordering
     eval_tuple = evalresp(minfreq, maxfreq, nfreq, filename, starttime, station, channel,
                     network, location, units, debug, output, spacing)
+    
     eval_df = pd.DataFrame.from_records(eval_tuple)
     eval_df = pd.DataFrame.transpose(eval_df)
+
     # add the column headers to the data frame
     if (output == "FAP"):
         eval_df.columns = ['freq','amp','phase']  # name the DF columns
         # to be comparative to ws/evalresp behavior, we must restrict the phase values
         # to 7 significant digits
-        eval_df.phase = map(lambda x: float('{:.7g}'.format(x)),eval_df.phase)
-        eval_df.freq = map(lambda x: float('{:.7g}'.format(x)),eval_df.freq)
-        eval_df.amp = map(lambda x: float('{:.7g}'.format(x)),eval_df.amp)
+        eval_df.phase = list(map(lambda x: float('{:.7g}'.format(x)),eval_df.phase))
+        eval_df.freq = list(map(lambda x: float('{:.7g}'.format(x)),eval_df.freq))
+        eval_df.amp = list(map(lambda x: float('{:.7g}'.format(x)),eval_df.amp))
     else:
         eval_df.columns = ['freq','real','imag']
     
@@ -147,6 +151,8 @@ def evalresp(sfft, efft, nfft, filename, date, station='*', channel='*',
     :rtype: :class:`numpy.ndarray` complex128
     :return: Frequency response from SEED RESP-file of length nfft
     """
+
+
     if isinstance(filename, (str, native_str)):
         with open(filename, 'rb') as fh:
             data = fh.read()

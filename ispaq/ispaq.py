@@ -14,21 +14,25 @@ import datetime
 import logging
 import numpy as np
 import subprocess
+from _ast import Try
+from numpy.random import sample
 
-__version__ = "2.0.2"
+__version__ = "3.0.0"
 
 # dictionary of currently defined ISPAQ metric groups and business logic
 # for comparison with R package IRISMustangMetrics/ISPAQUtils.R json
 
 def currentispaq():
-    groups = {'simple': ['basicStats','gaps','numSpikes','STALTA','stateOfHealth'],
+    # The metrics that are inside of each of these (ex basicStats) is defined in ISPAQUtils.R and returned in the function getMetricFunctionMetadata
+    groups = {'simple': ['basicStats','gaps','numSpikes','STALTA','stateOfHealth','maxRange'],
               'SNR': ['SNR'],
               'PSD': ['PSD','PSDText','PDF'],
               'crossCorrelation': ['crossCorrelation'],
               'crossTalk': ['crossTalk'],
               'orientationCheck': ['orientationCheck'],
               'pressureCorrelation': ['pressureCorrelation'],
-              'transferFunction': ['transferFunction'] }
+              'transferFunction': ['transferFunction'],
+              'sampleRate': ['sampleRateResp','sampleRateChannel'] }
     return groups
 
 def main():
@@ -46,7 +50,6 @@ def main():
     # Parse arguments ----------------------------------------------------------
     
     epilog_text='If no preference file is specified and the default file ./preference_files/default.txt cannot be found:\n--csv_dir, pdf_dir, and psd_dir default to "."\n--sncl_format defaults to "N.S.C.L"\n--sigfigs defaults to "6"\n--pdf_type defaults to "plot,text"\n--pdf_interval defaults to "aggregated"\n--plot_include defaults to "colorbar,legend"'
-    #parser = argparse.ArgumentParser(description=__doc__.strip(),formatter_class=lambda prog: argparse.HelpFormatter(prog,max_help_position=29, width=82))
     parser = argparse.ArgumentParser(description=" ".join(["ISPAQ version",__version__]), epilog=epilog_text,formatter_class=lambda prog: argparse.RawTextHelpFormatter(prog,max_help_position=35,width=82))
     parser._optionals.title = "single arguments"
 
@@ -70,10 +73,14 @@ def main():
                         help='FDSN webservice or path to QuakeML file')
     prefs.add_argument('--resp_dir', required=False,
                         help='path to directory with RESP files')
+    prefs.add_argument('--output', required=False,
+                       help='write metrics to csv file (csv) or sqlite database file (db). Options: csv, db')
+    prefs.add_argument('--db_name', required=False,
+                       help='name of sqlite database file, if output=csv')
     prefs.add_argument('--csv_dir', required=False,
-                        help='directory to write generated metrics .csv files')
+                        help='directory to write generated metrics .csv files, if output=csv')
     prefs.add_argument('--psd_dir', required=False,
-                        help='directory to write/read existing PSD .csv files')
+                        help='directory to write/read existing PSD .csv files, if output=csv')
     prefs.add_argument('--pdf_dir', required=False,
                         help='directory to write generated PDF files')
     prefs.add_argument('--pdf_type', required=False,
@@ -95,6 +102,8 @@ def main():
                         help='append to TRANSCRIPT file rather than overwriting')
     parser.add_argument('-V', '--version', action='version',
                         version='%(prog)s ' + __version__)
+    parser.add_argument('-I', '--install-r',action='store_true', default=False,
+                        help='install CRAN IRIS Mustang packages, and exit')
     parser.add_argument('-U', '--update-r', action='store_true', default=False,
                         help='check for and install newer CRAN IRIS Mustang packages \nand/or update required conda packages, and exit')
     parser.add_argument('-L', '--list-metrics', action='store_true', default=False,
@@ -103,7 +112,7 @@ def main():
 
     try:
         args = parser.parse_args(sys.argv[1:])
-    except IOError, msg:
+    except IOError as msg:
         print(str(msg))
         parser.error(str(msg))   # we may encounter an error accessing the indicated file
         raise SystemExit
@@ -139,14 +148,19 @@ def main():
     import obspy
     from distutils.version import StrictVersion
     from . import updater 
-    from rpy2 import robjects 
+    import rpy2.robjects as ro
     from rpy2 import rinterface 
-    from rpy2.robjects import pandas2ri  
+    from rpy2.robjects import pandas2ri
+    from rpy2.robjects.packages import importr
+    from rpy2.robjects.conversion import localconverter
 
     IRIS_packages = ['seismicRoll','IRISSeismic','IRISMustangMetrics']
 
-    r_installed = robjects.r("installed.packages()")
-    installed_names = pandas2ri.ri2py(r_installed.rownames).tolist()
+    r_installed = ro.r("installed.packages()")
+
+    with localconverter(ro.default_converter + pandas2ri.converter):
+        installed_names = ro.conversion.rpy2py(r_installed.rownames).tolist()
+
     flag=0
     for package in IRIS_packages:
         if package not in installed_names:
@@ -161,7 +175,7 @@ def main():
     
     # We can't use required=True in argpase because folks should be able to type only -U
     
-    if not (args.update_r or args.list_metrics):
+    if not (args.update_r or args.install_r or args.list_metrics):
         # metric sets
         if args.metrics is None:
             logger.critical('argument -M/--metrics is required to run metrics')
@@ -175,18 +189,24 @@ def main():
     
     # Handle R package upgrades ------------------------------------------------
 
-    _R_install_packages = robjects.r('utils::install.packages')
+    _R_install_packages = ro.r('utils::install.packages')
+
+    if args.install_r:
+        logger.info('(Re)installing IRIS R packages from CRAN')
+        updater.install_IRIS_packages(IRIS_packages,logger)
+        sys.exit(0)
 
     if args.update_r:
         logger.info('Checking for recommended conda packages...')
-        x=robjects.r("packageVersion('base')")
+        x=ro.r("packageVersion('base')")
         x_str = ".".join(map(str,np.array(x.rx(1)).flatten()))
-        if ((StrictVersion(obspy.__version__) < StrictVersion("1.1.1")) 
-                or (StrictVersion(x_str) < StrictVersion("3.5.1")) ):
+        if ((StrictVersion(obspy.__version__) < StrictVersion("1.2.2")) 
+                 or (StrictVersion(x_str) < StrictVersion("3.5.1")) ):
+            logger.debug('Obspy 1.2.2 not found')
             logger.info('Updating conda packages...')
-            conda_str = ("conda install -c conda-forge pandas=0.23.4 obspy=1.1.1 r=3.5.1 r-base=3.5.1 r-devtools=2.0.1" +
-                        " r-rcurl=1.95_4.11 r-rcurl=1.95_4.11 r-xml=3.98_1.16 r-dplyr=0.7.6 r-quadprog=1.5_5 r-signal=0.7_6" +
-                        " r-pracma=2.1.5 rpy2=2.8.6 r-stringr=1.3.1")
+            conda_str = ("conda update -c conda-forge pandas=0.25.3 obspy=1.2.2 r=3.6.0 r-base=3.6.0 r-devtools=2.0.1" +
+                    " r-rcurl=1.95_4.11 r-xml=3.98_1.16 r-dplyr=0.8.4 r-quadprog=1.5_5 r-signal=0.7_6" +
+                    " r-pracma=2.1.5 rpy2=3.1.0 r-stringr=1.3.1")
             subprocess.call(conda_str, shell=True)
             logger.info('(Re)installing IRIS R packages from CRAN')
             try:
@@ -229,7 +249,7 @@ def main():
 
     # Load additional modules --------------------------------------------------
 
-    # These are loaded here so that asking for --verion or --help is bogged down
+    # These are loaded here so that asking for --version or --help is not bogged down
     # by the slow-to-load modules that require matplotlib
 
     # ISPAQ modules
@@ -248,6 +268,7 @@ def main():
     from .crossCorrelation_metrics import crossCorrelation_metrics
     from .orientationCheck_metrics import orientationCheck_metrics
     from .transferFunction_metrics import transferFunction_metrics
+    from .sampleRate_metrics import sampleRate_metrics
 
     if (StrictVersion(obspy.__version__) < StrictVersion("1.1.0")):
         print("Please update ObsPy version " + str(obspy.__version__) + " to version 1.1.0")
@@ -308,8 +329,11 @@ def main():
             else:
                 try:
                     filepath = concierge.output_file_base + "_simpleMetrics.csv"
-                    logger.info('Writing simple metrics to %s' % filepath)
-                    utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
+                    if concierge.output == 'csv':
+                        logger.info('Writing simple metrics to %s' % filepath)
+                    elif concierge.output == 'db':
+                        logger.info('Writing simple metrics to %s' % concierge.db_name)
+                    utils.write_simple_df(df, filepath, concierge, sigfigs=concierge.sigfigs)
                 except Exception as e:
                     logger.debug(e)
                     logger.error("Error writing 'simple' metric results")
@@ -319,6 +343,29 @@ def main():
             logger.debug(e)
             logger.error("Error calculating 'simple' metrics")
 
+    
+    if 'sampleRate' in concierge.logic_types:
+        logger.debug('Inside sampleRate business logic ...')
+        try:
+            df = sampleRate_metrics(concierge)
+            if df is None:
+                logger.info('No sampleRate metrics were calculated')
+            else:
+                try:
+                    filepath = concierge.output_file_base + "_sampleRateMetrics.csv"
+                    if concierge.output == 'csv':
+                        logger.info('Writing sampleRate metrics to %s' % filepath)
+                    elif concierge.output == 'db':
+                        logger.info('Writing sampleRate metrics to %s' % concierge.db_name)
+                    utils.write_simple_df(df, filepath, concierge, sigfigs=concierge.sigfigs)
+                except Exception as e:
+                    logger.debug(e)
+                    logger.error("Error writing 'sampleRate' metric results")
+        except NoAvailableDataError as e:
+            logger.info("No data available for 'sampleRate' metrics")
+        except Exception as e:
+            logger.debug(e)
+            logger.error("Error calculating 'sampleRate' metrics")
 
     # Generate SNR Metrics -----------------------------------------------------
 
@@ -331,8 +378,12 @@ def main():
             else:
                 try:
                     filepath = concierge.output_file_base + "_SNRMetrics.csv"
-                    logger.info('Writing SNR metrics to %s' % filepath)
-                    utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
+                    
+                    if concierge.output == 'csv':
+                        logger.info('Writing SNR metrics to %s' % filepath)
+                    elif concierge.output == 'db':
+                        logger.info('Writing SNR metrics to %s' % concierge.db_name)
+                    utils.write_simple_df(df, filepath, concierge, sigfigs=concierge.sigfigs)
                 except Exception as e:
                     logger.debug(e)
                     logger.error("Error writing 'SNR' metric results")
@@ -357,8 +408,11 @@ def main():
                 try:
                     # Write out the metrics
                     filepath = concierge.output_file_base + "_PSDMetrics.csv"
-                    logger.info('Writing PSD metrics to %s' % filepath)
-                    utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
+                    if concierge.output == 'csv':
+                        logger.info('Writing PSD metrics to %s' % filepath)
+                    elif concierge.output == 'db':
+                        logger.info('Writing PSD metrics to %s' % concierge.db_name)
+                    utils.write_simple_df(df, filepath, concierge, sigfigs=concierge.sigfigs)
                 except Exception as e:
                     logger.debug(e)
                     logger.error("Error writing 'PSD' metric results")
@@ -380,8 +434,11 @@ def main():
             else:
                 try:
                     filepath = concierge.output_file_base + "_crossTalkMetrics.csv"
-                    logger.info('Writing crossTalk metrics to %s' % filepath)
-                    utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
+                    if concierge.output == 'csv':
+                        logger.info('Writing crossTalk metrics to %s' % filepath)
+                    elif concierge.output == 'db':
+                        logger.info('Writing crossTalk metrics to %s' % concierge.db_name)
+                    utils.write_simple_df(df, filepath, concierge, sigfigs=concierge.sigfigs)
                 except Exception as e:
                     logger.debug(e)
                     logger.error("Error writing 'crossTalk' metric results")
@@ -403,8 +460,11 @@ def main():
             else:
                 try:
                     filepath = concierge.output_file_base + "_pressureCorrelationMetrics.csv"
-                    logger.info('Writing pressureCorrelation metrics to %s' % filepath)
-                    utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
+                    if concierge.output == 'csv':
+                        logger.info('Writing pressureCorrelation metrics to %s' % filepath)
+                    elif concierge.output == 'db':
+                        logger.info('Writing pressureCorrelation metrics to %s' % concierge.db_name)
+                    utils.write_simple_df(df, filepath, concierge, sigfigs=concierge.sigfigs)
                 except Exception as e:
                     logger.debug(e)
                     logger.error("Error writing 'pressureCorrelation' metric results")
@@ -426,8 +486,11 @@ def main():
             else:
                 try:
                     filepath = concierge.output_file_base + "_crossCorrelationMetrics.csv"
-                    logger.info('Writing crossCorrelation metrics to %s' % filepath)
-                    utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
+                    if concierge.output == 'csv':
+                        logger.info('Writing crossCorrelation metrics to %s' % filepath)
+                    elif concierge.output == 'db':
+                        logger.info('Writing crossCorrelation metrics to %s' % concierge.db_name)
+                    utils.write_simple_df(df, filepath, concierge, sigfigs=concierge.sigfigs)
                 except Exception as e:
                     logger.debug(e)
                     logger.error("Error writing 'crossCorrelation' metric results")
@@ -449,8 +512,11 @@ def main():
             else:
                 try:
                     filepath = concierge.output_file_base + "_orientationCheckMetrics.csv"
-                    logger.info('Writing orientationCheck metrics to %s' % filepath)
-                    utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
+                    if concierge.output == 'csv':
+                        logger.info('Writing orientationCheck metrics to %s' % filepath)
+                    elif concierge.output == 'db':
+                        logger.info('Writing orientationCheck metrics to %s' % concierge.db_name)
+                    utils.write_simple_df(df, filepath, concierge, sigfigs=concierge.sigfigs)
                 except Exception as e:
                     logger.debug(e)
                     logger.error("Error writing 'orientationCheck' metric results")
@@ -472,8 +538,11 @@ def main():
             else:
                 try:
                     filepath = concierge.output_file_base + "_transferMetrics.csv"
-                    logger.info('Writing transfer metrics to %s' % filepath)
-                    utils.write_simple_df(df, filepath, sigfigs=concierge.sigfigs)
+                    if concierge.output == 'csv':
+                        logger.info('Writing transfer metrics to %s' % filepath)
+                    elif concierge.output == 'db':
+                        logger.info('Writing transferFunction metrics to %s' % concierge.db_name)
+                    utils.write_simple_df(df, filepath, concierge, sigfigs=concierge.sigfigs)
                 except Exception as e:
                     logger.debug(e)
                     logger.error("Error writing 'transferFunction' metric results")

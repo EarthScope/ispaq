@@ -20,6 +20,10 @@ from . import irisseismic
 from . import irismustangmetrics
 
 from obspy import UTCDateTime
+from rpy2.robjects import pandas2ri
+import rpy2.robjects as ro
+from rpy2.robjects import numpy2ri
+
 
 def orientationCheck_metrics(concierge):
     """
@@ -73,9 +77,10 @@ def orientationCheck_metrics(concierge):
 
     logger.info('Calculating orientationCheck metrics for %d events' % events.shape[0])
 
+
     for (index, event) in events.iterrows():
 
-        logger.info('%03d Magnitude %3.1f event: %s %sT%s:%s:%sZ' % (index, event.magnitude, event.eventLocationName, event.time.date, str(event.time.hour).zfill(2), str(event.time.minute).zfill(2), str(event.time.second).zfill(2)))
+        logger.info('Magnitude %3.1f event: %s %sT%s:%s:%sZ' % (event.magnitude, event.eventLocationName, event.time.date, str(event.time.hour).zfill(2), str(event.time.minute).zfill(2), str(event.time.second).zfill(2)))
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
@@ -154,10 +159,11 @@ def orientationCheck_metrics(concierge):
 
         # ----- All available SNCLs -------------------------------------------------
 
-        for sn_lId in sorted(list(set(sn_lIds))):
+        for idx, sn_lId in enumerate(sorted(list(set(sn_lIds)))):
 
-            logger.info('Calculating orientationCheck metrics for %s' % (sn_lId))
+            logger.info('%03d Calculating orientationCheck metrics for %s' % (idx, sn_lId))
 
+            
             sn_lAvailability = availability[availability.sn_lId == sn_lId]
             
             if sn_lAvailability.shape[0] != 3:
@@ -178,10 +184,14 @@ def orientationCheck_metrics(concierge):
             ZChannel = sn_lAvailability[Z_mask].iloc[0]
     
             # Calculate various distances and surface travel time
+            numpy2ri.activate()
+#             pandas2ri.activate()
             distaz = irisseismic.getDistaz(event.latitude,event.longitude,ZChannel.latitude,ZChannel.longitude)
             surfaceDistance = irisseismic.surfaceDistance(event.latitude,event.longitude,ZChannel.latitude,ZChannel.longitude)[0]
             surfaceTravelTime = surfaceDistance / 4.0 # km  / (km/sec)
-
+#             pandas2ri.deactivate()
+            numpy2ri.deactivate()
+            
 
             # Get the data -----------------------------------------
         
@@ -297,7 +307,7 @@ def orientationCheck_metrics(concierge):
                 R_data = pd.Series(utils.get_slot(stR,'data'))
                 Srr[angle] = sum(R_data * R_data)
                 Szr[angle] = sum(HZ_data * R_data)
-                
+              
             # an error in the loop means we skip this SNL, go to next in loop
             if not rotateOK:
                 continue
@@ -306,12 +316,13 @@ def orientationCheck_metrics(concierge):
             Czr = Szr / (Szz*Srr).pow(.5)
             C_zr = Szr / Szz
             
+
             maxCzr = Czr.max(skipna=True)
             maxC_zr = C_zr.max(skipna=True)
-        
+
             angleAtMaxCzr = int( list(Czr[Czr == maxCzr].index)[0] )
             angleAtMaxC_zr = int( list(C_zr[C_zr == maxC_zr].index)[0] )
-        
+
             azimuth_R = angleAtMaxC_zr % 360
             azimuth_T = (azimuth_R + 90) % 360
 
@@ -333,10 +344,10 @@ def orientationCheck_metrics(concierge):
             # max_Czr
             # max_C_zr
             # magnitude
-        
+
             azimuth_Y_obs = (float(distaz.backAzimuth) - azimuth_R) % 360
             azimuth_X_obs = (azimuth_Y_obs + 90.0) % 360
-        
+
             elementNames = ["azimuth_R","backAzimuth","azimuth_Y_obs","azimuth_X_obs","azimuth_Y_meta","azimuth_X_meta","max_Czr","max_C_zr","magnitude"]
             elementValues = [azimuth_R, float(distaz.backAzimuth), azimuth_Y_obs, azimuth_X_obs,
                                float(Channel_1.azimuth), float(Channel_2.azimuth), maxCzr, maxC_zr, float(event.magnitude)]

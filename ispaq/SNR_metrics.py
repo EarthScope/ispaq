@@ -66,7 +66,7 @@ def SNR_metrics(concierge):
     logger.info('Calculating SNR metrics for %d events.' % (events.shape[0]))
 
     for (index, event) in events.iterrows():
-        logger.info('%03d Magnitude %3.1f Time %s event: %s' % (index, event.magnitude, event.time.strftime("%Y-%m-%dT%H:%M:%S"), event.eventLocationName))
+        logger.info('%03d Magnitude %3.1f Time %s event: %s' % (int(index), event.magnitude, event.time.strftime("%Y-%m-%dT%H:%M:%S"), event.eventLocationName))
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
@@ -176,7 +176,7 @@ def SNR_metrics(concierge):
                     logger.info('Skipping %s because it is missing data in the SNR window' % (av.snclId)) 
                     continue
                 else:
-                    logger.info('Calculating SNR metrics for %s' % (av.snclId))
+                    logger.info('%03d Calculating SNR metrics for %s' % (index, av.snclId))
                     try:
                         df = irismustangmetrics.apply_simple_metric(r_stream, 'SNR', algorithm="splitWindow", windowSecs=windowSecs)
                         dataframes.append(df)

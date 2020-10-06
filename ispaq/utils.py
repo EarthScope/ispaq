@@ -14,6 +14,9 @@ import math
 import os
 import numpy as np
 import pandas as pd
+import sqlite3
+from sqlite3 import Error
+import datetime
 
 from obspy import UTCDateTime
 
@@ -26,7 +29,217 @@ class EvalrespException(Exception):
 
 # Utility functions ------------------------------------------------------------
 
-def write_simple_df(df, filepath, sigfigs=6):
+def initialize_general_database_table(dbname, tablename, concierge):
+    conn = sqlite3.connect(dbname)
+    create_table_sql = """ CREATE TABLE IF NOT EXISTS """ + tablename + """ (
+                            target text  NOT NULL,
+                            value float NOT NULL,
+                            start datetime  NOT NULL,
+                            end datetime NOT NULL,
+                            lddate datetime DATETIME DEFAULT CURRENT_TIMESTAMP,
+                            UNIQUE(target, start, end)
+                        ); """
+
+    try:
+        c = conn.cursor()
+        c.execute(create_table_sql)
+    except Error as e:
+        concierge.logger.error(e)
+    conn.close()
+
+
+def initialize_polcheck_database_table(dbname, concierge):
+    conn = sqlite3.connect(dbname)
+    create_table_sql = """ CREATE TABLE IF NOT EXISTS polarity_check (
+                            target text  NOT NULL,
+                            snclq2 text NOT NULL,
+                            value float NOT NULL,
+                            start datetime  NOT NULL,
+                            end datetime NOT NULL,
+                            lddate datetime DATETIME DEFAULT CURRENT_TIMESTAMP,
+                            UNIQUE(target, start, end)
+                        ); """
+
+    try:
+        c = conn.cursor()
+        c.execute(create_table_sql)
+    except Error as e:
+        concierge.logger.error(e)
+    conn.close()
+
+def initialize_trfunc_database_table(dbname, concierge):
+    conn = sqlite3.connect(dbname)
+    create_table_sql = """ CREATE TABLE IF NOT EXISTS transfer_function (
+                            target text  NOT NULL,
+                            gain_ratio float NOT NULL,
+                            phase_diff float NOT NULL,
+                            ms_coherence float NOT NULL,
+                            start datetime  NOT NULL,
+                            end datetime NOT NULL,
+                            lddate datetime DATETIME DEFAULT CURRENT_TIMESTAMP,
+                            UNIQUE(target, start, end)
+                        ); """
+
+    try:
+        c = conn.cursor()
+        c.execute(create_table_sql)
+    except Error as e:
+        concierge.logger.error(e)
+    conn.close()
+    
+def initialize_orcheck_database_table(dbname, concierge):
+    conn = sqlite3.connect(dbname)
+    create_table_sql = """ CREATE TABLE IF NOT EXISTS orientation_check (
+                            target text  NOT NULL,
+                            azimuth_R float NOT NULL,
+                            backAzimuth float NOT NULL,
+                            azimuth_Y_obs float NOT NULL,
+                            azimuth_X_obs float NOT NULL,
+                            azimuth_Y_meta float NOT NULL,
+                            azimuth_X_meta float NOT NULL,
+                            max_Czr float NOT NULL,
+                            max_C_zr float NOT NULL,
+                            magnitude float NOT NULL,
+                            start datetime  NOT NULL,
+                            end datetime NOT NULL,
+                            lddate datetime DATETIME DEFAULT CURRENT_TIMESTAMP,
+                            UNIQUE(target, start, end)
+                        ); """
+    try:
+        c = conn.cursor()
+        c.execute(create_table_sql)
+    except Error as e:
+        concierge.logger.error(e)
+    conn.close()
+
+    
+def initialize_psd_database_table(dbname, concierge):
+    conn = sqlite3.connect(dbname)
+    create_table_sql = """ CREATE TABLE IF NOT EXISTS psd_day (
+                            target text  NOT NULL,
+                            frequency float NOT NULL,
+                            power float NOT NULL,
+                            start datetime  NOT NULL,
+                            end datetime NOT NULL,
+                            lddate datetime DATETIME DEFAULT CURRENT_TIMESTAMP,
+                            UNIQUE(target, frequency, start, end)
+                        ); """
+
+    try:
+        c = conn.cursor()
+        c.execute(create_table_sql)
+    except Error as e:
+        concierge.logger.error(e)
+    conn.close()
+
+def initialize_pdf_database_table(dbname, concierge):
+    conn = sqlite3.connect(dbname)
+    create_table_sql = """ CREATE TABLE IF NOT EXISTS pdf (
+                            target text  NOT NULL,
+                            frequency float NOT NULL,
+                            power float NOT NULL,
+                            hits float NOT NULL,
+                            start datetime  NOT NULL,
+                            end datetime NOT NULL,
+                            lddate datetime DATETIME DEFAULT CURRENT_TIMESTAMP,
+                            UNIQUE(target, frequency, power, start, end)
+                        ); """
+
+    try:
+        c = conn.cursor()
+        c.execute(create_table_sql)
+    except Error as e:
+        concierge.logger.error(e)
+    conn.close()
+
+
+def insert_general_database_table(dbname, tablename, row):
+    conn = sqlite3.connect(dbname)
+    insert_sql = "INSERT or REPLACE INTO "  + tablename + " (target, value, start, end) VALUES (?, ?, ?, ?)"
+    newRow = (row['target'], row['value'], row['start'],  row['end']);
+    
+    cur = conn.cursor()
+    cur.execute(insert_sql, newRow)
+    conn.commit()
+    conn.close()
+
+def insert_polcheck_database_table(dbname, row):
+    conn = sqlite3.connect(dbname)
+    insert_sql = "INSERT or REPLACE INTO polarity_check (target, snclq2, value, start, end) VALUES (?, ?, ?, ?, ?)"
+    newRow = (row['target'], row['snclq2'], row['value'], row['start'],  row['end']);
+    
+    cur = conn.cursor()
+    cur.execute(insert_sql, newRow)
+    conn.commit()
+    conn.close()
+    
+def insert_trfunc_database_table(dbname, row):
+    conn = sqlite3.connect(dbname)
+    insert_sql = "INSERT or REPLACE INTO transfer_function (target, gain_ratio, phase_diff, ms_coherence, start, end) VALUES (?, ?, ?, ?, ?, ?)"
+    newRow = (row['target'], row['gain_ratio'], row['phase_diff'], row['ms_coherence'], row['start'],  row['end']);
+    
+    cur = conn.cursor()
+    cur.execute(insert_sql, newRow)
+    conn.commit()
+    conn.close()
+    
+def insert_orcheck_database_table(dbname, row):
+    conn = sqlite3.connect(dbname)
+    insert_sql = """INSERT or REPLACE INTO orientation_check (target, azimuth_R, backAzimuth, azimuth_Y_obs, azimuth_X_obs, azimuth_Y_meta,
+                     azimuth_X_meta, max_Czr, max_C_zr, magnitude, start, end) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+#     newRow = (row['target'], row['gain_ratio'], row['phase_diff'], row['ms_coherence'], row['start'],  row['end']);
+    newRow = (row['target'], row['azimuth_R'], row['backAzimuth'], row['azimuth_Y_obs'], row['azimuth_X_obs'], row['azimuth_Y_meta'], row['azimuth_X_meta'], row['max_Czr'], row['max_C_zr'], row['magnitude'], row['start'], row['end'])
+    
+    cur = conn.cursor()
+    cur.execute(insert_sql, newRow)
+    conn.commit()
+    conn.close()
+    
+
+    
+def insert_psd_database_table(dbname, row):
+    conn = sqlite3.connect(dbname)
+    insert_sql = "INSERT or REPLACE INTO psd_day (target, frequency, power, start, end) VALUES (?, ?, ?, ?, ?)"
+    newRow = (row['target'], row['frequency'], row['power'], row['starttime'],  row['endtime']);
+
+    cur = conn.cursor()
+    cur.execute(insert_sql, newRow)
+    conn.commit()
+    conn.close()
+ 
+ 
+ 
+def insert_pdf_database_table(dbname, row, target, starttime, endtime):
+    conn = sqlite3.connect(dbname)
+    insert_sql = "INSERT or REPLACE INTO pdf (target, frequency, power, hits, start, end) VALUES (?, ?, ?, ?, ?, ?)"
+    newRow = (target, row['frequency'],row['power'], row['hits'], starttime, endtime)
+     
+    cur = conn.cursor()
+    cur.execute(insert_sql, newRow)
+    conn.commit()
+    conn.close()
+     
+ 
+def retrieve_psd_unique_targets(dbname, sncl_pattern, starttime, endtime, logger):
+
+    conn = sqlite3.connect(dbname)
+    select_sql = "SELECT DISTINCT target from psd_day WHERE target like '" + sncl_pattern +"'"
+    if not starttime == "":
+        select_sql = select_sql + " AND start >= '" + str(starttime).split('.')[0] + "'"
+    if not endtime == "":
+        select_sql = select_sql + " AND end <= '" + str(endtime).split('.')[0] + "'"
+        
+    select_sql = select_sql + ";"
+    
+    cur = conn.cursor()
+    cur.execute(select_sql)
+    records = [ str(i).strip('()').strip(',').strip("'") for i in cur.fetchall()]
+    
+    return records
+    
+
+def write_simple_df(df, filepath, concierge, sigfigs=6):
     """
     Write a pretty dataframe with appropriate significant figures to a .csv file.
     :param df: Dataframe of simpleMetrics.
@@ -34,6 +247,11 @@ def write_simple_df(df, filepath, sigfigs=6):
     :param sigfigs: Number of significant figures to use.
     :return: status
     """
+    
+    output = concierge.output
+    dbname = concierge.db_name
+
+    
     if df is None:
         raise("Dataframe of simple metrics does not exist.")
     # Sometimes 'starttime' and 'endtime' get converted from UTCDateTime to float and need to be
@@ -52,9 +270,28 @@ def write_simple_df(df, filepath, sigfigs=6):
     extra_columns = sorted(list( set(original_columns).difference(set(columns)) ))
     extra_columns.remove('qualityFlag')
     columns.extend(extra_columns)
-    # Write out .csv file
-    pretty_df[columns].to_csv(filepath, index=False)
     
+
+    # Write out to database or .csv file
+    if output == 'csv':
+        pretty_df[columns].to_csv(filepath, index=False)
+    elif output == 'db':
+        for a,row in pretty_df.iterrows():
+            tablename = row['metricName']
+
+            if tablename == 'transfer_function':
+                initialize_trfunc_database_table(dbname, concierge)
+                insert_trfunc_database_table(dbname, row)
+            elif tablename == 'orientation_check':
+                initialize_orcheck_database_table(dbname, concierge)
+                insert_orcheck_database_table(dbname, row)
+            elif tablename == 'polarity_check':
+                initialize_polcheck_database_table(dbname, concierge)
+                insert_polcheck_database_table(dbname, row)
+            else:
+                initialize_general_database_table(dbname, tablename, concierge)
+                insert_general_database_table(dbname, tablename, row)
+
     # No return value
 
 
@@ -70,12 +307,13 @@ def format_simple_df(df, sigfigs=6):
     * Round the 'value' column to the specified number of significant figures.
     * Convert 'starttime' and 'endtime' to python 'date' objects.
     """
+    
     if 'value' in df.columns:
         # convert values to float
         df.value = df.value.astype(float)
         format_string = "." + str(sigfigs) + "g"
         df.value = df.value.apply(lambda x: format(x, format_string))
-        df.value = df.value.astype(basestring)
+        df.value = df.value.astype(str)
         df.loc[df['metricName'].str.match('timing_quality') & df['value'].str.match('nan'),'value'] = 'NULL'
     if 'starttime' in df.columns:
         df.starttime = df.starttime.apply(UTCDateTime, precision=0) # no milliseconds
@@ -84,12 +322,14 @@ def format_simple_df(df, sigfigs=6):
         df.endtime = df.endtime.apply(UTCDateTime, precision=0) # no milliseconds
         df.endtime = df.endtime.apply(lambda x: x.strftime("%Y-%m-%dT%H:%M:%S"))
     if 'qualityFlag' in df.columns:
+        
         df.qualityFlag = df.qualityFlag.astype(int)
+
 
     return df   
 
     
-def write_numeric_df(df, filepath, sigfigs=6):
+def write_numeric_df(df, filepath, concierge, sigfigs=6):
     """
     Write a pretty dataframe with appropriate significant figures to a .csv file.
     :param df: PSD dataframe.
@@ -97,14 +337,23 @@ def write_numeric_df(df, filepath, sigfigs=6):
     :param sigfigs: Number of significant figures to use.
     :return: status
     """
+
+    output = concierge.output
+    dbname = concierge.db_name
+
     # Get pretty values
     pretty_df = format_numeric_df(df, sigfigs=sigfigs)
-    # Write out .csv file
-    pretty_df.to_csv(filepath, index=False)
-    
+    # Write out to db or .csv file
+    if output == 'csv':
+        pretty_df.to_csv(filepath, index=False)
+    elif output == 'db':
+
+        initialize_psd_database_table(dbname, concierge)
+        for ind,row in pretty_df.iterrows():
+            insert_psd_database_table(dbname, row)
     # No return value
 
-def write_pdf_df(df, filepath, iappend, sigfigs=6):
+def write_pdf_df(df, filepath, iappend, sncl, starttime, endtime, concierge, sigfigs=6):
     """
     Write a pretty dataframe with appropriate significant figures to a .csv file.
     :param df: PSD dataframe.
@@ -112,14 +361,25 @@ def write_pdf_df(df, filepath, iappend, sigfigs=6):
     :param sigfigs: Number of significant figures to use.
     :return: status
     """
+    
+    ##### THIS SECTION NEEDS UPDATING, AND NEW INITIALIZE AND INSERT FUNCTIONS #####
+    output = concierge.output
+    dbname = concierge.db_name
+    
     # Get pretty values
     pretty_df = format_numeric_df(df, sigfigs=sigfigs)
-    # Write out .csv file
-    if iappend == 'a':
-        pretty_df.to_csv(filepath, mode='a', index=False)
-    else:
-        pretty_df.to_csv(filepath, index=False)
-    
+
+    # Write out to db or .csv file
+    if output == 'csv':
+        if iappend == 'a':
+            pretty_df.to_csv(filepath, mode='a', index=False)
+        else:
+            pretty_df.to_csv(filepath, index=False)
+    elif output == 'db':
+        initialize_pdf_database_table(dbname, concierge)
+        for ind,row in pretty_df.iterrows():
+            insert_pdf_database_table(dbname, row, sncl, str(starttime), str(endtime))
+        
     # No return value
 
 
@@ -136,6 +396,7 @@ def format_numeric_df(df, sigfigs=6):
     * Round the 'value' column to the specified number of significant figures.
     * Convert 'starttime' and 'endtime' to python 'date' objects.
     """
+
     format_string = "." + str(sigfigs) + "g"
     for column in df.columns:
         if column == 'starttime':
@@ -149,6 +410,7 @@ def format_numeric_df(df, sigfigs=6):
         else:
             df[column] = df[column].astype(float)
             df[column] = df[column].apply(lambda x: format(x, format_string))
+            df[column] = df[column].astype(str)
             
     return df   
 
@@ -246,8 +508,8 @@ def get_slot(r_object, prop):
     raise('"%s" is not a recognized slot name' % (prop))
         
 def getSpectra(st, sampling_rate, metric, concierge):
-    # This function returns an evalresp fap response for trace st using sampling_rate 
-    # to determine frequency limits
+    # This function returns an evalresp fap response needed for PSD calculation 
+    # for trace st using sampling_rate to determine frequency limits
     #
     # metric=transferFunction sets units="def" 
     # metric=PSD sets units="acc" 
@@ -323,8 +585,6 @@ def getSpectra(st, sampling_rate, metric, concierge):
   
     # REC - invoke evalresp either programmatically from a RESP file or by invoking the web service 
 
-    logger = concierge.logger
-
     evalResp = None
     respDir = concierge.resp_dir
     
@@ -335,7 +595,7 @@ def getSpectra(st, sampling_rate, metric, concierge):
         localFile2 = os.path.join(respDir,".".join(["RESP", station, network, location, channel])) # alternate pattern
         for localFiles in (localFile, localFile + ".txt", localFile2, localFile2 + ".txt"):
             if (os.path.exists(localFiles)):
-                logger.debug('Found local RESP file %s' % localFiles)
+                concierge.logger.debug('Found local RESP file %s' % localFiles)
                 debugMode = False
 
                 try:
@@ -358,10 +618,68 @@ def getSpectra(st, sampling_rate, metric, concierge):
             raise
     return(evalResp)
 
+
+def getSampleRateSpectra(r_stream,sampling_rate,norm_freq, concierge):
+
+    if sampling_rate is None or math.isnan(sampling_rate):
+       raise Exception("no data sampling rate was available")
+
+    if norm_freq is None or math.isnan(norm_freq):
+       raise Exception("no metadata sensitivity was available")
+
+    minfreq = norm_freq/10
+    maxfreq = 10*sampling_rate
+    nfreq = math.ceil(np.log10(maxfreq/minfreq)*100)
+    units = 'def'
+    output = 'fap'
+
+    # need to create new function here, to avoid cut and paste
+    network = get_slot(r_stream,'network')
+    station = get_slot(r_stream,'station')
+    location = get_slot(r_stream,'location')
+    channel = get_slot(r_stream,'channel')
+    starttime = get_slot(r_stream,'starttime')
+
+    evalResp = None
+    respDir = concierge.resp_dir
+
+    concierge.logger.debug('minfreq %f, maxfreq %f, nfreq %f' % (minfreq,maxfreq,nfreq))
+
+    if (respDir):
+        # calling local evalresp -- generate the target file based on the SNCL identifier
+        # file pattern:  RESP.<NET>.<STA>.<LOC>.<CHA> or RESP.<STA>.<NET>.<LOC>.<CHA>
+        localFile = os.path.join(respDir,".".join(["RESP", network, station, location, channel])) # attempt to find the RESP file
+        localFile2 = os.path.join(respDir,".".join(["RESP", station, network, location, channel])) # alternate pattern
+        for localFiles in (localFile, localFile + ".txt", localFile2, localFile2 + ".txt"):
+            if (os.path.exists(localFiles)):
+                concierge.logger.debug('Found local RESP file %s' % localFiles)
+                debugMode = False
+
+                try:
+                    evalResp = evresp.getEvalresp(localFiles, network, station, location, channel, starttime,
+                                       minfreq, maxfreq, nfreq, units.upper(), output.upper(), "LOG", debugMode)
+                except Exception as e:
+                    raise
+
+                if evalResp is not None:
+                    break   # break early from loop if we found a result
+        if evalResp is None:
+            raise EvalrespException('No RESP file found at %s[.txt] or %s[.txt]' % (localFile,localFile2))
+
+    else:
+        # calling the web service
+        try:
+            evalResp = irisseismic.getEvalresp(network, station, location, channel, starttime,
+                                       minfreq, maxfreq, nfreq, units.lower(), output.lower())
+        except Exception as e:
+            raise
+    return(evalResp)
+
+    
+
 # ------------------------------------------------------------------------------
-
-
-
 if __name__ == '__main__':
     import doctest
     doctest.testmod(exclude_empty=True)
+
+

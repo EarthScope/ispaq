@@ -1,3 +1,13 @@
+3.0.0
+ * ports code to Python3
+ * includes MUSTANG metrics sample_rate_resp, sample_rate_channel, max_range
+ * modifications to preference file default.txt
+ * access to IRIS PH5 archive data, using IRISPH5 name
+ * includes option to write metric values to SQLite database
+ * updates recommended conda package versions
+ * requires installation of R-packages seismicRoll 1.1.4, IRISMustangMetrics 2.4.2, IRISSeismic 1.6.0
+ * metric transfer_function will run on all requested days
+
 2.0.1
  * updates recommended conda ObsPy package version to 1.1.1. Run `run_ispaq.py -U` to install ObsPy 1.1.1.
 

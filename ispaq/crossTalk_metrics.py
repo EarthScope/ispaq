@@ -76,7 +76,7 @@ def crossTalk_metrics(concierge):
 
     for (index, event) in events.iterrows():
 
-        logger.info('%03d Magnitude %3.1f event: %s %s' % (index, event.magnitude, event.eventLocationName, event.time.strftime("%Y-%m-%dT%H:%M:%S")))
+        logger.info('%03d Magnitude %3.1f event: %s %s' % (int(index), event.magnitude, event.eventLocationName, event.time.strftime("%Y-%m-%dT%H:%M:%S")))
         
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
@@ -112,10 +112,11 @@ def crossTalk_metrics(concierge):
         concierge.sncl_patterns = new_sncl_patterns    
 
 
-        try:        
+        try:  
             availability = concierge.get_availability(starttime=halfHourStart, endtime=halfHourEnd,
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=0, maxradius=maxradius)
+
         except NoAvailableDataError as e:
             logger.info('Skipping event with no available data')
             concierge.sncl_patterns = original_sncl_patterns
@@ -151,8 +152,7 @@ def crossTalk_metrics(concierge):
         # ----- All available SNCLs -------------------------------------------------
 
         for idx, sn_lId in enumerate(sorted(list(set(sn_lIds)))):
-
-            logger.info('Calculating crossTalk metrics for %s' % (sn_lId))
+            logger.info('%03d Calculating crossTalk metrics for %s' % (idx, sn_lId))
 
             availabilitySub = availability[availability.sn_lId == sn_lId]
             

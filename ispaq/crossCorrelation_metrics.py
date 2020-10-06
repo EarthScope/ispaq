@@ -80,9 +80,8 @@ def crossCorrelation_metrics(concierge):
     logger.info('Calculating crossCorrelation metrics for %d events' % events.shape[0])
 
     for (index, event) in events.iterrows():
+        logger.info('%03d Magnitude %3.1f event: %s %s' % (int(index), event.magnitude, event.eventLocationName, event.time.strftime("%Y-%m-%dT%H:%M:%S")))
 
-        logger.info('%03d Magnitude %3.1f event: %s %s' % (index, event.magnitude, event.eventLocationName, event.time.strftime("%Y-%m-%dT%H:%M:%S")))
-        
         # Sanity check
         if pd.isnull(event.latitude) or pd.isnull(event.longitude):
             logger.info('Skipping event because of missing longitude or latitude')
@@ -100,13 +99,10 @@ def crossCorrelation_metrics(concierge):
         halfHourEnd = event.time + 60 * 28
 
         logger.debug("Looking for metadata from %s to %s" % (halfHourStart,halfHourEnd))
-
         try:        
             availability = concierge.get_availability(starttime=halfHourStart, endtime=halfHourEnd,
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=eventMinradius, maxradius=eventMaxradius)
-
-
         except NoAvailableDataError as e:
             logger.info('Skipping event with no available data')
             continue
@@ -155,9 +151,10 @@ def crossCorrelation_metrics(concierge):
                 if str(e).lower().find('no data') > -1:
                     logger.info('No data available for %s' % (av1.snclId))
                 elif str(e).lower().find('multiple epochs') :
-                    logger.info('Skipping %s because multiple metadata epochs found' % (av.snclId))
+                    logger.info('Skipping %s because multiple metadata epochs found' % (av1.snclId))
                 else:
                     logger.warning('No data available for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
+
                 continue
             
             # No metric calculation possible if SNCL has more than one trace 
@@ -173,8 +170,8 @@ def crossCorrelation_metrics(concierge):
             # ----- Now query again to find ANY SNCL near the SNCL of interest ---------
 
             # Create the regex for channel matching - must be same channel type
-	    sncl1ch1 = snclId.split('.')[-1][0]
-	    sncl1ch2 = snclId.split('.')[-1][1]
+            sncl1ch1 = snclId.split('.')[-1][0]
+            sncl1ch2 = snclId.split('.')[-1][1]
             channelString = "%s%s?" % (sncl1ch1,sncl1ch2)
 
             logger.debug("Looking for metadata for %s to %s within radius %s-%s degrees" % (halfHourStart, halfHourEnd, snclMinradius, snclMaxradius))
@@ -185,7 +182,6 @@ def crossCorrelation_metrics(concierge):
                                                            starttime=halfHourStart, endtime=halfHourEnd,
                                                            longitude=av1.longitude, latitude=av1.latitude,
                                                            minradius=snclMinradius, maxradius=snclMaxradius)
-
             except Exception as e:
                 logger.warning('Skipping %s because get_availability failed for nearby stations: %s' % (av1.snclId, e))
                 continue
@@ -231,7 +227,7 @@ def crossCorrelation_metrics(concierge):
                 maxAzimuthAngle = 5.0 * math.pi/180.0
                 azimuthMask = azimuthAngle.apply(math.cos) >= math.cos(maxAzimuthAngle)
                 channelMask = chMask & nonZMask & azimuthMask
-                
+
             # Bitwise AND to get the final mask
             mask = channelMask & sampleRateMask
 
@@ -257,6 +253,7 @@ def crossCorrelation_metrics(concierge):
                 
                 lastsncl = avCompatible.snclId[-1:].to_string(index=False)
                 testx = 0
+                r_stream2 = None
 
                 # Get data in a window centered on the event's arrival at station #2
                 try:
@@ -279,7 +276,7 @@ def crossCorrelation_metrics(concierge):
                     if str(e).lower().find('no data') > -1:
                         logger.debug('No data available for %s' % (av2.snclId))
                     elif str(e).lower().find('multiple epochs'):
-                        logger.info('Skipping %s because multiple metadata epochs are found' % (av.snclId))
+                        logger.info('Skipping %s because multiple metadata epochs are found' % (av2.snclId))
                     else:
                         logger.warning('No data available for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
                     if av2.snclId is lastsncl:
@@ -320,12 +317,14 @@ def crossCorrelation_metrics(concierge):
                 continue
 
             # Calculate the cross-correlation metrics and append them to the list
-            logger.info('Calculating crossCorrelation metrics for %s:%s' % (av1.snclId, av2.snclId))
-            try:
-                df = irismustangmetrics.apply_correlation_metric(r_stream1, r_stream2, 'crossCorrelation', maxLagSecs)
-                dataframes.append(df)
-            except Exception as e:
-                logger.warning('"crossCorrelation" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
+            if not r_stream2 == None:
+                logger.info('%03d Calculating polarityCheck metrics for %s:%s' % (index, av1.snclId, av2.snclId))
+                try:
+                    df = irismustangmetrics.apply_correlation_metric(r_stream1, r_stream2, 'crossCorrelation', maxLagSecs)
+                    dataframes.append(df)
+    
+                except Exception as e:
+                    logger.warning('"polarityCheck" metric calculation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
 
         # END of SNCL loop
 

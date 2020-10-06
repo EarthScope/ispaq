@@ -74,6 +74,8 @@ def simple_metrics(concierge):
         channelFilter = '[BH][HX].'
     if ('STALTA') in function_metadata and len(function_metadata) == 1:
         channelFilter = '[BHCDESLM][HPLGNX].'
+    if ('maxRange') in function_metadata and len(function_metadata) == 1:
+        channelFilter = '[BCDEFGHLMS][HPNLG][0-9ENZRT]|B[XY][12Z]|HX[12Z]'
 
     logger.debug("channelFilter %s" % channelFilter)
 
@@ -114,7 +116,7 @@ def simple_metrics(concierge):
 
             # NOTE:  Use the requested starttime, not just what is available
             try:
-                r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, starttime, endtime, ignoreEpoch=True)
+                r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, starttime, endtime, ignoreEpoch=True, inclusiveEnd=False)
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
                     logger.info('No data available for %s' % (av.snclId))
@@ -162,10 +164,9 @@ def simple_metrics(concierge):
             # NOTE:  between performance and accuracy.
 
             if 'STALTA' in function_metadata:
-            
                 if av.channel.startswith(('BH','HH','CH','DH','EH','SH','LH','MH','DP','SP','LP','EP','EL','HL','LL','BL','SL','BX','HX')):
                     try:
-                        r_stream_stalta = concierge.get_dataselect(av.network, av.station, av.location, av.channel, starttime, endtime)
+                        r_stream_stalta = concierge.get_dataselect(av.network, av.station, av.location, av.channel, starttime, endtime, inclusiveEnd=False)
                     except Exception as e:
                         if str(e).lower().find('no data') > -1:
                             logger.info('No data available for %s' % (av.snclId))
@@ -184,7 +185,7 @@ def simple_metrics(concierge):
                     except Exception as e:
                         logger.warning('"STALTA" metric calculation failed for for %s: %s' % (av.snclId, e))
                 else:
-                    logger.info('Skipping %s because channel not valid for "STALTA" metric' % av.snclId)
+                    logger.info('Skipping %s because channel not valid for "max_stalta" metric' % av.snclId)
                     
                     
             # Run the numSpikes metric --------------------------------------
@@ -203,8 +204,25 @@ def simple_metrics(concierge):
                     except Exception as e:
                         logger.warning('"numSpikes" metric calculation failed for %s: %s' % (av.snclId, e))            
                 else:
-                    logger.info('Skipping %s because channel not valid for "numSpikes" metric' % av.snclId)
+                    logger.info('Skipping %s because channel not valid for "num_spikes" metric' % av.snclId)
                         
+                        
+                        
+            # Run the maxRange metric --------------------------------------           
+            if 'maxRange' in function_metadata:
+                if av.channel.startswith(('B','C','D','E','F','G','H','L','M','S')):
+                    windowSize = 300
+                    increment = 150
+                    
+                    try:
+                        df = irismustangmetrics.apply_simple_metric(r_stream, 'maxRange', windowSize, increment)
+                        dataframes.append(df)
+                    except Exception as e:
+                        logger.warning('"maxRange" metric calculation failed for for %s: %s' % (av.snclId, e))
+                else:
+                    logger.info('Skipping %s because channel not valid for "max_range" metric' % av.snclId)       
+                    
+
     # Concatenate and filter dataframes before returning -----------------------
        
     # Create a boolean mask for filtering the dataframe

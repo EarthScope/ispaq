@@ -15,8 +15,10 @@ seismic data and metadata directly from selected data centers supporting the FDS
 have the option to read local [miniSEED](http://ds.iris.edu/ds/nodes/dmc/data/formats/seed/) files and 
 metadata on their own workstations and construct on-the-spot data quality analyses on that data.
 
-Output is provided in CSV format for tabular metrics. In addition, Probability Density Functions (PDF) 
-can be plotted to PNG image files. The PDF plots also include the New High Noise Model and the New Low Noise Model curves [Peterson,1993](https://doi.org/10.3133/ofr93322) and the minimum, maximum, and mode PDF statistics curves.
+Output is optionally in CSV format or written to an internal SQLite database for tabular metrics. 
+In addition, Probability Density Functions (PDF) can be plotted to PNG image files. The PDF plots also 
+include the New High Noise Model and the New Low Noise Model curves [Peterson,1993](https://doi.org/10.3133/ofr93322) 
+and the minimum, maximum, and mode PDF statistics curves.
 
 The business logic for MUSTANG metrics is emulated through [ObsPy](https://github.com/obspy/obspy/wiki) 
 and custom Python code and the core calculations are performed using the same R packages as used by 
@@ -95,8 +97,8 @@ Proceed to the [Miniconda](http://conda.pydata.org/miniconda.html) web site to f
 operating system before proceeding with the instructions below. If you can run ```conda``` from the command 
 line, then you know you have it successfully installed.
 
-By setting up a [conda virtual environment](https://conda.io/projects/conda/en/latest/user-guide/concepts.html#conda-environments), we assure that our 
-ISPAQ installation is entirely separate from any other installed software.
+By setting up a [conda virtual environment](https://conda.io/projects/conda/en/latest/user-guide/concepts.html#conda-environments), 
+we assure that our ISPAQ installation is entirely separate from any other installed software.
 
 
 ### Creating the ispaq environment for macOS or Linux
@@ -105,10 +107,13 @@ You will go into the ispaq directory that you created with git, update miniconda
 environment specially for ispaq. You have to ```activate``` the ISPAQ environment whenever you 
 perform installs, updates, or run ISPAQ.
 
+Note: If you are upgrading from ISPAQ 2.0 to ISPAQ 3.0+, you should create a new ispaq environment.
+
 ```
 cd ispaq
 conda update conda
-conda create --name ispaq python=2.7
+conda env remove --name ispaq  #if you are upgrading from an existing ISPAQ 2.0 installation to ISPAQ 3.0
+conda create --name ispaq python=3.6 obspy=1.2.2
 conda activate ispaq
 conda install -c conda-forge --file ispaq-conda-install.txt
 ```
@@ -122,19 +127,21 @@ conda list
 Now install the IRIS R packages for ISPAQ:
 ```
 export MACOSX_DEPLOYMENT_TARGET=10.9    # this line for macOS only
-R CMD INSTALL seismicRoll_1.1.3.tar.gz 
-R CMD INSTALL IRISSeismic_1.5.2.tar.gz
-R CMD INSTALL IRISMustangMetrics_2.3.0.tar.gz 
+R CMD INSTALL seismicRoll_1.1.4.tar.gz 
+R CMD INSTALL IRISSeismic_1.6.0.tar.gz
+R CMD INSTALL IRISMustangMetrics_2.4.2.tar.gz 
 ```
 
 Or alternatively, install the IRIS R packages from CRAN: 
 ```
-./run_ispaq.py -U
+./run_ispaq.py -I
 ```
 
-You should also run `./run_ispaq.py -U` after you update your ISPAQ version to verify that you have both the required minimum versions of anaconda packages and the most recent IRIS R packages.
+You should run `./run_ispaq.py -U` after you update ISPAQ minor versions to verify that you have both the 
+required minimum versions of anaconda packages and the most recent IRIS R packages.
 
-Note: If you are using macOS and see the error: "'math.h' file not found" when compiling seismicRoll, then it is likely that your command line tools are missing. Try running `xcode-select --install`.
+Note: If you are using macOS and see the error: "'math.h' file not found" when compiling seismicRoll, then it is 
+likely that your command line tools are missing. Try running `xcode-select --install`.
 
 # Using ISPAQ
 
@@ -163,13 +170,14 @@ usage: run_ispaq.py [-h] [-P PREFERENCES_FILE] [-M METRICS] [-S STATIONS]
                     [--plot_include PLOT_INCLUDE] [--sncl_format SNCL_FORMAT]
                     [--sigfigs SIGFIGS]
                     [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-A] [-V]
-                    [-U] [-L]
+                    [-I] [-U] [-L]
 
-ISPAQ version 2.0.0
+ISPAQ version 3.0.0
 
 single arguments:
   -h, --help                       show this help message and exit
   -V, --version                    show program's version number and exit
+  -I, --install-r                  (re)-install CRAN IRIS Mustang packages, and exit
   -U, --update-r                   check for and install newer CRAN IRIS Mustang packages 
                                    and/or update required conda packages, and exit
   -L, --list-metrics               list names of available metrics and exit
@@ -193,8 +201,10 @@ optional arguments for overriding preference file entries:
   --station_url STATION_URL        FDSN webservice or path to stationXML file
   --event_url EVENT_URL            FDSN webservice or path to QuakeML file
   --resp_dir RESP_DIR              path to directory with RESP files
-  --csv_dir CSV_DIR                directory to write generated metrics .csv files
-  --psd_dir PSD_DIR                directory to write/read existing PSD .csv files
+  --output OUTPUT                  write to .csv file (csv) or sqlite database (db)
+  --db_name DB_NAME                name of sqlite database file, if output=db
+  --csv_dir CSV_DIR                directory to write generated metrics .csv files, if output=csv
+  --psd_dir PSD_DIR                directory to write/read existing PSD .csv files, if output=csv
   --pdf_dir PDF_DIR                directory to write generated PDF files
   --pdf_type PDF_TYPE              output format of generated PDFs - text and/or plot
   --pdf_interval PDF_INTERVAL      time span for PDFs - daily and/or aggregated over the entire span
@@ -271,11 +281,11 @@ enclosed by quotes to avoid a possible error of unrecognized arguments.
 **Data_Access** has four entries describing where to find data, metadata, events, and optionally response files.
 
 * `dataselect_url:` should indicate a *miniSEED* data resource as one of the *FDSN web service aliases* used by ObsPy 
-(e.g. `IRIS`), an explicit URL pointing to an FDSN web service domain (e.g. `http://service.iris.edu` ), or a file 
+(e.g. `IRIS`), the IRIS PH5 web service alias 'IRISPH5', an explicit URL pointing to an FDSN web service domain (e.g. `http://service.iris.edu` ), or a file 
 path to a directory containing miniSEED files (_See: "Using Local Data Files", below_).
 
-* `station_url:` should indicate a metadata location as an FDSN web service alias, an explicit URL, or a path 
-to a file containing metadata in [StationXML](http://www.fdsn.org/xml/station/) format 
+* `station_url:` should indicate a metadata location as an FDSN web service alias, the IRIS PH5 web service alias 'IRISPH5',
+an explicit URL, or a path to a file containing metadata in [StationXML](http://www.fdsn.org/xml/station/) format 
 ([schema](http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd)). For web services, this should point to the same place as 
 `dataselect_url` (e.g. `http://service.iris.edu`). For local metadata, StationXML is read at the channel level and any 
 response information is ignored. Local instrument response (if used) is expected to be in RESP file format and specified 
@@ -308,9 +318,11 @@ or the transfer_function metric.
 
     If you are starting from a dataless SEED, you can create RESP files using [rdseed](http://ds.iris.edu/ds/nodes/dmc/manuals/rdseed/).
 
-**Preferences** has four entries describing ispaq output.
+**Preferences** has six entries describing ispaq output.
 
-* `csv_dir:` should be followed by a directory path for output of generated metric text files (CSV). 
+* `output:` either 'db' (write to SQLite database) or 'csv' (write to CSV files)
+* `db_name:` if writing to a database (output=db), the name of the database
+* `csv_dir:` of writing to CSV (output=csv), directory path for output of generated metric text files (CSV). 
 If the directory does not exist, then it attempts to create that directory.
 
 * `psd_dir:` should be followed by a directory path for writing and reading PSD csv files.
@@ -441,7 +453,9 @@ Network.Station.Location.Channel.Year.JulianDay.Quality
 where `Quality` is optional (e.g., `TA.P19K..BHZ.2016.214.M` or `TA.P19K..BHZ.2016.214`).   
 
 This naming convention can be modified by using the `sncl_format` entry in the preferences file or 
-the `--sncl_format` option on the command line. `sncl_format` allows you to specify a different order for `Network.Station.Location.Channel`, although all these elements must be present in the file name. For example, sncl_format `S.N.L.C` will change the file naming convention that ISPAQ uses to:
+the `--sncl_format` option on the command line. `sncl_format` allows you to specify a different order for 
+`Network.Station.Location.Channel`, although all these elements must be present in the file name. 
+For example, sncl_format `S.N.L.C` will change the file naming convention that ISPAQ uses to:
 
 ```
 Station.Network.Location.Channel.Year.JulianDay.Quality
@@ -476,26 +490,20 @@ IRISMustangMetrics R packages.
 
 ```
 (ispaq) bash-3.2$ ./run_ispaq.py -U
-2019-01-28 15:33:25 - INFO - Running ISPAQ version 2.0.0 on Mon Jan 28 15:33:25 2019
-2019-01-28 15:33:27 - INFO - Checking for recommended conda packages...
-2019-01-28 15:33:27 - INFO - Required conda packages found
-2019-01-28 15:33:27 - INFO - Checking for IRIS R package updates...
---- Please select a CRAN mirror for use in this session ---
-Secure CRAN mirrors 
-
- 1: 0-Cloud [https]                   2: Algeria [https]                
- 3: Australia (Canberra) [https]      4: Australia (Melbourne 1) [https]
- 5: Australia (Melbourne 2) [https]   6: Australia (Perth) [https]             
-...
-
-Selection: 1
+2020-10-05 21:22:27 - INFO - Running ISPAQ version 3.0.0 on Mon Oct  5 21:22:27 2020
+2020-10-05 21:22:30 - INFO - Checking for recommended conda packages...
+2020-10-05 21:22:30 - INFO - Required conda packages found
+2020-10-05 21:22:30 - INFO - Checking for IRIS R package updates...
 
               package installed   CRAN  upgrade
-0         seismicRoll     1.1.3  1.1.3    False
-1         IRISSeismic     1.4.9  1.4.9    False
-2  IRISMustangMetrics     2.2.0  2.1.3    False
+0         seismicRoll     1.1.4  1.1.4    False
+1         IRISSeismic     1.6.0  1.6.0    False
+2  IRISMustangMetrics     2.4.2  2.4.2    False
 
-2019-01-28 15:33:39 - INFO - No CRAN packages need updating.
+2020-10-05 21:22:32 - INFO - No CRAN packages need updating.
+
+Alternatively, the command-line argument `-I`, `--install-r` will install the CRAN packages regardless of what
+version is already installed
 
 ```
 
@@ -590,6 +598,10 @@ Indicates the size of the largest gap encountered within a 24-hour window.
 * **max_overlap**:
 Indicates the size of the largest overlap in seconds encountered within a 24-hour window.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/max_overlap/)
+
+* **max_range**:
+This metric calculates the difference between the largest and smallest sample value in a 5 minute rolling window and returns the largest value encountered within a 24-hour timespan.
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/max_range/)
 
 * **max_stalta**:
 The STALTAMetric function calculates the maximum of STA/LTA of the incoming seismic signal over a 24 hour period. 
@@ -687,6 +699,15 @@ The median value itself always occurs as an amplitude value in the times series.
 This metric reports smallest amplitude value in counts encountered within a 24-hour window.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_min/)
 
+* **sample_rate_channel**:
+A boolean measurement that returns 0 if miniSEED and channel sample rates agree within 1%, or 1 if they disagree. 
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_rate_channel/)
+
+* **sample_rate_resp**:
+A boolean measurement that returns 0 if miniSEED and response-derived sample rates agree within 15%, or 1 if they disagree. 
+Response-derived sample rates assume that the high-frequency amplitude rolloff is ~85% of the Nyquist frequency.
+[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_rate_resp/)
+
 * **sample_rms**:
 Displays the RMS variance of trace amplitudes within a 24-hour window.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_rms/)
@@ -736,6 +757,35 @@ Transfer function metric consisting of the gain ratio, phase difference and magn
 sensors. [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/transfer_function/)
     + channels = [BCFHLM][HX].
 
+### Access for restricted data
+Access to restricted data from ISPAQ can be managed with a .netrc file that has valid credentials.
+To set up ISPAQ for use with a .netrc file:
+
+```
+cd ispaq
+conda activate ispaq
+touch $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
+touch $CONDA_PREFIX/etc/conda/deactivate.d/env_vars.sh
+```
+
+Edit the $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh as follows:
+> #!/bin/sh
+> export IrisClient_netrc='path-to-netrc-file'
+
+where 'path-to-netrc-file' is the file path for your .netrc.
+
+Edit the $CONDA_PREFIX/etc/conda/deactivate.d/env_vars.sh as follows:
+> #!/bin/sh
+> unset IrisClient_netrc
+
+Then you'll need to re-install the CRAN IRISSeismic package:
+
+```
+conda deactivate
+conda activate ispaq
+Rscript -e 'Sys.getenv("IrisClient_netrc")'   # verify that your .netrc file path is correct
+./run_ispaq.py -I
+```
 
 ### Examples Using preference_files/default.txt Preference File
 
@@ -754,7 +804,7 @@ conda activate ispaq
 ```
 ./run_ispaq.py -M sample_mean -S II.KAPI.00.BHZ --starttime 2013-01-05 --dataselect_url ./test_data --station_url ./test_data/II.KAPI_station.xml --csv_dir ./test_out
 
-./run_ispaq.py -M psd_corrected,pdf -S "II.KAPI.00.BH*" --starttime 2013-01-05 --endtime 2013-01-08 --dataselect_url ./test_data --station_url ./test_data/II.KAPI_station.xml --psd_dir ./test_out --pdf_dir ./test_out --pdf_type plot --pdf_interval aggregated
+./run_ispaq.py -M psd_corrected,pdf -S II.KAPI.00.BHZ --starttime 2013-01-05 --endtime 2013-01-08 --dataselect_url ./test_data --station_url ./test_data/II.KAPI_station.xml --psd_dir ./test_out --pdf_dir ./test_out --pdf_type plot --pdf_interval aggregated
 ```
 
 

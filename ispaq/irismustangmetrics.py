@@ -29,8 +29,12 @@ import json
 from obspy.core import UTCDateTime
 
 from rpy2 import robjects
+import rpy2.robjects as ro
 from rpy2 import rinterface
 from rpy2.robjects import pandas2ri
+from rpy2.robjects import numpy2ri
+from rpy2.robjects.packages import importr
+from rpy2.robjects.conversion import localconverter
 
 #   R functions called internally     ------------------------------------------
 
@@ -59,20 +63,92 @@ def apply_simple_metric(r_stream, metric_function_name, *args, **kwargs):
     :param metric_function_name: the name of the set of metrics
     :return:
     """
+    
+    
     if metric_function_name is 'numSpikes':
         function = 'IRISMustangMetrics::spikesMetric'
     else:
         function = 'IRISMustangMetrics::' + metric_function_name + 'Metric'
+        
     R_function = robjects.r(function)
     r_metriclist = R_function(r_stream, *args, **kwargs)  
     r_dataframe = _R_metricList2DF(r_metriclist)
-    df = pandas2ri.ri2py(r_dataframe)
+
+    # Convert to a pandas dataframe
+    pandas2ri.activate()
+    df = ro.conversion.rpy2py(r_dataframe)
+    pandas2ri.deactivate()
     
     # Convert columns from R POSIXct to python UTCDateTime
     df.starttime = df.starttime.apply(UTCDateTime)
     df.endtime = df.endtime.apply(UTCDateTime)
+    
     return df
 
+def apply_sampleRateResp_metric(r_stream,resp_pct,norm_freq,evalresp):
+    """"
+    Invoke the sampleRateResp R metric and convert the R dataframe result into
+    a Pandas dataframe.
+    :param r_stream: an r_stream object
+    :param resp_pct: percent deviation allowed for sample_rate_resp
+    :param: norm_freq: SensitivityFrequency from the data
+    :param evalresp: None if from webservices, pandas evalresp if local
+    :return:
+    """
+
+    function = 'IRISMustangMetrics::sampleRateRespMetric'
+    R_function = robjects.r(function)
+
+    #kwargs is just evalresp, if none is provided then the R code will go to IRIS to get it anyway
+    if evalresp is not None:
+        with localconverter(ro.default_converter + pandas2ri.converter):
+            r_evalresp = ro.conversion.py2rpy(evalresp)
+
+        r_metriclist = R_function(r_stream,resp_pct,norm_freq, r_evalresp)
+    else:
+        r_metriclist = R_function(r_stream,resp_pct,norm_freq)
+
+    r_dataframe = _R_metricList2DF(r_metriclist)
+
+    # Convert to a pandas dataframe
+    pandas2ri.activate()
+    df = ro.conversion.rpy2py(r_dataframe)
+    pandas2ri.deactivate()
+
+    # Convert columns from R POSIXct to python UTCDateTime
+    df.starttime = df.starttime.apply(UTCDateTime)
+    df.endtime = df.endtime.apply(UTCDateTime)
+
+    return df
+
+def apply_sampleRateChannel_metric(r_stream, channel_pct,chan_rate):
+    """"
+    Invoke the sampleRateChannel R metric and convert the R dataframe result into
+    a Pandas dataframe.
+    :param r_stream: an r_stream object
+    :param channel_pct: percent deviation allowed for sample_rate_channel 
+    :param chan_rate: metadata-derived sample rate
+    :param evalresp: None if from webservices, pandas evalresp if local
+    :return:
+    """
+    
+    function = 'IRISMustangMetrics::sampleRateChannelMetric'
+    R_function = robjects.r(function)
+
+    r_metriclist = R_function(r_stream,channel_pct,chan_rate)
+        
+    r_dataframe = _R_metricList2DF(r_metriclist)
+
+    # Convert to a pandas dataframe
+    pandas2ri.activate()
+    df = ro.conversion.rpy2py(r_dataframe)
+    pandas2ri.deactivate()
+    
+    # Convert columns from R POSIXct to python UTCDateTime
+    df.starttime = df.starttime.apply(UTCDateTime)
+    df.endtime = df.endtime.apply(UTCDateTime)
+    
+    return df
 
 def apply_correlation_metric(r_stream1, r_stream2, metric_function_name, *args, **kwargs):
     """"
@@ -83,17 +159,24 @@ def apply_correlation_metric(r_stream1, r_stream2, metric_function_name, *args, 
     :param metric_function_name: the name of the set of metrics
     :return:
     """
+
     function = 'IRISMustangMetrics::' + metric_function_name + 'Metric'
     R_function = robjects.r(function)
+
     pandas2ri.activate()
-    r_metriclist = R_function(r_stream1, r_stream2, *args, **kwargs)  # args and kwargs shouldn't be needed in theory
+    r_metriclist = R_function(r_stream1, r_stream2, *args, **kwargs) 
     pandas2ri.deactivate()
+    
     r_dataframe = _R_metricList2DF(r_metriclist)
-    df = pandas2ri.ri2py_dataframe(r_dataframe)
+
+    pandas2ri.activate()
+    df = ro.conversion.rpy2py(r_dataframe)
+    pandas2ri.deactivate()
     
     # Convert columns from R POSIXct to pyton UTCDateTime
     df.starttime = df.starttime.apply(UTCDateTime)
     df.endtime = df.endtime.apply(UTCDateTime)
+
     return df
 
 
@@ -107,23 +190,26 @@ def apply_transferFunction_metric(r_stream1, r_stream2, evalresp1, evalresp2):
     :param evalresp2: pandas DataFrame of evalresp FAP for r_stream2
     :return:
     """
+    
+    
     R_function = robjects.r('IRISMustangMetrics::transferFunctionMetric')
     
     # NOTE:  Conversion of dataframes only works if you activate but we don't want conversion
     # NOTE:  to always be automatic so we deactivate() after we're done converting.
-    pandas2ri.activate()
-    r_evalresp1 = pandas2ri.py2ri_pandasdataframe(evalresp1)
-    r_evalresp2 = pandas2ri.py2ri_pandasdataframe(evalresp2)
-    pandas2ri.deactivate()
-    
+
+    with localconverter(ro.default_converter + pandas2ri.converter):
+        r_evalresp1 = ro.conversion.py2rpy(evalresp1)
+        r_evalresp2 = ro.conversion.py2rpy(evalresp2)
+
     # TODO:  Can we just activate/deactivate before/after R_function() without converting
     # TODO:  r_evalresp1/2 ahead of time?
     
     # Calculate the metric
     r_metriclist = R_function(r_stream1, r_stream2, r_evalresp1, r_evalresp2)
     r_dataframe = _R_metricList2DF(r_metriclist)
+
     pandas2ri.activate()
-    df = pandas2ri.ri2py_dataframe(r_dataframe)
+    df = ro.conversion.rpy2py(r_dataframe)
     pandas2ri.deactivate()
     
     # Convert columns from R POSIXct to pyton UTCDateTime
@@ -143,7 +229,6 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
     """
     
     R_function = robjects.r('IRISMustangMetrics::PSDMetric')
-    pandas2ri.activate()
 
     # look for optional parameter evalresp=pd.DataFrame
     evalresp = None
@@ -151,19 +236,27 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
         evalresp = kwargs['evalresp']
         
     r_listOfLists = None
-    if evalresp is not None:
-        r_evalresp = pandas2ri.py2ri(evalresp)  # convert to R dataframe
+    r_evalresp = evalresp
+    if  evalresp is not None:
+        with localconverter(ro.default_converter + pandas2ri.converter):
+            ###################
+            r_evalresp = ro.conversion.py2rpy(evalresp)
+            ###################
         r_listOfLists = R_function(r_stream, evalresp=r_evalresp)
     else:
         r_listOfLists = R_function(r_stream)
 
     r_metriclist = r_listOfLists[0]
+    
     if r_metriclist:
         r_dataframe = _R_metricList2DF(r_metriclist)
-        df = pandas2ri.ri2py(r_dataframe)
+
+        with localconverter(ro.default_converter + pandas2ri.converter):
+            df = ro.conversion.rpy2py(r_dataframe)
+
         # Convert columns from R POSIXct to python UTCDateTime
-        df.starttime = df.starttime.apply(UTCDateTime)
-        df.endtime = df.endtime.apply(UTCDateTime)
+        df['starttime'] = df['starttime'].apply(UTCDateTime)
+        df['endtime'] = df['endtime'].apply(UTCDateTime)
 
     # PSDMetric returns no PSD derived metrics 
     else:    
@@ -171,16 +264,17 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
     
     # correctedPSD is returned as a dataframe
     r_correctedPSD = r_listOfLists[2]
-    PSDCorrected = pandas2ri.ri2py(r_correctedPSD)
-    
+    with localconverter(ro.default_converter + pandas2ri.converter):
+        PSDCorrected = ro.conversion.rpy2py(r_correctedPSD)
+
     # Convert columns from R POSIXct to python UTCDateTime
     PSDCorrected.starttime = PSDCorrected.starttime.apply(UTCDateTime)
     PSDCorrected.endtime = PSDCorrected.endtime.apply(UTCDateTime)
 
     r_PDF = r_listOfLists[3]
-    PDF = pandas2ri.ri2py(r_PDF)
-    pandas2ri.deactivate()
-    
+    with localconverter(ro.default_converter + pandas2ri.converter):
+        PDF = ro.conversion.rpy2py(r_PDF)
+
     return (df, PSDCorrected, PDF)
 
 
@@ -206,6 +300,8 @@ def apply_PSD_plot(r_stream, filepath, evalresp=None):
     
     # convert pandas df to R df as parameter automatically
     if evalresp is not None:
+#         with localconverter(robjects.default_converter + pandas2ri.converter):
+#             r_evalresp = robjects.conversion.py2rpy(evalresp)
         r_evalresp = pandas2ri.py2ri(evalresp)  # convert to R dataframe
         result = robjects.r('IRISSeismic::psdPlot')(r_psdList, style='pdf', evalresp=r_evalresp)
     else:

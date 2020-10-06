@@ -75,6 +75,7 @@ class Concierge(object):
         self.logic_types = user_request.function_by_logic.keys()
         
         # Individual elements from the Preferences: section of the preferences file
+        
         if (os.path.isdir(user_request.csv_dir)):
             self.csv_dir = user_request.csv_dir
         else:
@@ -108,7 +109,8 @@ class Concierge(object):
                 self.logger.warning("Cannot create pdf_dir %s, defaulting to current directory" % user_request.pdf_dir)
                 self.pdf_dir = "."
         
-
+        self.output = user_request.output
+        self.db_name = user_request.db_name
         self.pdf_type = user_request.pdf_type
         self.pdf_interval = user_request.pdf_interval
         self.plot_include = user_request.plot_include
@@ -124,28 +126,41 @@ class Concierge(object):
         self.dev_null = open(os.devnull,"w")
         
         # Add dataselect clients and URLs or reference a local file
+        self.dataselect_type = None
         if user_request.dataselect_url in URL_MAPPINGS.keys():
             # Get data from FDSN dataselect service
             self.dataselect_url = URL_MAPPINGS[user_request.dataselect_url]
+            self.dataselect_type = "fdsnws"
             try:
                 self.dataselect_client = Client(self.dataselect_url)
             except Exception as e:
                 err_msg = e
-                self.logger.critical(err_msg)   
+                self.logger.critical(err_msg)
                 raise SystemExit
 
             if user_request.station_url is not None:    
                 if user_request.station_url != user_request.dataselect_url:
-                    self.logger.warning("Station_url should be the same as dataselect_url when retreiving data from FDSN webservices. Station_url '%s' does not match dataselect_url '%s'" 
+                    self.logger.warning("Station_url should be the same as dataselect_url when retrieving data from FDSN webservices. Station_url '%s' does not match dataselect_url '%s'" 
                                          % (user_request.station_url, user_request.dataselect_url))
+
+        elif user_request.dataselect_url == "IRISPH5":
+            self.dataselect_url = "http://service.iris.edu"
+            self.dataselect_type = "ph5ws"
+            self.dataselect_client = "PH5"
+
+            if user_request.station_url is not None:
+               if user_request.station_url != user_request.dataselect_url:
+                   self.logger.warning("Station_url should be the same as dataselect_url when retreiving data from IRIS PH5 webservices. Station_url '%s' does not match dataselect_url '%s'"
+                                        % (user_request.station_url, user_request.dataselect_url))
 
         elif "http://" in user_request.dataselect_url or "https://" in user_request.dataselect_url:
             self.dataselect_url = user_request.dataselect_url
+            self.dataselect_type = "fdsnws"
             try:
                 self.dataselect_client = Client(self.dataselect_url)
             except Exception as e:
                 err_msg = e
-                self.logger.critical(err_msg)   
+                self.logger.critical(err_msg)
                 raise SystemExit
 
             if user_request.station_url is not None:
@@ -168,13 +183,17 @@ class Concierge(object):
             if ("http://" in self.dataselect_url or "https://" in self.dataselect_url):
                 self.station_url = self.dataselect_url
                 self.logger.info("Using station_url = %s" % self.dataselect_url)
-                try:
-                    self.station_client = Client(self.station_url)
-                except Exception as e:
-                    self.logger.warning(e)
-                    self.logger.info("Metrics that require metadata information cannot be calculated")
-                    self.station_url = None
-                    self.station_client = None
+                if (self.dataselect_type == "ph5ws"):
+                    self.station_type = "ph5ws"
+                    self.station_client = "PH5"
+                else:
+                    try:
+                        self.station_client = Client(self.station_url)
+                    except Exception as e:
+                        self.logger.warning(e)
+                        self.logger.info("Metrics that require metadata information cannot be calculated")
+                        self.station_url = None
+                        self.station_client = None
             else:
                 self.logger.info("No station_url found")
                 self.logger.info("Metrics that require metadata information cannot be calculated")
@@ -189,6 +208,11 @@ class Concierge(object):
                 self.logger.info("Metrics that require metadata information cannot be calculated")
                 self.station_url = None
                 self.station_client = None
+        elif user_request.station_url == "IRISPH5":
+            self.station_url = "http://service.iris.edu"
+            self.station_type = "ph5ws"
+            self.station_client = "PH5"
+         
         elif "http://" in user_request.station_url or "https://" in user_request.station_url:
             self.station_url = user_request.station_url
             try:
@@ -355,6 +379,8 @@ class Concierge(object):
         self.logger.debug("station_url %s", self.station_url)
         self.logger.debug("event_url %s", self.event_url)
         self.logger.debug("resp_dir %s", self.resp_dir)
+        self.logger.debug("output %s", self.output)
+        self.logger.debug("db_name %s", self.db_name)
         self.logger.debug("csv_dir %s", self.csv_dir)
         self.logger.debug("pdf_dir %s", self.pdf_dir)
         self.logger.debug("psd_dir %s", self.psd_dir)
@@ -374,9 +400,9 @@ class Concierge(object):
         sncl_pattern = "%s.%s.%s.%s" % tuple(snclList)
         return(sncl_pattern)
 
-    def get_availability(self,
+    def get_availability(self, 
                          network=None, station=None, location=None, channel=None,
-                         starttime=None, endtime=None, includerestricted=None,
+                         starttime=None, endtime=None, 
                          latitude=None, longitude=None, minradius=None, maxradius=None):
         """
         ################################################################################
@@ -397,7 +423,8 @@ class Concierge(object):
         
         if (!isGeneric("getAvailability")) {
           setGeneric("getAvailability", function(obj, network, station, location, channel,
-                                                 starttime, endtime, includerestricted,
+                                                 #starttime, endtime,includerestricted,
+                                                 starttime, endtime, 
                                                  latitude, longitude, minradius, maxradius) {
             standardGeneric("getAvailability")
           })
@@ -436,9 +463,9 @@ class Concierge(object):
         :type endtime: :class:`~obspy.core.utcdatetime.UTCDateTime`
         :param endtime: Limit to metadata epochs ending on or before the
             specified end time.
-        :type includerestricted: bool
-        :param includerestricted: Specify if results should include information
-            for restricted stations.
+        #:type includerestricted: bool
+        #:param includerestricted: Specify if results should include information
+        #    for restricted stations.
         :type latitude: float
         :param latitude: Specify the latitude to be used for a radius search.
         :type longitude: float
@@ -476,7 +503,6 @@ class Concierge(object):
         #    return(self.filtered_availability)
         
         # Read from a local StationXML file one time only -- IE, once this section has been run once in a job, don't run it again... so availability2 wont run this section.
-
         if self.station_client is None:
             # Using Local Data        
 
@@ -488,14 +514,13 @@ class Concierge(object):
                     if self.station_url is not None:            
                         self.logger.info("Reading StationXML file %s" % self.station_url)
                         sncl_inventory = obspy.read_inventory(self.station_url, format="STATIONXML")
-
+                        
                 except Exception as e:
                     err_msg = "The StationXML file: '%s' is not valid" % self.station_url
                     self.logger.debug(e)
                     self.logger.error(err_msg)   
                     raise ValueError
                 
-
                 self.logger.debug('Building availability dataframe...')
 
                 # Allow arguments to override UserRequest parameters
@@ -508,7 +533,6 @@ class Concierge(object):
                 else:
                     _endtime = endtime
                 
-
                 # Set up empty dataframe
                 df = pd.DataFrame(columns=("network", "station", "location", "channel",
                                            "latitude", "longitude", "elevation", "depth" ,
@@ -522,17 +546,31 @@ class Concierge(object):
                     for n in sncl_inventory.networks:
                         for s in n.stations:
                             for c in s.channels:
-                                if c.start_date < _endtime and c.end_date > _starttime:
+                                if (c.start_date < _endtime) and ((c.end_date > _starttime) or (c.end_date is None)):
+                                    if c.end_date is None:
+                                        tmpend = UTCDateTime("2599-12-31T23:59:59")
+                                    else:
+                                        tmpend = c.end_date
                                     snclId = self.get_sncl_pattern(n.code, s.code, c.location_code, c.code)
-                                    df.loc[len(df)] = [n.code, s.code, c.location_code, c.code,
-                                                       c.latitude, c.longitude, c.elevation, c.depth,
-                                                       c.azimuth, c.dip, c.sensor.description,
-                                                       None,     # TODO:  Figure out how to get instrument 'scale'
-                                                       None,     # TODO:  Figure out how to get instrument 'scalefreq'
-                                                       None,     # TODO:  Figure out how to get instrument 'scaleunits'
-                                                       c.sample_rate,
-                                                       c.start_date, c.end_date, snclId]
-
+                                    if c.response.instrument_sensitivity is None:
+                                        df.loc[len(df)] = [n.code, s.code, c.location_code, c.code,
+                                                          c.latitude, c.longitude, c.elevation, c.depth,
+                                                          c.azimuth, c.dip, c.sensor.description,
+                                                          None,
+                                                          None,
+                                                          None,
+                                                          c.sample_rate,
+                                                          c.start_date, c.end_date, snclId]
+                                    else:
+                                        df.loc[len(df)] = [n.code, s.code, c.location_code, c.code,
+                                                          c.latitude, c.longitude, c.elevation, c.depth,
+                                                          c.azimuth, c.dip, c.sensor.description,
+                                                          c.response.instrument_sensitivity.value,
+                                                          c.response.instrument_sensitivity.frequency,
+                                                          c.response.instrument_sensitivity.input_units,
+                                                          c.sample_rate,
+                                                          c.start_date, c.end_date, snclId]
+                            
                 # Add local data to the dataframe, even if we don't have metadata
                 # Loop through all sncl_patterns in the preferences file ---------------
                 self.logger.debug("Searching for data in %s" % self.dataselect_url)
@@ -573,15 +611,28 @@ class Concierge(object):
                     if self.station_client is None:	# Local metadata
                         if self.dataselect_client is None:	# Local data
                             # Loop over the available data and add to dataframe if they aren't yet
-                            fpattern1 = '%s' % (sncl_pattern + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
-                            fpattern2 = '%s' % (fpattern1 + '.[A-Z]')
+                            if len(sncl_pattern.split('.')) > 4:
+                                tmp_sncl_pattern = os.path.splitext(sncl_pattern)[0]
+                                q = os.path.splitext(sncl_pattern)[1][1]
+                                
+                                fpattern1 = '%s' % (tmp_sncl_pattern + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
+                                if q.isalpha():
+                                    fpattern2 = '%s' % (fpattern1 + '.' + q)
+                                else:
+                                    fpattern2 = '%s' % (fpattern1 + '.[A-Z]')
+
+                            else:
+                                fpattern1 = '%s' % (sncl_pattern + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
+                                fpattern2 = '%s' % (fpattern1 + '.[A-Z]')
 
                             matching_files = []
+
                             for root, dirnames, fnames in os.walk(self.dataselect_url):
                                 for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
                                     matching_files.append(os.path.join(root,fname))
 
-                            self.logger.debug("Found %s files matching %s (sncl_format=%s)" % (len(matching_files), sncl_pattern,self.sncl_format))
+
+                            #self.logger.debug("Found files: \n %s" % '\n '.join(matching_files))
 
                             if (len(matching_files) == 0):
                                 continue
@@ -602,7 +653,6 @@ class Concierge(object):
 
                 # Now save the dataframe internally
                 self.initial_availability = df
-
 
         # Container for all of the individual sncl_pattern dataframes generated
         sncl_pattern_dataframes = []
@@ -656,21 +706,52 @@ class Concierge(object):
                
             _sncl_pattern = self.get_sncl_pattern(_network, _station, _location, _channel)
 
+            
             # Get availability dataframe ---------------------------------------
             if self.station_client is None:
                 # Use pre-existing internal dataframe if we are using local data, filtered by time 
                 df = self.initial_availability
-                df = df[(df['starttime'] < _endtime-1) & (df['endtime'] > _starttime)]
+                if not df['endtime'] is None:
+                    df = df[(df['starttime'] < _endtime-1) & (df['endtime'] > _starttime)]
+                else:
+                    df = df[(df['starttime'] < _endtime-1)]
                 if df is None:
                     continue 
+            elif self.station_client == "PH5":
+                self.logger.debug("read IRISPH5 station web services %s/%s for %s,%s,%s,%s,%s,%s" % (self.station_url,self.station_type,_network, _station, _location, _channel, _starttime.strftime('%Y.%j'), _endtime.strftime('%Y.%j')))
+                try:
+                    df = irisseismic.getAvailability(self.station_url,self.station_type,network=_network, station=_station,
+                                                     location=_location, channel=_channel,starttime=_starttime, endtime=_endtime,
+                                                     includerestricted=True,
+                                                     latitude=latitude, longitude=longitude, minradius=minradius, maxradius=maxradius)
+                                                     
+                except Exception as e:
+                    if (minradius):
+                        err_msg = "No stations found for %s within radius %s-%s degrees of latitude,longitude %s,%s" % (_sncl_pattern,minradius,maxradius,latitude,longitude)
+                    else:
+                        err_msg = "No stations found for %s" % (_sncl_pattern)
+                    self.logger.debug(str(e).strip('\n'))
+                    self.logger.info(err_msg)
+                    continue
+
+                if (df.empty):
+                    if (minradius):
+                        err_msg = "No stations found for %s within radius %s-%s degrees of latitude,longitude %s,%s" % (_sncl_pattern,minradius,maxradius,latitude,longitude)
+                    else:
+                        err_msg = "No stations found for %s" % (_sncl_pattern)
+                    self.logger.info(err_msg)
+                    continue
+
+                self.logger.debug('Adding %s to the availability dataframe' % _sncl_pattern)
+
             else:
                 # Read from FDSN web services
-                self.logger.debug("read FDSN station web services %s for %s, %s, %s, %s, %s, %s" % (self.station_url,_network, _station, _location, _channel, _starttime.strftime('%Y.%j'), _endtime.strftime('%Y.%j')))
+                self.logger.debug("read FDSN station web services %s for %s,%s,%s,%s,%s,%s" % (self.station_url,_network, _station, _location, _channel, _starttime.strftime('%Y.%j'), _endtime.strftime('%Y.%j')))
                 try:
                     sncl_inventory = self.station_client.get_stations(starttime=_starttime, endtime=_endtime,
                                                                       network=_network, station=_station,
                                                                       location=_location, channel=_channel,
-                                                                      includerestricted=None,
+                                                                      includerestricted=True,
                                                                       latitude=latitude, longitude=longitude,
                                                                       minradius=minradius, maxradius=maxradius,                                                                
                                                                       level="channel",matchtimeseries=True)
@@ -697,14 +778,25 @@ class Concierge(object):
                     for s in n.stations:
                         for c in s.channels:
                             snclId = self.get_sncl_pattern(n.code, s.code, c.location_code, c.code)
-                            df.loc[len(df)] = [n.code, s.code, c.location_code, c.code,
+                            if c.response.instrument_sensitivity is None:
+                                df.loc[len(df)] = [n.code, s.code, c.location_code, c.code,
                                                c.latitude, c.longitude, c.elevation, c.depth,
                                                c.azimuth, c.dip, c.sensor.description,
-                                               None,     # TODO:  Figure out how to get instrument 'scale'
-                                               None,     # TODO:  Figure out how to get instrument 'scalefreq'
-                                               None,     # TODO:  Figure out how to get instrument 'scaleunits'
+                                               None,
+                                               None,
+                                               None,
                                                c.sample_rate,
                                                c.start_date, c.end_date, snclId]
+                            else:
+                                df.loc[len(df)] = [n.code, s.code, c.location_code, c.code,
+                                               c.latitude, c.longitude, c.elevation, c.depth,
+                                               c.azimuth, c.dip, c.sensor.description,
+                                               c.response.instrument_sensitivity.value,
+                                               c.response.instrument_sensitivity.frequency,
+                                               c.response.instrument_sensitivity.input_units,
+                                               c.sample_rate,
+                                               c.start_date, c.end_date, snclId]
+
 
             # Subset availability dataframe based on _sncl_pattern -------------
 
@@ -725,9 +817,8 @@ class Concierge(object):
                 
                 matching_files = []
                 for root, dirnames, fnames in os.walk(self.dataselect_url):
-                   for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
-                       matching_files.append(os.path.join(root,fname))
-
+                    for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
+                        matching_files.append(os.path.join(root,fname))
                 if (len(matching_files) == 0):
                     err_msg = "No local waveforms matching %s" % fpattern1
                     self.logger.debug(err_msg)
@@ -735,6 +826,7 @@ class Concierge(object):
                 else:
                     # Create a mask based on available file names
                     mask = df.snclId.str.contains("MASK WITH ALL FALSE")
+
                     for i in range(len(matching_files)):
                         basename = os.path.basename(matching_files[i])
                         match = re.match('[^\\.]*\\.[^\\.]*\\.[^\\.]*\\.[^\\.]*',basename)
@@ -744,6 +836,7 @@ class Concierge(object):
                         
                 # Subset based on the mask
                 df = df[mask]
+
             # Subset based on distance
             # Create a temporary column that has the distances, use to subset
             df.insert(0,'dist',"EMPTY")
@@ -774,10 +867,7 @@ class Concierge(object):
 
             # Append this dataframe
             if df.shape[0] == 0:
-                if maxradius is not None or minradius is not None:
-                    self.logger.info("No stations found for "  + str(_sncl_pattern) + " within radius %s-%s degrees of latitude,longitude %s,%s" % (minradius,maxradius,latitude,longitude))
-                else:
-                    self.logger.info("No stations found for " + str(_sncl_pattern) )
+                self.logger.debug("No SNCLS found matching '%s' (sncl_format=%s)" % (_sncl_pattern,self.sncl_format))
             else:
                 #if df.snclId not in sncl_pattern_dataframes[:].snclId:
                 sncl_pattern_dataframes.append(df)	# tack the dataframes together
@@ -785,10 +875,7 @@ class Concierge(object):
         # END of sncl_patterns loop --------------------------------------------
  
         if len(sncl_pattern_dataframes) == 0:
-            if maxradius is not None or minradius is not None:
-                err_msg = "No available waveforms for %s matching " % _starttime.strftime('%Y-%m-%d') + str(self.sncl_patterns) + " within radius %s-%s degrees of latitude,longitude %s,%s" % (minradius,maxradius,latitude,longitude)
-            else:
-                err_msg = "No available waveforms for %s matching " % _starttime.strftime('%Y-%m-%d') + str(self.sncl_patterns)
+            err_msg = "No available waveforms for %s matching " % _starttime.strftime('%Y-%m-%d') + str(self.sncl_patterns)
             self.logger.info(err_msg)
             #raise NoAvailableDataError(err_msg)
         else:
@@ -855,7 +942,7 @@ class Concierge(object):
             _endtime = endtime
 
         
-        if self.dataselect_client is None:
+        if self.dataselect_type is None:
             # Read local MiniSEED file and convert to R_Stream
             nday = int((_endtime - .00001).julday - _starttime.julday) + 1   # subtract a short amount of time for 00:00:00 endtimes
 
@@ -884,10 +971,12 @@ class Concierge(object):
                             _endtime = _endtime - 0.000001
                         py_stream = obspy.read(filepath)
                         py_stream = py_stream.slice(_starttime, _endtime, nearest_sample=False)
+                       
+                        
                         if (StrictVersion(obspy.__version__) < StrictVersion("1.1.0")): 
                             flag_dict = obspy.io.mseed.util.get_timing_and_data_quality(filepath)
-                            act_flags = [0,0,0,0,0,0,0,0] # TODO:  Find a way to read act_flags
-                            io_flags = [0,0,0,0,0,0,0,0] # TODO:  Find a way to read io_flags
+                            act_flags = [0,0,0,0,0,0,0,0] # not supported before 1.1.0  
+                            io_flags = [0,0,0,0,0,0,0,0]  # not supported before 1.1.0
                             dq_flags = flag_dict['data_quality_flags']
                         else:
                             flag_dict = obspy.io.mseed.util.get_flags(filepath)
@@ -914,30 +1003,33 @@ class Concierge(object):
                             if (len(availability) > 1):
                                 raise Exception("Multiple metadata epochs found for %s" % _sncl_pattern)
 
+
                         sensor = availability.instrument[0]
                         scale = availability.scale[0]
                         scalefreq = availability.scalefreq[0]
                         scaleunits = availability.scaleunits[0]
-                        if sensor is None: sensor = ""           # default from IRISSeismic Trace class prototype
-                        if scale is None: scale = 1.0            # default from IRISSeismic Trace class prototype
-                        if scalefreq is None: scalefreq = 1.0    # default from IRISSeismic Trace class prototype
-                        if scaleunits is None: scaleunits = ""   # default from IRISSeismic Trace class prototype
+                        if sensor is None: sensor = ""          
+                        if scale is None: scale = np.NaN            
+                        if scalefreq is None: scalefreq = np.NaN    
+                        if scaleunits is None: scaleunits = ""  
                         latitude = availability.latitude[0]
                         longitude = availability.longitude[0]
                         elevation = availability.elevation[0]
                         depth = availability.depth[0]
                         azimuth = availability.azimuth[0]
                         dip = availability.dip[0]
+                        
+                       
                         # Create the IRISSeismic version of the stream
                         r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags, timing_qual,
 							sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
-
 
                     except Exception as e:
                         err_msg = "Error reading in local waveform from %s" % filepath
                         self.logger.debug(e)
                         self.logger.debug(err_msg)
                         raise
+  
                     if len(utils.get_slot(r_stream, 'traces')) == 0:
                         raise Exception("no data available") 
 
@@ -1023,10 +1115,10 @@ class Concierge(object):
                     scale = availability.scale[0]
                     scalefreq = availability.scalefreq[0]
                     scaleunits = availability.scaleunits[0]
-                    if sensor is None: sensor = ""           # default from IRISSeismic Trace class prototype
-                    if scale is None: scale = 1.0            # default from IRISSeismic Trace class prototype
-                    if scalefreq is None: scalefreq = 1.0    # default from IRISSeismic Trace class prototype
-                    if scaleunits is None: scaleunits = ""   # default from IRISSeismic Trace class prototype
+                    if sensor is None: sensor = ""          
+                    if scale is None: scale = np.NaN           
+                    if scalefreq is None: scalefreq = np.NaN   
+                    if scaleunits is None: scaleunits = ""  
                     latitude = availability.latitude[0]
                     longitude = availability.longitude[0]
                     elevation = availability.elevation[0]
@@ -1055,7 +1147,7 @@ class Concierge(object):
                 # we want to suppress the stderr channel briefly to block the unwanted feedback from R
                 orig_stderr = sys.stderr
                 sys.stderr = self.dev_null
-                r_stream = irisseismic.R_getDataselect(self.dataselect_url, network, station, location, channel, _starttime, _endtime, quality, repository,inclusiveEnd, ignoreEpoch)
+                r_stream = irisseismic.R_getDataselect(self.dataselect_url, self.dataselect_type, network, station, location, channel, _starttime, _endtime, quality, repository,inclusiveEnd, ignoreEpoch)
                 sys.stderr = orig_stderr
             except Exception as e:
                 err_msg = "Error reading in waveform from FDSN dataselect webservice client (base url: %s)" % self.dataselect_url

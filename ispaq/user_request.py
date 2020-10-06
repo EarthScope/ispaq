@@ -94,7 +94,9 @@ class UserRequest(object):
                                                                 'outputType': 'GeneralValue',
                                                                 'speed': 'fast',
                                                                 'streamCount': 1}}}
-            self.preferences = {'pdf_dir': '.',
+            self.preferences = {'output': 'csv',
+                                'db_name': 'ispaq.db',
+                                'pdf_dir': '.',
                                 'csv_dir': '.',
                                 'psd_dir': '.',
                                 'sigfigs': 6,
@@ -106,6 +108,7 @@ class UserRequest(object):
         #     Initialize from JSON     ----------------------------------------
         
         elif json_representation is not None:
+            
             # Load json dictionary from file (or string)
             try:
                 with open(os.path.expanduser(json_representation), 'r') as infile:
@@ -118,13 +121,16 @@ class UserRequest(object):
             self.requested_endtime = UTCDateTime(json_dict['requested_endtime']["timestamp"])
             self.requested_metric_set = json_dict['requested_metric_set']
             self.requested_sncl_set = json_dict['requested_sncl_set']
+            
             # Metric and SNCL information from the preferences file
             self.metrics = json_dict['metrics']
             self.sncls = json_dict['sncls']
+            
             # Data access information from the preferences file
             self.event_url = json_dict['event_url']
             self.station_url = json_dict['station_url']
             self.dataselect_url = json_dict['dataselect_url']
+            
             # Metric functions determined by querying the R package
             self.invalid_metrics = json_dict['invalid_metrics']
             self.function_by_logic = json_dict['function_by_logic']
@@ -151,6 +157,9 @@ class UserRequest(object):
             self.dataselect_url = args.dataselect_url
             self.event_url = args.event_url
             self.resp_dir = args.resp_dir
+            
+            self.output = args.output
+            self.db_name = args.db_name
             self.csv_dir = args.csv_dir
             self.sncl_format = args.sncl_format
             self.sigfigs = args.sigfigs
@@ -160,6 +169,7 @@ class UserRequest(object):
             self.plot_include = args.plot_include
             self.pdf_dir = args.pdf_dir
             self.psd_dir = args.psd_dir
+            
             
 
             #     Load preferences from file      -----------------------------
@@ -210,7 +220,8 @@ class UserRequest(object):
                                 if name is not None and len(entry) > 1:             # we have a value or set of comma separated values
                                     values = entry[1].strip().split(',')
                                     values = [value.strip() for value in values]
-                                    values = filter(None, values)  # remove empty strings -- TODO: this can cause index out of range errors on empty entries
+                                    values = [i for i in values if i]  # remove empty strings
+                                    #values = filter(None, values)  # this no longer works in python 3
                                         
                             # attempt robust assignment of name to value(s) -- currentSection is the current dictionary of interest
                             if name is None:  # sanity check
@@ -223,7 +234,8 @@ class UserRequest(object):
                                 currentSection[name] = values[0]
             else:
                 logger.warning("Cannot find preference file %s, continuing with program defaults" % self.preferences_file)
-                        
+                 
+      
             # Check for special keyword to exit after loading preferences
             # Be sure to save object instance variables needed from the preference files
             pref_keyword = "LOAD_PREFS_ONLY"
@@ -285,6 +297,18 @@ class UserRequest(object):
             
             #     Add individual preferences     ------------------------------
             
+            if self.output is None:
+                if 'output' in preferences:
+                    self.output = preferences['output']
+                else:
+                    self.output = 'csv'
+            
+            if self.db_name is None:
+                if 'db_name' in preferences:
+                    self.db_name = preferences['db_name']
+                else:
+                    self.db_name = 'ispaq.db'
+            
             if self.pdf_dir is None:
                 if 'pdf_dir' in preferences:
                     self.pdf_dir = os.path.abspath(os.path.expanduser(preferences['pdf_dir']))
@@ -335,7 +359,8 @@ class UserRequest(object):
                 else:
                     self.sigfigs = 6
             if self.sncl_format is None:
-                if preferences.has_key('sncl_format'):
+                #if preferences.has_key('sncl_format'):    # deprecated has_key
+                if 'sncl_format' in preferences:
                     self.sncl_format = preferences['sncl_format']
                 else:
                     self.sncl_format = "N.S.L.C"
@@ -378,7 +403,6 @@ class UserRequest(object):
 
             # Get the dictionary from the R package
             default_function_dict = irismustangmetrics.function_metadata()
-
             # Determine which functions and logic types are required
             valid_function_names = set()
             valid_logic_types = set()
@@ -414,7 +438,7 @@ class UserRequest(object):
             # Check for metrics that may require a more recent version of ISPAQ --------------------
             ispq = currentispaq()
             versionMetric = []
-
+            
             for function_name in valid_function_names:
                 default_function = default_function_dict[function_name]
                 bLogic = default_function['businessLogic']
