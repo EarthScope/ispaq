@@ -802,9 +802,9 @@ conda activate ispaq
 
 ### Example Using Command-line Options to Override Preference File
 ```
-./run_ispaq.py -M sample_mean -S II.KAPI.00.BHZ --starttime 2013-01-05 --dataselect_url ./test_data --station_url ./test_data/II.KAPI_station.xml --csv_dir ./test_out
+./run_ispaq.py -M sample_mean -S II.KAPI.00.BHZ --starttime 2013-01-05 --dataselect_url ./test_data --station_url ./test_data/II.KAPI_station.xml --output csv --csv_dir ./test_out
 
-./run_ispaq.py -M psd_corrected,pdf -S II.KAPI.00.BHZ --starttime 2013-01-05 --endtime 2013-01-08 --dataselect_url ./test_data --station_url ./test_data/II.KAPI_station.xml --psd_dir ./test_out --pdf_dir ./test_out --pdf_type plot --pdf_interval aggregated
+./run_ispaq.py -M psd_corrected,pdf -S II.KAPI.00.BHZ --starttime 2013-01-05 --endtime 2013-01-08 --dataselect_url ./test_data --station_url ./test_data/II.KAPI_station.xml --output csv --psd_dir ./test_out/PSDs --pdf_dir ./test_out/PDFs --pdf_type plot --pdf_interval aggregated
 ```
 
 

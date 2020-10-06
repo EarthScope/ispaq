@@ -18,6 +18,7 @@ from rpy2.robjects import pandas2ri
 import numpy as np
 from rpy2.robjects.conversion import localconverter
 from rpy2.robjects import numpy2ri
+from . import ispaq
 
 #     R Initialization     -----------------------------------------------------
 
@@ -405,6 +406,16 @@ def _R_stationExtraArgs(includerestricted, latitude, longitude, minradius, maxra
     else:
         return (includerestricted, rinterface.MissingArg, rinterface.MissingArg, rinterface.MissingArg, rinterface.MissingArg)
 
+def _userAgent():
+    """
+    Create user agent string for use with new("IrisClient")
+    """
+    #ispaq_version = ispaq.__version__
+    ispaq_version = '3.0.0'
+    r_agent_string = ro.r("paste0('IRISSeismic/',installed.packages()['IRISSeismic','Version'],' RCurl/',installed.packages()['RCurl','Version'],' R/',R.version$major,'.',R.version$minor,' ',version$platform,' ISPAQ/')")
+    return(r_agent_string[0]+ispaq_version)
+
+
 
 #     Python wrappers for R get~ webservice functions     ---------------------
 
@@ -442,8 +453,11 @@ def getAvailability(client_url="http://service.iris.edu",
     2     629145000
     ...
     """
-    cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '")'
+    user_agent = _userAgent()
+    cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '", useragent="' + user_agent + '")'
+    #cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '")'
     r_client = ro.r(cmd)
+    
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
 
@@ -495,7 +509,8 @@ def getChannel(client_url="http://service.iris.edu",
     2     629145000
     ...
     """
-    cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '")'
+    user_agent = _userAgent()
+    cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '", useragent="' + user_agent + '")'
     r_client = ro.r(cmd)
 
     # Convert python arguments to R equivalents
@@ -542,7 +557,8 @@ def R_getDataselect(client_url="http://service.iris.edu",
     
 #     from rpy2.robjects import pandas2ri
 
-    cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '")'
+    user_agent = _userAgent()
+    cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '", useragent="' + user_agent + '")'
     r_client = ro.r(cmd)
     
 
@@ -576,7 +592,8 @@ def getDistaz(latitude, longitude, staLatitude, staLongitude):
          azimuth  backAzimuth  distance
     1  241.57595     47.88017  39.97257
     """
-    r_client = ro.r('new("IrisClient")')
+    user_agent = _userAgent()
+    r_client = ro.r('new("IrisClient",useragent="' + user_agent + '")')
     
     # Call the function and return a pandas dataframe with the results
     r_df = _R_getDistaz(r_client, latitude, longitude, staLatitude, staLongitude)
@@ -610,7 +627,10 @@ def getEvalresp(network=None, station=None, location=None, channel=None,
          azimuth  backAzimuth  distance
     1  241.57595     47.88017  39.97257
     """
-    r_client = ro.r('new("IrisClient")')
+    #r_client = ro.r('new("IrisClient")')
+    user_agent = _userAgent()
+    r_client = ro.r('new("IrisClient",useragent="' + user_agent + '")')
+
     
     # Convert python arguments to R equivalents
     time = R_POSIXct(time)
@@ -648,7 +668,9 @@ def getEvent(client_url="https://earthquake.usgs.gov", starttime=None, endtime=N
     1    NEAR EAST COAST OF KAMCHATKA
     Name: eventLocationName, dtype: object
     """
-    cmd = 'new("IrisClient", site="' + client_url + '")'
+    #cmd = 'new("IrisClient", site="' + client_url + '")'
+    user_agent = _userAgent()
+    cmd = 'new("IrisClient", site="' + client_url + '",useragent="' + user_agent + '")'
     r_client = ro.r(cmd)
     
     # Convert python arguments to R equivalents
@@ -691,7 +713,9 @@ def getNetwork(client_url="http://service.iris.edu",
     :param maxradius: Optional maximum radius used when specifying a location and radius.
     :return: pandas dataframe of network metadata.
     """
-    cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '")'
+    #cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '")'
+    user_agent = _userAgent()
+    cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '", useragent="' + user_agent + '")'
     r_client = ro.r(cmd)
 
     # Convert python arguments to R equivalents
@@ -730,7 +754,9 @@ def R_getSNCL(client_url="http://service.iris.edu",
     :param ignoreEpoch: don't stop for multiple metadata epochs (logical)
     :return: R Stream object
     """
-    cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '")'
+    #cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '")'
+    user_agent = _userAgent()
+    cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '", useragent="' + user_agent + '")'
     r_client = ro.r(cmd)
 
     # Convert python arguments to R equivalents
@@ -766,7 +792,9 @@ def getStation(client_url="http://service.iris.edu",
     :param maxradius: Optional maximum radius used when specifying a location and radius.
     :return: pandas dataframe of channel metadata.
     """
-    cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '")'
+    #cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '")'
+    user_agent = _userAgent()
+    cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '", useragent="' + user_agent + '")'
     r_client = ro.r(cmd)
 
     # Convert python arguments to R equivalents
@@ -796,7 +824,9 @@ def getTraveltime(latitude, longitude, depth, staLatitude, staLongitude):
     :param staLongitude: Longitude of seismic station.
     :return: pandas dataframe with columns: ``distance, depth, phaseName, travelTime, rayParam, takeoff, incident, puristDistance, puristName``.
     """
-    r_client = ro.r('new("IrisClient")')
+    #r_client = ro.r('new("IrisClient")')
+    user_agent = _userAgent()
+    r_client = ro.r('new("IrisClient",useragent="' + user_agent + '")')
     
     # Call the function and return a pandas dataframe with the results
     r_df = _R_getTraveltime(r_client, latitude, longitude, depth, staLatitude, staLongitude)
@@ -829,7 +859,9 @@ def getUnavailability(client_url="http://service.iris.edu",
     :param maxradius: Optional maximum radius used when specifying a location and radius.
     :return: pandas dataframe of channel metadata.
     """
-    cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '")'
+    #cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '")'
+    user_agent = _userAgent()
+    cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '", useragent="' + user_agent + '")'
     r_client = ro.r(cmd)
     
     # Convert python arguments to R equivalents

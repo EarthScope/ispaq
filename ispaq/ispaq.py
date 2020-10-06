@@ -270,8 +270,8 @@ def main():
     from .transferFunction_metrics import transferFunction_metrics
     from .sampleRate_metrics import sampleRate_metrics
 
-    if (StrictVersion(obspy.__version__) < StrictVersion("1.1.0")):
-        print("Please update ObsPy version " + str(obspy.__version__) + " to version 1.1.0")
+    if (StrictVersion(obspy.__version__) < StrictVersion("1.2.2")):
+        print("Please update ObsPy version " + str(obspy.__version__) + " to version 1.2.2")
         message = "Would you like to update obspy now? [y]/n: "
         answer = raw_input(message).lower()
         accepted_answer = ['','yes','y']
@@ -281,7 +281,7 @@ def main():
             message = "Would you like to update obspy now? [y]/n: "
             answer = raw_input(message).lower()
         if answer in accepted_answer:
-            subprocess.call("conda install -c conda-forge obspy=1.1.0",shell=True)
+            subprocess.call("conda install -c conda-forge obspy=1.2.2",shell=True)
         elif answer in rejected_answer:
             print("Exiting now without updating conda packages.")
             raise SystemExit
