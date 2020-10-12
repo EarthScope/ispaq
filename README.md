@@ -172,7 +172,7 @@ usage: run_ispaq.py [-h] [-P PREFERENCES_FILE] [-M METRICS] [-S STATIONS]
                     [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-A] [-V]
                     [-I] [-U] [-L]
 
-ISPAQ version 3.0.0
+ISPAQ version 3.0.0-beta
 
 single arguments:
   -h, --help                       show this help message and exit
@@ -490,7 +490,7 @@ IRISMustangMetrics R packages.
 
 ```
 (ispaq) bash-3.2$ ./run_ispaq.py -U
-2020-10-05 21:22:27 - INFO - Running ISPAQ version 3.0.0 on Mon Oct  5 21:22:27 2020
+2020-10-05 21:22:27 - INFO - Running ISPAQ version 3.0.0-beta on Mon Oct  5 21:22:27 2020
 2020-10-05 21:22:30 - INFO - Checking for recommended conda packages...
 2020-10-05 21:22:30 - INFO - Required conda packages found
 2020-10-05 21:22:30 - INFO - Checking for IRIS R package updates...
