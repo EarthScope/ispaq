@@ -113,7 +113,7 @@ Note: If you are upgrading from ISPAQ 2.0 to ISPAQ 3.0+, you should create a new
 cd ispaq
 conda update conda
 conda env remove --name ispaq  #if you are upgrading from an existing ISPAQ 2.0 installation to ISPAQ 3.0
-conda create --name ispaq python=3.6 obspy=1.2.2
+conda create --name ispaq -c conda-forge python=3.6 obspy=1.2.2
 conda activate ispaq
 conda install -c conda-forge --file ispaq-conda-install.txt
 ```
