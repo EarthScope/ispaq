@@ -769,13 +769,13 @@ touch $CONDA_PREFIX/etc/conda/deactivate.d/env_vars.sh
 ```
 
 Edit the $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh as follows:
-> #!/bin/sh
+> #!/bin/sh     
 > export IrisClient_netrc='path-to-netrc-file'
 
 where 'path-to-netrc-file' is the file path for your .netrc.
 
 Edit the $CONDA_PREFIX/etc/conda/deactivate.d/env_vars.sh as follows:
-> #!/bin/sh
+> #!/bin/sh    
 > unset IrisClient_netrc
 
 Then you'll need to re-install the CRAN IRISSeismic package:
