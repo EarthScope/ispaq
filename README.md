@@ -792,7 +792,7 @@ R CMD INSTALL IRISSeismic_1.6.0.tar.gz.   # or whichever version you have in you
 ./run_ispaq.py -U   # to (re-)install the latest version if you have IRISSeismic < 1.6.0
 ```
 
-For ISPAQ verion 3 (in beta):
+For ISPAQ version 3 (in beta):
 ```
 ./run_ispaq.py -I
 ```

@@ -19,27 +19,24 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
     # For writing to file, before convert the datetime object
     start = starttime.date
     end = endtime.date
-            
+
 
     if concierge.output == 'csv':
         # Convert datetime for dataframe manipulation
         starttime = starttime.datetime
         endtime = endtime.datetime
 
-    
         # Subset fileDF to only this sncl
         snclFiles = fileDF[fileDF['SNCL'] == sncl]['FILE']
-        
-        
         
         for snclFile in snclFiles:
             logger.debug('Collecting PSD values from %s' % (snclFile))
     
-            psd = pd.read_csv(snclFile, parse_dates=['starttime','endtime'])
-            psd.dropna(inplace=True)
-    
-            # Only include PSDs that are within the time range
-            psd=psd[(psd['starttime'] >= starttime) & (psd['endtime'] <= endtime)]
+        psd = pd.concat((pd.read_csv(snclFile, parse_dates=['starttime','endtime']) for snclFile in snclFiles))
+        psd.dropna(inplace=True)
+
+        # Only include PSDs that are within the time range
+        psd=psd[(psd['starttime'] >= starttime) & (psd['endtime'] <= endtime)]
     
             
 

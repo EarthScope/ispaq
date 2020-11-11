@@ -89,7 +89,7 @@ PDF_Preferences:
 #   run_ispaq.py -M basicStats -S basicStats --starttime 2010-04-20 --log-level DEBUG
 #   run_ispaq.py -M stateOfHealth -S IU --starttime 2011-01-01
 #   run_ispaq.py -M gaps -S ANMO --starttime 2013-01-05 --endtime 2013-01-08 --log-level INFO -A
-#   run_ispaq.py -M psdPDF -S psdPDF --starttime 2013-06-01 --endtime 2013-07-01
+#   run_ispaq.py -M psdPdf -S psdPdf --starttime 2013-06-01 --endtime 2013-07-01
 
 
 # About the Data_Access Section:
