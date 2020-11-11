@@ -82,13 +82,14 @@ def PSD_metrics(concierge):
             try:
                 r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel,starttime,endtime, inclusiveEnd=False)
             except Exception as e:
-                logger.debug(e)
+                #logger.debug(e)
                 if str(e).lower().find('no data') > -1:
                     logger.info('No data available for %s' % (av.snclId))
                 elif str(e).lower().find('multiple epochs') :
                     logger.info('Skipping %s because multiple metadata epochs found' % (av.snclId))
                 else:
-                    logger.warning('No data available for %s from %s' % (av.snclId, concierge.dataselect_url))
+                    logger.error(e)
+                    #logger.warning('No data available for %s from %s' % (av.snclId, concierge.dataselect_url))
                 continue
 
             # Run the PSD metric ----------------------------------------
@@ -98,7 +99,10 @@ def PSD_metrics(concierge):
                     if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
                         sampling_rate = utils.get_slot(r_stream, 'sampling_rate')
                         evalresp = utils.getSpectra(r_stream, sampling_rate, "PSD", concierge)
-                    # get corrected PSDs
+                    if (concierge.dataselect_type == "ph5ws"):
+                        sampling_rate = utils.get_slot(r_stream, 'sampling_rate')
+                        evalresp = utils.getSpectra(r_stream, sampling_rate, "PSD", concierge)
+                    # get corrected PSD
                     try:
                         (df, PSDcorrected, PDF) = irismustangmetrics.apply_PSD_metric(r_stream, evalresp=evalresp)
                     except Exception as e:

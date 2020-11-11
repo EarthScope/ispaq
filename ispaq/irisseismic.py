@@ -603,11 +603,15 @@ def getDistaz(latitude, longitude, staLatitude, staLongitude):
     return df
     
 
-def getEvalresp(network=None, station=None, location=None, channel=None,
+def getEvalresp(client_url="http://service.iris.edu",
+                client_type="fdsnws",
+                network=None, station=None, location=None, channel=None,
                 time=None, minfreq=None, maxfreq=None,
                 nfreq=None, units=None, output="fap"):
     """
     Returns a pandas dataframe with cinstrument response data from the IRIS DMC evalresp webservice.
+    :param client_url: FDSN web services site URL
+    :param client_type: usually fdsnws, for IRIS PH5 archive use ph5ws
     :param network: sncl network (string)
     :param station: sncl station (string)
     :param location: sncl location (string)
@@ -628,9 +632,10 @@ def getEvalresp(network=None, station=None, location=None, channel=None,
     1  241.57595     47.88017  39.97257
     """
     #r_client = ro.r('new("IrisClient")')
-    user_agent = _userAgent()
-    r_client = ro.r('new("IrisClient",useragent="' + user_agent + '")')
 
+    user_agent = _userAgent()
+    cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '", useragent="' + user_agent + '")'
+    r_client = ro.r(cmd)
     
     # Convert python arguments to R equivalents
     time = R_POSIXct(time)
@@ -640,7 +645,6 @@ def getEvalresp(network=None, station=None, location=None, channel=None,
     r_df = _R_getEvalresp(r_client, network, station, location, channel, time, minfreq, maxfreq, nfreq, units, output)
     with localconverter(ro.default_converter + pandas2ri.converter):
         df = ro.conversion.rpy2py(r_df)
-#     df = pandas2ri.ri2py(r_df)    # deprecated
     return df
     
     

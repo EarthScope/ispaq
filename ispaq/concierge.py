@@ -376,6 +376,7 @@ class Concierge(object):
         self.logger.debug("metric_names %s", self.metric_names)
         self.logger.debug("sncl_patterns %s", self.sncl_patterns)
         self.logger.debug("dataselect_url %s", self.dataselect_url)
+        self.logger.debug("dataselect_type %s", self.dataselect_type)
         self.logger.debug("station_url %s", self.station_url)
         self.logger.debug("event_url %s", self.event_url)
         self.logger.debug("resp_dir %s", self.resp_dir)
@@ -1151,8 +1152,8 @@ class Concierge(object):
                 sys.stderr = orig_stderr
             except Exception as e:
                 err_msg = "Error reading in waveform from FDSN dataselect webservice client (base url: %s)" % self.dataselect_url
+                self.logger.error(err_msg)
                 self.logger.debug(str(e).strip('\n'))
-                self.logger.debug(err_msg)
                 raise
 
             # Some FDSN web services cut on record boundaries instead of samples, so make sure we have correct start/end times

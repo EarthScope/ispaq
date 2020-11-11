@@ -612,7 +612,7 @@ def getSpectra(st, sampling_rate, metric, concierge):
     else:    
         # calling the web service 
         try:
-            evalResp = irisseismic.getEvalresp(network, station, location, channel, starttime,
+            evalResp = irisseismic.getEvalresp(concierge.dataselect_url, concierge.dataselect_type, network, station, location, channel, starttime,
                                        minfreq, maxfreq, nfreq, units.lower(), output.lower())
         except Exception as e:
             raise
@@ -669,7 +669,7 @@ def getSampleRateSpectra(r_stream,sampling_rate,norm_freq, concierge):
     else:
         # calling the web service
         try:
-            evalResp = irisseismic.getEvalresp(network, station, location, channel, starttime,
+            evalResp = irisseismic.getEvalresp(concierge.dataselect_url, concierge.dataselect_type, network, station, location, channel, starttime,
                                        minfreq, maxfreq, nfreq, units.lower(), output.lower())
         except Exception as e:
             raise
