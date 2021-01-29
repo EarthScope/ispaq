@@ -56,7 +56,7 @@ def PSD_metrics(concierge):
     ####################
     def do_psd(concierge,starttime,endtime):
         try:
-            availability = concierge.get_availability(starttime=starttime,endtime=endtime)
+            availability = concierge.get_availability("PSDs", starttime=starttime,endtime=endtime)
         except NoAvailableDataError as e:
             raise
         except Exception as e:
@@ -81,6 +81,10 @@ def PSD_metrics(concierge):
             # NOTE:  Use the requested starttime and endtime
             try:
                 r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel,starttime,endtime, inclusiveEnd=False)
+                if not utils.get_slot(r_stream, 'traces'):
+                    # There is no data, just bypass it
+                    continue
+                    
             except Exception as e:
                 #logger.debug(e)
                 if str(e).lower().find('no data') > -1:
@@ -270,7 +274,7 @@ def PSD_metrics(concierge):
 
         if concierge.station_client is None:
             try:
-                initialAvailability = concierge.get_availability(starttime=start,endtime=end)
+                initialAvailability = concierge.get_availability("PSDs", starttime=start,endtime=end)
             except NoAvailableDataError as e:
                 raise
             except Exception as e:

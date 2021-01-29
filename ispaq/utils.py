@@ -269,9 +269,13 @@ def write_simple_df(df, filepath, concierge, sigfigs=6):
     original_columns = pretty_df.columns
     extra_columns = sorted(list( set(original_columns).difference(set(columns)) ))
     extra_columns.remove('qualityFlag')
+#     if "time" in extra_columns:
+#         extra_columns.remove('time')
+
     columns.extend(extra_columns)
     
-
+    pretty_df.drop_duplicates(inplace=True)
+    
     # Write out to database or .csv file
     if output == 'csv':
         pretty_df[columns].to_csv(filepath, index=False)

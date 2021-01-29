@@ -60,6 +60,19 @@ def orientationCheck_metrics(concierge):
         logger.warning('No station metadata found for orientationCheck metrics')
         return None
 
+
+    # Create an initial availability that includes everything for the entire span
+    start = concierge.requested_starttime
+    end = concierge.requested_endtime
+    if concierge.station_client is None:
+        try:
+            initialAvailability = concierge.get_availability("orientation", starttime=start, endtime=end)
+        except NoAvailableDataError as e:
+            raise
+        except Exception as e:
+            logger.error("concierge.get_availability() failed: '%s'" % e)
+            return None
+
     # Get the seismic events in this time period
     events = concierge.get_event(minmag=minmag)
         
@@ -116,7 +129,7 @@ def orientationCheck_metrics(concierge):
         concierge.sncl_patterns = new_sncl_patterns    
  
         try:        
-            availability = concierge.get_availability(starttime=halfHourStart, endtime=halfHourEnd,
+            availability = concierge.get_availability("orientation", starttime=halfHourStart, endtime=halfHourEnd,
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=eventMinradius, maxradius=eventMaxradius)
         except NoAvailableDataError as e:

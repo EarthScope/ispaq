@@ -59,11 +59,30 @@ def SNR_metrics(concierge):
     # Container for all of the metrics dataframes generated
     dataframes = []
 
+    # get initial availability for entire time range
+    start = concierge.requested_starttime
+    end = concierge.requested_endtime
+    delta = (end-start)/(24*60*60)
+    nday=int(delta)+1
+    
+    # Create an initial availability that spans the entire requested period to ensure that all files are included
+#     if nday > 1 and concierge.station_client is None:
+    if concierge.station_client is None:
+        try:
+            initialAvailability = concierge.get_availability("snr", starttime=start, endtime=end)
+        except NoAvailableDataError as e:
+            raise
+        except Exception as e:
+            logger.error("concierge.get_availability() failed: '%s'" % e)
+            return None
+  
+  
     #############################################################
     ## Loop through each event.
     #############################################################
-
     logger.info('Calculating SNR metrics for %d events.' % (events.shape[0]))
+
+    
 
     for (index, event) in events.iterrows():
         logger.info('%03d Magnitude %3.1f Time %s event: %s' % (int(index), event.magnitude, event.time.strftime("%Y-%m-%dT%H:%M:%S"), event.eventLocationName))
@@ -86,7 +105,7 @@ def SNR_metrics(concierge):
 
         logger.debug("Looking for metadata from %s to %s" % (halfHourStart.strftime("%Y-%m-%dT%H:%M:%S"),halfHourEnd.strftime("%Y-%m-%dT%H:%M:%S")))
         try:        
-            availability = concierge.get_availability(starttime=halfHourStart, endtime=halfHourEnd,
+            availability = concierge.get_availability("snr", starttime=halfHourStart, endtime=halfHourEnd,
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=0, maxradius=maxradius)
 
@@ -103,6 +122,7 @@ def SNR_metrics(concierge):
         # Apply the channelFilter and drop multiple metadata epochs
         availability = availability[availability.channel.str.contains(channelFilter)].drop_duplicates(['snclId'])      
 
+        
         # Sanity check that some SNCLs exist
         if availability.shape[0] == 0:
             logger.info('Skipping event with no available data')
@@ -148,6 +168,10 @@ def SNR_metrics(concierge):
             # NOTE:  windowStart < tr.stats.starttime and windowEnd > tr.stats.endtime
             try:
                 r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel, windowStart-1, windowEnd+1, inclusiveEnd=False)
+                if not utils.get_slot(r_stream, 'traces'):
+                    # There is no data, just bypass it
+                    continue
+                
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
                     logger.info('No data found for %s' % (av.snclId))
@@ -178,7 +202,8 @@ def SNR_metrics(concierge):
                 else:
                     logger.info('%03d Calculating SNR metrics for %s' % (index, av.snclId))
                     try:
-                        df = irismustangmetrics.apply_simple_metric(r_stream, 'SNR', algorithm="splitWindow", windowSecs=windowSecs)
+                        
+                        df = irismustangmetrics.apply_simple_metric(av, windowStart, windowEnd, r_stream, 'SNR', algorithm="splitWindow", windowSecs=windowSecs)
                         dataframes.append(df)
                     except Exception as e:
                         logger.warning('"SNR" metric calculation failed for %s: %s' % (av.snclId, e))
@@ -198,7 +223,7 @@ def SNR_metrics(concierge):
         result = pd.concat(dataframes, ignore_index=True)    
         mask = result.metricName.apply(valid_metric)
         result = result[(mask)]
-        result.reset_index(drop=True, inplace=True)        
+        result.reset_index(drop=True, inplace=True) 
         return(result)
 
 

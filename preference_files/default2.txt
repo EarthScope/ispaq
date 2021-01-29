@@ -18,12 +18,11 @@ Metrics:
   orientationCheck: orientation_check
   transferFunction: transfer_function
   sampleRates: sample_rate_channel, sample_rate_resp
-  pctAvail: percent_availability
+  
+  allMetrics: pct_above_nhnm, pct_below_nlnm, dead_channel_lin, dead_channel_gsn, psd_corrected, pdf, sample_min, sample_median, sample_mean, sample_max, sample_rms, sample_unique, num_gaps, max_gap, num_overlaps, max_overlap, percent_availability, polarity_check, cross_talk, pressure_effects, amplifier_saturation, calibration_signal, clock_locked, digital_filter_charging, digitizer_clipping, event_begin, event_end, event_in_progress, glitches, missing_padded_data, spikes, suspect_time_tag, telemetry_sync_error, timing_correction, timing_quality, sample_snr, num_spikes, max_stalta, orientation_check, transfer_function, max_range, sample_rate_channel, sample_rate_resp
 
   # Example user-defined combination
   customStats: sample_min, max_stalta, num_spikes
-  allMetrics: pct_above_nhnm, pct_below_nlnm, dead_channel_lin, dead_channel_gsn, psd_corrected, pdf, sample_min, sample_median, sample_mean, sample_max, sample_rms, sample_unique, num_gaps, max_gap, num_overlaps, max_overlap, percent_availability, polarity_check, cross_talk, pressure_effects, amplifier_saturation, calibration_signal, clock_locked, digital_filter_charging, digitizer_clipping, event_begin, event_end, event_in_progress, glitches, missing_padded_data, spikes, suspect_time_tag, telemetry_sync_error, timing_correction, timing_quality, sample_snr, num_spikes, max_stalta, orientation_check, transfer_function, max_range, sample_rate_channel, sample_rate_resp
-
 
 # Sets of SNCLs ---------------------------------------------------------------
 SNCLs:
@@ -31,9 +30,9 @@ SNCLs:
   # Examples for testing default combinations of metrics
   basicStats: IU.ANMO.00.BHZ, IU.GUMO.00.BH?
   psdPdf: IU.GRFO..BHZ
-  ANMO: IU.ANMO.00.BH?
+  ANMO: IU.ANMO.00.BH1
   IU: IU.*.10.BHZ, IU.*.10.HHZ
-  KAPI: II.KAPI.00.BH?
+  AK: AK.*.*.BH?
 
   # Example user-defined combination
   myStations: TA.*..BH?
@@ -42,20 +41,20 @@ SNCLs:
 # Data and Metadata source ----------------------------------------------------
 Data_Access:
 
-  dataselect_url: test_data/
-  event_url: test_data/2010-02-27_event.xml
-  station_url: test_data/II.KAPI_station.xml
-  resp_dir: test_data/
+  dataselect_url: IRIS    #one of: ObsPy FDSN service name, IRISPH5, url pointing to FDSN web service, or local data directory
+  station_url: IRIS       #one of: ObsPy FDSN service name, IRISPH5, url pointing to FDSN web service, or path to local StationXML file      
+  event_url: IRIS         #one of: ObsPy FDSN service name, url pointing to FDSN web service, or path to local QUAKEML file
+  resp_dir:               #directory containing local response RESP files, if used.
  
 
 # User defined preferences ----------------------------------------------------
 Preferences:
 
-  output: csv          	 	# whether to write metrics to a csv file or a sqlite database. options: csv, db
+  output: db          	 	# whether to write metrics to a csv file or a sqlite database. options: csv, db
   db_name: ispaq.db		# if writing to a database (output=db), the name of the database
-  csv_dir: test_out/csv/		# directory to contain generated metrics .csv files
-  psd_dir: test_out/PSDs/		# directory to find PSD csv files (will have subdirectories based on network and station code)
-  pdf_dir: test_out/PDFs/		# directory to contain PDF files (will have subdirectories based on network and station code)
+  csv_dir: ./csv/		# directory to contain generated metrics .csv files
+  psd_dir: ./PSDs/		# directory to find PSD csv files (will have subdirectories based on network and station code)
+  pdf_dir: ./PDFs/		# directory to contain PDF files (will have subdirectories based on network and station code)
   sigfigs: 6			# significant figures used to output metric values
   sncl_format: N.S.L.C  	# format of sncl aliases and miniSEED file names, must be some combination of period separated
                           	  N=network,S=station, L=location, C=channel (e.g., N.S.L.C or S.N.L.C)

@@ -56,6 +56,8 @@ def crossTalk_metrics(concierge):
         logger.warning('No station metadata found for crossTalk metrics')
         return None
 
+
+
     # Get the seismic events in this time period
     events = concierge.get_event(minmag=minmag)
         
@@ -63,6 +65,21 @@ def crossTalk_metrics(concierge):
     if events is None or events.shape[0] == 0:
         logger.info('No events found for crossTalk metrics.')
         return None
+
+
+
+    # Create an initial availability that includes everything for the entire span
+    start = concierge.requested_starttime
+    end = concierge.requested_endtime
+    if concierge.station_client is None:
+        try:
+            initialAvailability = concierge.get_availability("crossTalk", starttime=start, endtime=end)
+        except NoAvailableDataError as e:
+            raise
+        except Exception as e:
+            logger.error("concierge.get_availability() failed: '%s'" % e)
+            return None
+        
         
     # Container for all of the metrics dataframes generated
     dataframes = []
@@ -113,7 +130,7 @@ def crossTalk_metrics(concierge):
 
 
         try:  
-            availability = concierge.get_availability(starttime=halfHourStart, endtime=halfHourEnd,
+            availability = concierge.get_availability("crossTalk", starttime=halfHourStart, endtime=halfHourEnd,
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=0, maxradius=maxradius)
 

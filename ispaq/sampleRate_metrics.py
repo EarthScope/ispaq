@@ -59,7 +59,7 @@ def sampleRate_metrics(concierge):
 
     if concierge.station_client is None:
         try:
-            initialAvailability = concierge.get_availability(starttime=start,endtime=end)
+            initialAvailability = concierge.get_availability("sample_rates", starttime=start,endtime=end)
         except NoAvailableDataError as e:
             raise
         except Exception as e:
@@ -75,7 +75,7 @@ def sampleRate_metrics(concierge):
             continue
 
         try:
-            availability = concierge.get_availability(starttime=starttime, endtime=endtime)
+            availability = concierge.get_availability("sample_rates", starttime=starttime, endtime=endtime)
         except NoAvailableDataError as e:
             raise
         except Exception as e:
@@ -123,7 +123,7 @@ def sampleRate_metrics(concierge):
                         logger.debug('sampling_rate %f', sampling_rate)
                         logger.debug('norm_freq %f', norm_freq)
                         evalresp = utils.getSampleRateSpectra(r_stream, sampling_rate, norm_freq, concierge)     #getSampleRateSpectra uses concierge to know where to find the resp info
-                        logger.debug(print(evalresp))
+#                         logger.debug(print(evalresp))
                     try:
                         df1 = irismustangmetrics.apply_sampleRateResp_metric(r_stream, resp_pct, norm_freq, evalresp)
                     except Exception as e:
