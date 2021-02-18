@@ -404,8 +404,8 @@ PDFs in files named:
 * `SNCL`\_`startdate`\_PDF.png  (for daily PDF plot)
 * `SNCL`\_`startdate`\_`enddate`\_PDF.png  (for aggregate PDF plot)
 
-Note: The metric 'pdf' requires that corrected psds exist.  If using `output` 'csv' then `SNCL`\_`startdate`\_PSDcorrected.csv files must exist in the `psd_dir` specified directory.  
-If using `output` 'db' then the psds must exist in the database specified by `db_name`.  
+Note: The metric 'pdf' requires that corrected PSDs exist.  If using `output` 'csv' then `SNCL`\_`startdate`\_PSDcorrected.csv files must exist in the `psd_dir` specified directory.  
+If using `output` 'db' then the PSDs must exist in the database specified by `db_name`.  
 If you run the metric 'pdf' alone and see the warning 'No PSD files found', then try running metric 'psd_corrected'
 first to generate the PSD files. You will also see the warning 'No PSD files found' if there is no data available for that day.
 These two  metrics can be run simulataneously, as it will calculate the PSDs before calculating the PDFs. 
