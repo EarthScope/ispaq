@@ -211,8 +211,8 @@ def PSD_metrics(concierge):
                 for (index, sncl) in enumerate(snclList):
                     logger.info('%03d Calculating PDF values for %s' % (index, sncl))
                         
-                    
                     [pdfDF,modesDF, maxDF, minDF] = PDF_aggregator.calculate_PDF(fileDF, sncl, starttime, endtime, concierge)
+
         
                     if ('plot' in concierge.pdf_type) and not pdfDF.empty:
                         PDF_aggregator.plot_PDF(sncl, starttime, endtime, pdfDF, modesDF, maxDF, minDF, concierge)
@@ -229,11 +229,21 @@ def PSD_metrics(concierge):
                     db_sncl_pattern = db_sncl_pattern.rsplit('.', 1)[0]
                 
                 # Retrieve all targets that match
-                snclList = utils.retrieve_psd_unique_targets(concierge.db_name, db_sncl_pattern, starttime, endtime, logger) 
+                try:
+                    snclList = utils.retrieve_psd_unique_targets(concierge.db_name, db_sncl_pattern, starttime, endtime, logger) 
+                except Exception as e:
+                    if "no such table" in str(e):
+                        logger.warning("Unable to access table %s in %s" % (str(e).split(":")[1], concierge.db_name))
+                    else:
+                        logger.warning("Unable to access PSD values for %s %s - %s" % (sncl_pattern, starttime, endtime))
+                    return "No Table"
                 
                 for (index, sncl) in enumerate(snclList):
                     logger.info('%03d Calculating PDF values for %s' % (index, sncl))
+                    
                     [pdfDF,modesDF, maxDF, minDF] = PDF_aggregator.calculate_PDF("", sncl, starttime, endtime, concierge)
+
+                    
                     
                     if ('plot' in concierge.pdf_type) and not pdfDF.empty:
                         PDF_aggregator.plot_PDF(sncl, starttime, endtime, pdfDF, modesDF, maxDF, minDF, concierge)
@@ -242,7 +252,7 @@ def PSD_metrics(concierge):
             else:
                 logger.info("Output %s not recognized: cannot find PSD values" % concierge.output)
         
-        
+        return 1
 #             
 
     ########################
@@ -300,9 +310,10 @@ def PSD_metrics(concierge):
                 
 
     if ("pdf" in concierge.metric_names) and ('daily' in concierge.pdf_interval):
-        logger.info("Calculating daily PDFs")
+#         logger.info("Calculating daily PDFs")
 
         for day in range(nday):
+            
             # On the first and last days, use the hour provided, otherwise use 00:00:00
             starttime = (start + day * 86400)
             starttime = UTCDateTime(starttime.strftime("%Y-%m-%d") +"T00:00:00Z")
@@ -313,16 +324,20 @@ def PSD_metrics(concierge):
             if starttime.date == start.date:
                 starttime = start
 
+            logger.info("Calculating daily PDFs for %s" % starttime.date)
+            
             # Can't have a starttime that matches the end
             if starttime == end:
                 continue
 
-            do_pdf(concierge, starttime, endtime-1)
+            result = do_pdf(concierge, starttime, endtime-1)
+            if result == "No Table":
+                break
                 
                  
     if ("pdf" in concierge.metric_names) and ('aggregated' in concierge.pdf_interval):
         logger.info("Calculating aggregated PDFs")
-        do_pdf(concierge, start, end - 1)
+        result = do_pdf(concierge, start, end - 1)
     
     # Concatenate and filter dataframes before returning -----------------------
 
