@@ -787,7 +787,7 @@ class Concierge(object):
                                            "latitude", "longitude", "elevation", "depth" ,
                                            "azimuth", "dip", "instrument",
                                            "scale", "scalefreq", "scaleunits", "samplerate",
-                                           "starttime", "endtime", "snclId"))
+                                           "starttime", "endtime", "snclId"), dtype="object")
 
                 # Walk through the Inventory object
                 for n in sncl_inventory.networks:
