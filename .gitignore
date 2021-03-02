@@ -74,6 +74,8 @@ target/
 TRANSCRIPT.txt
 *.db
 
+.Rhistory
+
 # WingIDE files
 *.wpr
 *.wpu

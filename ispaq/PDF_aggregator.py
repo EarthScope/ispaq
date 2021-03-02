@@ -62,7 +62,7 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
     
     # Initiate dataframe to hold hit values
     index = pd.MultiIndex(levels=[[],[]], labels=[[],[]], names=[u'frequency', u'power'])
-    pdfDF = pd.DataFrame(columns=['frequency', 'power','hits'], index=index)
+    pdfDF = pd.DataFrame(columns=['frequency', 'power','hits'], index=index, dtype="object")
         
     # Pre-calculate how many hits each frequency-power bin has for the day
     psd['freqPow'] = list(zip(psd['frequency'], [int(round(i)) for i in psd['power']]))
@@ -99,9 +99,9 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
     pdfDF.reset_index(inplace=True,drop=True)
     
     # Set up dataframes for the max, min, modes for plotting later
-    modesDF = pd.DataFrame(columns=['Frequency','Power'])
-    minsDF = pd.DataFrame(columns=['Frequency','Power']) 
-    maxsDF = pd.DataFrame(columns=['Frequency','Power']);
+    modesDF = pd.DataFrame(columns=['Frequency','Power'], dtype="object")
+    minsDF = pd.DataFrame(columns=['Frequency','Power'], dtype="object") 
+    maxsDF = pd.DataFrame(columns=['Frequency','Power'], dtype="object");
     
 
     # For each *frequency*, sum up the total hits, as well as min, max, mode values

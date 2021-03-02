@@ -160,7 +160,7 @@ def PSD_metrics(concierge):
         
         
         fullFileList = list(); fullSnclList = list()
-        fileDF = pd.DataFrame(columns=["SNCL","FILE"])
+        fileDF = pd.DataFrame(columns=["SNCL","FILE"], dtype="object")
         daylist = pd.date_range(start=str(starttime.date), end=str(endtime.date)).tolist()
         
         # Get a list of the files that exist in the directory within the sncl and timespan
