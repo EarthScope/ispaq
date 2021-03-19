@@ -128,8 +128,8 @@ Now install the IRIS R packages for ISPAQ:
 ```
 export MACOSX_DEPLOYMENT_TARGET=10.9    # this line for macOS only
 R CMD INSTALL seismicRoll_1.1.4.tar.gz 
-R CMD INSTALL IRISSeismic_1.6.0.tar.gz
-R CMD INSTALL IRISMustangMetrics_2.4.2.tar.gz 
+R CMD INSTALL IRISSeismic_1.6.1.tar.gz
+R CMD INSTALL IRISMustangMetrics_2.4.4.tar.gz 
 ```
 
 Or alternatively, install the IRIS R packages from CRAN: 
