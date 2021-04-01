@@ -1,4 +1,4 @@
-pandas=0.25.3
+pandas=1.2.3
 obspy=1.2.2
 rpy2=3.1.0
 r=3.5.1
@@ -10,3 +10,4 @@ r-quadprog=1.5_8
 r-signal=0.7_6
 r-pracma=2.2.9 
 r-stringr=1.4.0 
+jupyter
