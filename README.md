@@ -165,7 +165,8 @@ usage: run_ispaq.py [-h] [-P PREFERENCES_FILE] [-M METRICS] [-S STATIONS]
                     [--starttime STARTTIME] [--endtime ENDTIME]
                     [--dataselect_url DATASELECT_URL] [--station_url STATION_URL]
                     [--event_url EVENT_URL] [--resp_dir RESP_DIR]
-                    [--csv_dir CSV_DIR] [--psd_dir PSD_DIR] [--pdf_dir PDF_DIR]
+                    [--output OUTPUT] [--db_name DB_NAME][--csv_dir CSV_DIR]
+                    [--psd_dir PSD_DIR] [--pdf_dir PDF_DIR]
                     [--pdf_type PDF_TYPE] [--pdf_interval PDF_INTERVAL]
                     [--plot_include PLOT_INCLUDE] [--sncl_format SNCL_FORMAT]
                     [--sigfigs SIGFIGS]
@@ -250,7 +251,7 @@ preference file is ```preference_files/default.txt```. This file is self describ
 with the following comments in the header:
 
 ```
-# Preferences fall into four categories:
+# Preferences fall into five categories:
 #  * Metrics -- aliases for user defined combinations of metrics (Use with -M)
 #  * Station_SNCLs -- aliases for user defined combinations of SNCL patterns (Use with -S)
 #                     SNCL patterns are station names formatted as Network.Station.Location.Channel
@@ -359,7 +360,8 @@ If no `sncl_format` exists, it defaults to `N.S.L.C`.
 
 Any of these preference file entries can be overridden by command-line arguments:
 `-M "metric name"`, `-S "station SNCL"`, `--dataselect_url`, `--station_url`, `--event_url`, `--resp_dir`, 
-`--csv_output_dir`, `--plot_output_dir`, `--sigfigs`, `--sncl_format`,`--pdf_type`, `--pdf_interval`, `--plot_include`
+`--output`, `--db_name`, `--csv_output_dir`, `--plot_output_dir`, `--sigfigs`, `--sncl_format`,`--pdf_type`, 
+`--pdf_interval`, `--plot_include`, `--sncl_format`, `--sigfigs`
 
 More information about using local files can be found below in the section "Using Local Data Files".
 
@@ -368,6 +370,10 @@ More information about using local files can be found below in the section "Usin
 ISPAQ will always create a log file named ```ISPAQ_TRANSCRIPT.log``` to record actions taken
 and messages generated during processing.
 
+In addition, the metric calculations will write to either .csv files or to a SQLite database, depending on the 
+`output` option selected.  
+
+#### CSV files
 Results of most metrics calculations will be written to .csv files using the following naming scheme:
 
 * `MetricAlias`\_`StationAlias`\_`startdate`\__`businessLogic`.csv
@@ -384,7 +390,7 @@ _businessLogic_ corresponds to which script is invoked:
 | ----------|--------------|---------|
 | simpleMetrics | simple_metrics.py | most metrics |
 | SNRMetrics | SNR_metrics.py | sample_snr   |
-| PSDMetrics | PSD_metrics.py | pct_above_nhnm, pct_below_nlnm, dead_channel_{lin,gsn}, psd_corrected, pdf |
+| PSDMetrics | PSD_metrics.py, PDF_aggregator.py | pct_above_nhnm, pct_below_nlnm, dead_channel_{lin,gsn}, psd_corrected, pdf |
 | crossTalkMetrics | crossTalk_metrics.py | cross_talk |
 | pressureCorrelationMetrics | pressureCorrelation_metrics.py | pressure_effects | 
 | crossCorrelationMetrics | crossCorrelation_metrics.py | polarity_check | 
@@ -405,7 +411,6 @@ PDFs in files named:
 * `SNCL`\_`startdate`\_`enddate`\_PDF.png  (for aggregate PDF plot)
 
 Note: The metric 'pdf' requires that corrected PSDs exist.  If using `output` 'csv' then `SNCL`\_`startdate`\_PSDcorrected.csv files must exist in the `psd_dir` specified directory.  
-If using `output` 'db' then the PSDs must exist in the database specified by `db_name`.  
 If you run the metric 'pdf' alone and see the warning 'No PSD files found', then try running metric 'psd_corrected'
 first to generate the PSD files. You will also see the warning 'No PSD files found' if there is no data available for that day.
 These two  metrics can be run simulataneously, as it will calculate the PSDs before calculating the PDFs. 
@@ -414,6 +419,65 @@ If specifying metrics and station SNCLs from the command line instead of using p
 the metric name and station SNCL will be used instead of the MetricAlias and StationAlias in the output
 file name. In addition, any instances of command-line wildcards "*" or "?" will be replaced with the letter
 "x" in the output file name.
+
+#### SQLite database
+Using the 'db' `output` option will write to a SQLite database with the filename supplied in the `db_name` field. All metrics values, 
+except for any .png PSD or PDFs that may be generated, will be inserted into the database. Tables within the datbase correspond to the 
+metric name. For example:  
+
+```
+sqlite> .tables
+amplifier_saturation     max_range                sample_mean
+calibration_signal       max_stalta               sample_median
+clock_locked             missing_padded_data      sample_min
+cross_talk               num_gaps                 sample_rate_channel
+dead_channel_gsn         num_overlaps             sample_rate_resp
+dead_channel_lin         num_spikes               sample_rms
+digital_filter_charging  orientation_check        sample_snr
+digitizer_clipping       pct_above_nhnm           sample_unique
+event_begin              pct_below_nlnm           spikes
+event_end                pdf                      suspect_time_tag
+event_in_progress        percent_availability     telemetry_sync_error
+glitches                 polarity_check           timing_correction
+max_gap                  psd_day                  timing_quality
+max_overlap              sample_max
+```
+  
+  
+The majority of tables (metrics) will have the same set of columns. These include:  
+
+`target` - the network.station.location.channel.quality code that the measurement corresponds to  
+`value` - value of measurement  
+`start` - start time of the measurement  
+`end` - end time of the measurement  
+`lddate` - the load date, when the measurement was inserted (or updated) in the table  
+
+In addition to those fields, these metrics have other columns as well:  
+
+* polarity_check: `snclq2`  
+* transfer_function: `gain_ratio`, `phase_diff`, `ms_coherence`  
+* orientation_check: `azimuth_R`, `backAzimuth`, `azimuth_Y_obs`, `azimuth_X_obs`, `azimuth_Y_meta`, `azimuth_X_meta`, 
+`max_Czr`, `max_C_zr`, `magnitude`  
+* psd_corrected: `frequency`, `power`  
+* pdf: `frequency`, `power`, `hits`  
+
+Note that transfer_function, orientation_check, psd_corrected, and pdf metrics all lack the `value` column.  
+
+
+The metric 'pdf' requires that corrected PSDs exist. If using `output` 'db' then the PSDs must exist in the database specified by `db_name`.  
+If you run the metric 'pdf' and see the warning 'Unable to access PSD values', then try running metric 'psd_corrected' 
+first to generate the PSD values. These two  metrics can be run simulataneously, as it will calculate the PSDs before calculating the PDFs. You will also see the warning 'Unable to access PSD values' if there is no data available for that day, 
+or 'Unable to access table psd_day' if no the table does not exist, which may indicate that no PSDs have been calculated and added to the database 
+yet.  
+
+
+For those using [QuARG](https://github.com/iris-edu/quarg), a utility produced by the IRIS DMC for generating quality assurance reports, it is possible 
+to have QuARG read metrics from your local ISPAQ SQLite database rather than from the MUSTANG web services.  Simply point the `metric source` in the QuARG  preference file to the database file produced by ISPAQ and it will use your local metric values.  
+
+
+Examples of how to access and use the metrics are included as jupyter notebooks in the EXAMPLES/ directory. For more information on how to navigate a SQLite database, see [https://sqlite.org/cli.html](https://sqlite.org/cli.html).  
+
+
 
 ### Command line invocation
 
