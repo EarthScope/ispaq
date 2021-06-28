@@ -31,9 +31,14 @@ from obspy.clients.fdsn.header import URL_MAPPINGS
 from obspy import UTCDateTime
 
 # ISPAQ modules
-from .user_request import UserRequest
-from . import irisseismic
-from . import utils
+try:
+    from user_request import UserRequest
+    import irisseismic
+    import utils
+except:
+    from .user_request import UserRequest
+    from . import irisseismic
+    from . import utils
 
 
 # Custom exceptions
@@ -827,6 +832,7 @@ class Concierge(object):
             # Filter dataframe
             df = df[df.snclId.str.contains(py_pattern)]
             
+                       
             # Subset based on locally available data ---------------------------
 #             if self.dataselect_client is None and metric is not "simple":
             if self.dataselect_client is None and metric != "simple":
@@ -996,9 +1002,10 @@ class Concierge(object):
 #                 else:
 #                 filepath=matching_files[0]
 
-                if (len(matching_files) > 1):
-                    self.logger.debug("Multiple files found: %s" % " ".join(matching_files))
-                    self.logger.warning("Multiple files found matching " '%s -- using %s' % (fpattern1, filepath))
+#                 if (len(matching_files) > 1):
+#                     filepath=matching_files[0]
+#                     self.logger.debug("Multiple files found: %s" % " ".join(matching_files))
+#                     self.logger.warning("Multiple files found matching " '%s -- using %s' % (fpattern1, filepath))
                     
                 try:
                     # Get the ObsPy version of the stream
@@ -1013,6 +1020,11 @@ class Concierge(object):
                     
                     else:
                         filepath=matching_files[0]
+                        
+                        if (len(matching_files) > 1):
+                            self.logger.debug("Multiple files found: %s" % " ".join(matching_files))
+                            self.logger.warning("Multiple files found matching " '%s -- using %s' % (fpattern1, filepath))
+                        
                         if not inclusiveEnd:
                             _endtime = _endtime - 0.000001
                         py_stream = obspy.read(filepath)
@@ -1196,7 +1208,9 @@ class Concierge(object):
 
 #                 if len(utils.get_slot(r_stream, 'traces')) == 0:
 #                         raise Exception("no data available")
-      
+            
+            self.logger.debug(f"Dataselect found local data that spans {py_stream.traces[0].stats.starttime} - {py_stream.traces[-1].stats.endtime}")
+            
 
         else:
             # Read from FDSN web services
@@ -1206,6 +1220,7 @@ class Concierge(object):
                 orig_stderr = sys.stderr
                 sys.stderr = self.dev_null
                 r_stream = irisseismic.R_getDataselect(self.dataselect_url, self.dataselect_type, network, station, location, channel, _starttime, _endtime, quality, repository,inclusiveEnd, ignoreEpoch)
+                
                 sys.stderr = orig_stderr
             except Exception as e:
                 err_msg = "Error reading in waveform from FDSN dataselect webservice client (base url: %s)" % self.dataselect_url
@@ -1216,6 +1231,8 @@ class Concierge(object):
             # Some FDSN web services cut on record boundaries instead of samples, so make sure we have correct start/end times
             try:
                 r_stream = irisseismic.R_slice(r_stream,_starttime, _endtime)
+                
+                
             except Exception as e:
                 err_msg = "Error cutting R stream for start %s and end %s" % (_starttime, _endtime)
                 self.logger.debug(err_msg)

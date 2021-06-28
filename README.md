@@ -113,7 +113,7 @@ Note: If you are upgrading from ISPAQ 2.0 to ISPAQ 3.0+, you should create a new
 cd ispaq
 conda update conda
 conda env remove --name ispaq  #if you are upgrading from an existing ISPAQ 2.0 installation to ISPAQ 3.0
-conda create --name ispaq -c conda-forge python=3.6 obspy=1.2.2
+conda create --name ispaq -c conda-forge python=3.8 obspy=1.2.2
 conda activate ispaq
 conda install -c conda-forge --file ispaq-conda-install.txt
 ```
@@ -439,7 +439,7 @@ event_begin              pct_below_nlnm           spikes
 event_end                pdf                      suspect_time_tag
 event_in_progress        percent_availability     telemetry_sync_error
 glitches                 polarity_check           timing_correction
-max_gap                  psd_day                  timing_quality
+max_gap                  psd_corrected            timing_quality
 max_overlap              sample_max
 ```
   
@@ -467,7 +467,7 @@ Note that transfer_function, orientation_check, psd_corrected, and pdf metrics a
 The metric 'pdf' requires that corrected PSDs exist. If using `output` 'db' then the PSDs must exist in the database specified by `db_name`.  
 If you run the metric 'pdf' and see the warning 'Unable to access PSD values', then try running metric 'psd_corrected' 
 first to generate the PSD values. These two  metrics can be run simulataneously, as it will calculate the PSDs before calculating the PDFs. You will also see the warning 'Unable to access PSD values' if there is no data available for that day, 
-or 'Unable to access table psd_day' if no the table does not exist, which may indicate that no PSDs have been calculated and added to the database 
+or 'Unable to access table psd_corrected' if no the table does not exist, which may indicate that no PSDs have been calculated and added to the database 
 yet.  
 
 

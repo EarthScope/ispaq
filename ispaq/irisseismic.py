@@ -18,7 +18,7 @@ from rpy2.robjects import pandas2ri
 import numpy as np
 from rpy2.robjects.conversion import localconverter
 from rpy2.robjects import numpy2ri
-from . import ispaq
+import ispaq
 
 #     R Initialization     -----------------------------------------------------
 
@@ -571,7 +571,6 @@ def R_getDataselect(client_url="http://service.iris.edu",
     
     # Call the function and return an R Stream
     r_stream = _R_getDataselect(r_client, network, station, location, channel, starttime, endtime, quality=quality, repository=repository, inclusiveEnd=inclusiveEnd, ignoreEpoch=ignoreEpoch)
-    
     #pandas2ri.deactivate()
     return r_stream
 
@@ -633,8 +632,11 @@ def getEvalresp(client_url="http://service.iris.edu",
     """
     #r_client = ro.r('new("IrisClient")')
 
+
     user_agent = _userAgent()
-    cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '", useragent="' + user_agent + '")'
+#     cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '", useragent="' + user_agent + '")'
+    
+    cmd = f'new("IrisClient", site="{client_url}", service_type="{client_type}", useragent="{user_agent}")'
     r_client = ro.r(cmd)
     
     # Convert python arguments to R equivalents
@@ -903,6 +905,7 @@ def R_slice(x, starttime, endtime):
     endtime = R_POSIXct(endtime)
 
     r_stream = _R_slice(x,starttime, endtime)
+    
     return r_stream
 
 # surfaceDistance is needed in crossCorrelation_metrics.py

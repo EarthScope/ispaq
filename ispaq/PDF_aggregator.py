@@ -1,9 +1,13 @@
 import pandas as pd
 import numpy as np
-from . import noise_models
-from . import utils
 import os
 
+try:
+    import noise_models
+    import utils
+except:
+    from . import noise_models
+    from . import utils
 
 
 def find_nearest(array, value):
@@ -36,8 +40,8 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
         psd.dropna(inplace=True)
 
         # Only include PSDs that are within the time range
-        psd=psd[(psd['starttime'] >= starttime) & (psd['endtime'] <= endtime)]
-    
+#         psd=psd[(psd['starttime'] >= starttime) & (psd['endtime'] <= endtime)]
+        psd=psd[(psd['starttime'] >= starttime) & (psd['starttime'] < endtime)] # Changed to future-proof as PSDs will span the day-boundary
             
 
     elif concierge.output == 'db':
@@ -48,20 +52,29 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
         sqlstarttime = str(starttime).split('.')[0]
         sqlendtime = str(endtime).split('.')[0]
         con = sqlite3.connect(concierge.db_name)
-        select_sql = "SELECT * from psd_day WHERE target = '" + sncl +"'"
-        if not starttime == "":
-            select_sql = select_sql + " AND start >= '" + sqlstarttime + "'"
-        if not endtime == "":
-            select_sql = select_sql + " AND end <= '" + sqlendtime + "'"
         
-        select_sql = select_sql + " AND power != 'nan';"
+        select_sql = f"SELECT * from psd_corrected WHERE target = '{sncl}'"
+#         select_sql = "SELECT * from psd_corrected WHERE target = '" + sncl +"'"
+        if not starttime == "":
+            select_sql = f"{select_sql} AND start >= '{sqlstarttime}'"
+#             select_sql = select_sql + " AND start >= '" + sqlstarttime + "'"
+        if not endtime == "":
+            select_sql = f"{select_sql} AND end <= '{sqlendtime}'"
+#             select_sql = select_sql + " AND end <= '" + sqlendtime + "'"
+        
+        select_sql = f"{select_sql} AND power != 'nan';"
+#         select_sql = select_sql + " AND power != 'nan';"
         logger.debug(select_sql)
         
-        psd = pd.read_sql_query(select_sql, con)
-        con.close()
+        try:
+            psd = pd.read_sql_query(select_sql, con)
+            con.close()
+        except Exception as e:
+            logger.warning(f"Unable to access PSDs. ERROR: {e}")
+            return pd.DataFrame(), None, None, None
     
     # Initiate dataframe to hold hit values
-    index = pd.MultiIndex(levels=[[],[]], labels=[[],[]], names=[u'frequency', u'power'])
+    index = pd.MultiIndex(levels=[[],[]], codes=[[],[]], names=[u'frequency', u'power'])
     pdfDF = pd.DataFrame(columns=['frequency', 'power','hits'], index=index, dtype="object")
         
     # Pre-calculate how many hits each frequency-power bin has for the day

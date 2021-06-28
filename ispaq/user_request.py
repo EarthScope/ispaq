@@ -17,9 +17,13 @@ import re
 from obspy import UTCDateTime
 
 # ISPAQ modules
-from . import irismustangmetrics
+try:
+    import irismustangmetrics
+    from ispaq import currentispaq
 
-from .ispaq import currentispaq
+except:
+    from . import irismustangmetrics
+    from .ispaq import currentispaq
 
 class UserRequest(object):
     """

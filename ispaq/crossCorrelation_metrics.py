@@ -164,7 +164,7 @@ def crossCorrelation_metrics(concierge):
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
                     logger.info('No data available for %s' % (av1.snclId))
-                elif str(e).lower().find('multiple epochs') :
+                elif str(e).lower().find('multiple epochs') > -1:
                     logger.info('Skipping %s because multiple metadata epochs found' % (av1.snclId))
                 else:
                     logger.warning('No data available for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
@@ -254,7 +254,8 @@ def crossCorrelation_metrics(concierge):
                 #avCompatible['dist'] = pd.Series(irisseismic.surfaceDistance(av1.latitude, av1.longitude, avCompatible.latitude, avCompatible.longitude))
                 dist2 = pd.Series()
                 for i in range(0,avCompatible.shape[0]):
-                    dist2.set_value(i,value=obspy.geodetics.base.locations2degrees(av1.latitude, av1.longitude,avCompatible.latitude.iloc[i],avCompatible.longitude.iloc[i]))
+#                     dist2.set_value(i,value=obspy.geodetics.base.locations2degrees(av1.latitude, av1.longitude,avCompatible.latitude.iloc[i],avCompatible.longitude.iloc[i]))
+                    dist2.at[i] = obspy.geodetics.base.locations2degrees(av1.latitude, av1.longitude,avCompatible.latitude.iloc[i],avCompatible.longitude.iloc[i])
                 avCompatible['dist'] = dist2
                 avCompatible = avCompatible.sort_values('dist', ascending=True)
                 
@@ -289,7 +290,7 @@ def crossCorrelation_metrics(concierge):
                 except Exception as e:
                     if str(e).lower().find('no data') > -1:
                         logger.debug('No data available for %s' % (av2.snclId))
-                    elif str(e).lower().find('multiple epochs'):
+                    elif str(e).lower().find('multiple epochs') > -1:
                         logger.info('Skipping %s because multiple metadata epochs are found' % (av2.snclId))
                     else:
                         logger.warning('No data available for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))

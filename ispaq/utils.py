@@ -20,8 +20,13 @@ import datetime
 
 from obspy import UTCDateTime
 
-from . import irisseismic
-from . import evalresp as evresp
+
+try:
+    import irisseismic
+    import evalresp as evresp
+except:
+    from . import irisseismic
+    from . import evalresp as evresp
 
 class EvalrespException(Exception):
     pass
@@ -46,7 +51,6 @@ def initialize_general_database_table(dbname, tablename, concierge):
     except Error as e:
         concierge.logger.error(e)
     conn.close()
-
 
 def initialize_polcheck_database_table(dbname, concierge):
     conn = sqlite3.connect(dbname)
@@ -111,18 +115,17 @@ def initialize_orcheck_database_table(dbname, concierge):
     except Error as e:
         concierge.logger.error(e)
     conn.close()
-
-    
+   
 def initialize_psd_database_table(dbname, concierge):
     conn = sqlite3.connect(dbname)
-    create_table_sql = """ CREATE TABLE IF NOT EXISTS psd_day (
+    create_table_sql = """ CREATE TABLE IF NOT EXISTS psd_corrected (
                             target text  NOT NULL,
                             frequency float NOT NULL,
                             power float NOT NULL,
                             start datetime  NOT NULL,
                             end datetime NOT NULL,
                             lddate datetime DATETIME DEFAULT CURRENT_TIMESTAMP,
-                            UNIQUE(target, frequency, start, end)
+                            UNIQUE(target, frequency, start)
                         ); """
 
     try:
@@ -131,7 +134,7 @@ def initialize_psd_database_table(dbname, concierge):
     except Error as e:
         concierge.logger.error(e)
     conn.close()
-
+    
 def initialize_pdf_database_table(dbname, concierge):
     conn = sqlite3.connect(dbname)
     create_table_sql = """ CREATE TABLE IF NOT EXISTS pdf (
@@ -155,76 +158,127 @@ def initialize_pdf_database_table(dbname, concierge):
 
 def insert_general_database_table(dbname, tablename, row):
     conn = sqlite3.connect(dbname)
-    insert_sql = "INSERT or REPLACE INTO "  + tablename + " (target, value, start, end) VALUES (?, ?, ?, ?)"
+    insert_sql = f'''INSERT INTO {tablename} (target, value, start, end)
+  VALUES (?, ?, ?, ?) 
+  ON CONFLICT(target, start, end) 
+  DO UPDATE SET value=excluded.value, lddate=excluded.lddate;
+  '''
+
     newRow = (row['target'], row['value'], row['start'],  row['end']);
     
     cur = conn.cursor()
-    cur.execute(insert_sql, newRow)
+    try:
+        cur.execute(insert_sql, newRow)
+    except:
+        insert_sql = "INSERT or REPLACE INTO "  + tablename + " (target, value, start, end) VALUES (?, ?, ?, ?)"
+        cur.execute(insert_sql, newRow)
+             
     conn.commit()
     conn.close()
 
 def insert_polcheck_database_table(dbname, row):
     conn = sqlite3.connect(dbname)
-    insert_sql = "INSERT or REPLACE INTO polarity_check (target, snclq2, value, start, end) VALUES (?, ?, ?, ?, ?)"
+    insert_sql = f'''INSERT INTO polarity_check (target, snclq2, value, start, end)
+  VALUES (?, ?, ?, ?, ?) 
+  ON CONFLICT(target, start, end) 
+  DO UPDATE SET snclq2=excluded.snclq2, value=excluded.value, lddate=excluded.lddate;
+  '''
     newRow = (row['target'], row['snclq2'], row['value'], row['start'],  row['end']);
     
     cur = conn.cursor()
-    cur.execute(insert_sql, newRow)
+    try:
+        cur.execute(insert_sql, newRow)
+    except:
+        insert_sql = "INSERT or REPLACE INTO polarity_check (target, snclq2, value, start, end) VALUES (?, ?, ?, ?, ?)"
+        cur.execute(insert_sql, newRow)
     conn.commit()
     conn.close()
     
 def insert_trfunc_database_table(dbname, row):
     conn = sqlite3.connect(dbname)
-    insert_sql = "INSERT or REPLACE INTO transfer_function (target, gain_ratio, phase_diff, ms_coherence, start, end) VALUES (?, ?, ?, ?, ?, ?)"
+    insert_sql = f'''INSERT INTO transfer_function (target, gain_ratio, phase_diff, ms_coherence, start, end)
+  VALUES (?, ?, ?, ?, ?, ?) 
+  ON CONFLICT(target, start, end) 
+  DO UPDATE SET gain_ratio=excluded.gain_ratio, phase_diff=excluded.phase_diff, ms_coherence=excluded.ms_coherence, lddate=excluded.lddate;
+  '''
     newRow = (row['target'], row['gain_ratio'], row['phase_diff'], row['ms_coherence'], row['start'],  row['end']);
     
     cur = conn.cursor()
-    cur.execute(insert_sql, newRow)
+    try:
+        cur.execute(insert_sql, newRow)
+    except:
+        insert_sql = "INSERT or REPLACE INTO transfer_function (target, gain_ratio, phase_diff, ms_coherence, start, end) VALUES (?, ?, ?, ?, ?, ?)"
+        cur.execute(insert_sql, newRow)
     conn.commit()
     conn.close()
     
 def insert_orcheck_database_table(dbname, row):
     conn = sqlite3.connect(dbname)
-    insert_sql = """INSERT or REPLACE INTO orientation_check (target, azimuth_R, backAzimuth, azimuth_Y_obs, azimuth_X_obs, azimuth_Y_meta,
-                     azimuth_X_meta, max_Czr, max_C_zr, magnitude, start, end) 
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
-#     newRow = (row['target'], row['gain_ratio'], row['phase_diff'], row['ms_coherence'], row['start'],  row['end']);
+    insert_sql = f'''INSERT INTO orientation_check (target, azimuth_R, backAzimuth, azimuth_Y_obs, azimuth_X_obs, azimuth_Y_meta,
+                     azimuth_X_meta, max_Czr, max_C_zr, magnitude, start, end)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
+  ON CONFLICT(target, start, end) 
+  DO UPDATE SET azimuth_R=excluded.azimuth_R, backAzimuth=excluded.backAzimuth, azimuth_Y_obs=excluded.azimuth_Y_obs,
+  azimuth_X_obs=excluded.azimuth_X_obs, azimuth_X_meta=excluded.azimuth_X_meta, max_Czr=excluded.max_Czr, max_C_zr=excluded.max_C_zr,
+  magnitude=excluded.magnitude, lddate=excluded.lddate;
+  '''
     newRow = (row['target'], row['azimuth_R'], row['backAzimuth'], row['azimuth_Y_obs'], row['azimuth_X_obs'], row['azimuth_Y_meta'], row['azimuth_X_meta'], row['max_Czr'], row['max_C_zr'], row['magnitude'], row['start'], row['end'])
     
     cur = conn.cursor()
-    cur.execute(insert_sql, newRow)
+    try:
+        cur.execute(insert_sql, newRow)
+    except:
+        insert_sql = """INSERT or REPLACE INTO orientation_check (target, azimuth_R, backAzimuth, azimuth_Y_obs, azimuth_X_obs, azimuth_Y_meta,
+                     azimuth_X_meta, max_Czr, max_C_zr, magnitude, start, end) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+        cur.execute(insert_sql, newRow)
     conn.commit()
     conn.close()
-    
-
-    
+       
 def insert_psd_database_table(dbname, row):
     conn = sqlite3.connect(dbname)
-    insert_sql = "INSERT or REPLACE INTO psd_day (target, frequency, power, start, end) VALUES (?, ?, ?, ?, ?)"
+    insert_sql = f'''INSERT INTO psd_corrected (target, frequency, power, start, end)
+  VALUES (?, ?, ?, ?, ?) 
+  ON CONFLICT(target, frequency, start, end) 
+  DO UPDATE SET power=excluded.power, lddate=excluded.lddate;
+  '''
     newRow = (row['target'], row['frequency'], row['power'], row['starttime'],  row['endtime']);
 
     cur = conn.cursor()
-    cur.execute(insert_sql, newRow)
+    
+    try:
+        cur.execute(insert_sql, newRow)
+        
+    except:
+        insert_sql = "INSERT or REPLACE INTO psd_corrected (target, frequency, power, start, end) VALUES (?, ?, ?, ?, ?)"
+        cur.execute(insert_sql, newRow)
     conn.commit()
     conn.close()
- 
- 
  
 def insert_pdf_database_table(dbname, row, target, starttime, endtime):
     conn = sqlite3.connect(dbname)
-    insert_sql = "INSERT or REPLACE INTO pdf (target, frequency, power, hits, start, end) VALUES (?, ?, ?, ?, ?, ?)"
+    insert_sql = f'''INSERT INTO pdf (target, frequency, power, hits, start, end)
+  VALUES (?, ?, ?, ?, ?,?) 
+  ON CONFLICT(target, frequency, power, start, end) 
+  DO UPDATE SET hits=excluded.hits, lddate=excluded.lddate;
+  '''
     newRow = (target, row['frequency'],row['power'], row['hits'], starttime, endtime)
      
     cur = conn.cursor()
-    cur.execute(insert_sql, newRow)
+    try:
+        cur.execute(insert_sql, newRow)
+    except:
+        insert_sql = "INSERT or REPLACE INTO pdf (target, frequency, power, hits, start, end) VALUES (?, ?, ?, ?, ?, ?)"
+        cur.execute(insert_sql, newRow)
     conn.commit()
     conn.close()
      
+
  
 def retrieve_psd_unique_targets(dbname, sncl_pattern, starttime, endtime, logger):
 
     conn = sqlite3.connect(dbname)
-    select_sql = "SELECT DISTINCT target from psd_day WHERE target like '" + sncl_pattern +"'"
+    select_sql = "SELECT DISTINCT target from psd_corrected WHERE target like '" + sncl_pattern +"'"
     if not starttime == "":
         select_sql = select_sql + " AND start >= '" + str(starttime).split('.')[0] + "'"
     if not endtime == "":
@@ -238,7 +292,6 @@ def retrieve_psd_unique_targets(dbname, sncl_pattern, starttime, endtime, logger
     
     return records
     
-
 def write_simple_df(df, filepath, concierge, sigfigs=6):
     """
     Write a pretty dataframe with appropriate significant figures to a .csv file.
@@ -295,9 +348,7 @@ def write_simple_df(df, filepath, concierge, sigfigs=6):
             else:
                 initialize_general_database_table(dbname, tablename, concierge)
                 insert_general_database_table(dbname, tablename, row)
-
     # No return value
-
 
 def format_simple_df(df, sigfigs=6):
     """
@@ -331,8 +382,7 @@ def format_simple_df(df, sigfigs=6):
 
 
     return df   
-
-    
+  
 def write_numeric_df(df, filepath, concierge, sigfigs=6):
     """
     Write a pretty dataframe with appropriate significant figures to a .csv file.
@@ -383,10 +433,7 @@ def write_pdf_df(df, filepath, iappend, sncl, starttime, endtime, concierge, sig
         initialize_pdf_database_table(dbname, concierge)
         for ind,row in pretty_df.iterrows():
             insert_pdf_database_table(dbname, row, sncl, str(starttime), str(endtime))
-        
     # No return value
-
-
 
 def format_numeric_df(df, sigfigs=6):
     """
@@ -417,8 +464,7 @@ def format_numeric_df(df, sigfigs=6):
             df[column] = df[column].astype(str)
             
     return df   
-
-    
+  
 def get_slot(r_object, prop):
     """
     Return a property from the R_Stream.
@@ -622,7 +668,6 @@ def getSpectra(st, sampling_rate, metric, concierge):
             raise
     return(evalResp)
 
-
 def getSampleRateSpectra(r_stream,sampling_rate,norm_freq, concierge):
 
     if sampling_rate is None or math.isnan(sampling_rate):
@@ -682,6 +727,8 @@ def getSampleRateSpectra(r_stream,sampling_rate,norm_freq, concierge):
     
 
 # ------------------------------------------------------------------------------
+
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod(exclude_empty=True)

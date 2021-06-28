@@ -84,12 +84,12 @@ def PSD_metrics(concierge):
                 if not utils.get_slot(r_stream, 'traces'):
                     # There is no data, just bypass it
                     continue
-                    
+
             except Exception as e:
                 #logger.debug(e)
                 if str(e).lower().find('no data') > -1:
                     logger.info('No data available for %s' % (av.snclId))
-                elif str(e).lower().find('multiple epochs') :
+                elif str(e).lower().find('multiple epochs') > -1:
                     logger.info('Skipping %s because multiple metadata epochs found' % (av.snclId))
                 else:
                     logger.error(e)
@@ -323,12 +323,12 @@ def PSD_metrics(concierge):
                 endtime = end
             if starttime.date == start.date:
                 starttime = start
-
-            logger.info("Calculating daily PDFs for %s" % starttime.date)
             
             # Can't have a starttime that matches the end
             if starttime == end:
                 continue
+            
+            logger.info("Calculating daily PDFs for %s" % starttime.date)
 
             result = do_pdf(concierge, starttime, endtime-1)
             if result == "No Table":

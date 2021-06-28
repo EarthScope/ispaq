@@ -225,7 +225,7 @@ def orientationCheck_metrics(concierge):
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
                     logger.info('No data available for %s' % (Channel_1.snclId[:-1]))
-                elif str(e).lower().find('multiple epochs'):
+                elif str(e).lower().find('multiple epochs') > -1:
                     logger.info('Skipping %s because multiple metadata epochs found' % (av.snclId))
                 else:
                     logger.warning('No data available for %s from %s: %s' % (Channel_1.snclId, concierge.dataselect_url, e))
@@ -237,7 +237,7 @@ def orientationCheck_metrics(concierge):
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
                     logger.info('No data available for %s' % (Channel_2.snclId[:-1]))
-                elif str(e).lower().find('multiple epochs'):
+                elif str(e).lower().find('multiple epochs') > -1:
                     logger.info('Skipping %s because multiple metadata epochs found' % (av.snclId))
                 else:
                     logger.info('No data available for %s from %s: %s' % (Channel_2.snclId, concierge.dataselect_url, e))
@@ -249,7 +249,7 @@ def orientationCheck_metrics(concierge):
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
                     logger.info('No data available for %s' % (ZChannel.snclId[:-1]))
-                elif str(e).lower().find('multiple epochs'):
+                elif str(e).lower().find('multiple epochs') > -1:
                     logger.info('Skipping %s because multiple metadata epochs found' % (av.snclId))
                 else:
                     logger.info('No data available for %s from %s: %s' % (ZChannel.snclId, concierge.dataselect_url, e))
