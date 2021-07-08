@@ -542,6 +542,11 @@ def transferFunction_metrics(concierge):
                                 except Exception as e:
                                     logger.warning('"transferFunction_metrics Trace rotation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
                                     continue
+                                if not isinstance(traceRotList, list):
+                                    # This is a hack that was put into rotate2D to ensure that pandas2ri would be deactivated
+                                    logger.warning('"transferFunction_metrics Trace rotation failed for %s:%s: %s' % (av1.snclId, av2.snclId, traceRotList))
+                                    continue
+                                
                                 
                                 RYst2 = traceRotList[0]
                                 RXst2 = traceRotList[1]

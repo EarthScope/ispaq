@@ -980,11 +980,10 @@ class Concierge(object):
         else:
             _endtime = endtime
 
-        
         if self.dataselect_type is None:
             # Read local MiniSEED file and convert to R_Stream
             nday = int((_endtime - .00001).julday - _starttime.julday) + 1   # subtract a short amount of time for 00:00:00 endtimes
-
+            
             if (nday == 1):
                 _sncl_pattern = self.get_sncl_pattern(network, station, location, channel)
                 fpattern1 = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))
@@ -1056,7 +1055,6 @@ class Concierge(object):
                     # NOTE:  We need to read them in separately from station metadata.
                     availability = self.get_availability("dummy", network, station, location, channel, _starttime, _endtime)
                     
-                    
                     if availability is None:
 #                     if availability.empty: 
                         return None
@@ -1065,7 +1063,6 @@ class Concierge(object):
                         if (len(availability) > 1):
                             raise Exception("Multiple metadata epochs found for %s" % _sncl_pattern)
 
-                    
                     
                     sensor = availability.instrument[0]
                     scale = availability.scale[0]
@@ -1093,9 +1090,9 @@ class Concierge(object):
 #                     self.logger.debug(err_msg)
                     raise
       
-                # Create the IRISSeismic version of the stream
-                r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags, timing_qual,
-                    sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
+#                 # Create the IRISSeismic version of the stream -- is this second call necessary? Uncomment if things start misbehaving.
+#                 r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags, timing_qual,
+#                     sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
                    
 #                 if len(utils.get_slot(r_stream, 'traces')) == 0:
 #                     raise Exception("no data available") 
@@ -1209,8 +1206,10 @@ class Concierge(object):
 #                 if len(utils.get_slot(r_stream, 'traces')) == 0:
 #                         raise Exception("no data available")
             
-            self.logger.debug(f"Dataselect found local data that spans {py_stream.traces[0].stats.starttime} - {py_stream.traces[-1].stats.endtime}")
-            
+            try:
+                self.logger.debug(f"Dataselect found local data that spans {py_stream.traces[0].stats.starttime} - {py_stream.traces[-1].stats.endtime}")
+            except:
+                self.logger.debug("Dataselect found no local data")
 
         else:
             # Read from FDSN web services
