@@ -179,6 +179,7 @@ def SNR_metrics(concierge):
                     logger.info('Skipping %s because multiple metadata epochs are found' % (av.snclId))
                 else:
                     logger.warning('No data found for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
+
                 # TODO:  Create appropriate empty dataframe
                 df = pd.DataFrame({'metricName': 'SNR',
                                    'value': 0,
@@ -188,6 +189,10 @@ def SNR_metrics(concierge):
                                    'qualityFlag': -9},
                                   index=[0]) 
                 dataframes.append(df)
+                continue
+
+            if utils.get_slot(r_stream, 'sampling_rate') <= 0.5:
+                logger.info("Skipping %s because sample rate %s sps is too low" % (av.snclId, utils.get_slot(r_stream, 'sampling_rate')))
                 continue
 
             # Run the SNR metric
