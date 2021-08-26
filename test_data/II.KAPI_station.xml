@@ -1,0 +1,3103 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.0" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:iris="http://www.fdsn.org/xml/station/1/iris">
+ <Source>IRIS-DMC</Source>
+ <Sender>IRIS-DMC</Sender>
+ <Module>IRIS WEB SERVICE: fdsnws-station | version: 1.1.25</Module>
+ <ModuleURI>http://service.iris.edu/fdsnws/station/1/query?net=II&amp;sta=KAPI&amp;loc=*&amp;cha=BH*&amp;starttime=2000-01-01&amp;endtime=2018-01-01&amp;level=channel&amp;format=xml&amp;includecomments=true&amp;nodata=404</ModuleURI>
+ <Created>2017-05-25T19:45:28</Created>
+ <Network code="II" startDate="1986-01-01T00:00:00" endDate="2500-12-31T23:59:59" restrictedStatus="open">
+  <Description>Global Seismograph Network (GSN - IRIS/IDA)</Description>
+  <TotalNumberStations>53</TotalNumberStations>
+  <SelectedNumberStations>1</SelectedNumberStations>
+  <Station code="KAPI" startDate="1999-02-06T00:00:00" endDate="2599-12-31T23:59:59" restrictedStatus="open" iris:alternateNetworkCodes="_FDSN,_GSN-BROADBAND,_FDSN-ALL,_REALTIME,.UNRESTRICTED,_GSN">
+   <Comment>
+    <Value>Clock unlocked.</Value>
+    <BeginEffectiveTime>2001-01-29T17:46:48</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-02T03:21:40</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>Clock unlocked.</Value>
+    <BeginEffectiveTime>2001-02-02T04:23:22</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-03T01:02:40</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>Clock unlocked.</Value>
+    <BeginEffectiveTime>2001-02-03T04:49:55</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-04T03:02:20</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>Clock unlocked.</Value>
+    <BeginEffectiveTime>2001-02-08T03:06:27</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-09T13:28:57</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>Clock unlocked.</Value>
+    <BeginEffectiveTime>2001-02-18T09:58:04</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-19T16:24:21</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>Clock unlocked.</Value>
+    <BeginEffectiveTime>2001-02-19T16:44:46</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-22T05:14:57</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>Station has clock problems.</Value>
+    <BeginEffectiveTime>2001-01-29T17:46:48</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-02T03:21:40</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>Station has clock problems.</Value>
+    <BeginEffectiveTime>2001-02-02T04:23:22</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-03T01:02:40</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>Station has clock problems.</Value>
+    <BeginEffectiveTime>2001-02-03T04:49:55</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-04T03:02:20</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>Station has clock problems.</Value>
+    <BeginEffectiveTime>2001-02-08T03:06:27</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-09T13:28:57</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>Station has clock problems.</Value>
+    <BeginEffectiveTime>2001-02-18T09:58:04</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-19T16:24:21</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>Station has clock problems.</Value>
+    <BeginEffectiveTime>2001-02-19T16:44:46</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-22T05:14:57</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>time uncertain.</Value>
+    <BeginEffectiveTime>2001-01-29T17:46:48</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-02T03:21:40</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>time uncertain.</Value>
+    <BeginEffectiveTime>2001-02-02T04:23:22</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-03T01:02:40</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>time uncertain.</Value>
+    <BeginEffectiveTime>2001-02-03T04:49:55</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-04T03:02:20</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>time uncertain.</Value>
+    <BeginEffectiveTime>2001-02-08T03:06:27</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-09T13:28:57</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>time uncertain.</Value>
+    <BeginEffectiveTime>2001-02-18T09:58:04</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-19T16:24:21</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>time uncertain.</Value>
+    <BeginEffectiveTime>2001-02-19T16:44:46</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-22T05:14:57</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>Time may be in error by several seconds.</Value>
+    <BeginEffectiveTime>2001-01-29T17:46:48</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-02T03:21:40</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>Time may be in error by several seconds.</Value>
+    <BeginEffectiveTime>2001-02-02T04:23:22</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-03T01:02:40</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>Time may be in error by several seconds.</Value>
+    <BeginEffectiveTime>2001-02-03T04:49:55</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-04T03:02:20</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>Time may be in error by several seconds.</Value>
+    <BeginEffectiveTime>2001-02-08T03:06:27</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-09T13:28:57</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>Time may be in error by several seconds.</Value>
+    <BeginEffectiveTime>2001-02-18T09:58:04</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-19T16:24:21</EndEffectiveTime>
+   </Comment>
+   <Comment>
+    <Value>Time may be in error by several seconds.</Value>
+    <BeginEffectiveTime>2001-02-19T16:44:46</BeginEffectiveTime>
+    <EndEffectiveTime>2001-02-22T05:14:57</EndEffectiveTime>
+   </Comment>
+   <Latitude>-5.0142</Latitude>
+   <Longitude>119.7517</Longitude>
+   <Elevation>300.0</Elevation>
+   <Site>
+    <Name>Kappang, Sulawesi, Indonesia</Name>
+   </Site>
+   <CreationDate>1999-02-06T00:00:00</CreationDate>
+   <TotalNumberChannels>199</TotalNumberChannels>
+   <SelectedNumberChannels>51</SelectedNumberChannels>
+   <Channel code="BH1" endDate="2010-11-16T23:59:59" locationCode="00" restrictedStatus="open" startDate="2009-11-10T07:00:00">
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>1.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>3.61044E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BH1" endDate="2011-11-18T23:59:59" locationCode="00" restrictedStatus="open" startDate="2010-11-17T00:00:00">
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2010-11-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>1.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>3.61044E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BH1" endDate="2016-08-09T23:59:59" locationCode="00" restrictedStatus="open" startDate="2011-11-19T00:00:00">
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2010-11-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2011-11-19T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>1.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>3.61044E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BH1" endDate="2599-12-31T23:59:59" locationCode="00" restrictedStatus="open" startDate="2016-08-10T00:00:00">
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2010-11-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2011-11-19T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2016-08-10T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>1.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>3.61044E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BH2" endDate="2010-11-16T23:59:59" locationCode="00" restrictedStatus="open" startDate="2009-11-10T07:00:00">
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>92.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>3.49874E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BH2" endDate="2011-11-18T23:59:59" locationCode="00" restrictedStatus="open" startDate="2010-11-17T00:00:00">
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2010-11-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>92.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>3.49874E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BH2" endDate="2016-08-09T23:59:59" locationCode="00" restrictedStatus="open" startDate="2011-11-19T00:00:00">
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2010-11-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2011-11-19T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>92.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>3.49874E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BH2" endDate="2599-12-31T23:59:59" locationCode="00" restrictedStatus="open" startDate="2016-08-10T00:00:00">
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2010-11-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2011-11-19T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2016-08-10T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>92.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>3.49874E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHE" endDate="2002-01-16T23:59:59" locationCode="00" restrictedStatus="open" startDate="1999-02-06T00:00:00">
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>92.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>3.65037E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHE" endDate="2005-08-08T23:59:59" locationCode="00" restrictedStatus="open" startDate="2002-01-17T00:00:00">
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2002-01-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>92.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>3.65037E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHE" endDate="2007-11-14T05:09:59" locationCode="00" restrictedStatus="open" startDate="2005-08-09T00:00:00">
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2002-01-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>92.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.82519E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHE" endDate="2009-11-10T06:59:59" locationCode="00" restrictedStatus="open" startDate="2007-11-14T05:10:00">
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2002-01-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2007-11-14T05:10:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>92.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>8.9225E8</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHN" endDate="2002-01-16T23:59:59" locationCode="00" restrictedStatus="open" startDate="1999-02-06T00:00:00">
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>1.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>3.53007E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHN" endDate="2005-08-08T23:59:59" locationCode="00" restrictedStatus="open" startDate="2002-01-17T00:00:00">
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2002-01-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>1.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>3.53007E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHN" endDate="2007-11-14T05:09:59" locationCode="00" restrictedStatus="open" startDate="2005-08-09T00:00:00">
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2002-01-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>1.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.76504E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHN" endDate="2009-11-10T06:59:59" locationCode="00" restrictedStatus="open" startDate="2007-11-14T05:10:00">
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2002-01-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2007-11-14T05:10:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>1.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>8.64064E8</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHZ" endDate="2002-01-16T23:59:59" locationCode="00" restrictedStatus="open" startDate="1999-02-06T00:00:00">
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>0.0</Azimuth>
+    <Dip>-90.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>3.47833E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHZ" endDate="2005-08-08T23:59:59" locationCode="00" restrictedStatus="open" startDate="2002-01-17T00:00:00">
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2002-01-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>0.0</Azimuth>
+    <Dip>-90.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>3.47833E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHZ" endDate="2007-11-14T05:09:59" locationCode="00" restrictedStatus="open" startDate="2005-08-09T00:00:00">
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2002-01-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>0.0</Azimuth>
+    <Dip>-90.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.73916E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHZ" endDate="2009-11-10T06:59:59" locationCode="00" restrictedStatus="open" startDate="2007-11-14T05:10:00">
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2002-01-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2007-11-14T05:10:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>0.0</Azimuth>
+    <Dip>-90.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>8.52614E8</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHZ" endDate="2010-11-16T23:59:59" locationCode="00" restrictedStatus="open" startDate="2009-11-10T07:00:00">
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2002-01-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2007-11-14T05:10:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>0.0</Azimuth>
+    <Dip>-90.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>3.49076E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHZ" endDate="2011-11-18T23:59:59" locationCode="00" restrictedStatus="open" startDate="2010-11-17T00:00:00">
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2002-01-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2007-11-14T05:10:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2010-11-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>0.0</Azimuth>
+    <Dip>-90.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>3.49076E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHZ" endDate="2016-08-09T23:59:59" locationCode="00" restrictedStatus="open" startDate="2011-11-19T00:00:00">
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2002-01-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2007-11-14T05:10:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2010-11-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2011-11-19T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>0.0</Azimuth>
+    <Dip>-90.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>3.49076E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHZ" endDate="2599-12-31T23:59:59" locationCode="00" restrictedStatus="open" startDate="2016-08-10T00:00:00">
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2002-01-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2007-11-14T05:10:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2010-11-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2011-11-19T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2016-08-10T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>0.0</Azimuth>
+    <Dip>-90.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>3.49076E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BH1" endDate="2009-11-10T06:59:59" locationCode="10" restrictedStatus="open" startDate="2005-08-09T00:00:00">
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>7.0</Depth>
+    <Azimuth>5.8</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>1.25E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Guralp CMG-3T Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.2716E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BH1" endDate="2010-11-16T23:59:59" locationCode="10" restrictedStatus="open" startDate="2009-11-10T07:00:00">
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>7.0</Depth>
+    <Azimuth>5.8</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>1.25E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Guralp CMG-3T Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>2.47772E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BH1" endDate="2013-03-01T23:59:59" locationCode="10" restrictedStatus="open" startDate="2010-11-17T00:00:00">
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2010-11-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>7.0</Depth>
+    <Azimuth>5.8</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>1.25E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Guralp CMG-3T Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>2.47772E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BH1" endDate="2015-07-21T00:00:00" locationCode="10" restrictedStatus="open" startDate="2013-03-02T00:00:00">
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2010-11-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3845</Value>
+     <BeginEffectiveTime>2013-03-02T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>7.0</Depth>
+    <Azimuth>27.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>1.25E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Guralp CMG-3T Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>2.48023E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BH1" endDate="2016-08-09T23:59:59" locationCode="10" restrictedStatus="open" startDate="2015-07-21T00:00:00">
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2010-11-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3845</Value>
+     <BeginEffectiveTime>2013-03-02T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 25</Value>
+     <BeginEffectiveTime>2015-07-21T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>7.0</Depth>
+    <Azimuth>5.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>1.25E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Nanometrics Trillium 120 Posthole BB Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.91597E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BH1" endDate="2599-12-31T23:59:59" locationCode="10" restrictedStatus="open" startDate="2016-08-10T00:00:00">
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2010-11-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3845</Value>
+     <BeginEffectiveTime>2013-03-02T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 25</Value>
+     <BeginEffectiveTime>2015-07-21T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 25</Value>
+     <BeginEffectiveTime>2016-08-10T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>7.0</Depth>
+    <Azimuth>5.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>1.25E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Nanometrics Trillium 120 Posthole BB Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.91597E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BH2" endDate="2009-11-10T06:59:59" locationCode="10" restrictedStatus="open" startDate="2005-08-09T00:00:00">
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>7.0</Depth>
+    <Azimuth>95.8</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>1.25E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Guralp CMG-3T Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.28521E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BH2" endDate="2010-11-16T23:59:59" locationCode="10" restrictedStatus="open" startDate="2009-11-10T07:00:00">
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>7.0</Depth>
+    <Azimuth>95.8</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>1.25E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Guralp CMG-3T Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>2.49101E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BH2" endDate="2013-03-01T23:59:59" locationCode="10" restrictedStatus="open" startDate="2010-11-17T00:00:00">
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2010-11-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>7.0</Depth>
+    <Azimuth>95.8</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>1.25E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Guralp CMG-3T Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>2.49101E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BH2" endDate="2015-07-21T00:00:00" locationCode="10" restrictedStatus="open" startDate="2013-03-02T00:00:00">
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2010-11-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3845</Value>
+     <BeginEffectiveTime>2013-03-02T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>7.0</Depth>
+    <Azimuth>117.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>1.25E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Guralp CMG-3T Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>2.45766E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BH2" endDate="2016-08-09T23:59:59" locationCode="10" restrictedStatus="open" startDate="2015-07-21T00:00:00">
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2010-11-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3845</Value>
+     <BeginEffectiveTime>2013-03-02T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 25</Value>
+     <BeginEffectiveTime>2015-07-21T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>7.0</Depth>
+    <Azimuth>95.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>1.25E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Nanometrics Trillium 120 Posthole BB Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.926E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BH2" endDate="2599-12-31T23:59:59" locationCode="10" restrictedStatus="open" startDate="2016-08-10T00:00:00">
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2010-11-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3845</Value>
+     <BeginEffectiveTime>2013-03-02T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 25</Value>
+     <BeginEffectiveTime>2015-07-21T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 25</Value>
+     <BeginEffectiveTime>2016-08-10T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>7.0</Depth>
+    <Azimuth>95.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>1.25E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Nanometrics Trillium 120 Posthole BB Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.926E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHE" endDate="2005-08-08T23:59:59" locationCode="10" restrictedStatus="open" startDate="1999-02-06T00:00:00">
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>1999-11-02T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>1999-11-02T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>1999-11-26T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>1999-11-26T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>1999-12-11T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>1999-12-11T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-01-23T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-01-23T08:53:55</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-01-28T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-01-28T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-02-25T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-02-25T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-03-03T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-03-03T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-03-28T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-03-28T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-05-04T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-05-05T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-05-14T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-05-14T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-06-04T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-06-04T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-06-07T05:13:35</BeginEffectiveTime>
+     <EndEffectiveTime>2000-06-07T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-06-18T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-06-18T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-06-27T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-06-27T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-08-07T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-08-07T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-08-28T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-08-28T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-10-07T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-10-07T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-10-14T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-10-14T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-10-25T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-10-25T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-10-30T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-10-30T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-11-16T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-11-16T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-12-28T06:42:44</BeginEffectiveTime>
+     <EndEffectiveTime>2000-12-28T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-01-01T00:00:03</BeginEffectiveTime>
+     <EndEffectiveTime>2001-01-01T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-01-16T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2001-01-16T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-01-26T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2001-01-26T08:13:24</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-02-22T05:15:26</BeginEffectiveTime>
+     <EndEffectiveTime>2001-02-22T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-02-24T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2001-02-24T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-03-19T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2001-03-19T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-05-14T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2001-05-14T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 3443</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>7.0</Depth>
+    <Azimuth>90.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>1.25E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Guralp CMG-3T Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.30526E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHN" endDate="2005-08-08T23:59:59" locationCode="10" restrictedStatus="open" startDate="1999-02-06T00:00:00">
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>1999-10-30T09:55:08</BeginEffectiveTime>
+     <EndEffectiveTime>1999-10-30T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>1999-11-02T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>1999-11-02T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>1999-11-15T01:16:57</BeginEffectiveTime>
+     <EndEffectiveTime>1999-11-15T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>1999-12-11T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>1999-12-11T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>1999-12-21T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>1999-12-21T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-01-23T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-01-23T08:53:55</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-01-28T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-01-28T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-03-28T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-03-28T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-05-04T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-05-05T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-05-14T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-05-14T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-06-04T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-06-04T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-06-07T05:13:35</BeginEffectiveTime>
+     <EndEffectiveTime>2000-06-07T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-06-18T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-06-18T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-08-07T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-08-07T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-08-28T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-08-28T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-09-14T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-09-14T23:44:23</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-09-15T16:03:26</BeginEffectiveTime>
+     <EndEffectiveTime>2000-10-14T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-10-25T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-10-25T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-10-30T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-10-30T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-11-16T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-11-17T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-12-24T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-12-24T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-01-01T00:00:03</BeginEffectiveTime>
+     <EndEffectiveTime>2001-01-01T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-01-13T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2001-01-13T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-01-16T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2001-01-16T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-01-26T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2001-01-26T08:13:24</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-02-22T05:15:26</BeginEffectiveTime>
+     <EndEffectiveTime>2001-02-22T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-02-24T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2001-02-24T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-03-19T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2001-03-19T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-05-14T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2001-05-14T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 3443</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>7.0</Depth>
+    <Azimuth>0.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>1.25E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Guralp CMG-3T Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.30442E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHZ" endDate="2005-08-08T23:59:59" locationCode="10" restrictedStatus="open" startDate="1999-02-06T00:00:00">
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>1999-11-02T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>1999-11-02T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>1999-11-26T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>1999-11-26T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>1999-12-11T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>1999-12-11T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-01-23T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-01-23T08:53:55</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-01-28T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-01-28T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-03-03T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-03-03T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-03-28T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-03-28T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-05-04T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-05-05T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-05-14T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-05-14T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-05-19T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-05-19T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-06-04T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-06-04T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-06-07T05:13:35</BeginEffectiveTime>
+     <EndEffectiveTime>2000-06-08T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-06-18T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-06-18T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-06-27T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-06-27T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-08-07T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-08-07T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-08-28T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-08-28T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-10-07T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-10-07T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-10-14T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-10-14T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-10-25T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-10-25T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-10-30T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-10-30T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-11-13T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-11-13T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-11-16T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-11-16T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-01-01T00:00:03</BeginEffectiveTime>
+     <EndEffectiveTime>2001-01-01T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-01-13T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2001-01-13T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-01-16T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2001-01-16T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-01-26T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2001-01-26T08:13:24</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-02-24T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2001-02-24T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-03-19T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2001-03-19T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-05-14T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2001-05-14T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 3443</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>7.0</Depth>
+    <Azimuth>0.0</Azimuth>
+    <Dip>-90.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>1.25E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Guralp CMG-3T Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.29459E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHZ" endDate="2009-11-10T06:59:59" locationCode="10" restrictedStatus="open" startDate="2005-08-09T00:00:00">
+    <Comment>
+     <Value>S/N 3443</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>7.0</Depth>
+    <Azimuth>0.0</Azimuth>
+    <Dip>-90.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>1.25E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Guralp CMG-3T Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.27408E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHZ" endDate="2010-11-16T23:59:59" locationCode="10" restrictedStatus="open" startDate="2009-11-10T07:00:00">
+    <Comment>
+     <Value>S/N 3443</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>7.0</Depth>
+    <Azimuth>0.0</Azimuth>
+    <Dip>-90.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>1.25E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Guralp CMG-3T Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>2.47772E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHZ" endDate="2013-03-01T23:59:59" locationCode="10" restrictedStatus="open" startDate="2010-11-17T00:00:00">
+    <Comment>
+     <Value>S/N 3443</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2010-11-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>7.0</Depth>
+    <Azimuth>0.0</Azimuth>
+    <Dip>-90.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>1.25E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Guralp CMG-3T Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>2.47772E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHZ" endDate="2015-07-21T00:00:00" locationCode="10" restrictedStatus="open" startDate="2013-03-02T00:00:00">
+    <Comment>
+     <Value>S/N 3443</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2010-11-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3845</Value>
+     <BeginEffectiveTime>2013-03-02T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>7.0</Depth>
+    <Azimuth>0.0</Azimuth>
+    <Dip>-90.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>1.25E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Guralp CMG-3T Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>2.45264E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHZ" endDate="2016-08-09T23:59:59" locationCode="10" restrictedStatus="open" startDate="2015-07-21T00:00:00">
+    <Comment>
+     <Value>S/N 3443</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2010-11-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3845</Value>
+     <BeginEffectiveTime>2013-03-02T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 25</Value>
+     <BeginEffectiveTime>2015-07-21T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>7.0</Depth>
+    <Azimuth>0.0</Azimuth>
+    <Dip>-90.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>1.25E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Nanometrics Trillium 120 Posthole BB Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.98218E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHZ" endDate="2599-12-31T23:59:59" locationCode="10" restrictedStatus="open" startDate="2016-08-10T00:00:00">
+    <Comment>
+     <Value>S/N 3443</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2005-08-09T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2009-11-10T07:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3F55</Value>
+     <BeginEffectiveTime>2010-11-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N T3845</Value>
+     <BeginEffectiveTime>2013-03-02T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 25</Value>
+     <BeginEffectiveTime>2015-07-21T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 25</Value>
+     <BeginEffectiveTime>2016-08-10T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>7.0</Depth>
+    <Azimuth>0.0</Azimuth>
+    <Dip>-90.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>40.0</SampleRate>
+    <ClockDrift>1.25E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Nanometrics Trillium 120 Posthole BB Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.98218E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHE" endDate="2002-01-16T23:59:59" locationCode="XX" restrictedStatus="open" startDate="1999-02-06T00:00:00">
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>1999-10-30T09:55:15</BeginEffectiveTime>
+     <EndEffectiveTime>1999-10-30T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-05-04T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-05-04T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>92.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.82519E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHE" endDate="2005-08-08T23:59:59" locationCode="XX" restrictedStatus="open" startDate="2002-01-17T00:00:00">
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2002-01-17T06:55:07</BeginEffectiveTime>
+     <EndEffectiveTime>2002-01-17T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2002-01-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>92.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.82519E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHN" endDate="2002-01-16T23:59:59" locationCode="XX" restrictedStatus="open" startDate="1999-02-06T00:00:00">
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>1999-10-30T09:55:15</BeginEffectiveTime>
+     <EndEffectiveTime>1999-10-30T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2000-05-04T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2000-05-04T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>1.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.76504E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHN" endDate="2005-08-08T23:59:59" locationCode="XX" restrictedStatus="open" startDate="2002-01-17T00:00:00">
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2002-01-17T06:55:07</BeginEffectiveTime>
+     <EndEffectiveTime>2002-01-17T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2002-01-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>1.0</Azimuth>
+    <Dip>0.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.76504E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHZ" endDate="2002-01-16T23:59:59" locationCode="XX" restrictedStatus="open" startDate="1999-02-06T00:00:00">
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>1999-10-30T09:55:15</BeginEffectiveTime>
+     <EndEffectiveTime>1999-10-30T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2001-02-18T09:58:04</BeginEffectiveTime>
+     <EndEffectiveTime>2001-02-18T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2002-01-16T06:10:59</BeginEffectiveTime>
+     <EndEffectiveTime>2002-01-16T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>0.0</Azimuth>
+    <Dip>-90.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.73916E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+   <Channel code="BHZ" endDate="2005-08-08T23:59:59" locationCode="XX" restrictedStatus="open" startDate="2002-01-17T00:00:00">
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2002-01-17T06:55:07</BeginEffectiveTime>
+     <EndEffectiveTime>2002-01-17T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Channel may have clipped during this time period.</Value>
+     <BeginEffectiveTime>2002-03-15T10:42:07</BeginEffectiveTime>
+     <EndEffectiveTime>2002-03-15T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 21</Value>
+     <BeginEffectiveTime>1999-02-06T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>S/N 110</Value>
+     <BeginEffectiveTime>2002-01-17T00:00:00</BeginEffectiveTime>
+     <EndEffectiveTime>2599-12-31T23:59:59</EndEffectiveTime>
+    </Comment>
+    <Latitude>-5.0142</Latitude>
+    <Longitude>119.7517</Longitude>
+    <Elevation>300.0</Elevation>
+    <Depth>100.0</Depth>
+    <Azimuth>0.0</Azimuth>
+    <Dip>-90.0</Dip>
+    <Type>CONTINUOUS</Type>
+    <Type>GEOPHYSICAL</Type>
+    <SampleRate>20.0</SampleRate>
+    <ClockDrift>2.5E-6</ClockDrift>
+    <CalibrationUnits>
+     <Name>V</Name>
+     <Description>Volts</Description>
+    </CalibrationUnits>
+    <Sensor>
+     <Description>Geotech KS-54000 Borehole Seismometer</Description>
+    </Sensor>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.73916E9</Value>
+      <Frequency>0.05</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>Velocity in Meters Per Second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+    </Response>
+   </Channel>
+  </Station>
+ </Network>
+</FDSNStationXML>

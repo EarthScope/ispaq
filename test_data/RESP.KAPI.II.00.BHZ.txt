@@ -1,0 +1,53 @@
+Error 400: Bad Request
+
+The Resp webservice was unable to understand your request. exception parsing dates
+
+Usage details are available from http://service.iris.edu/irisws/resp/1
+
+Request:
+http://service.iris.edu/irisws/resp/1/query?net=II&sta=KAPI&loc=00&cha=BHZ&starttime=1900-01-01&endtime=2500-01-01
+
+Request Submitted:
+2019/01/23 22:30:27.210 GMT
+
+Service Version:
+ws-response web service - ICAB:1.7.11
+li3:84
+
+192.168.168.1
+java.lang.IllegalArgumentException: exception parsing dates
+	at edu.iris.dmc.wsresp.RequestParser.<init>(RequestParser.java:165)
+	at edu.iris.dmc.wsresp.ResponseServlet._serviceRequest(ResponseServlet.java:156)
+	at edu.iris.dmc.wsresp.ResponseServlet.serviceRequest(ResponseServlet.java:113)
+	at edu.iris.dmc.wsresp.ResponseServlet.doGet(ResponseServlet.java:80)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:622)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:729)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:292)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:207)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:240)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:207)
+	at org.apache.catalina.filters.CorsFilter.handleNonCORS(CorsFilter.java:458)
+	at org.apache.catalina.filters.CorsFilter.doFilter(CorsFilter.java:177)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:240)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:207)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:212)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:94)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:141)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:79)
+	at org.apache.catalina.valves.AbstractAccessLogValve.invoke(AbstractAccessLogValve.java:620)
+	at org.apache.catalina.valves.RemoteIpValve.invoke(RemoteIpValve.java:676)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:88)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:502)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1132)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:684)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1539)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.run(NioEndpoint.java:1495)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.IllegalArgumentException: Bad date-time string: 1900-01-01 must match YYYY.DDDThh:mm:ss[.s[s[s]]] or YYYY.MM.DDThh:mm:ss[.s[s[s]]]
+	at edu.iris.dmc.utils.datetime.WsTimeParser.parseDateTimeString(WsTimeParser.java:116)
+	at edu.iris.dmc.wsresp.RequestParser.<init>(RequestParser.java:147)
+	... 30 more
