@@ -17,6 +17,11 @@
 
 ################################################################################
 ## Jupyter Notebooks
+
+# The examples in the jupyter notebooks rely on certain metric values being available in the ISPAQ SQLite database.  To ensure that the metrics are available for all three examples, for the default metrics, targets, and days, you can run the following:
+
+./run_ispaq.py -M sample_rms,psd_day,pdf -S ANMO --starttime 2020-10-01 --endtime 2020-10-26 --output db --pdf_interval aggregated
+
 # To run the jupyter notebooks, you will need to launch the notebook interface. To do this, navigate to the directory with the .ipynb files (should be the directory that this file is in). Then you can do either of the following:
 
 # A. Launch the notebook interface, then select the particular notebook to open from within the interface:
@@ -26,10 +31,6 @@ jupyter notebook
 jupyter notebook SQLiteExample1_plotMetricsOverTime.ipynb
 jupyter notebook SQLiteExample2_plotPSDs.ipynb
 jupyter notebook SQLiteExample3_plotPDFs.ipynb
-
-# The examples in the jupyter notebooks relies on certain metric values being available in the ispaq SQLite database.  To ensure that the metrics are available for all three examples, for the default metrics, targets, and days, you can run the following:
-
-./run_ispaq.py -M sample_rms,psd_day,pdf -S ANMO --starttime 2020-10-01 --endtime 2020-10-26 --output db --pdf_interval aggregated
 
 ################################################################################
 
