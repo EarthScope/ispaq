@@ -29,7 +29,7 @@ jupyter notebook SQLiteExample3_plotPDFs.ipynb
 
 # The examples in the jupyter notebooks relies on certain metric values being available in the ispaq SQLite database.  To ensure that the metrics are available for all three examples, for the default metrics, targets, and days, you can run the following:
 
-./run_ispaq.py -M sample_rms,psd_day,pdf -S ANMO --starttime 2020-10-01 --endtime 2020-10-26 --output db --pdf_interval aggregated
+./run_ispaq.py -M sample_rms,psd_corrected,pdf -S ANMO --starttime 2020-10-01 --endtime 2020-10-26 --output db --pdf_interval aggregated
 
 ################################################################################
 
