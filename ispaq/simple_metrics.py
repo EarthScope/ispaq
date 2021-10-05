@@ -126,6 +126,16 @@ def simple_metrics(concierge):
                     logger.info('No data available for %s' % (av.snclId))
                 else:
                     logger.warning('No data available for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
+                
+                ## If there is no data, then mark it as 0% availability and move along to next target
+                if concierge.dataselect_client == 'PH5':
+                    q = 'D'
+                else:
+                    q = 'M'
+                snclq = av.snclId + '.' + q
+                df = pd.DataFrame(columns=['metricName','snclq','starttime','endtime','qualityFlag','value'])
+                df.loc[len(df.index)] = ['percent_availability',snclq, starttime, endtime, -9, 0 ]
+                dataframes.append(df)
                 continue
 
             # Run the Gaps metric ----------------------------------------

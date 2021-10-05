@@ -775,7 +775,8 @@ class Concierge(object):
                                                                       includerestricted=True,
                                                                       latitude=latitude, longitude=longitude,
                                                                       minradius=minradius, maxradius=maxradius,                                                                
-                                                                      level="channel",matchtimeseries=True)
+                                                                      level="channel",matchtimeseries=False)
+                    
                 except Exception as e:
                     if (minradius):
                         err_msg = "No stations found for %s within radius %s-%s degrees of latitude,longitude %s,%s" % (_sncl_pattern,minradius,maxradius,latitude,longitude)
@@ -1222,7 +1223,7 @@ class Concierge(object):
                 
                 sys.stderr = orig_stderr
             except Exception as e:
-                err_msg = "Error reading in waveform from FDSN dataselect webservice client (base url: %s)" % self.dataselect_url
+                err_msg = "Error reading in waveform from %s dataselect webservice client (base url: %s)" % (self.dataselect_type, self.dataselect_url)
                 self.logger.error(err_msg)
                 self.logger.debug(str(e).strip('\n'))
                 raise
