@@ -163,13 +163,15 @@ def PSD_metrics(concierge):
     def do_pdf(concierge, starttime, endtime):
         
         
-        fullFileList = list(); fullSnclList = list()
-        fileDF = pd.DataFrame(columns=["SNCL","FILE"], dtype="object")
+#         fullFileList = list(); fullSnclList = list()
+#         fileDF = pd.DataFrame(columns=["SNCL","FILE"], dtype="object")
         daylist = pd.date_range(start=str(starttime.date), end=str(endtime.date)).tolist()
         
         # Get a list of the files that exist in the directory within the sncl and timespan, or get psds from the database
         for sncl_pattern in concierge.sncl_patterns:
             logger.debug(sncl_pattern)
+            fullFileList = list(); fullSnclList = list()
+            fileDF = pd.DataFrame(columns=["SNCL","FILE"], dtype="object")
             
             # if using files on the filesystem
             if concierge.output == 'csv':
@@ -202,7 +204,7 @@ def PSD_metrics(concierge):
                         logger.warning('No PSD files found for %s %s' % (sncl_pattern,day))
                             
                         
-            
+                
                 fileDF['FILE'] = fullFileList
                 fileDF['SNCL'] = fullSnclList            
                 snclList = fileDF['SNCL'].unique()
