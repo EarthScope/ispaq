@@ -271,10 +271,14 @@ where *metric* can be a single metric name or a comma separated list of valid me
 combinations of other aliases. 
 Example: `myMetrics: num_gaps, sample_mean, cross_talk`.
 
-**Station_SNCL** aliases are user created `alias: Network.Station.Location.Channel` combinations. Station SNCLs 
-can be comma separated lists. `*` or `?` wildcards can be used in any of the network, station, location, channel elements. 
-Example: `"myStations: IU.ANMO.10.BHZ, IU.*.00.BH?, IU.ANMO.*.?HZ, II.PFO.??.*`. By default, aliases are formatted
-as `Network.Station.Location.Channel`. This format pattern can be modified using the `sncl_format`entry discussed below.
+**Station_SNCL** aliases are user created `alias: Network.Station.Location.Channel[.Quality]` combinations. Station SNCLs 
+can be comma separated lists. `*` or `?` wildcards can be used in any of the network, station, location, channel, or quality elements. 
+The use of quality code is optional, but may be beneficial to include if you have multiple versions of the data in your holdings. 
+Example: `"myStations: IU.ANMO.10.BHZ.M, IU.*.00.BH?.M, IU.ANMO.*.?HZ, II.PFO.??.*`. By default, aliases are formatted
+as `Network.Station.Location.Channel[.Quality]`. This format pattern can be modified using the `sncl_format`entry discussed below.
+
+_Note_: the PDF metric will use the quality code specified, if there is one, as it retrieves PSDs. If no quality code is specified in the 
+station SNCL, then it will look for any and all quality codes that might exist for that SNCL.
 
 _Note:_ When directly specifying a SNCL pattern on the command line, SNCLs containing wildcards should be 
 enclosed by quotes to avoid a possible error of unrecognized arguments.
@@ -384,6 +388,11 @@ when a single day is specified on the command line or
 
 when multiple days are specified from the command line. End date in this context is inclusive of that day.
 
+If specifying metrics and station SNCLs from the command line instead of using preference file aliases,
+the metric name and station SNCL[Q] will be used instead of the MetricAlias and StationAlias in the output
+file name. In addition, any instances of command-line wildcards "*" or "?" will be replaced with the letter
+"x" in the output file name.
+
 _businessLogic_ corresponds to which script is invoked:
 
 | businessLogic | ISPAQ script | metrics |
@@ -400,25 +409,22 @@ _businessLogic_ corresponds to which script is invoked:
 The metric alias psdPdf in the default preference file (or any user defined set with metric 'psd_corrected') will 
 generate corrected PSDs in files named:
 
-* `SNCL`\_`startdate`\_PSDcorrected.csv
+* `S.N.C.L.Q`\_`startdate`\_PSDcorrected.csv
 
 The metric alias psdPdf in the default preference file (or any user defined set with metric 'pdf') will generate 
 PDFs in files named:
 
-* `SNCL`\_`startdate`\_PDF.csv  (for daily PDF text)
-* `SNCL`\_`startdate`\_`enddate`\_PDF.csv (for aggregate PDF text)
-* `SNCL`\_`startdate`\_PDF.png  (for daily PDF plot)
-* `SNCL`\_`startdate`\_`enddate`\_PDF.png  (for aggregate PDF plot)
+* `S.N.C.L.Q`\_`startdate`\_PDF.csv  (for daily PDF text)
+* `S.N.C.L.Q`\_`startdate`\_`enddate`\_PDF.csv (for aggregate PDF text)
+* `S.N.C.L.Q`\_`startdate`\_PDF.png  (for daily PDF plot)
+* `S.N.C.L.Q`\_`startdate`\_`enddate`\_PDF.png  (for aggregate PDF plot)
 
-Note: The metric 'pdf' requires that corrected PSDs exist.  If using `output` 'csv' then `SNCL`\_`startdate`\_PSDcorrected.csv files must exist in the `psd_dir` specified directory.  
+_Note_: The metric 'pdf' requires that corrected PSDs exist.  If using `output` 'csv' then `S.N.C.L.Q`\_`startdate`\_PSDcorrected.csv files must exist in the `psd_dir` specified directory.  
 If you run the metric 'pdf' alone and see the warning 'No PSD files found', then try running metric 'psd_corrected'
 first to generate the PSD files. You will also see the warning 'No PSD files found' if there is no data available for that day.
 These two  metrics can be run simulataneously, as it will calculate the PSDs before calculating the PDFs. 
 
-If specifying metrics and station SNCLs from the command line instead of using preference file aliases,
-the metric name and station SNCL will be used instead of the MetricAlias and StationAlias in the output
-file name. In addition, any instances of command-line wildcards "*" or "?" will be replaced with the letter
-"x" in the output file name.
+
 
 #### SQLite database
 Using the 'db' `output` option will write to a SQLite database with the filename supplied in the `db_name` field. All metrics values, 
@@ -536,11 +542,11 @@ will be run on the first file that is found. To request all data files, use pref
 FDSN webservices instead of local files.
 
 _Note:_ All data is expected to be in the day file that matches its timestamp; if records do not break on the 
-day boundary, data that is not in the correct day file will not be used in the metrics calculation. This can 
+UTC day boundary, data that is not in the correct day file will not be used in the metrics calculation. This can 
 lead to cases where, for example, a gap is calculated at the start of a day when the data for that time period 
 is in the previous day file.
 
-If your miniSEED files are not already split on day boundaries, one tool that can be used for this task is the 
+If your miniSEED files are not already split on UTC day boundaries, one tool that can be used for this task is the 
 *dataselect* command-line tool available at [https://github.com/iris-edu/dataselect](https://github.com/iris-edu/dataselect). 
 Follow the [releases](https://github.com/iris-edu/dataselect/releases) link in the README to download the latest 
 version of the source code. The following example reads the input miniSEED files, splits the records on day
@@ -718,7 +724,7 @@ Model. This value is calculated over the entire time period.
 Probability density function plots and/or text output (controlled by PDF_Preferences in the preference file; or by `--pdf_type`,
 `--pdf_interval`, `--plot_include` on the command line). You must have local PSD files written in the format produced by the 
 'psd_corrected' metric (below) or run it concurrently with 'psd_corrected'. These files should be in a directory specified by the
-'psd_dir' entry in the preference file or by `--psd_dir` on the command line.
+`psd_dir` entry in the preference file or by `--psd_dir` on the command line, or in the database specified by `db_name`.
 [Reference: Ambient Noise Levels in the Continental United States, McNamara and Buland, 2004](https://doi.org/10.1785/012003001)
 
 * **percent_availability**:
