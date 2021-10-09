@@ -128,7 +128,7 @@ Now install the IRIS R packages for ISPAQ:
 ```
 export MACOSX_DEPLOYMENT_TARGET=10.9    # this line for macOS only
 R CMD INSTALL seismicRoll_1.1.4.tar.gz 
-R CMD INSTALL IRISSeismic_1.6.2.tar.gz
+R CMD INSTALL IRISSeismic_1.6.3.tar.gz
 R CMD INSTALL IRISMustangMetrics_2.4.4.tar.gz 
 ```
 
@@ -855,16 +855,6 @@ Then you'll need to re-install the CRAN IRISSeismic package:
 conda deactivate
 conda activate ispaq
 Rscript -e 'Sys.getenv("IrisClient_netrc")'   # verify that your .netrc file path is correct
-```
-
-For ISPAQ version 2:
-```
-R CMD INSTALL IRISSeismic_1.6.0.tar.gz.   # or whichever version you have in your ISPAQ directory
-./run_ispaq.py -U   # to (re-)install the latest version if you have IRISSeismic < 1.6.0
-```
-
-For ISPAQ version 3 (in beta):
-```
 ./run_ispaq.py -I
 ```
 
