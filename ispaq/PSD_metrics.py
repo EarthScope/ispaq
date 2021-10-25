@@ -85,7 +85,10 @@ def PSD_metrics(concierge):
                 if not utils.get_slot(r_stream, 'traces'):
                     # There is no data, just bypass it
                     continue
-                q = utils.get_slot(r_stream, "quality")
+                try:
+                    q = utils.get_slot(r_stream, "quality")
+                except:
+                    q = ""
                 
 
             except Exception as e:
@@ -122,22 +125,28 @@ def PSD_metrics(concierge):
                         # Write out the corrected PSDs
                         # Do it this way to have each individual day file properly named with starttime.date
                         subFolder = '%s/%s/%s/' % (concierge.psd_dir, av.network, av.station)
-                        filename = '%s.%s_%s_PSDCorrected.csv' % (av.snclId, q, starttime.date)
+                        if not q == "":
+                            filename = '%s.%s_%s_PSDCorrected.csv' % (av.snclId, q, starttime.date)
+                        else:
+                            filename = '%s_%s_PSDCorrected.csv' % (av.snclId, starttime.date)
                         filepath = subFolder + filename
                         
                         if concierge.output == 'csv':
-                            
                             if not os.path.isdir(subFolder):
                                 logger.info("psd_dir %s does not exist, creating directory" % subFolder)
                                 os.makedirs(subFolder)
                             logger.info('Writing corrected PSD values to %s' % filepath)
                         
                         elif concierge.output == 'db':
-                            logger.info('Writing corrected PSD values to %s' % concierge.db_name)
+                            logger.debug('Writing corrected PSD values to %s' % concierge.db_name)
 
                         try:
                             # Add target
-                            PSDcorrected['target'] = '%s.%s' % (av.snclId, q)
+                            if not q == "":
+                                PSDcorrected['target'] = '%s.%s' % (av.snclId, q)
+                            else: 
+                                PSDcorrected['target'] = av.snclId
+                                
                             PSDcorrected.rename(columns={'freq':'frequency'}, inplace=True)
                             PSDcorrected = PSDcorrected[['target','starttime','endtime','frequency','power']]
                             utils.write_numeric_df(PSDcorrected, filepath, concierge, sigfigs=concierge.sigfigs)
@@ -183,17 +192,18 @@ def PSD_metrics(concierge):
                 
                 ## If no quality code is specified, then wildcard it
                 if len(sncl_pattern.split('.')) == 4:
-                    sncl_pattern = '%s.?' % sncl_pattern
+                    sncl_pattern = '%s.?,%s' % (sncl_pattern, sncl_pattern)
                     logger.info("No quality code specified, wildcarding it")    
                     
                     
                 for day in daylist:
                     day = day.strftime("%Y-%m-%d")
-                    fnames = sncl_pattern + "_" + str(day) + "_PSDCorrected.csv"
                     files = []
-                    for root, dirnames, filenames in os.walk(concierge.psd_dir):
-                        for filename in fnmatch.filter(filenames, fnames):
-                            files.append(os.path.join(root, filename))
+                    for sncl_pat in sncl_pattern.split(','):
+                        fnames = sncl_pat + "_" + str(day) + "_PSDCorrected.csv"
+                        for root, dirnames, filenames in os.walk(concierge.psd_dir):
+                            for filename in fnmatch.filter(filenames, fnames):
+                                files.append(os.path.join(root, filename))
                     
                     #files = glob.glob(filename,recursive=True)
                     if files:
@@ -243,7 +253,7 @@ def PSD_metrics(concierge):
 
                 ## If no quality code is included in the preference file or command line SNCL definition, then add a wildcard for the quality code
                 if len(db_sncl_pattern.split('.')) == 4:
-                    db_sncl_pattern = '%s._' % db_sncl_pattern
+                    db_sncl_pattern = ('%s*' % db_sncl_pattern).replace("*","%")
                     logger.info("No quality code specified, wildcarding it")
                 
                 # Retrieve all targets that match

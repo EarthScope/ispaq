@@ -142,7 +142,7 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
     if 'text' in concierge.pdf_type:
         
         if concierge.output == "csv":
-            logger.info("Write to csv")
+            logger.debug("Write to csv")
             # Write to file
             
             subFolder = '%s/%s/%s/' % (concierge.pdf_dir, sncl.split('.')[0],  sncl.split('.')[1])
@@ -172,7 +172,7 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
             utils.write_pdf_df(sortedDF, filepath, 'a', sncl, starttime, endtime, concierge, sigfigs=concierge.sigfigs)
         
         elif concierge.output == "db":
-            logger.info('Writing PDF values to %s' % concierge.db_name)
+            logger.debug('Writing PDF values to %s' % concierge.db_name)
             utils.write_pdf_df(sortedDF, "unused", "unused", sncl, starttime, endtime, concierge, sigfigs=concierge.sigfigs)
             
         
