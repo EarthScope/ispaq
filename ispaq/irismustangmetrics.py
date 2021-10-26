@@ -83,7 +83,7 @@ def apply_simple_metric(av, starttime, endtime, r_stream, metric_function_name, 
         
     except:
         # The stream being empty will trigger this, so mark percent_Availability=0
-        snclq = av.snclId + '.M'
+#         snclq = av.snclId + '.M'    # Obsolete now that new logic is in place in simple_metrics.py
         df = pd.DataFrame(columns=['metricName','snclq','starttime','endtime','qualityFlag','value'])
         
         df.loc[len(df.index)] = ['percent_availability',snclq, starttime, endtime, -9, 0 ]
