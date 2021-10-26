@@ -1027,6 +1027,7 @@ class Concierge(object):
                         
                         if not inclusiveEnd:
                             _endtime = _endtime - 0.000001
+                            
                         py_stream = obspy.read(filepath)
                         py_stream = py_stream.slice(_starttime, _endtime, nearest_sample=False)
                       
@@ -1058,6 +1059,7 @@ class Concierge(object):
                     
                     if availability is None:
 #                     if availability.empty: 
+                        raise Exception('No Data')
                         return None
  
                     if(ignoreEpoch == False):
@@ -1086,9 +1088,7 @@ class Concierge(object):
 						sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
 
                 except Exception as e:
-#                     err_msg = "Error reading in local waveform from %s" % filepath
                     self.logger.debug(e)
-#                     self.logger.debug(err_msg)
                     raise
       
 #                 # Create the IRISSeismic version of the stream -- is this second call necessary? Uncomment if things start misbehaving.
