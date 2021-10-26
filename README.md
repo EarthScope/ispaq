@@ -107,7 +107,7 @@ You will go into the ispaq directory that you created with git, update miniconda
 environment specially for ispaq. You have to ```activate``` the ISPAQ environment whenever you 
 perform installs, updates, or run ISPAQ.
 
-Note: If you are upgrading from ISPAQ 2.0 to ISPAQ 3.0+, you should create a new ispaq environment.
+> _Note:_ If you are upgrading from ISPAQ 2.0 to ISPAQ 3.0+, you should create a new ispaq environment.
 
 ```
 cd ispaq
@@ -140,7 +140,7 @@ Or alternatively, install the IRIS R packages from CRAN:
 You should run `./run_ispaq.py -U` after you update ISPAQ minor versions to verify that you have both the 
 required minimum versions of anaconda packages and the most recent IRIS R packages.
 
-Note: If you are using macOS and see the error: "'math.h' file not found" when compiling seismicRoll, then it is 
+> _Note:_ If you are using macOS and see the error: "'math.h' file not found" when compiling seismicRoll, then it is 
 likely that your command line tools are missing. Try running `xcode-select --install`.
 
 # Using ISPAQ
@@ -273,21 +273,22 @@ Example: `myMetrics: num_gaps, sample_mean, cross_talk`.
 
 **Station_SNCL** aliases are user created `alias: Network.Station.Location.Channel[.Quality]` combinations. Station SNCLs 
 can be comma separated lists. `*` or `?` wildcards can be used in any of the network, station, location, channel, or quality elements. 
-The use of quality code is optional, but may be beneficial to include if you have multiple versions of the data in your holdings. 
-Example: `"myStations: IU.ANMO.10.BHZ.M, IU.*.00.BH?.M, IU.ANMO.*.?HZ, II.PFO.??.*`. By default, aliases are formatted
+ Example: `"myStations: IU.ANMO.10.BHZ.M, IU.*.00.BH?.M, IU.ANMO.*.?HZ, II.PFO.??.*`. By default, aliases are formatted
 as `Network.Station.Location.Channel[.Quality]`. This format pattern can be modified using the `sncl_format`entry discussed below.
 
-_Note_: the PDF metric will use the quality code specified, if there is one, as it retrieves PSDs. If no quality code is specified in the 
-station SNCL, then it will look for any and all quality codes that might exist for that SNCL.
+> _Note:_ the use of the quality code is optional and is not fully utilized in this version of ISPAQ. Specifying a quality code will not guarantee that ISPAQ retrieves data with only that quality code, but instead data will be of whatever quality the specified web services (or local data) provides. This is a known issue and will be addressed in a future release. 
 
-_Note:_ When directly specifying a SNCL pattern on the command line, SNCLs containing wildcards should be 
-enclosed by quotes to avoid a possible error of unrecognized arguments.
+> _Note:_ the PDF metric _will_ use the quality code specified, if there is one, as it retrieves PSDs. If no quality code is specified in the station SNCL, then it will look for any and all quality codes that might exist for that SNCL.
+
+> _Note:_ When directly specifying a SNCL pattern on the command line, SNCLs containing wildcards should be enclosed by quotes to avoid a possible error of unrecognized arguments.
 
 **Data_Access** has four entries describing where to find data, metadata, events, and optionally response files.
 
 * `dataselect_url:` should indicate a *miniSEED* data resource as one of the *FDSN web service aliases* used by ObsPy 
 (e.g. `IRIS`), the IRIS PH5 web service alias 'IRISPH5', an explicit URL pointing to an FDSN web service domain (e.g. `http://service.iris.edu` ), or a file 
 path to a directory containing miniSEED files (_See: "Using Local Data Files", below_).
+
+> _NOTE:_ When data is missing and it is marked as percent_availability=0, the quality code to assign to the target must be inferred. To do this, the current logic is to assign quality "M" for IRIS (fdsnws) derived data, and quality "D" for all other data (IRISPH5, local data, or any other webservice). We are aware that this is too simplistic to truly capture the range of possible quality codes, and have it on our radar to improve with a later release. 
 
 * `station_url:` should indicate a metadata location as an FDSN web service alias, the IRIS PH5 web service alias 'IRISPH5',
 an explicit URL, or a path to a file containing metadata in [StationXML](http://www.fdsn.org/xml/station/) format 
@@ -419,7 +420,7 @@ PDFs in files named:
 * `S.N.C.L.Q`\_`startdate`\_PDF.png  (for daily PDF plot)
 * `S.N.C.L.Q`\_`startdate`\_`enddate`\_PDF.png  (for aggregate PDF plot)
 
-_Note_: The metric 'pdf' requires that corrected PSDs exist.  If using `output` 'csv' then `S.N.C.L.Q`\_`startdate`\_PSDcorrected.csv files must exist in the `psd_dir` specified directory.  
+> _Note:_ The metric 'pdf' requires that corrected PSDs exist.  If using `output` 'csv' then `S.N.C.L.Q`\_`startdate`\_PSDcorrected.csv files must exist in the `psd_dir` specified directory.  
 If you run the metric 'pdf' alone and see the warning 'No PSD files found', then try running metric 'psd_corrected'
 first to generate the PSD files. You will also see the warning 'No PSD files found' if there is no data available for that day.
 These two  metrics can be run simulataneously, as it will calculate the PSDs before calculating the PDFs. 
@@ -467,7 +468,7 @@ In addition to those fields, these metrics have other columns as well:
 * psd_corrected: `frequency`, `power`  
 * pdf: `frequency`, `power`, `hits`  
 
-Note that transfer_function, orientation_check, psd_corrected, and pdf metrics all lack the `value` column.  
+> _Note:_  transfer_function, orientation_check, psd_corrected, and pdf metrics all lack the `value` column.  
 
 
 The metric 'pdf' requires that corrected PSDs exist. If using `output` 'db' then the PSDs must exist in the database specified by `db_name`.  
@@ -541,7 +542,7 @@ will be run on the first file that is found. To request all data files, use pref
 `*.*.*.*`, or `-S "*.*.*.*"` from the command line". Wildcarding every element is strongly discouraged when using 
 FDSN webservices instead of local files.
 
-_Note:_ All data is expected to be in the day file that matches its timestamp; if records do not break on the 
+> _Note:_ All data is expected to be in the day file that matches its timestamp; if records do not break on the 
 UTC day boundary, data that is not in the correct day file will not be used in the metrics calculation. This can 
 lead to cases where, for example, a gap is calculated at the start of a day when the data for that time period 
 is in the previous day file.
@@ -732,6 +733,8 @@ The portion of data available for each day is represented as a percentage. 100% 
 data for the reported start and end time.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/percent_availability/)
 
+> _NOTE:_ percent_availability will only be calculated for target-days that have metadata.  If metadata is available but no data can be retrieved, then it will be marked as percent_availability=0.  In this case, the quality code associated with that target cannot be determined from the data itself and must be inferred. ISPAQ will currently mark data from `IRIS` (fdsnws) as quality "M" and data from all other sources as "D". We are aware that this may not be able to capture the complexity of possible quality codes and will work on improving the logic in a future release.
+
 * **polarity_check**:
 The signed cross-correlation peak value based on the cross-correlation of two neighboring station channels in 
 proximity to a large earthquake signal. A negative peak close to -1.0 can indicate reversed polarity.
@@ -860,7 +863,7 @@ Rscript -e 'Sys.getenv("IrisClient_netrc")'   # verify that your .netrc file pat
 
 ### Examples Using preference_files/default.txt Preference File
 
-Note: not using `-P` in the command line is the same as specifying `-P preference_files/default.txt`
+> _Note:_ not using `-P` in the command line is the same as specifying `-P preference_files/default.txt`
 
 ```
 cd ispaq
