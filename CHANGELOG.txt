@@ -5,7 +5,7 @@
  * access to IRIS PH5 archive data, using IRISPH5 name
  * includes option to write metric values to SQLite database
  * updates recommended conda package versions
- * requires installation of R-packages seismicRoll 1.1.4, IRISMustangMetrics 2.4.2, IRISSeismic 1.6.0
+ * requires installation of R-packages seismicRoll 1.1.4, IRISMustangMetrics 2.4.4, IRISSeismic 1.6.2
  * metric transfer_function will run on all requested days
  * local data will be marked percent_availability=0 for target-days without data if metadata is included for target. 
 

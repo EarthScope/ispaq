@@ -56,13 +56,14 @@ def main():
     metrics = parser.add_argument_group('arguments for running metrics')
     metrics.add_argument('-P', '--preferences-file', required=False, help='path to preference file, default=./preference_files/default.txt')
     metrics.add_argument('-M', '--metrics', required=False,
-                        help='metrics alias as defined in preference file or metric name, required')
+                        help='metrics alias as defined in preference file or metric name, required. Can be a single metric alias from the preference file, or one or more metrics names in a comma-separated list.')
     metrics.add_argument('-S', '--stations', required=False,
-                        help='stations alias as defined in preference file or station SNCL, required')
+                        help='stations_SNCLs alias as defined in preference file or station SNCL, required. Can be a single station_SNCL alias, a single N.S.L.C[.Q], or a list of N.S.L.C[.Q]s. If using wildcarding, enclose in quotation marks.')
     metrics.add_argument('--starttime', required=False,
                         help='starttime in ObsPy UTCDateTime format, required for webservice requests \nand defaults to earliest data file for local data \nexamples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]')
     metrics.add_argument('--endtime',  required=False,
                         help='endtime in ObsPy UTCDateTime format, default=starttime + 1 day; \nif starttime is also not specified then it defaults to the latest data \nfile for local data \nexamples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]')
+   
    
     prefs = parser.add_argument_group('optional arguments for overriding preference file entries')
     prefs.add_argument('--dataselect_url', required=False,

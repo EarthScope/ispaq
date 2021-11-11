@@ -24,7 +24,7 @@ Metrics:
   customStats: sample_min, max_stalta, num_spikes
 
 # Sets of SNCLs ---------------------------------------------------------------
-SNCLs:
+Station_SNCLs:
   
   # Examples for testing default combinations of metrics
   basicStats: IU.ANMO.00.BHZ, IU.GUMO.00.BH?
