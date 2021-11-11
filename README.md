@@ -186,9 +186,12 @@ single arguments:
 arguments for running metrics:
   -P PREFERENCES_FILE, --preferences-file PREFERENCES_FILE
                                    path to preference file, default=./preference_files/default.txt
-  -M METRICS, --metrics METRICS    metrics alias as defined in preference file or metric name, required
+  -M METRICS, --metrics METRICS    single Metrics alias as defined in preference file, or one or 
+                                   more metrics names in a comma-separated list, required
   -S STATIONS, --stations STATIONS
-                                   stations alias as defined in preference file or station SNCL, required
+                                   single Stations_SNCLs alias as defined in preference file, or 
+                                   one or more SNCL[Q] in a comma-separted list, required 
+                                   note: use of quotation marks may be required when wildcarding on the command line  
   --starttime STARTTIME            starttime in ObsPy UTCDateTime format, required for webservice requests 
                                    and defaults to earliest data file for local data 
                                    examples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]
@@ -240,8 +243,8 @@ e.g., `--starttime=2016-01-01 --endtime=2016-01-02` will also calculate one day 
 greater than one day is requested, metrics will be calculated by cycling through multiple single days to produce 
 a measurement for each day. Additionally, and only if using local data files, you can run metrics without specifying 
 a start time. In this case, ISPAQ will use a start time corresponding to the earliest file found that matches the 
-requested station(s). If end time is also not specified, ISPAQ will use an end time corresponding to the latest file 
-found that matches the requested station(s).
+requested Station_SNCLs. If end time is also not specified, ISPAQ will use an end time corresponding to the latest file 
+found that matches the requested Station_SNCLs.
 
 ### Preference files
 
@@ -266,12 +269,12 @@ with the following comments in the header:
 #
 ```
 
-**Metric** aliases can be any of one of the predefined options or any user-created `alias: metric` combination, 
+**Metric** aliases can be any of one of the predefined options or any user-created `alias_name: metric` combination, 
 where *metric* can be a single metric name or a comma separated list of valid metric names. Aliases cannot be 
 combinations of other aliases. 
 Example: `myMetrics: num_gaps, sample_mean, cross_talk`.
 
-**Station_SNCL** aliases are user created `alias: Network.Station.Location.Channel[.Quality]` combinations. Station SNCLs 
+**Station_SNCL** aliases are user created `alias_name: Network.Station.Location.Channel[.Quality]` combinations. Station_SNCLs 
 can be comma separated lists. `*` or `?` wildcards can be used in any of the network, station, location, channel, or quality elements. 
  Example: `"myStations: IU.ANMO.10.BHZ.M, IU.*.00.BH?.M, IU.ANMO.*.?HZ, II.PFO.??.*`. By default, aliases are formatted
 as `Network.Station.Location.Channel[.Quality]`. This format pattern can be modified using the `sncl_format`entry discussed below.
@@ -364,7 +367,7 @@ If no `sncl_format` exists, it defaults to `N.S.L.C`.
 "legend,colorbar,fixed_axis_limits" will create a PDF plot with all three features.  
 
 Any of these preference file entries can be overridden by command-line arguments:
-`-M "metric name"`, `-S "station SNCL"`, `--dataselect_url`, `--station_url`, `--event_url`, `--resp_dir`, 
+`-M "Metric name/alias"`, `-S "Station_SNCL"`, `--dataselect_url`, `--station_url`, `--event_url`, `--resp_dir`, 
 `--output`, `--db_name`, `--csv_output_dir`, `--plot_output_dir`, `--sigfigs`, `--sncl_format`,`--pdf_type`, 
 `--pdf_interval`, `--plot_include`, `--sncl_format`, `--sigfigs`
 
@@ -381,16 +384,16 @@ In addition, the metric calculations will write to either .csv files or to a SQL
 #### CSV files
 Results of most metrics calculations will be written to .csv files using the following naming scheme:
 
-* `MetricAlias`\_`StationAlias`\_`startdate`\__`businessLogic`.csv
+* `MetricAlias`\_`Station_SNCLAlias`\_`startdate`\__`businessLogic`.csv
 
 when a single day is specified on the command line or
 
-* `MetricAlias`\_`StationAlias`\_`startdate`\_`enddate`\_`businessLogic`.csv
+* `MetricAlias`\_`Station_SNCLAlias`\_`startdate`\_`enddate`\_`businessLogic`.csv
 
 when multiple days are specified from the command line. End date in this context is inclusive of that day.
 
-If specifying metrics and station SNCLs from the command line instead of using preference file aliases,
-the metric name and station SNCL[Q] will be used instead of the MetricAlias and StationAlias in the output
+If specifying metrics and station_SNCLs from the command line instead of using preference file aliases,
+the metric name and station_SNCL[Q] will be used instead of the MetricAlias and Station_SNCLAlias in the output
 file name. In addition, any instances of command-line wildcards "*" or "?" will be replaced with the letter
 "x" in the output file name.
 
@@ -482,7 +485,7 @@ For those using [QuARG](https://github.com/iris-edu/quarg), a utility produced b
 to have QuARG read metrics from your local ISPAQ SQLite database rather than from the MUSTANG web services.  Simply point the `metric source` in the QuARG  preference file to the database file produced by ISPAQ and it will use your local metric values.  
 
 
-Examples of how to access and use the metrics are included as jupyter notebooks in the EXAMPLES/ directory. For more information on how to navigate a SQLite database, see [https://sqlite.org/cli.html](https://sqlite.org/cli.html).  
+Examples of how to access and use the metrics are included as jupyter notebooks in the EXAMPLES/ directory. For more information on how to navigate a SQLite database, see [https://sqlite.org/cli.html](https://sqlite.org/cli.html).  Given your `ispaq` environment is activated, you should be able to run the jupyter notebooks if you have installed the conda environment using the provided ispaq-conda-install.txt file. But if you are having trouble you can go through installation steps here: [https://jupyter.org/install](https://jupyter.org/install).
 
 
 
