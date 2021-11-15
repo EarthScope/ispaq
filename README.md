@@ -189,15 +189,16 @@ arguments for running metrics:
   -M METRICS, --metrics METRICS    single Metrics alias as defined in preference file, or one or 
                                    more metrics names in a comma-separated list, required
   -S STATIONS, --stations STATIONS
-                                   single Stations_SNCLs alias as defined in preference file, or 
-                                   one or more SNCL[Q] in a comma-separted list, required 
-                                   note: use of quotation marks may be required when wildcarding on the command line  
+                                   single Station_SNCLs alias as defined in preference file, or 
+                                   one or more SNCL[Q] in a comma-separated list, required. 
+                                   notes: SNCL[Q] refers to Station.Network.Channel.Location.(optional)Quality.
+                                          If using wildcarding, enclose in quotation marks
   --starttime STARTTIME            starttime in ObsPy UTCDateTime format, required for webservice requests 
-                                   and defaults to earliest data file for local data 
+                                   and defaults to earliest data file for local data.
                                    examples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]
   --endtime ENDTIME                endtime in ObsPy UTCDateTime format, default=starttime + 1 day; 
                                    if starttime is also not specified then it defaults to the latest data 
-                                   file for local data 
+                                   file for local data.
                                    examples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]
 
 optional arguments for overriding preference file entries:
@@ -274,12 +275,12 @@ where *metric* can be a single metric name or a comma separated list of valid me
 combinations of other aliases. 
 Example: `myMetrics: num_gaps, sample_mean, cross_talk`.
 
-**Station_SNCL** aliases are user created `alias_name: Network.Station.Location.Channel[.Quality]` combinations. Station_SNCLs 
-can be comma separated lists. `*` or `?` wildcards can be used in any of the network, station, location, channel, or quality elements. 
+**Station_SNCL** aliases are user created `alias_name: Network.Station.Location.Channel[.Quality]` combinations, where [ ] denotes an optional element. 
+Station_SNCLs can be comma separated lists. `*` or `?` wildcards can be used in any of the network, station, location, channel, or quality elements. 
  Example: `"myStations: IU.ANMO.10.BHZ.M, IU.*.00.BH?.M, IU.ANMO.*.?HZ, II.PFO.??.*`. By default, aliases are formatted
 as `Network.Station.Location.Channel[.Quality]`. This format pattern can be modified using the `sncl_format`entry discussed below.
 
-> _Note:_ the use of the quality code is optional and is not fully utilized in this version of ISPAQ. Specifying a quality code will not guarantee that ISPAQ retrieves data with only that quality code, but instead data will be of whatever quality the specified web services (or local data) provides. This is a known issue and will be addressed in a future release. 
+> _Note:_ the use of the quality code is optional and is not fully utilized in this version of ISPAQ. Specifying a quality code will not guarantee that ISPAQ retrieves data with only that quality code; instead data will be of whatever quality the specified web services (or local data) provides. This is a known issue and will be addressed in a future release. 
 
 > _Note:_ the PDF metric _will_ use the quality code specified, if there is one, as it retrieves PSDs. If no quality code is specified in the station SNCL, then it will look for any and all quality codes that might exist for that SNCL.
 
