@@ -352,7 +352,7 @@ If no `sncl_format` exists, it defaults to `N.S.L.C`.
 **PDF_Preferences** has three entries describing PDF output.
 
 * `pdf_type:` should be followed by either "text","plot", or "text,plot".  
-"text" will output PDF information in a csv format file with frequency, power, and hits columns.  
+"text" will output PDF information in a csv format file with frequency, power, and hits columns, or to a database.  
 "plot" will output a PDF plot in a png format file.  
 "text,plot" will output both.  
 
@@ -870,20 +870,36 @@ Rscript -e 'Sys.getenv("IrisClient_netrc")'   # verify that your .netrc file pat
 > _Note:_ not using `-P` in the command line is the same as specifying `-P preference_files/default.txt`
 
 ```
-cd ispaq
+cd ispaq  # top-level directory
 conda activate ispaq
 ./run_ispaq.py -M basicStats -S basicStats --starttime 2010-100             # starttime specified as julian day
 ./run_ispaq.py -M stateOfHealth -S ANMO --starttime 2013-01-05              # starttime specified as calendar day
 ./run_ispaq.py -M gaps -S ANMO --starttime 2011-01-01 --endtime 2011-01-08
-./run_ispaq.py -M psdPdf -S psdPdf --starttime 2013-06-01 --endtime 2013-06-08
+./run_ispaq.py -M psdPdf -S psdPdf --starttime 2013-06-01 --endtime 2013-06-04
 ```
 
-### Example Using Command-line Options to Override Preference File
+### Examples Using Command-line Options to Override Preference File
 ```
 ./run_ispaq.py -M sample_mean -S II.KAPI.00.BHZ --starttime 2013-01-05 --dataselect_url ./test_data --station_url ./test_data/II.KAPI_station.xml --output csv --csv_dir ./test_out
 
 ./run_ispaq.py -M psd_corrected,pdf -S II.KAPI.00.BHZ --starttime 2013-01-05 --endtime 2013-01-08 --dataselect_url ./test_data --station_url ./test_data/II.KAPI_station.xml --output csv --psd_dir ./test_out/PSDs --pdf_dir ./test_out/PDFs --pdf_type plot --pdf_interval aggregated
 ```
+
+### Example Using SQLite database
+```
+./run_ispaq.py -M basicStats -S basicStats --starttime 2010-100 --output db --db_name ispaq_example.db
+```
+To view values in sqlite database:
+```
+sqlite3 ispaq_example.db
+```
+At sqlite prompt:
+```
+.tables
+select * from sample_mean;
+select * from sample_max;
+```
+Ctrl + D to exit sqlite
 
 
 
