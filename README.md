@@ -110,7 +110,7 @@ perform installs, updates, or run ISPAQ.
 > _Note:_ If you are upgrading from ISPAQ 2.0 to ISPAQ 3.0+, you should create a new ispaq environment.
 
 ```
-cd ispaq
+cd ispaq   #top level directory
 conda update conda
 conda env remove --name ispaq  #if you are upgrading from an existing ISPAQ 2.0 installation to ISPAQ 3.0
 conda create --name ispaq -c conda-forge python=3.8 obspy=1.2.2
@@ -124,17 +124,18 @@ See what is installed in our (ispaq) environment with:
 conda list
 ```
 
-Now install the IRIS R packages for ISPAQ:
+Now install the IRIS R packages for ISPAQ using the -I option:
 ```
 export MACOSX_DEPLOYMENT_TARGET=10.9    # this line for macOS only
-R CMD INSTALL seismicRoll_1.1.4.tar.gz 
-R CMD INSTALL IRISSeismic_1.6.3.tar.gz
-R CMD INSTALL IRISMustangMetrics_2.4.4.tar.gz 
+./run_ispaq.py -I    #downloads latest packages from CRAN (https://cran.r-project.org)
 ```
 
-Or alternatively, install the IRIS R packages from CRAN: 
+Or alternatively, install the IRIS R packages from local files: 
 ```
-./run_ispaq.py -I
+export MACOSX_DEPLOYMENT_TARGET=10.9    # this line for macOS only
+R CMD INSTALL seismicRoll_1.1.4.tar.gz
+R CMD INSTALL IRISSeismic_1.6.3.tar.gz
+R CMD INSTALL IRISMustangMetrics_2.4.4.tar.gz
 ```
 
 You should run `./run_ispaq.py -U` after you update ISPAQ minor versions to verify that you have both the 
@@ -173,7 +174,7 @@ usage: run_ispaq.py [-h] [-P PREFERENCES_FILE] [-M METRICS] [-S STATIONS]
                     [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-A] [-V]
                     [-I] [-U] [-L]
 
-ISPAQ version 3.0.0-beta
+ISPAQ version 3.0.0
 
 single arguments:
   -h, --help                       show this help message and exit
@@ -566,17 +567,17 @@ IRISMustangMetrics R packages.
 
 ```
 (ispaq) bash-3.2$ ./run_ispaq.py -U
-2020-10-05 21:22:27 - INFO - Running ISPAQ version 3.0.0-beta on Mon Oct  5 21:22:27 2020
-2020-10-05 21:22:30 - INFO - Checking for recommended conda packages...
-2020-10-05 21:22:30 - INFO - Required conda packages found
-2020-10-05 21:22:30 - INFO - Checking for IRIS R package updates...
+2021-11-16 12:06:09 - INFO - Running ISPAQ version 3.0.0 on Tue Nov 16 12:06:09 2021
+2021-11-16 12:06:11 - INFO - Checking for recommended conda packages...
+2021-11-16 12:06:11 - INFO - Required conda packages found
+2021-11-16 12:06:11 - INFO - Checking for IRIS R package updates...
 
               package installed   CRAN  upgrade
 0         seismicRoll     1.1.4  1.1.4    False
-1         IRISSeismic     1.6.0  1.6.0    False
-2  IRISMustangMetrics     2.4.2  2.4.2    False
+1         IRISSeismic     1.6.3  1.6.3    False
+2  IRISMustangMetrics     2.4.4  2.4.4    False
 
-2020-10-05 21:22:32 - INFO - No CRAN packages need updating.
+2021-11-16 12:06:15 - INFO - No CRAN packages need updating.
 
 Alternatively, the command-line argument `-I`, `--install-r` will install the CRAN packages regardless of what
 version is already installed
