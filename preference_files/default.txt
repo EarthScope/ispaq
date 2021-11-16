@@ -71,10 +71,16 @@ PDF_Preferences:
 # Preferences fall into five categories:
 #  * Metrics -- aliases for user defined combinations of metrics
 #  * Station_SNCLs -- aliases for user defined combinations of SNCL patterns
-#                     SNCL patterns are station names formatted as Network.Station.Location.Channel
-#                     wildcards * and ? are allowed (*.*.*.*). SNCL pattern format can be modified
-#                     using the Preferences sncl_format. 
-#	              NOTE: Quality codes will be ignored. For example, IU.ANMO.00.BHZ.M will be treated as IU.ANMO.00.BHZ
+#                     SNCL patterns are station names formatted as Network.Station.Location.Channel.[Quality], where 
+#                     [ ] denotes an optional element.
+#                     Wildcards * and ? are allowed (*.*.*.*). 
+#                     SNCL pattern format can be modified using the Preferences sncl_format.
+#	              NOTE: the use of the quality code is optional and is not fully utilized in this version of ISPAQ. Specifying 
+#                           a quality code will not guarantee that ISPAQ retrieves data with only that quality code; instead data 
+#                           will be of whatever quality the specified web services (or local data) provides. This is a known issue and 
+#                           will be addressed in a future release. The pdf metric will use the quality code specified, if there is one, 
+#                           as it retrieves PSDs. If no quality code is specified in the station SNCL, then it will look for any and all 
+#                           quality codes that might exist for that SNCL.
 #  * Data_Access -- FDSN web services or local files
 #  * Preferences -- additional user preferences
 #  * PDF_Preferences -- preferences specific to PDF calculation
