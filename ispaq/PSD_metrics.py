@@ -138,7 +138,7 @@ def PSD_metrics(concierge):
                             logger.info('Writing corrected PSD values to %s' % filepath)
                         
                         elif concierge.output == 'db':
-                            logger.debug('Writing corrected PSD values to %s' % concierge.db_name)
+                            logger.info('Writing corrected PSD values to %s' % concierge.db_name)
 
                         try:
                             # Add target

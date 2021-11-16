@@ -362,7 +362,7 @@ def plot_PDF(sncl, starttime, endtime, pdfDF, modesDF, maxsDF, minsDF, concierge
         filename = sncl + '.' + str(start) + '_PDF.png'
     filepath = subFolder + filename
     
-    logger.debug('Saving PDF plot to %s' % (filepath))
+    logger.info('Saving PDF plot to %s' % (filepath))
     plt.savefig(filepath)
 
 

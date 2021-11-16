@@ -205,7 +205,7 @@ def main():
                  or (StrictVersion(x_str) < StrictVersion("3.5.1")) ):
             logger.debug('Obspy 1.2.2 not found')
             logger.info('Updating conda packages...')
-            conda_str = ("conda update -c conda-forge pandas=1.2.3 obspy=1.2.2 r=3.6 r-devtools=2.0.1" +
+            conda_str = ("conda update -c conda-forge pandas=1.2.3 obspy=1.2.2 r=3.6 " +
                     " r-rcurl=1.98_1.3 r-xml=3.99_0.3 r-dplyr=1.0.6 r-quadprog=1.5_8 r-signal=0.7_6" +
                     " r-pracma=2.3.3 rpy2=3.1.0 r-stringr=1.4.0")
             subprocess.call(conda_str, shell=True)
