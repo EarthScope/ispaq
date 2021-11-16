@@ -10,7 +10,7 @@
  * updates to documentation, including new Jupyter notebook tutorials
  * updates to logging output
  * PSD and PDF output targets now contain quality code information
- * bug fix, transfer_function metric will run on all requested days
+ * bug fix, transfer_function metric will run on all requested daysa with correct results
  * bug fix, PDF calculation completes when using CSV files having multiple SNCLs with a differing number of targets 
 
 2.0.1
