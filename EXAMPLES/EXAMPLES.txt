@@ -1,0 +1,53 @@
+################################################################################
+# Examples that use IRIS web services
+#
+# If not using preference_files/default.txt, the preference file should be specified
+# using the -P option
+#
+# Run all examples in your ISPAQ conda environment
+#
+cd ispaq  #top-level ISPAQ directory 
+conda activate ispaq
+./run_ispaq.py -M basicStats -S basicStats --starttime 2010-100             # starttime specified as julian day
+./run_ispaq.py -M stateOfHealth -S ANMO --starttime 2013-01-05              # starttime specified as calendar day
+./run_ispaq.py -M gaps -S ANMO --starttime 2011-01-01 --endtime 2011-01-04
+./run_ispaq.py -M psdPdf -S psdPdf --starttime 2013-06-01 --endtime 2013-06-04
+
+# Examples using local data and command-line options to override preference file
+./run_ispaq.py -M sample_mean -S II.KAPI.00.BHZ --starttime 2013-01-05 --dataselect_url ./test_data --station_url ./test_data/II.KAPI_station.xml --output csv --csv_dir ./test_out
+
+./run_ispaq.py -M psd_corrected,pdf -S II.KAPI.00.BHZ --starttime 2013-01-05 --endtime 2013-01-08 --dataselect_url ./test_data --station_url ./test_data/II.KAPI_station.xml --output csv --psd_dir ./test_out --pdf_dir ./test_out --pdf_type plot --pdf_interval aggregated
+
+### Example Using SQLite database
+./run_ispaq.py -M basicStats -S basicStats --starttime 2010-100 --output db --db_name ispaq_example.db
+
+To view values in sqlite database:
+sqlite3 ispaq_example.db
+
+At sqlite prompt:
+.tables
+select * from sample_mean;
+select * from sample_max;
+
+Ctrl + D to exit sqlite
+
+
+################################################################################
+## Jupyter Notebooks
+
+# The examples in the jupyter notebooks rely on certain metric values being available in the ISPAQ example SQLite database.  To ensure that the metrics are available for all three examples, for the default metrics, targets, and days, you can run the following (this will take several minutes):
+
+./run_ispaq.py -M sample_rms,psd_corrected,pdf -S ANMO --starttime 2020-10-01 --endtime 2020-10-16 --output db --db_name ispaq_example.db --pdf_interval aggregated
+
+# To run the jupyter notebooks, you will need to launch the notebook interface. To do this, navigate to the directory with the .ipynb files (should be the directory that this file is in). Then you can do either of the following:
+
+# A. Launch the notebook interface, then select the particular notebook to open from within the interface:
+jupyter notebook
+
+# B. Launch a particular notebook:
+jupyter notebook Example1_plotMetricsOverTime.ipynb
+jupyter notebook Example2_plotPSDs.ipynb
+jupyter notebook Example3_plotPDFs.ipynb
+jupyter notebook Example4_calculatePDFs.ipynb
+
+################################################################################

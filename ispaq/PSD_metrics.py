@@ -56,7 +56,7 @@ def PSD_metrics(concierge):
     ####################
     def do_psd(concierge,starttime,endtime):
         try:
-            availability = concierge.get_availability(starttime=starttime,endtime=endtime)
+            availability = concierge.get_availability("PSDs", starttime=starttime,endtime=endtime)
         except NoAvailableDataError as e:
             raise
         except Exception as e:
@@ -75,17 +75,27 @@ def PSD_metrics(concierge):
 
         for (index, av) in availability.iterrows():
             logger.info('%03d Calculating PSD values for %s' % (index, av.snclId))
+            
 
             # Get the data ----------------------------------------------
 
             # NOTE:  Use the requested starttime and endtime
             try:
                 r_stream = concierge.get_dataselect(av.network, av.station, av.location, av.channel,starttime,endtime, inclusiveEnd=False)
+                if not utils.get_slot(r_stream, 'traces'):
+                    # There is no data, just bypass it
+                    continue
+                try:
+                    q = utils.get_slot(r_stream, "quality")
+                except:
+                    q = ""
+                
+
             except Exception as e:
                 #logger.debug(e)
                 if str(e).lower().find('no data') > -1:
                     logger.info('No data available for %s' % (av.snclId))
-                elif str(e).lower().find('multiple epochs') :
+                elif str(e).lower().find('multiple epochs') > -1:
                     logger.info('Skipping %s because multiple metadata epochs found' % (av.snclId))
                 else:
                     logger.error(e)
@@ -115,21 +125,28 @@ def PSD_metrics(concierge):
                         # Write out the corrected PSDs
                         # Do it this way to have each individual day file properly named with starttime.date
                         subFolder = '%s/%s/%s/' % (concierge.psd_dir, av.network, av.station)
-                        filename = '%s_%s_PSDCorrected.csv' % (av.snclId, starttime.date)
+                        if not q == "":
+                            filename = '%s.%s_%s_PSDCorrected.csv' % (av.snclId, q, starttime.date)
+                        else:
+                            filename = '%s_%s_PSDCorrected.csv' % (av.snclId, starttime.date)
                         filepath = subFolder + filename
                         
                         if concierge.output == 'csv':
-                            
                             if not os.path.isdir(subFolder):
                                 logger.info("psd_dir %s does not exist, creating directory" % subFolder)
                                 os.makedirs(subFolder)
                             logger.info('Writing corrected PSD values to %s' % filepath)
+                        
                         elif concierge.output == 'db':
                             logger.info('Writing corrected PSD values to %s' % concierge.db_name)
 
                         try:
                             # Add target
-                            PSDcorrected['target'] = av.snclId
+                            if not q == "":
+                                PSDcorrected['target'] = '%s.%s' % (av.snclId, q)
+                            else: 
+                                PSDcorrected['target'] = av.snclId
+                                
                             PSDcorrected.rename(columns={'freq':'frequency'}, inplace=True)
                             PSDcorrected = PSDcorrected[['target','starttime','endtime','frequency','power']]
                             utils.write_numeric_df(PSDcorrected, filepath, concierge, sigfigs=concierge.sigfigs)
@@ -155,29 +172,38 @@ def PSD_metrics(concierge):
     def do_pdf(concierge, starttime, endtime):
         
         
-        fullFileList = list(); fullSnclList = list()
-        fileDF = pd.DataFrame(columns=["SNCL","FILE"])
+#         fullFileList = list(); fullSnclList = list()
+#         fileDF = pd.DataFrame(columns=["SNCL","FILE"], dtype="object")
         daylist = pd.date_range(start=str(starttime.date), end=str(endtime.date)).tolist()
         
-        # Get a list of the files that exist in the directory within the sncl and timespan
+        # Get a list of the files that exist in the directory within the sncl and timespan, or get psds from the database
         for sncl_pattern in concierge.sncl_patterns:
             logger.debug(sncl_pattern)
+            fullFileList = list(); fullSnclList = list()
+            fileDF = pd.DataFrame(columns=["SNCL","FILE"], dtype="object")
             
             # if using files on the filesystem
             if concierge.output == 'csv':
                 logger.info("Looking for PSD values in CSV files")
             
-                # We need to ignore the quality code, if included
-                if len(sncl_pattern.split('.')) == 5:
-                    sncl_pattern = sncl_pattern.rsplit('.', 1)[0]
+                # We need to ignore the quality code, if included -- OUTDATED, we DO use quality code now
+#                 if len(sncl_pattern.split('.')) == 5:
+#                     sncl_pattern = sncl_pattern.rsplit('.', 1)[0]
+                
+                ## If no quality code is specified, then wildcard it
+                if len(sncl_pattern.split('.')) == 4:
+                    sncl_pattern = '%s.?,%s' % (sncl_pattern, sncl_pattern)
+                    logger.info("No quality code specified, wildcarding it")    
+                    
                     
                 for day in daylist:
                     day = day.strftime("%Y-%m-%d")
-                    fnames = sncl_pattern + "_" + str(day) + "_PSDCorrected.csv"
                     files = []
-                    for root, dirnames, filenames in os.walk(concierge.psd_dir):
-                        for filename in fnmatch.filter(filenames, fnames):
-                            files.append(os.path.join(root, filename))
+                    for sncl_pat in sncl_pattern.split(','):
+                        fnames = sncl_pat + "_" + str(day) + "_PSDCorrected.csv"
+                        for root, dirnames, filenames in os.walk(concierge.psd_dir):
+                            for filename in fnmatch.filter(filenames, fnames):
+                                files.append(os.path.join(root, filename))
                     
                     #files = glob.glob(filename,recursive=True)
                     if files:
@@ -188,7 +214,7 @@ def PSD_metrics(concierge):
                         logger.warning('No PSD files found for %s %s' % (sncl_pattern,day))
                             
                         
-            
+                
                 fileDF['FILE'] = fullFileList
                 fileDF['SNCL'] = fullSnclList            
                 snclList = fileDF['SNCL'].unique()
@@ -207,8 +233,8 @@ def PSD_metrics(concierge):
                 for (index, sncl) in enumerate(snclList):
                     logger.info('%03d Calculating PDF values for %s' % (index, sncl))
                         
-                    
                     [pdfDF,modesDF, maxDF, minDF] = PDF_aggregator.calculate_PDF(fileDF, sncl, starttime, endtime, concierge)
+
         
                     if ('plot' in concierge.pdf_type) and not pdfDF.empty:
                         PDF_aggregator.plot_PDF(sncl, starttime, endtime, pdfDF, modesDF, maxDF, minDF, concierge)
@@ -220,16 +246,32 @@ def PSD_metrics(concierge):
                 logger.debug("Looking for %s targets in %s PSD table for %s to %s" % (sncl_pattern, concierge.db_name, starttime.date, endtime.date))
                 db_sncl_pattern = sncl_pattern.replace('*','%').replace('?','_')
                 
-                if len(db_sncl_pattern.split('.')) == 5:
-                    # TODO: In the future I'd like to be able to include quality codes in the PSDs
-                    db_sncl_pattern = db_sncl_pattern.rsplit('.', 1)[0]
+                ## No longer required, since PSDs now have quality codes
+#                 if len(db_sncl_pattern.split('.')) == 5:
+#                     # TODO: In the future I'd like to be able to include quality codes in the PSDs
+#                     db_sncl_pattern = db_sncl_pattern.rsplit('.', 1)[0]
+
+                ## If no quality code is included in the preference file or command line SNCL definition, then add a wildcard for the quality code
+                if len(db_sncl_pattern.split('.')) == 4:
+                    db_sncl_pattern = ('%s*' % db_sncl_pattern).replace("*","%")
+                    logger.info("No quality code specified, wildcarding it")
                 
                 # Retrieve all targets that match
-                snclList = utils.retrieve_psd_unique_targets(concierge.db_name, db_sncl_pattern, starttime, endtime, logger) 
+                try:
+                    snclList = utils.retrieve_psd_unique_targets(concierge.db_name, db_sncl_pattern, starttime, endtime, logger) 
+                except Exception as e:
+                    if "no such table" in str(e):
+                        logger.warning("Unable to access table %s in %s" % (str(e).split(":")[1], concierge.db_name))
+                    else:
+                        logger.warning("Unable to access PSD values for %s %s - %s" % (sncl_pattern, starttime, endtime))
+                    return "No Table"
                 
                 for (index, sncl) in enumerate(snclList):
                     logger.info('%03d Calculating PDF values for %s' % (index, sncl))
+                    
                     [pdfDF,modesDF, maxDF, minDF] = PDF_aggregator.calculate_PDF("", sncl, starttime, endtime, concierge)
+
+                    
                     
                     if ('plot' in concierge.pdf_type) and not pdfDF.empty:
                         PDF_aggregator.plot_PDF(sncl, starttime, endtime, pdfDF, modesDF, maxDF, minDF, concierge)
@@ -238,7 +280,7 @@ def PSD_metrics(concierge):
             else:
                 logger.info("Output %s not recognized: cannot find PSD values" % concierge.output)
         
-        
+        return 1
 #             
 
     ########################
@@ -270,7 +312,7 @@ def PSD_metrics(concierge):
 
         if concierge.station_client is None:
             try:
-                initialAvailability = concierge.get_availability(starttime=start,endtime=end)
+                initialAvailability = concierge.get_availability("PSDs", starttime=start,endtime=end)
             except NoAvailableDataError as e:
                 raise
             except Exception as e:
@@ -299,6 +341,7 @@ def PSD_metrics(concierge):
         logger.info("Calculating daily PDFs")
 
         for day in range(nday):
+            
             # On the first and last days, use the hour provided, otherwise use 00:00:00
             starttime = (start + day * 86400)
             starttime = UTCDateTime(starttime.strftime("%Y-%m-%d") +"T00:00:00Z")
@@ -308,17 +351,21 @@ def PSD_metrics(concierge):
                 endtime = end
             if starttime.date == start.date:
                 starttime = start
-
+            
             # Can't have a starttime that matches the end
             if starttime == end:
                 continue
+            
+            logger.info("Calculating daily PDFs for %s" % starttime.date)
 
-            do_pdf(concierge, starttime, endtime-1)
+            result = do_pdf(concierge, starttime, endtime-1)
+            if result == "No Table":
+                break
                 
                  
     if ("pdf" in concierge.metric_names) and ('aggregated' in concierge.pdf_interval):
         logger.info("Calculating aggregated PDFs")
-        do_pdf(concierge, start, end - 1)
+        result = do_pdf(concierge, start, end - 1)
     
     # Concatenate and filter dataframes before returning -----------------------
 

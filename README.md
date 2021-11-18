@@ -107,13 +107,13 @@ You will go into the ispaq directory that you created with git, update miniconda
 environment specially for ispaq. You have to ```activate``` the ISPAQ environment whenever you 
 perform installs, updates, or run ISPAQ.
 
-Note: If you are upgrading from ISPAQ 2.0 to ISPAQ 3.0+, you should create a new ispaq environment.
+> _Note:_ If you are upgrading from ISPAQ 2.0 to ISPAQ 3.0+, you should create a new ispaq environment.
 
 ```
-cd ispaq
+cd ispaq   #top level directory
 conda update conda
 conda env remove --name ispaq  #if you are upgrading from an existing ISPAQ 2.0 installation to ISPAQ 3.0
-conda create --name ispaq -c conda-forge python=3.6 obspy=1.2.2
+conda create --name ispaq -c conda-forge python=3.8 obspy=1.2.2
 conda activate ispaq
 conda install -c conda-forge --file ispaq-conda-install.txt
 ```
@@ -124,23 +124,24 @@ See what is installed in our (ispaq) environment with:
 conda list
 ```
 
-Now install the IRIS R packages for ISPAQ:
+Now install the IRIS R packages for ISPAQ using the -I option:
 ```
 export MACOSX_DEPLOYMENT_TARGET=10.9    # this line for macOS only
-R CMD INSTALL seismicRoll_1.1.4.tar.gz 
-R CMD INSTALL IRISSeismic_1.6.0.tar.gz
-R CMD INSTALL IRISMustangMetrics_2.4.2.tar.gz 
+./run_ispaq.py -I    #downloads latest packages from CRAN (https://cran.r-project.org)
 ```
 
-Or alternatively, install the IRIS R packages from CRAN: 
+Or alternatively, install the IRIS R packages from local files: 
 ```
-./run_ispaq.py -I
+export MACOSX_DEPLOYMENT_TARGET=10.9    # this line for macOS only
+R CMD INSTALL seismicRoll_1.1.4.tar.gz
+R CMD INSTALL IRISSeismic_1.6.3.tar.gz
+R CMD INSTALL IRISMustangMetrics_2.4.4.tar.gz
 ```
 
 You should run `./run_ispaq.py -U` after you update ISPAQ minor versions to verify that you have both the 
 required minimum versions of anaconda packages and the most recent IRIS R packages.
 
-Note: If you are using macOS and see the error: "'math.h' file not found" when compiling seismicRoll, then it is 
+> _Note:_ If you are using macOS and see the error: "'math.h' file not found" when compiling seismicRoll, then it is 
 likely that your command line tools are missing. Try running `xcode-select --install`.
 
 # Using ISPAQ
@@ -165,14 +166,15 @@ usage: run_ispaq.py [-h] [-P PREFERENCES_FILE] [-M METRICS] [-S STATIONS]
                     [--starttime STARTTIME] [--endtime ENDTIME]
                     [--dataselect_url DATASELECT_URL] [--station_url STATION_URL]
                     [--event_url EVENT_URL] [--resp_dir RESP_DIR]
-                    [--csv_dir CSV_DIR] [--psd_dir PSD_DIR] [--pdf_dir PDF_DIR]
+                    [--output OUTPUT] [--db_name DB_NAME][--csv_dir CSV_DIR]
+                    [--psd_dir PSD_DIR] [--pdf_dir PDF_DIR]
                     [--pdf_type PDF_TYPE] [--pdf_interval PDF_INTERVAL]
                     [--plot_include PLOT_INCLUDE] [--sncl_format SNCL_FORMAT]
                     [--sigfigs SIGFIGS]
                     [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-A] [-V]
                     [-I] [-U] [-L]
 
-ISPAQ version 3.0.0-beta
+ISPAQ version 3.0.0
 
 single arguments:
   -h, --help                       show this help message and exit
@@ -185,15 +187,19 @@ single arguments:
 arguments for running metrics:
   -P PREFERENCES_FILE, --preferences-file PREFERENCES_FILE
                                    path to preference file, default=./preference_files/default.txt
-  -M METRICS, --metrics METRICS    metrics alias as defined in preference file or metric name, required
+  -M METRICS, --metrics METRICS    single Metrics alias as defined in preference file, or one or 
+                                   more metrics names in a comma-separated list, required
   -S STATIONS, --stations STATIONS
-                                   stations alias as defined in preference file or station SNCL, required
+                                   single Station_SNCLs alias as defined in preference file, or 
+                                   one or more SNCL[Q] in a comma-separated list, required. 
+                                   notes: SNCL[Q] refers to Station.Network.Channel.Location.(optional)Quality.
+                                          If using wildcarding, enclose in quotation marks
   --starttime STARTTIME            starttime in ObsPy UTCDateTime format, required for webservice requests 
-                                   and defaults to earliest data file for local data 
+                                   and defaults to earliest data file for local data.
                                    examples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]
   --endtime ENDTIME                endtime in ObsPy UTCDateTime format, default=starttime + 1 day; 
                                    if starttime is also not specified then it defaults to the latest data 
-                                   file for local data 
+                                   file for local data.
                                    examples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]
 
 optional arguments for overriding preference file entries:
@@ -239,8 +245,8 @@ e.g., `--starttime=2016-01-01 --endtime=2016-01-02` will also calculate one day 
 greater than one day is requested, metrics will be calculated by cycling through multiple single days to produce 
 a measurement for each day. Additionally, and only if using local data files, you can run metrics without specifying 
 a start time. In this case, ISPAQ will use a start time corresponding to the earliest file found that matches the 
-requested station(s). If end time is also not specified, ISPAQ will use an end time corresponding to the latest file 
-found that matches the requested station(s).
+requested Station_SNCLs. If end time is also not specified, ISPAQ will use an end time corresponding to the latest file 
+found that matches the requested Station_SNCLs.
 
 ### Preference files
 
@@ -250,7 +256,7 @@ preference file is ```preference_files/default.txt```. This file is self describ
 with the following comments in the header:
 
 ```
-# Preferences fall into four categories:
+# Preferences fall into five categories:
 #  * Metrics -- aliases for user defined combinations of metrics (Use with -M)
 #  * Station_SNCLs -- aliases for user defined combinations of SNCL patterns (Use with -S)
 #                     SNCL patterns are station names formatted as Network.Station.Location.Channel
@@ -265,24 +271,29 @@ with the following comments in the header:
 #
 ```
 
-**Metric** aliases can be any of one of the predefined options or any user-created `alias: metric` combination, 
+**Metric** aliases can be any of one of the predefined options or any user-created `alias_name: metric` combination, 
 where *metric* can be a single metric name or a comma separated list of valid metric names. Aliases cannot be 
 combinations of other aliases. 
 Example: `myMetrics: num_gaps, sample_mean, cross_talk`.
 
-**Station_SNCL** aliases are user created `alias: Network.Station.Location.Channel` combinations. Station SNCLs 
-can be comma separated lists. `*` or `?` wildcards can be used in any of the network, station, location, channel elements. 
-Example: `"myStations: IU.ANMO.10.BHZ, IU.*.00.BH?, IU.ANMO.*.?HZ, II.PFO.??.*`. By default, aliases are formatted
-as `Network.Station.Location.Channel`. This format pattern can be modified using the `sncl_format`entry discussed below.
+**Station_SNCL** aliases are user created `alias_name: Network.Station.Location.Channel[.Quality]` combinations, where [ ] denotes an optional element. 
+Station_SNCLs can be comma separated lists. `*` or `?` wildcards can be used in any of the network, station, location, channel, or quality elements. 
+ Example: `"myStations: IU.ANMO.10.BHZ.M, IU.*.00.BH?.M, IU.ANMO.*.?HZ, II.PFO.??.*`. By default, aliases are formatted
+as `Network.Station.Location.Channel[.Quality]`. This format pattern can be modified using the `sncl_format`entry discussed below.
 
-_Note:_ When directly specifying a SNCL pattern on the command line, SNCLs containing wildcards should be 
-enclosed by quotes to avoid a possible error of unrecognized arguments.
+> _Note:_ the use of the quality code is optional and is not fully utilized in this version of ISPAQ. Specifying a quality code will not guarantee that ISPAQ retrieves data with only that quality code; instead data will be of whatever quality the specified web services (or local data) provides. This is a known issue and will be addressed in a future release. 
+
+> _Note:_ the PDF metric _will_ use the quality code specified, if there is one, as it retrieves PSDs. If no quality code is specified in the station SNCL, then it will look for any and all quality codes that might exist for that SNCL.
+
+> _Note:_ When directly specifying a SNCL pattern on the command line, SNCLs containing wildcards should be enclosed by quotes to avoid a possible error of unrecognized arguments.
 
 **Data_Access** has four entries describing where to find data, metadata, events, and optionally response files.
 
 * `dataselect_url:` should indicate a *miniSEED* data resource as one of the *FDSN web service aliases* used by ObsPy 
 (e.g. `IRIS`), the IRIS PH5 web service alias 'IRISPH5', an explicit URL pointing to an FDSN web service domain (e.g. `http://service.iris.edu` ), or a file 
 path to a directory containing miniSEED files (_See: "Using Local Data Files", below_).
+
+> _NOTE:_ When data is missing and it is marked as percent_availability=0, the quality code to assign to the target must be inferred. To do this, the current logic is to assign quality "M" for IRIS (fdsnws) derived data, and quality "D" for all other data (IRISPH5, local data, or any other webservice). We are aware that this is too simplistic to truly capture the range of possible quality codes, and have it on our radar to improve with a later release. 
 
 * `station_url:` should indicate a metadata location as an FDSN web service alias, the IRIS PH5 web service alias 'IRISPH5',
 an explicit URL, or a path to a file containing metadata in [StationXML](http://www.fdsn.org/xml/station/) format 
@@ -342,7 +353,7 @@ If no `sncl_format` exists, it defaults to `N.S.L.C`.
 **PDF_Preferences** has three entries describing PDF output.
 
 * `pdf_type:` should be followed by either "text","plot", or "text,plot".  
-"text" will output PDF information in a csv format file with frequency, power, and hits columns.  
+"text" will output PDF information in a csv format file with frequency, power, and hits columns, or to a database.  
 "plot" will output a PDF plot in a png format file.  
 "text,plot" will output both.  
 
@@ -358,8 +369,9 @@ If no `sncl_format` exists, it defaults to `N.S.L.C`.
 "legend,colorbar,fixed_axis_limits" will create a PDF plot with all three features.  
 
 Any of these preference file entries can be overridden by command-line arguments:
-`-M "metric name"`, `-S "station SNCL"`, `--dataselect_url`, `--station_url`, `--event_url`, `--resp_dir`, 
-`--csv_output_dir`, `--plot_output_dir`, `--sigfigs`, `--sncl_format`,`--pdf_type`, `--pdf_interval`, `--plot_include`
+`-M "Metric name/alias"`, `-S "Station_SNCL"`, `--dataselect_url`, `--station_url`, `--event_url`, `--resp_dir`, 
+`--output`, `--db_name`, `--csv_output_dir`, `--plot_output_dir`, `--sigfigs`, `--sncl_format`,`--pdf_type`, 
+`--pdf_interval`, `--plot_include`, `--sncl_format`, `--sigfigs`
 
 More information about using local files can be found below in the section "Using Local Data Files".
 
@@ -368,15 +380,24 @@ More information about using local files can be found below in the section "Usin
 ISPAQ will always create a log file named ```ISPAQ_TRANSCRIPT.log``` to record actions taken
 and messages generated during processing.
 
+In addition, the metric calculations will write to either .csv files or to a SQLite database, depending on the 
+`output` option selected.  
+
+#### CSV files
 Results of most metrics calculations will be written to .csv files using the following naming scheme:
 
-* `MetricAlias`\_`StationAlias`\_`startdate`\__`businessLogic`.csv
+* `MetricAlias`\_`Station_SNCLAlias`\_`startdate`\__`businessLogic`.csv
 
 when a single day is specified on the command line or
 
-* `MetricAlias`\_`StationAlias`\_`startdate`\_`enddate`\_`businessLogic`.csv
+* `MetricAlias`\_`Station_SNCLAlias`\_`startdate`\_`enddate`\_`businessLogic`.csv
 
 when multiple days are specified from the command line. End date in this context is inclusive of that day.
+
+If specifying metrics and station_SNCLs from the command line instead of using preference file aliases,
+the metric name and station_SNCL[Q] will be used instead of the MetricAlias and Station_SNCLAlias in the output
+file name. In addition, any instances of command-line wildcards "*" or "?" will be replaced with the letter
+"x" in the output file name.
 
 _businessLogic_ corresponds to which script is invoked:
 
@@ -384,7 +405,7 @@ _businessLogic_ corresponds to which script is invoked:
 | ----------|--------------|---------|
 | simpleMetrics | simple_metrics.py | most metrics |
 | SNRMetrics | SNR_metrics.py | sample_snr   |
-| PSDMetrics | PSD_metrics.py | pct_above_nhnm, pct_below_nlnm, dead_channel_{lin,gsn}, psd_corrected, pdf |
+| PSDMetrics | PSD_metrics.py, PDF_aggregator.py | pct_above_nhnm, pct_below_nlnm, dead_channel_{lin,gsn}, psd_corrected, pdf |
 | crossTalkMetrics | crossTalk_metrics.py | cross_talk |
 | pressureCorrelationMetrics | pressureCorrelation_metrics.py | pressure_effects | 
 | crossCorrelationMetrics | crossCorrelation_metrics.py | polarity_check | 
@@ -394,25 +415,81 @@ _businessLogic_ corresponds to which script is invoked:
 The metric alias psdPdf in the default preference file (or any user defined set with metric 'psd_corrected') will 
 generate corrected PSDs in files named:
 
-* `SNCL`\_`startdate`\_PSDcorrected.csv
+* `S.N.C.L.Q`\_`startdate`\_PSDcorrected.csv
 
 The metric alias psdPdf in the default preference file (or any user defined set with metric 'pdf') will generate 
 PDFs in files named:
 
-* `SNCL`\_`startdate`\_PDF.csv  (for daily PDF text)
-* `SNCL`\_`startdate`\_`enddate`\_PDF.csv (for aggregate PDF text)
-* `SNCL`\_`startdate`\_PDF.png  (for daily PDF plot)
-* `SNCL`\_`startdate`\_`enddate`\_PDF.png  (for aggregate PDF plot)
+* `S.N.C.L.Q`\_`startdate`\_PDF.csv  (for daily PDF text)
+* `S.N.C.L.Q`\_`startdate`\_`enddate`\_PDF.csv (for aggregate PDF text)
+* `S.N.C.L.Q`\_`startdate`\_PDF.png  (for daily PDF plot)
+* `S.N.C.L.Q`\_`startdate`\_`enddate`\_PDF.png  (for aggregate PDF plot)
 
-Note: The metric 'pdf' requires that `SNCL`\_`startdate`\_PSDcorrected.csv files exist in the `psd_dir` specified directory. 
+> _Note:_ The metric 'pdf' requires that corrected PSDs exist.  If using `output` 'csv' then `S.N.C.L.Q`\_`startdate`\_PSDcorrected.csv files must exist in the `psd_dir` specified directory.  
 If you run the metric 'pdf' alone and see the warning 'No PSD files found', then try running metric 'psd_corrected'
 first to generate the PSD files. You will also see the warning 'No PSD files found' if there is no data available for that day.
-These two  metrics can be run simulataneously.
+These two  metrics can be run simulataneously, as it will calculate the PSDs before calculating the PDFs. 
 
-If specifying metrics and station SNCLs from the command line instead of using preference file aliases,
-the metric name and station SNCL will be used instead of the MetricAlias and StationAlias in the output
-file name. In addition, any instances of command-line wildcards "*" or "?" will be replaced with the letter
-"x" in the output file name.
+
+
+#### SQLite database
+Using the 'db' `output` option will write to a SQLite database with the filename supplied in the `db_name` field. All metrics values, 
+except for any .png PSD or PDFs that may be generated, will be inserted into the database. Tables within the datbase correspond to the 
+metric name. For example:  
+
+```
+sqlite> .tables
+amplifier_saturation     max_range                sample_mean
+calibration_signal       max_stalta               sample_median
+clock_locked             missing_padded_data      sample_min
+cross_talk               num_gaps                 sample_rate_channel
+dead_channel_gsn         num_overlaps             sample_rate_resp
+dead_channel_lin         num_spikes               sample_rms
+digital_filter_charging  orientation_check        sample_snr
+digitizer_clipping       pct_above_nhnm           sample_unique
+event_begin              pct_below_nlnm           spikes
+event_end                pdf                      suspect_time_tag
+event_in_progress        percent_availability     telemetry_sync_error
+glitches                 polarity_check           timing_correction
+max_gap                  psd_corrected            timing_quality
+max_overlap              sample_max
+```
+  
+  
+The majority of tables (metrics) will have the same set of columns. These include:  
+
+`target` - the network.station.location.channel.quality code that the measurement corresponds to  
+`value` - value of measurement  
+`start` - start time of the measurement  
+`end` - end time of the measurement  
+`lddate` - the load date, when the measurement was inserted (or updated) in the table  
+
+In addition to those fields, these metrics have other columns as well:  
+
+* polarity_check: `snclq2`  
+* transfer_function: `gain_ratio`, `phase_diff`, `ms_coherence`  
+* orientation_check: `azimuth_R`, `backAzimuth`, `azimuth_Y_obs`, `azimuth_X_obs`, `azimuth_Y_meta`, `azimuth_X_meta`, 
+`max_Czr`, `max_C_zr`, `magnitude`  
+* psd_corrected: `frequency`, `power`  
+* pdf: `frequency`, `power`, `hits`  
+
+> _Note:_  transfer_function, orientation_check, psd_corrected, and pdf metrics all lack the `value` column.  
+
+
+The metric 'pdf' requires that corrected PSDs exist. If using `output` 'db' then the PSDs must exist in the database specified by `db_name`.  
+If you run the metric 'pdf' and see the warning 'Unable to access PSD values', then try running metric 'psd_corrected' 
+first to generate the PSD values. These two  metrics can be run simulataneously, as it will calculate the PSDs before calculating the PDFs. You will also see the warning 'Unable to access PSD values' if there is no data available for that day, 
+or 'Unable to access table psd_corrected' if no the table does not exist, which may indicate that no PSDs have been calculated and added to the database 
+yet.  
+
+
+For those using [QuARG](https://github.com/iris-edu/quarg), a utility produced by the IRIS DMC for generating quality assurance reports, it is possible 
+to have QuARG read metrics from your local ISPAQ SQLite database rather than from the MUSTANG web services.  Simply point the `metric source` in the QuARG  preference file to the database file produced by ISPAQ and it will use your local metric values.  
+
+
+Examples of how to access and use the metrics are included as jupyter notebooks in the EXAMPLES/ directory. For more information on how to navigate a SQLite database, see [https://sqlite.org/cli.html](https://sqlite.org/cli.html).  Given your `ispaq` environment is activated, you should be able to run the jupyter notebooks if you have installed the conda environment using the provided ispaq-conda-install.txt file. But if you are having trouble you can go through installation steps here: [https://jupyter.org/install](https://jupyter.org/install).
+
+
 
 ### Command line invocation
 
@@ -470,12 +547,12 @@ will be run on the first file that is found. To request all data files, use pref
 `*.*.*.*`, or `-S "*.*.*.*"` from the command line". Wildcarding every element is strongly discouraged when using 
 FDSN webservices instead of local files.
 
-_Note:_ All data is expected to be in the day file that matches its timestamp; if records do not break on the 
-day boundary, data that is not in the correct day file will not be used in the metrics calculation. This can 
+> _Note:_ All data is expected to be in the day file that matches its timestamp; if records do not break on the 
+UTC day boundary, data that is not in the correct day file will not be used in the metrics calculation. This can 
 lead to cases where, for example, a gap is calculated at the start of a day when the data for that time period 
 is in the previous day file.
 
-If your miniSEED files are not already split on day boundaries, one tool that can be used for this task is the 
+If your miniSEED files are not already split on UTC day boundaries, one tool that can be used for this task is the 
 *dataselect* command-line tool available at [https://github.com/iris-edu/dataselect](https://github.com/iris-edu/dataselect). 
 Follow the [releases](https://github.com/iris-edu/dataselect/releases) link in the README to download the latest 
 version of the source code. The following example reads the input miniSEED files, splits the records on day
@@ -490,17 +567,17 @@ IRISMustangMetrics R packages.
 
 ```
 (ispaq) bash-3.2$ ./run_ispaq.py -U
-2020-10-05 21:22:27 - INFO - Running ISPAQ version 3.0.0-beta on Mon Oct  5 21:22:27 2020
-2020-10-05 21:22:30 - INFO - Checking for recommended conda packages...
-2020-10-05 21:22:30 - INFO - Required conda packages found
-2020-10-05 21:22:30 - INFO - Checking for IRIS R package updates...
+2021-11-16 12:06:09 - INFO - Running ISPAQ version 3.0.0 on Tue Nov 16 12:06:09 2021
+2021-11-16 12:06:11 - INFO - Checking for recommended conda packages...
+2021-11-16 12:06:11 - INFO - Required conda packages found
+2021-11-16 12:06:11 - INFO - Checking for IRIS R package updates...
 
               package installed   CRAN  upgrade
 0         seismicRoll     1.1.4  1.1.4    False
-1         IRISSeismic     1.6.0  1.6.0    False
-2  IRISMustangMetrics     2.4.2  2.4.2    False
+1         IRISSeismic     1.6.3  1.6.3    False
+2  IRISMustangMetrics     2.4.4  2.4.4    False
 
-2020-10-05 21:22:32 - INFO - No CRAN packages need updating.
+2021-11-16 12:06:15 - INFO - No CRAN packages need updating.
 
 Alternatively, the command-line argument `-I`, `--install-r` will install the CRAN packages regardless of what
 version is already installed
@@ -653,13 +730,15 @@ Model. This value is calculated over the entire time period.
 Probability density function plots and/or text output (controlled by PDF_Preferences in the preference file; or by `--pdf_type`,
 `--pdf_interval`, `--plot_include` on the command line). You must have local PSD files written in the format produced by the 
 'psd_corrected' metric (below) or run it concurrently with 'psd_corrected'. These files should be in a directory specified by the
-'psd_dir' entry in the preference file or by `--psd_dir` on the command line.
+`psd_dir` entry in the preference file or by `--psd_dir` on the command line, or in the database specified by `db_name`.
 [Reference: Ambient Noise Levels in the Continental United States, McNamara and Buland, 2004](https://doi.org/10.1785/012003001)
 
 * **percent_availability**:
 The portion of data available for each day is represented as a percentage. 100% data available means full coverage of 
 data for the reported start and end time.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/percent_availability/)
+
+> _NOTE:_ percent_availability will only be calculated for target-days that have metadata.  If metadata is available but no data can be retrieved, then it will be marked as percent_availability=0.  In this case, the quality code associated with that target cannot be determined from the data itself and must be inferred. ISPAQ will currently mark data from `IRIS` (fdsnws) as quality "M" and data from all other sources as "D". We are aware that this may not be able to capture the complexity of possible quality codes and will work on improving the logic in a future release.
 
 * **polarity_check**:
 The signed cross-correlation peak value based on the cross-correlation of two neighboring station channels in 
@@ -784,38 +863,44 @@ Then you'll need to re-install the CRAN IRISSeismic package:
 conda deactivate
 conda activate ispaq
 Rscript -e 'Sys.getenv("IrisClient_netrc")'   # verify that your .netrc file path is correct
-```
-
-For ISPAQ version 2:
-```
-R CMD INSTALL IRISSeismic_1.6.0.tar.gz.   # or whichever version you have in your ISPAQ directory
-./run_ispaq.py -U   # to (re-)install the latest version if you have IRISSeismic < 1.6.0
-```
-
-For ISPAQ version 3 (in beta):
-```
 ./run_ispaq.py -I
 ```
 
 ### Examples Using preference_files/default.txt Preference File
 
-Note: not using `-P` in the command line is the same as specifying `-P preference_files/default.txt`
+> _Note:_ not using `-P` in the command line is the same as specifying `-P preference_files/default.txt`
 
 ```
-cd ispaq
+cd ispaq  # top-level directory
 conda activate ispaq
 ./run_ispaq.py -M basicStats -S basicStats --starttime 2010-100             # starttime specified as julian day
 ./run_ispaq.py -M stateOfHealth -S ANMO --starttime 2013-01-05              # starttime specified as calendar day
 ./run_ispaq.py -M gaps -S ANMO --starttime 2011-01-01 --endtime 2011-01-08
-./run_ispaq.py -M psdPdf -S psdPdf --starttime 2013-06-01 --endtime 2013-06-08
+./run_ispaq.py -M psdPdf -S psdPdf --starttime 2013-06-01 --endtime 2013-06-04
 ```
 
-### Example Using Command-line Options to Override Preference File
+### Examples Using Command-line Options to Override Preference File
 ```
 ./run_ispaq.py -M sample_mean -S II.KAPI.00.BHZ --starttime 2013-01-05 --dataselect_url ./test_data --station_url ./test_data/II.KAPI_station.xml --output csv --csv_dir ./test_out
 
 ./run_ispaq.py -M psd_corrected,pdf -S II.KAPI.00.BHZ --starttime 2013-01-05 --endtime 2013-01-08 --dataselect_url ./test_data --station_url ./test_data/II.KAPI_station.xml --output csv --psd_dir ./test_out/PSDs --pdf_dir ./test_out/PDFs --pdf_type plot --pdf_interval aggregated
 ```
+
+### Example Using SQLite database
+```
+./run_ispaq.py -M basicStats -S basicStats --starttime 2010-100 --output db --db_name ispaq_example.db
+```
+To view values in sqlite database:
+```
+sqlite3 ispaq_example.db
+```
+At sqlite prompt:
+```
+.tables
+select * from sample_mean;
+select * from sample_max;
+```
+Ctrl + D to exit sqlite
 
 
 

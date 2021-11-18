@@ -49,7 +49,8 @@ def simple_metrics(concierge):
 
     # ----- All UN-available SNCLs ----------------------------------------------
 
-    # TODO:  Create percent_availability metric with   0% available
+    if concierge.station_url is None:
+        logger.warning('No station metadata found for simple metrics')
 
     # ----- All available SNCLs -------------------------------------------------
 
@@ -58,10 +59,11 @@ def simple_metrics(concierge):
     end = concierge.requested_endtime
     delta = (end-start)/(24*60*60)
     nday=int(delta)+1
+    quality = concierge.sncl_patterns
 
     if nday > 1 and concierge.station_client is None:
         try:
-            initialAvailability = concierge.get_availability(starttime=start, endtime=end)
+            initialAvailability = concierge.get_availability("simple", starttime=start, endtime=end)
         except NoAvailableDataError as e:
             raise
         except Exception as e:
@@ -89,7 +91,7 @@ def simple_metrics(concierge):
             continue
 
         try:
-            availability = concierge.get_availability(starttime=starttime, endtime=endtime)
+            availability = concierge.get_availability("simple", starttime=starttime, endtime=endtime)
         except NoAvailableDataError as e:
             raise
         except Exception as e:
@@ -97,8 +99,10 @@ def simple_metrics(concierge):
             logger.error('concierge.get_availability() failed')
             return None 
 
+        
         # NEW: If the station has no data, then skip it (used to raise NoAvailableDataError)
         if availability is None:
+#         if availability.empty:
             logger.debug("skipping %s with no available data" % (starttime.date))
             continue
 
@@ -122,13 +126,26 @@ def simple_metrics(concierge):
                     logger.info('No data available for %s' % (av.snclId))
                 else:
                     logger.warning('No data available for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
+                
+                ## If there is no data, then mark it as 0% availability and move along to next target
+                if (concierge.dataselect_url == 'http://service.iris.edu') and (concierge.dataselect_type == 'fdsnws'):
+                    q = 'M'
+                else:
+                    q = 'D'
+                
+                
+                
+                snclq = av.snclId + '.' + q
+                df = pd.DataFrame(columns=['metricName','snclq','starttime','endtime','qualityFlag','value'])
+                df.loc[len(df.index)] = ['percent_availability',snclq, starttime, endtime, -9, 0 ]
+                dataframes.append(df)
                 continue
 
             # Run the Gaps metric ----------------------------------------
 
             if 'gaps' in function_metadata:
                 try:
-                    df = irismustangmetrics.apply_simple_metric(r_stream, 'gaps')
+                    df = irismustangmetrics.apply_simple_metric(av, starttime, endtime, r_stream, 'gaps')
                     dataframes.append(df)
                 except Exception as e:
                     logger.warning('"gaps" metric calculation failed for %s: %s' % (av.snclId, e))
@@ -136,7 +153,7 @@ def simple_metrics(concierge):
             # Run the State-of-Health metric -----------------------------
             if 'stateOfHealth' in function_metadata:
                 try:
-                    df = irismustangmetrics.apply_simple_metric(r_stream, 'stateOfHealth')
+                    df = irismustangmetrics.apply_simple_metric(av, starttime, endtime, r_stream, 'stateOfHealth')
                     # for local miniSEED data, remove invalid state of health metrics
                     if concierge.dataselect_client is None and (StrictVersion(obspy.__version__) < StrictVersion("1.1.0")):
                         df = df[~df.metricName.isin(["calibration_signal","clock_locked","event_begin","event_end","event_in_progess","timing_correction","timing_quality"])]
@@ -149,7 +166,7 @@ def simple_metrics(concierge):
 
             if 'basicStats' in function_metadata:  
                 try:
-                    df = irismustangmetrics.apply_simple_metric(r_stream, 'basicStats')
+                    df = irismustangmetrics.apply_simple_metric(av, starttime, endtime, r_stream, 'basicStats')
                     dataframes.append(df)
                 except Exception as e:
                     logger.warning('"basicStats" metric calculation failed for %s: %s' % (av.snclId, e))
@@ -170,17 +187,20 @@ def simple_metrics(concierge):
                     except Exception as e:
                         if str(e).lower().find('no data') > -1:
                             logger.info('No data available for %s' % (av.snclId))
-                        elif str(e).lower().find('multiple epochs') :
+                        elif str(e).lower().find('multiple epochs') > -1:
                             logger.info('Skipping %s because multiple metadata epochs found' % (av.snclId))
                         else:
                             logger.warning('No data available for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
                         continue
 
+                    if r_stream_stalta is None:
+                        continue
+                    
                     sampling_rate = utils.get_slot(r_stream_stalta, 'sampling_rate')
                     increment = math.ceil(sampling_rate / 2.0)
                 
                     try:
-                        df = irismustangmetrics.apply_simple_metric(r_stream_stalta, 'STALTA', staSecs=3, ltaSecs=30, increment=increment, algorithm='classic_LR')
+                        df = irismustangmetrics.apply_simple_metric(av, starttime, endtime, r_stream_stalta, 'STALTA', staSecs=3, ltaSecs=30, increment=increment, algorithm='classic_LR')
                         dataframes.append(df)
                     except Exception as e:
                         logger.warning('"STALTA" metric calculation failed for for %s: %s' % (av.snclId, e))
@@ -199,7 +219,7 @@ def simple_metrics(concierge):
                     thresholdMin = 10
                            
                     try:
-                        df = irismustangmetrics.apply_simple_metric(r_stream, 'numSpikes', windowSize, thresholdMin, fixedThreshold=True)
+                        df = irismustangmetrics.apply_simple_metric(av, starttime, endtime, r_stream, 'numSpikes', windowSize, thresholdMin, fixedThreshold=True)
                         dataframes.append(df)
                     except Exception as e:
                         logger.warning('"numSpikes" metric calculation failed for %s: %s' % (av.snclId, e))            
@@ -215,7 +235,7 @@ def simple_metrics(concierge):
                     increment = 150
                     
                     try:
-                        df = irismustangmetrics.apply_simple_metric(r_stream, 'maxRange', windowSize, increment)
+                        df = irismustangmetrics.apply_simple_metric(av, starttime, endtime, r_stream, 'maxRange', windowSize, increment)
                         dataframes.append(df)
                     except Exception as e:
                         logger.warning('"maxRange" metric calculation failed for for %s: %s' % (av.snclId, e))

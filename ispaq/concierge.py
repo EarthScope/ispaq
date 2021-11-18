@@ -18,6 +18,7 @@ import math
 import fileinput
 import fnmatch
 import tempfile
+import datetime
 
 import pandas as pd
 import numpy as np
@@ -30,9 +31,14 @@ from obspy.clients.fdsn.header import URL_MAPPINGS
 from obspy import UTCDateTime
 
 # ISPAQ modules
-from .user_request import UserRequest
-from . import irisseismic
-from . import utils
+try:
+    from user_request import UserRequest
+    import irisseismic
+    import utils
+except:
+    from .user_request import UserRequest
+    from . import irisseismic
+    from . import utils
 
 
 # Custom exceptions
@@ -401,7 +407,7 @@ class Concierge(object):
         sncl_pattern = "%s.%s.%s.%s" % tuple(snclList)
         return(sncl_pattern)
 
-    def get_availability(self, 
+    def get_availability(self, metric,
                          network=None, station=None, location=None, channel=None,
                          starttime=None, endtime=None, 
                          latitude=None, longitude=None, minradius=None, maxradius=None):
@@ -539,7 +545,7 @@ class Concierge(object):
                                            "latitude", "longitude", "elevation", "depth" ,
                                            "azimuth", "dip", "instrument",
                                            "scale", "scalefreq", "scaleunits", "samplerate",
-                                           "starttime", "endtime", "snclId"))
+                                           "starttime", "endtime", "snclId"), dtype="object")
 
 
                 # Walk through the Inventory object and fill the dataframe with metadata
@@ -609,9 +615,10 @@ class Concierge(object):
                     _sncl_pattern = self.get_sncl_pattern(_network,_station,_location,_channel)
                     self.logger.debug("Adding %s to availability dataframe" % _sncl_pattern)
 
-                    if self.station_client is None:	# Local metadata
+                    if (self.station_client is None):	# Local metadata
                         if self.dataselect_client is None:	# Local data
                             # Loop over the available data and add to dataframe if they aren't yet
+                            # But only for the requested days 
                             if len(sncl_pattern.split('.')) > 4:
                                 tmp_sncl_pattern = os.path.splitext(sncl_pattern)[0]
                                 q = os.path.splitext(sncl_pattern)[1][1]
@@ -630,11 +637,16 @@ class Concierge(object):
 
                             for root, dirnames, fnames in os.walk(self.dataselect_url):
                                 for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
-                                    matching_files.append(os.path.join(root,fname))
+                                    file_year = int(fname.split('.')[4])
+                                    file_day = int(fname.split('.')[5])
+                                    file_date = (datetime.datetime(file_year, 1, 1) + datetime.timedelta(file_day - 1)).date()
+                                    
+                                    # Compare the date on the file to the dates of the start and end time (but not the 
+                                    # actual start and end time, since that can be a partial day)
+                                    if file_date >= _starttime.date and file_date < _endtime:
+                                        matching_files.append(os.path.join(root,fname))
 
-
-                            #self.logger.debug("Found files: \n %s" % '\n '.join(matching_files))
-
+                            
                             if (len(matching_files) == 0):
                                 continue
                             else:
@@ -665,7 +677,8 @@ class Concierge(object):
             # For example, during crossCorrelation.  Otherwise it creates a bloated
             # availability dataframe with the same sncls repeating #sncl_patterns times
             loopCounter += 1
-            if (network is "*" and station is "*" and location is "*" and loopCounter > 1):
+#             if (network is "*" and station is "*" and location is "*" and loopCounter > 1):
+            if (network == "*" and station == "*" and location == "*" and loopCounter > 1):
                 continue
 
             # Get "User Request" parameters
@@ -704,18 +717,25 @@ class Concierge(object):
                 _channel = UR_channel
             else:
                 _channel = channel
-               
+                
             _sncl_pattern = self.get_sncl_pattern(_network, _station, _location, _channel)
 
             
             # Get availability dataframe ---------------------------------------
             if self.station_client is None:
                 # Use pre-existing internal dataframe if we are using local data, filtered by time 
+                
                 df = self.initial_availability
-                if not df['endtime'] is None:
-                    df = df[(df['starttime'] < _endtime-1) & (df['endtime'] > _starttime)]
-                else:
-                    df = df[(df['starttime'] < _endtime-1)]
+               
+                for ind, row in df.iterrows():
+                    if not (row['endtime'] is None):
+                        if  not (row['starttime'] < _endtime-1) & (row['endtime'] > _starttime):
+                            df.drop([ind], inplace=True)
+                    else:
+                        if not row['starttime'] < _endtime-1:
+                            df.drop([ind], inplace=True)
+#                         df = df[(df['starttime'] < _endtime-1)]
+                        
                 if df is None:
                     continue 
             elif self.station_client == "PH5":
@@ -755,7 +775,8 @@ class Concierge(object):
                                                                       includerestricted=True,
                                                                       latitude=latitude, longitude=longitude,
                                                                       minradius=minradius, maxradius=maxradius,                                                                
-                                                                      level="channel",matchtimeseries=True)
+                                                                      level="channel",matchtimeseries=False)
+                    
                 except Exception as e:
                     if (minradius):
                         err_msg = "No stations found for %s within radius %s-%s degrees of latitude,longitude %s,%s" % (_sncl_pattern,minradius,maxradius,latitude,longitude)
@@ -772,7 +793,7 @@ class Concierge(object):
                                            "latitude", "longitude", "elevation", "depth" ,
                                            "azimuth", "dip", "instrument",
                                            "scale", "scalefreq", "scaleunits", "samplerate",
-                                           "starttime", "endtime", "snclId"))
+                                           "starttime", "endtime", "snclId"), dtype="object")
 
                 # Walk through the Inventory object
                 for n in sncl_inventory.networks:
@@ -808,18 +829,33 @@ class Concierge(object):
             # NOTE:  Replace '.' first before introducing '.*' or '.'!
             py_pattern = _sncl_pattern.replace('.','\\.').replace('*','.*').replace('?','.')
 
+            
             # Filter dataframe
             df = df[df.snclId.str.contains(py_pattern)]
-
+            
+                       
             # Subset based on locally available data ---------------------------
-            if self.dataselect_client is None:
+#             if self.dataselect_client is None and metric is not "simple":
+            if self.dataselect_client is None and metric != "simple":
                 fpattern1 = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))
                 fpattern2 = '%s' % (fpattern1 + '.[A-Z]')
                 
                 matching_files = []
                 for root, dirnames, fnames in os.walk(self.dataselect_url):
                     for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
-                        matching_files.append(os.path.join(root,fname))
+                        file_year = int(fname.split('.')[4])
+                        file_day = int(fname.split('.')[5])
+                        file_date = (datetime.datetime(file_year, 1, 1) + datetime.timedelta(file_day - 1)).date()
+                        
+                        # Compare the date on the file to the dates of the start and end time (but not the 
+                        # actual start and end time, since that can be a partial day)
+                        if file_date >= _starttime.date and file_date < _endtime:
+                            matching_files.append(os.path.join(root,fname))
+                        
+                        
+                        
+                        
+#                         matching_files.append(os.path.join(root,fname))
                 if (len(matching_files) == 0):
                     err_msg = "No local waveforms matching %s" % fpattern1
                     self.logger.debug(err_msg)
@@ -827,14 +863,14 @@ class Concierge(object):
                 else:
                     # Create a mask based on available file names
                     mask = df.snclId.str.contains("MASK WITH ALL FALSE")
-
+ 
                     for i in range(len(matching_files)):
                         basename = os.path.basename(matching_files[i])
                         match = re.match('[^\\.]*\\.[^\\.]*\\.[^\\.]*\\.[^\\.]*',basename)
                         sncl = match.group(0)
                         py_pattern = sncl.replace('.','\\.')
                         mask = mask | df.snclId.str.contains(py_pattern)
-                        
+                         
                 # Subset based on the mask
                 df = df[mask]
 
@@ -878,6 +914,8 @@ class Concierge(object):
         if len(sncl_pattern_dataframes) == 0:
             err_msg = "No available waveforms for %s matching " % _starttime.strftime('%Y-%m-%d') + str(self.sncl_patterns)
             self.logger.info(err_msg)
+#             return pd.DataFrame()
+            return None
             #raise NoAvailableDataError(err_msg)
         else:
             # Those dataframes become availability
@@ -892,6 +930,7 @@ class Concierge(object):
             if availability.shape[0] == 0:              
                 err_msg = "No available waveforms matching" + str(self.sncl_patterns)
                 self.logger.info(err_msg)
+                return pd.DataFrame()
             else:
                 # The concierge should remember this dataframe for metrics that
                 # make multiple calls to get_availability with all defaults.
@@ -942,38 +981,56 @@ class Concierge(object):
         else:
             _endtime = endtime
 
-        
         if self.dataselect_type is None:
             # Read local MiniSEED file and convert to R_Stream
             nday = int((_endtime - .00001).julday - _starttime.julday) + 1   # subtract a short amount of time for 00:00:00 endtimes
-
+            
             if (nday == 1):
                 _sncl_pattern = self.get_sncl_pattern(network, station, location, channel)
                 fpattern1 = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))
                 fpattern2 = '%s' % (fpattern1 + '.[A-Z]')
-
+                
                 matching_files = []
                 for root, dirnames, fnames in os.walk(self.dataselect_url):
                     for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
                         matching_files.append(os.path.join(root,fname))
 
-                if (len(matching_files) == 0):
-                    self.logger.info("No files found matching '%s'" % (fpattern1))
-                else:
-                    filepath=matching_files[0]
+#                 if (len(matching_files) == 0):
+#                     self.logger.info("No files found matching '%s'" % (fpattern1))
+#                     py_stream = obspy.read()
+#                     
+#                 else:
+#                 filepath=matching_files[0]
 
-                    if (len(matching_files) > 1):
-                        self.logger.debug("Multiple files found: %s" % " ".join(matching_files))
-                        self.logger.warning("Multiple files found matching " '%s -- using %s' % (fpattern1, filepath))
+#                 if (len(matching_files) > 1):
+#                     filepath=matching_files[0]
+#                     self.logger.debug("Multiple files found: %s" % " ".join(matching_files))
+#                     self.logger.warning("Multiple files found matching " '%s -- using %s' % (fpattern1, filepath))
                     
-                    try:
-                        # Get the ObsPy version of the stream
+                try:
+                    # Get the ObsPy version of the stream
+
+                    if (len(matching_files) == 0):
+                        self.logger.info("No files found matching '%s'" % (fpattern1))
+                        py_stream = obspy.read().clear()
+                        act_flags = []
+                        io_flags = []
+                        dq_flags = []
+                        timing_qual=None
+                    
+                    else:
+                        filepath=matching_files[0]
+                        
+                        if (len(matching_files) > 1):
+                            self.logger.debug("Multiple files found: %s" % " ".join(matching_files))
+                            self.logger.warning("Multiple files found matching " '%s -- using %s' % (fpattern1, filepath))
+                        
                         if not inclusiveEnd:
                             _endtime = _endtime - 0.000001
+                            
                         py_stream = obspy.read(filepath)
                         py_stream = py_stream.slice(_starttime, _endtime, nearest_sample=False)
-                       
-                        
+                      
                         if (StrictVersion(obspy.__version__) < StrictVersion("1.1.0")): 
                             flag_dict = obspy.io.mseed.util.get_timing_and_data_quality(filepath)
                             act_flags = [0,0,0,0,0,0,0,0] # not supported before 1.1.0  
@@ -990,49 +1047,56 @@ class Concierge(object):
                                 io_flags.append(v)
                             for k,v in flag_dict['data_quality_flags_counts'].items():
                                 dq_flags.append(v)
-                        
+                            
                         if flag_dict["timing_quality"]:
                             timing_qual=flag_dict["timing_quality"]["mean"]
                         else:
                             timing_qual=None
+                            
+                    # NOTE:  ObsPy does not store station metadata with each trace.
+                    # NOTE:  We need to read them in separately from station metadata.
+                    availability = self.get_availability("dummy", network, station, location, channel, _starttime, _endtime)
+                    
+                    if availability is None:
+#                     if availability.empty: 
+                        raise Exception('No Data')
+                        return None
+ 
+                    if(ignoreEpoch == False):
+                        if (len(availability) > 1):
+                            raise Exception("Multiple metadata epochs found for %s" % _sncl_pattern)
 
-                        # NOTE:  ObsPy does not store station metadata with each trace.
-                        # NOTE:  We need to read them in separately from station metadata.
-                        availability = self.get_availability(network, station, location, channel, _starttime, _endtime)
-                        
-                        if(ignoreEpoch == False):
-                            if (len(availability) > 1):
-                                raise Exception("Multiple metadata epochs found for %s" % _sncl_pattern)
-
-
-                        sensor = availability.instrument[0]
-                        scale = availability.scale[0]
-                        scalefreq = availability.scalefreq[0]
-                        scaleunits = availability.scaleunits[0]
-                        if sensor is None: sensor = ""          
-                        if scale is None: scale = np.NaN            
-                        if scalefreq is None: scalefreq = np.NaN    
-                        if scaleunits is None: scaleunits = ""  
-                        latitude = availability.latitude[0]
-                        longitude = availability.longitude[0]
-                        elevation = availability.elevation[0]
-                        depth = availability.depth[0]
-                        azimuth = availability.azimuth[0]
-                        dip = availability.dip[0]
+                    
+                    sensor = availability.instrument[0]
+                    scale = availability.scale[0]
+                    scalefreq = availability.scalefreq[0]
+                    scaleunits = availability.scaleunits[0]
+                    if sensor is None: sensor = ""          
+                    if scale is None: scale = np.NaN            
+                    if scalefreq is None: scalefreq = np.NaN    
+                    if scaleunits is None: scaleunits = ""  
+                    latitude = availability.latitude[0]
+                    longitude = availability.longitude[0]
+                    elevation = availability.elevation[0]
+                    depth = availability.depth[0]
+                    azimuth = availability.azimuth[0]
+                    dip = availability.dip[0]
                         
                        
-                        # Create the IRISSeismic version of the stream
-                        r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags, timing_qual,
-							sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
+                    # Create the IRISSeismic version of the stream
+                    r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags, timing_qual,
+						sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
 
-                    except Exception as e:
-                        err_msg = "Error reading in local waveform from %s" % filepath
-                        self.logger.debug(e)
-                        self.logger.debug(err_msg)
-                        raise
-  
-                    if len(utils.get_slot(r_stream, 'traces')) == 0:
-                        raise Exception("no data available") 
+                except Exception as e:
+                    self.logger.debug(e)
+                    raise
+      
+#                 # Create the IRISSeismic version of the stream -- is this second call necessary? Uncomment if things start misbehaving.
+#                 r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags, timing_qual,
+#                     sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
+                   
+#                 if len(utils.get_slot(r_stream, 'traces')) == 0:
+#                     raise Exception("no data available") 
 
 
             else:
@@ -1106,8 +1170,11 @@ class Concierge(object):
                     # NOTE:  We need to read them in separately from station metadata.
                     # NOTE:  This should be consistent for each day of data
                     self.logger.info('%s, %s,%s,%s' % (network,station,location,channel))
-                    availability = self.get_availability(network, station, location, channel, _starttime, _endtime)
-
+                    availability = self.get_availability("dummy", network, station, location, channel, _starttime, _endtime)
+                    
+                    if availability is None:
+                        return None
+                    
                     if(ignoreEpoch == False):
                         if (len(availability) > 1):
                             raise Exception("Multiple metadata epochs found for %s" % _sncl_pattern)
@@ -1130,16 +1197,20 @@ class Concierge(object):
                     # Create the IRISSeismic version of the stream
                     r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags, timing_qual,
 						    sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
-			
+            
                 except Exception as e:
                     err_msg = "Error reading in local waveform from %s" % filepath
                     self.logger.debug(e)
                     self.logger.debug(err_msg)
                     raise
 
-                if len(utils.get_slot(r_stream, 'traces')) == 0:
-                        raise Exception("no data available")
-      
+#                 if len(utils.get_slot(r_stream, 'traces')) == 0:
+#                         raise Exception("no data available")
+            
+            try:
+                self.logger.debug(f"Dataselect found local data that spans {py_stream.traces[0].stats.starttime} - {py_stream.traces[-1].stats.endtime}")
+            except:
+                self.logger.debug("Dataselect found no local data")
 
         else:
             # Read from FDSN web services
@@ -1149,9 +1220,10 @@ class Concierge(object):
                 orig_stderr = sys.stderr
                 sys.stderr = self.dev_null
                 r_stream = irisseismic.R_getDataselect(self.dataselect_url, self.dataselect_type, network, station, location, channel, _starttime, _endtime, quality, repository,inclusiveEnd, ignoreEpoch)
+                
                 sys.stderr = orig_stderr
             except Exception as e:
-                err_msg = "Error reading in waveform from FDSN dataselect webservice client (base url: %s)" % self.dataselect_url
+                err_msg = "Error reading in waveform from %s dataselect webservice client (base url: %s)" % (self.dataselect_type, self.dataselect_url)
                 self.logger.error(err_msg)
                 self.logger.debug(str(e).strip('\n'))
                 raise
@@ -1159,6 +1231,8 @@ class Concierge(object):
             # Some FDSN web services cut on record boundaries instead of samples, so make sure we have correct start/end times
             try:
                 r_stream = irisseismic.R_slice(r_stream,_starttime, _endtime)
+                
+                
             except Exception as e:
                 err_msg = "Error cutting R stream for start %s and end %s" % (_starttime, _endtime)
                 self.logger.debug(err_msg)

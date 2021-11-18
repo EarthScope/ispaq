@@ -44,6 +44,7 @@ def pressureCorrelation_metrics(concierge):
     logger.debug("channelFilter %s" % channelFilter)
     pressureLocation = "*"
     pressureChannel = "LDO"
+
     logger.debug("pressureChannel %s" % pressureChannel)
 
     # ----- All available SNCLs -------------------------------------------------
@@ -53,10 +54,11 @@ def pressureCorrelation_metrics(concierge):
     
     delta = (end-start)/(24*60*60)
     nday=int(delta)+1
+    
 
     if nday > 1 and concierge.station_client is None:
         try:
-            initialAvailability = concierge.get_availability(location=pressureLocation, channel=pressureChannel,starttime=start,endtime=end)
+            initialAvailability = concierge.get_availability("pressure", starttime=start,endtime=end)
         except NoAvailableDataError as e:
             raise
         except Exception as e:
@@ -72,10 +74,11 @@ def pressureCorrelation_metrics(concierge):
             continue
 
         try:
-            pressureAvailability = concierge.get_availability(location=pressureLocation, channel=pressureChannel,starttime=starttime,endtime=endtime)
+            pressureAvailability = concierge.get_availability("pressure", location=pressureLocation, channel=pressureChannel,starttime=starttime,endtime=endtime)
         except Exception as e:
-            logger.error('Metric calculation failed because concierge.get_availability failed: %s' % (e))
-            return None
+            logger.error('Metric calculation failed because concierge.get_availability failed, moving on: %s' % (e))
+            continue
+#             return None
     
         if pressureAvailability is None or pressureAvailability.shape[0] == 0:
             logger.info('No pressure channels available')
@@ -96,7 +99,7 @@ def pressureCorrelation_metrics(concierge):
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
                     logger.info('No data available for %s' % (pAv.snclId))
-                elif str(e).lower().find('multiple epochs'):
+                elif str(e).lower().find('multiple epochs') > -1:
                     logger.info('Skipping %s because multiple metadata epochs found' % (av.snclId))
                 else:
                     logger.warning('No data available for %s from %s: %s' % (pAv.snclId, concierge.dataselect_url, e))
@@ -110,8 +113,14 @@ def pressureCorrelation_metrics(concierge):
                 continue
 
             # Get all desired seismic channels for this network-station
-            seismicAvailability = concierge.get_availability(pAv.network, pAv.station)
-        
+            seismicAvailability = concierge.get_availability("pressure", network=pAv.network, station=pAv.station, starttime=starttime, endtime=endtime)
+#             seismicAvailability = concierge.get_availability("pressure", pAv.network, pAv.station)
+            
+            
+            #if seismicAvailability == None:
+            if seismicAvailability.empty:
+                continue 
+            
             # Apply the channelFilter
             seismicAvailability = seismicAvailability[seismicAvailability.channel.str.contains(channelFilter)]
             if seismicAvailability is None or seismicAvailability.shape[0] == 0:
@@ -149,7 +158,7 @@ def pressureCorrelation_metrics(concierge):
                     except Exception as e:
                         if str(e).lower().find('no data') > -1:
                             logger.debug('No data available for %s' % (lAv.snclId))
-                        elif str(e).lower().find('multiple epochs'):
+                        elif str(e).lower().find('multiple epochs') > -1:
                             logger.info('Skipping %s because multiple metadata epochs found' % (av.snclId))
                         else:
                             logger.warning('No data available for %s from %s: %s' % (lAv.snclId, concierge.dataselect_url, e))

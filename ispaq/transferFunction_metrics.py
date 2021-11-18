@@ -73,10 +73,20 @@ def transferFunction_metrics(concierge):
     # loop over days
     start = concierge.requested_starttime
     end = concierge.requested_endtime
-    
     delta = (end-start)/(24*60*60)
     nday=int(delta)+1
-    
+
+    # Create an initial availability that spans the entire requested period to ensure that all files are included
+#     if nday > 1 and concierge.station_client is None:
+    if concierge.station_client is None:
+        try:
+            initialAvailability = concierge.get_availability("transfer_function", starttime=start, endtime=end)
+        except NoAvailableDataError as e:
+            raise
+        except Exception as e:
+            logger.error("concierge.get_availability() failed: '%s'" % e)
+            return None
+
     for day in range(nday):
         beginday = (start + day * 86400)
         # start and endtimes should be 1 hour, not 1 day
@@ -88,17 +98,22 @@ def transferFunction_metrics(concierge):
         
         # ----- All available SNCLs -------------------------------------------------
         try:
-            availability = concierge.get_availability()
+            availability = concierge.get_availability("transfer_function", starttime=windowStart, endtime=windowEnd)
+        
+            # If there is no data for the day, that's ok... it should just move onto the next day. No longer should it return None or raise an error. 
         except NoAvailableDataError as e:
-            raise
+#             raise
+            continue
         except Exception as e:
             logger.debug(e)
             logger.error('concierge.get_availability() failed')
-            return None
+#             return None
+            continue
         
         if availability is None:
-            logger.debug("skipping event with no available data")
-            return None
+            logger.debug("skipping window with no available data")
+            continue
+#             return None
         
         # Apply the channelFilter
         availability = availability[availability.channel.str.contains(channelFilter)]
@@ -192,7 +207,7 @@ def transferFunction_metrics(concierge):
                         except Exception as e:
                             if str(e).lower().find('no data') > -1:
                                 logger.info('No data available for %s' % (Zav1.snclId))
-                            elif str(e).lower().find('multiple epochs'):
+                            elif str(e).lower().find('multiple epochs') > -1:
                                 logger.info('Skipping %s because multiple metadata epochs found' % (Zav1.snclId))
                             else:
                                 logger.warning('No data available for %s from %s: %s' % (Zav1.snclId, concierge.dataselect_url, e))
@@ -203,7 +218,7 @@ def transferFunction_metrics(concierge):
                         except Exception as e:
                             if str(e).lower().find('no data') > -1:
                                 logger.info('No data available for %s' % (Zav2.snclId))
-                            elif str(e).lower().find('multiple epochs'):
+                            elif str(e).lower().find('multiple epochs') > -1:
                                 logger.info('Skipping %s because multiple metadata epochs found' % (Zav2.snclId))
                             else:
                                 logger.warning('No data available for %s from %s: %s' % (Zav2.snclId, concierge.dataselect_url, e))
@@ -381,7 +396,7 @@ def transferFunction_metrics(concierge):
                                 except Exception as e:
                                     if str(e).lower().find('no data') > -1:
                                         logger.info('No data available for %s' % (av1.snclId))
-                                    elif str(e).lower().find('multiple epochs'):
+                                    elif str(e).lower().find('multiple epochs') > -1:
                                         logger.info('Skipping %s because multiple metadata epochs found' % (av1.snclId))
                                     else:
                                         logger.warning('No data available for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
@@ -392,7 +407,7 @@ def transferFunction_metrics(concierge):
                                 except Exception as e:
                                     if str(e).lower().find('no data') > -1:
                                         logger.info('No data available for %s' % (av2.snclId))
-                                    elif str(e).lower().find('multiple epochs'):
+                                    elif str(e).lower().find('multiple epochs') > -1:
                                         logger.info('Skipping %s because multiple metadata epochs found' % (av2.snclId))
                                     else:
                                         logger.warning('No data available for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
@@ -465,7 +480,7 @@ def transferFunction_metrics(concierge):
                                 except Exception as e:
                                     if str(e).lower().find('no data') > -1:
                                         logger.info('No data available for %s' % (av1.snclId))
-                                    elif str(e).lower().find('multiple epochs'):
+                                    elif str(e).lower().find('multiple epochs') > -1:
                                         logger.info('Skipping %s because multiple metadata epochs found' % (av1.snclId))
                                         logger.debug(e)
                                     else:
@@ -477,7 +492,7 @@ def transferFunction_metrics(concierge):
                                 except Exception as e:
                                     if str(e).lower().find('no data') > -1:
                                         logger.info('No data available for %s' % (av2.snclId))
-                                    elif str(e).lower().find('multiple epochs'):
+                                    elif str(e).lower().find('multiple epochs') > -1:
                                         logger.info('Skipping %s because multiple metadata epochs found' % (av2.snclId))
                                     else:
                                         logger.warning('No data available for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))
@@ -488,7 +503,7 @@ def transferFunction_metrics(concierge):
                                 except Exception as e:
                                     if str(e).lower().find('no data') > -1:
                                         logger.info('No data available for %s' % (av3.snclId))
-                                    elif str(e).lower().find('multiple epochs'):
+                                    elif str(e).lower().find('multiple epochs') > -1:
                                         logger.info('Skipping %s because multiple metadata epochs found' % (av3.snclId))
                                     else:
                                         logger.warning('No data available for %s from %s: %s' % (av3.snclId, concierge.dataselect_url, e))
@@ -527,6 +542,11 @@ def transferFunction_metrics(concierge):
                                 except Exception as e:
                                     logger.warning('"transferFunction_metrics Trace rotation failed for %s:%s: %s' % (av1.snclId, av2.snclId, e))
                                     continue
+                                if not isinstance(traceRotList, list):
+                                    # This is a hack that was put into rotate2D to ensure that pandas2ri would be deactivated
+                                    logger.warning('"transferFunction_metrics Trace rotation failed for %s:%s: %s' % (av1.snclId, av2.snclId, traceRotList))
+                                    continue
+                                
                                 
                                 RYst2 = traceRotList[0]
                                 RXst2 = traceRotList[1]

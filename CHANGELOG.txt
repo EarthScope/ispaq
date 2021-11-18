@@ -5,8 +5,13 @@
  * access to IRIS PH5 archive data, using IRISPH5 name
  * includes option to write metric values to SQLite database
  * updates recommended conda package versions
- * requires installation of R-packages seismicRoll 1.1.4, IRISMustangMetrics 2.4.2, IRISSeismic 1.6.0
- * metric transfer_function will run on all requested days
+ * requires installation of R-packages seismicRoll 1.1.4, IRISMustangMetrics 2.4.4, IRISSeismic 1.6.3
+ * local data will be marked percent_availability=0 for target-days without data if metadata is included for target 
+ * updates to documentation, including new Jupyter notebook tutorials
+ * updates to logging output
+ * PSD and PDF output targets now contain quality code information
+ * bug fix, transfer_function metric will run on all requested days with correct results
+ * bug fix, PDF calculation completes when using CSV files having multiple SNCLs with a differing number of targets 
 
 2.0.1
  * updates recommended conda ObsPy package version to 1.1.1. Run `run_ispaq.py -U` to install ObsPy 1.1.1.

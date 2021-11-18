@@ -18,7 +18,7 @@ from rpy2.robjects import pandas2ri
 import numpy as np
 from rpy2.robjects.conversion import localconverter
 from rpy2.robjects import numpy2ri
-from . import ispaq
+import ispaq
 
 #     R Initialization     -----------------------------------------------------
 
@@ -133,7 +133,6 @@ def R_float(x):
     <FloatVector - Python:...>
     [1.500000, 2.500000, 3.500000]
     """
-
     if x is None:
         return np.NaN 
     else:
@@ -260,6 +259,7 @@ def R_Trace(trace,
     :param input_units: Units available from IRIS getChannel webservice.
     :return: IRISSeismic Trace object.
     """
+    
     r_trace = ro.r('new("Trace")')
     
     r_trace = _R_initialize(r_trace,
@@ -307,7 +307,8 @@ def R_Stream(stream,
         requestedStarttime = stream.traces[0].stats.starttime
     if requestedEndtime is None:
         requestedEndtime = stream.traces[-1].stats.endtime
-        
+    
+       
     # Create R list of Trace objects
     r_listOfTraces = R_list(len(stream.traces))
 
@@ -318,7 +319,7 @@ def R_Stream(stream,
 
     # Create R Stream object
     r_stream = ro.r('new("Stream")')
-        
+     
     if timing_qual is None:
         numpy2ri.activate()
         r_stream = _R_initialize(r_stream,
@@ -342,8 +343,6 @@ def R_Stream(stream,
                                  timing_qual=timing_qual,
                                  traces=r_listOfTraces)
         numpy2ri.deactivate()
-
-
     return(r_stream) 
 
 
@@ -411,7 +410,7 @@ def _userAgent():
     Create user agent string for use with new("IrisClient")
     """
     #ispaq_version = ispaq.__version__
-    ispaq_version = '3.0.0-beta'
+    ispaq_version = '3.0.0'
     r_agent_string = ro.r("paste0('IRISSeismic/',installed.packages()['IRISSeismic','Version'],' RCurl/',installed.packages()['RCurl','Version'],' R/',R.version$major,'.',R.version$minor,' ',version$platform,' ISPAQ/')")
     return(r_agent_string[0]+ispaq_version)
 
@@ -571,7 +570,6 @@ def R_getDataselect(client_url="http://service.iris.edu",
     
     # Call the function and return an R Stream
     r_stream = _R_getDataselect(r_client, network, station, location, channel, starttime, endtime, quality=quality, repository=repository, inclusiveEnd=inclusiveEnd, ignoreEpoch=ignoreEpoch)
-    
     #pandas2ri.deactivate()
     return r_stream
 
@@ -633,8 +631,11 @@ def getEvalresp(client_url="http://service.iris.edu",
     """
     #r_client = ro.r('new("IrisClient")')
 
+
     user_agent = _userAgent()
-    cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '", useragent="' + user_agent + '")'
+#     cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '", useragent="' + user_agent + '")'
+    
+    cmd = f'new("IrisClient", site="{client_url}", service_type="{client_type}", useragent="{user_agent}")'
     r_client = ro.r(cmd)
     
     # Convert python arguments to R equivalents
@@ -903,6 +904,7 @@ def R_slice(x, starttime, endtime):
     endtime = R_POSIXct(endtime)
 
     r_stream = _R_slice(x,starttime, endtime)
+    
     return r_stream
 
 # surfaceDistance is needed in crossCorrelation_metrics.py
@@ -988,12 +990,16 @@ def rotate2D(st1, st2, angle):
     pandas2ri.activate()
     R_function = ro.r('IRISSeismic::rotate2D')
 
-    r_list = R_function(st1, st2, angle)
-    
-    returnList = []
-    returnList.append(r_list[0])
-    returnList.append(r_list[1])
+    try:
+        r_list = R_function(st1, st2, angle)
+        returnList = []
+        returnList.append(r_list[0])
+        returnList.append(r_list[1])
+    except Exception as e:
+        returnList = e
+
     pandas2ri.deactivate()
+
     return(returnList)
 
 # generalValueMetric

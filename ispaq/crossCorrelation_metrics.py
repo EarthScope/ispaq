@@ -70,6 +70,20 @@ def crossCorrelation_metrics(concierge):
         logger.info('No events found for crossCorrelation metrics.')
         return None
         
+    # Create an initial availability that includes everything for the entire span    
+    start = concierge.requested_starttime
+    end = concierge.requested_endtime    
+    if concierge.station_client is None:
+        try:
+            initialAvailability = concierge.get_availability("polarityCheck", starttime=start, endtime=end)
+        except NoAvailableDataError as e:
+            raise
+        except Exception as e:
+            logger.error("concierge.get_availability() failed: '%s'" % e)
+            return None    
+        
+    
+        
     # Container for all of the metrics dataframes generated
     dataframes = []
 
@@ -100,7 +114,7 @@ def crossCorrelation_metrics(concierge):
 
         logger.debug("Looking for metadata from %s to %s" % (halfHourStart,halfHourEnd))
         try:        
-            availability = concierge.get_availability(starttime=halfHourStart, endtime=halfHourEnd,
+            availability = concierge.get_availability("polarityCheck", starttime=halfHourStart, endtime=halfHourEnd,
                                                       longitude=event.longitude, latitude=event.latitude,
                                                       minradius=eventMinradius, maxradius=eventMaxradius)
         except NoAvailableDataError as e:
@@ -150,7 +164,7 @@ def crossCorrelation_metrics(concierge):
             except Exception as e:
                 if str(e).lower().find('no data') > -1:
                     logger.info('No data available for %s' % (av1.snclId))
-                elif str(e).lower().find('multiple epochs') :
+                elif str(e).lower().find('multiple epochs') > -1:
                     logger.info('Skipping %s because multiple metadata epochs found' % (av1.snclId))
                 else:
                     logger.warning('No data available for %s from %s: %s' % (av1.snclId, concierge.dataselect_url, e))
@@ -178,7 +192,7 @@ def crossCorrelation_metrics(concierge):
 
             # Get the data availability using spatial search parameters
             try:
-                availability2 = concierge.get_availability(network='*', station='*', location='*', channel=channelString,
+                availability2 = concierge.get_availability("polarityCheck",network='*', station='*', location='*', channel=channelString,
                                                            starttime=halfHourStart, endtime=halfHourEnd,
                                                            longitude=av1.longitude, latitude=av1.latitude,
                                                            minradius=snclMinradius, maxradius=snclMaxradius)
@@ -240,7 +254,8 @@ def crossCorrelation_metrics(concierge):
                 #avCompatible['dist'] = pd.Series(irisseismic.surfaceDistance(av1.latitude, av1.longitude, avCompatible.latitude, avCompatible.longitude))
                 dist2 = pd.Series()
                 for i in range(0,avCompatible.shape[0]):
-                    dist2.set_value(i,value=obspy.geodetics.base.locations2degrees(av1.latitude, av1.longitude,avCompatible.latitude.iloc[i],avCompatible.longitude.iloc[i]))
+#                     dist2.set_value(i,value=obspy.geodetics.base.locations2degrees(av1.latitude, av1.longitude,avCompatible.latitude.iloc[i],avCompatible.longitude.iloc[i]))
+                    dist2.at[i] = obspy.geodetics.base.locations2degrees(av1.latitude, av1.longitude,avCompatible.latitude.iloc[i],avCompatible.longitude.iloc[i])
                 avCompatible['dist'] = dist2
                 avCompatible = avCompatible.sort_values('dist', ascending=True)
                 
@@ -275,7 +290,7 @@ def crossCorrelation_metrics(concierge):
                 except Exception as e:
                     if str(e).lower().find('no data') > -1:
                         logger.debug('No data available for %s' % (av2.snclId))
-                    elif str(e).lower().find('multiple epochs'):
+                    elif str(e).lower().find('multiple epochs') > -1:
                         logger.info('Skipping %s because multiple metadata epochs are found' % (av2.snclId))
                     else:
                         logger.warning('No data available for %s from %s: %s' % (av2.snclId, concierge.dataselect_url, e))

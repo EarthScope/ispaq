@@ -55,7 +55,7 @@ def function_metadata():
 #     Functions that return GeneralValueMetrics     -----------------------------
 
 
-def apply_simple_metric(r_stream, metric_function_name, *args, **kwargs):
+def apply_simple_metric(av, starttime, endtime, r_stream, metric_function_name, *args, **kwargs):
     """"
     Invoke a named "simple" R metric and convert the R dataframe result into
     a Pandas dataframe.
@@ -65,19 +65,28 @@ def apply_simple_metric(r_stream, metric_function_name, *args, **kwargs):
     """
     
     
-    if metric_function_name is 'numSpikes':
+#     if metric_function_name is 'numSpikes':
+    if metric_function_name == 'numSpikes':
         function = 'IRISMustangMetrics::spikesMetric'
     else:
         function = 'IRISMustangMetrics::' + metric_function_name + 'Metric'
         
     R_function = robjects.r(function)
-    r_metriclist = R_function(r_stream, *args, **kwargs)  
-    r_dataframe = _R_metricList2DF(r_metriclist)
-
-    # Convert to a pandas dataframe
-    pandas2ri.activate()
-    df = ro.conversion.rpy2py(r_dataframe)
-    pandas2ri.deactivate()
+    try:
+        r_metriclist = R_function(r_stream, *args, **kwargs)
+        r_dataframe = _R_metricList2DF(r_metriclist)
+        
+        # Convert to a pandas dataframe
+        pandas2ri.activate()
+        df = ro.conversion.rpy2py(r_dataframe)
+        pandas2ri.deactivate()
+        
+    except:
+        # The stream being empty will trigger this, so mark percent_Availability=0
+#         snclq = av.snclId + '.M'    # Obsolete now that new logic is in place in simple_metrics.py
+        df = pd.DataFrame(columns=['metricName','snclq','starttime','endtime','qualityFlag','value'])
+        
+        df.loc[len(df.index)] = ['percent_availability',snclq, starttime, endtime, -9, 0 ]
     
     # Convert columns from R POSIXct to python UTCDateTime
     df.starttime = df.starttime.apply(UTCDateTime)
@@ -289,9 +298,6 @@ def apply_PSD_plot(r_stream, filepath, evalresp=None):
     """
     result = robjects.r('grDevices::png')(filepath)
     r_psdList = robjects.r('IRISSeismic::psdList')(r_stream)    
-   
-    #print(r_psdList)
-   
    
     if len(r_psdList) == 0:
         raise Exception("No PSDs returned")

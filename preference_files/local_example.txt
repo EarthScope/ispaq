@@ -18,10 +18,12 @@ Metrics:
   orientationCheck: orientation_check
   transferFunction: transfer_function
   sampleRates: sample_rate_channel, sample_rate_resp
-  
+  pctAvail: percent_availability
 
   # Example user-defined combination
   customStats: sample_min, max_stalta, num_spikes
+  allMetrics: pct_above_nhnm, pct_below_nlnm, dead_channel_lin, dead_channel_gsn, psd_corrected, pdf, sample_min, sample_median, sample_mean, sample_max, sample_rms, sample_unique, num_gaps, max_gap, num_overlaps, max_overlap, percent_availability, polarity_check, cross_talk, pressure_effects, amplifier_saturation, calibration_signal, clock_locked, digital_filter_charging, digitizer_clipping, event_begin, event_end, event_in_progress, glitches, missing_padded_data, spikes, suspect_time_tag, telemetry_sync_error, timing_correction, timing_quality, sample_snr, num_spikes, max_stalta, orientation_check, transfer_function, max_range, sample_rate_channel, sample_rate_resp
+
 
 # Sets of SNCLs ---------------------------------------------------------------
 SNCLs:
@@ -31,6 +33,7 @@ SNCLs:
   psdPdf: IU.GRFO..BHZ
   ANMO: IU.ANMO.00.BH?
   IU: IU.*.10.BHZ, IU.*.10.HHZ
+  KAPI: II.KAPI.00.BH?
 
   # Example user-defined combination
   myStations: TA.*..BH?
@@ -71,10 +74,15 @@ PDF_Preferences:
 # Preferences fall into five categories:
 #  * Metrics -- aliases for user defined combinations of metrics
 #  * Station_SNCLs -- aliases for user defined combinations of SNCL patterns
-#                     SNCL patterns are station names formatted as Network.Station.Location.Channel
-#                     wildcards * and ? are allowed (*.*.*.*). SNCL pattern format can be modified
-#                     using the Preferences sncl_format. 
-#	              NOTE: Quality codes will be ignored. For example, IU.ANMO.00.BHZ.M will be treated as IU.ANMO.00.BHZ
+#                     SNCL patterns are station names formatted as Network.Station.Location.Channel.[Quality], where 
+#                     [ ] denotes an optional element.
+#                     Wildcards * and ? are allowed (*.*.*.*). 
+#	              NOTE: the use of the quality code is optional and is not fully utilized in this version of ISPAQ. Specifying 
+#                           a quality code will not guarantee that ISPAQ retrieves data with only that quality code; instead data 
+#                           will be of whatever quality the specified web services (or local data) provides. This is a known issue and 
+#                           will be addressed in a future release. The pdf metric will use the quality code specified, if there is one, 
+#                           as it retrieves PSDs. If no quality code is specified in the station SNCL, then it will look for any and all 
+#                           quality codes that might exist for that SNCL.
 #  * Data_Access -- FDSN web services or local files
 #  * Preferences -- additional user preferences
 #  * PDF_Preferences -- preferences specific to PDF calculation

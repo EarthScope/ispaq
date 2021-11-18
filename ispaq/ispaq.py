@@ -17,7 +17,7 @@ import subprocess
 from _ast import Try
 from numpy.random import sample
 
-__version__ = "3.0.0-beta"
+__version__ = "3.0.0"
 
 # dictionary of currently defined ISPAQ metric groups and business logic
 # for comparison with R package IRISMustangMetrics/ISPAQUtils.R json
@@ -56,13 +56,14 @@ def main():
     metrics = parser.add_argument_group('arguments for running metrics')
     metrics.add_argument('-P', '--preferences-file', required=False, help='path to preference file, default=./preference_files/default.txt')
     metrics.add_argument('-M', '--metrics', required=False,
-                        help='metrics alias as defined in preference file or metric name, required')
+                        help='single Metrics alias as defined in preference file, or one or \nmore metric names in a comma-separated list, required')
     metrics.add_argument('-S', '--stations', required=False,
-                        help='stations alias as defined in preference file or station SNCL, required')
+                        help='single Station_SNCLs alias as defined in preference file, or \none or more SNCL[Q] in a comma-separated list, required.\nnotes: SNCL[Q] refers to Station.Network.Channel.Location.(optional)Quality\n       If using wildcarding, enclose in quotation marks')
     metrics.add_argument('--starttime', required=False,
                         help='starttime in ObsPy UTCDateTime format, required for webservice requests \nand defaults to earliest data file for local data \nexamples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]')
     metrics.add_argument('--endtime',  required=False,
                         help='endtime in ObsPy UTCDateTime format, default=starttime + 1 day; \nif starttime is also not specified then it defaults to the latest data \nfile for local data \nexamples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]')
+   
    
     prefs = parser.add_argument_group('optional arguments for overriding preference file entries')
     prefs.add_argument('--dataselect_url', required=False,
@@ -204,9 +205,9 @@ def main():
                  or (StrictVersion(x_str) < StrictVersion("3.5.1")) ):
             logger.debug('Obspy 1.2.2 not found')
             logger.info('Updating conda packages...')
-            conda_str = ("conda update -c conda-forge pandas=0.25.3 obspy=1.2.2 r=3.6.0 r-base=3.6.0 r-devtools=2.0.1" +
-                    " r-rcurl=1.95_4.11 r-xml=3.98_1.16 r-dplyr=0.8.4 r-quadprog=1.5_5 r-signal=0.7_6" +
-                    " r-pracma=2.1.5 rpy2=3.1.0 r-stringr=1.3.1")
+            conda_str = ("conda update -c conda-forge pandas=1.2.3 obspy=1.2.2 r=3.6 " +
+                    " r-rcurl=1.98_1.3 r-xml=3.99_0.3 r-dplyr=1.0.6 r-quadprog=1.5_8 r-signal=0.7_6" +
+                    " r-pracma=2.3.3 rpy2=3.1.0 r-stringr=1.4.0")
             subprocess.call(conda_str, shell=True)
             logger.info('(Re)installing IRIS R packages from CRAN')
             try:
