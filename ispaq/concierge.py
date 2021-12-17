@@ -301,8 +301,9 @@ class Concierge(object):
                 matching_files = []
                 fpattern1 = '%s' % (sncl_pattern + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
                 fpattern2 = '%s' % (fpattern1 + '.[A-Z]')
+                fpattern3 = '%s' % (sncl_pattern + '.*[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
                 for root, dirnames, fnames in os.walk(self.dataselect_url):
-                    for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
+                    for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2), fnmatch.filter(fnames, fpattern3):
                         matching_files.append(os.path.join(root,fname))
                 if (len(matching_files) == 0):
                     continue
@@ -624,6 +625,8 @@ class Concierge(object):
                                 q = os.path.splitext(sncl_pattern)[1][1]
                                 
                                 fpattern1 = '%s' % (tmp_sncl_pattern + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
+                                fpattern3 = '%s' % (tmp_sncl_pattern + '.*[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
+
                                 if q.isalpha():
                                     fpattern2 = '%s' % (fpattern1 + '.' + q)
                                 else:
@@ -632,11 +635,13 @@ class Concierge(object):
                             else:
                                 fpattern1 = '%s' % (sncl_pattern + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
                                 fpattern2 = '%s' % (fpattern1 + '.[A-Z]')
+                                fpattern3 = '%s' % (sncl_pattern + '.*[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
+
 
                             matching_files = []
 
                             for root, dirnames, fnames in os.walk(self.dataselect_url):
-                                for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
+                                for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2) + fnmatch.filter(fnames, fpattern3):
                                     file_year = int(fname.split('.')[4])
                                     file_day = int(fname.split('.')[5])
                                     file_date = (datetime.datetime(file_year, 1, 1) + datetime.timedelta(file_day - 1)).date()
@@ -839,10 +844,11 @@ class Concierge(object):
             if self.dataselect_client is None and metric != "simple":
                 fpattern1 = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))
                 fpattern2 = '%s' % (fpattern1 + '.[A-Z]')
-                
+                fpattern3 = '%s.*%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))
+
                 matching_files = []
                 for root, dirnames, fnames in os.walk(self.dataselect_url):
-                    for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
+                    for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2)+ fnmatch.filter(fnames, fpattern3):
                         file_year = int(fname.split('.')[4])
                         file_day = int(fname.split('.')[5])
                         file_date = (datetime.datetime(file_year, 1, 1) + datetime.timedelta(file_day - 1)).date()
@@ -989,10 +995,10 @@ class Concierge(object):
                 _sncl_pattern = self.get_sncl_pattern(network, station, location, channel)
                 fpattern1 = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))
                 fpattern2 = '%s' % (fpattern1 + '.[A-Z]')
-                
+                fpattern3 = '%s.*%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))
                 matching_files = []
                 for root, dirnames, fnames in os.walk(self.dataselect_url):
-                    for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
+                    for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2)+ fnmatch.filter(fnames, fpattern3):
                         matching_files.append(os.path.join(root,fname))
 
 #                 if (len(matching_files) == 0):
@@ -1030,7 +1036,8 @@ class Concierge(object):
                             
                         py_stream = obspy.read(filepath)
                         py_stream = py_stream.slice(_starttime, _endtime, nearest_sample=False)
-                      
+                        py_stream.merge(method=-1)
+                        self.logger.debug(f'Successfully merged object {py_stream}')
                         if (StrictVersion(obspy.__version__) < StrictVersion("1.1.0")): 
                             flag_dict = obspy.io.mseed.util.get_timing_and_data_quality(filepath)
                             act_flags = [0,0,0,0,0,0,0,0] # not supported before 1.1.0  
@@ -1088,7 +1095,9 @@ class Concierge(object):
 						sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
 
                 except Exception as e:
+                    err_msg = "Error reading in local waveform from %s" % filepath
                     self.logger.debug(e)
+                    self.logger.debug(err_msg)
                     raise
       
 #                 # Create the IRISSeismic version of the stream -- is this second call necessary? Uncomment if things start misbehaving.
@@ -1119,7 +1128,8 @@ class Concierge(object):
                     self.logger.debug("read local miniseed file for %s..." % filename)
                     fpattern1 = self.dataselect_url + '/' + filename + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]'
                     fpattern2 = fpattern1 + '.[A-Z]'
-                    matching_files = glob.glob(fpattern1) + glob.glob(fpattern2)
+                    fpattern3 = self.dataselect_url + '/' + '%s.*%s.[12][0-9][0-9][0-9].[0-9][0-9][0-9]' % (_sncl_pattern,_starttime.strftime('%Y.%j'))
+                    matching_files = glob.glob(fpattern1) + glob.glob(fpattern2)+ glob.glob(fpattern3)
 		
                     if (len(matching_files) == 0):
                         err_msg = "No files found matching '%s'" % (fpattern1)
@@ -1139,10 +1149,13 @@ class Concierge(object):
 
                 try:
                     py_stream = obspy.read(x)
+                    self.logger.debug(f'Reading from file {filepath}')
                     x.close()
                     if not inclusiveEnd:
                             _endtime = _endtime - 0.000001
                     py_stream = py_stream.slice(_starttime, _endtime, nearest_sample=False) 
+                    py_stream.merge(method=-1)
+                    self.logger.debug(f'Successfully merged object {py_stream}')
                     # NOTE:  ObsPy does not store state-of-health flags with each stream.
                     if (StrictVersion(obspy.__version__) < StrictVersion("1.1.0")):
                         flag_dict = obspy.io.mseed.util.get_timing_and_data_quality(filepath)
@@ -1197,7 +1210,7 @@ class Concierge(object):
                     # Create the IRISSeismic version of the stream
                     r_stream = irisseismic.R_Stream(py_stream, _starttime, _endtime, act_flags, io_flags, dq_flags, timing_qual,
 						    sensor, scale, scalefreq, scaleunits, latitude, longitude, elevation, depth, azimuth, dip)
-            
+                    self.logger.debug(f'Successfully generated r_stream for {channel}')
                 except Exception as e:
                     err_msg = "Error reading in local waveform from %s" % filepath
                     self.logger.debug(e)
@@ -1223,7 +1236,7 @@ class Concierge(object):
                 
                 sys.stderr = orig_stderr
             except Exception as e:
-                err_msg = "Error reading in waveform from %s dataselect webservice client (base url: %s)" % (self.dataselect_type, self.dataselect_url)
+                err_msg = "Error reading in waveform from FDSN dataselect webservice client (base url: %s)" % (self.dataselect_type, self.dataselect_url)
                 self.logger.error(err_msg)
                 self.logger.debug(str(e).strip('\n'))
                 raise
