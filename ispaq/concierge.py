@@ -1037,7 +1037,6 @@ class Concierge(object):
                         py_stream = obspy.read(filepath)
                         py_stream = py_stream.slice(_starttime, _endtime, nearest_sample=False)
                         py_stream.merge(method=-1)
-                        self.logger.debug(f'Successfully merged object {py_stream}')
                         if (StrictVersion(obspy.__version__) < StrictVersion("1.1.0")): 
                             flag_dict = obspy.io.mseed.util.get_timing_and_data_quality(filepath)
                             act_flags = [0,0,0,0,0,0,0,0] # not supported before 1.1.0  
