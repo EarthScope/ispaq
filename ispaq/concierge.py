@@ -1228,7 +1228,7 @@ class Concierge(object):
                 
                 sys.stderr = orig_stderr
             except Exception as e:
-                err_msg = "Error reading in waveform from FDSN dataselect webservice client (base url: %s)" % (self.dataselect_type, self.dataselect_url)
+                err_msg = "Error reading in waveform from %s dataselect webservice client (base url: %s)" % (self.dataselect_type, self.dataselect_url)
                 self.logger.error(err_msg)
                 self.logger.debug(str(e).strip('\n'))
                 raise
