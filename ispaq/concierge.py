@@ -775,16 +775,35 @@ class Concierge(object):
                                                                       includerestricted=True,
                                                                       latitude=latitude, longitude=longitude,
                                                                       minradius=minradius, maxradius=maxradius,                                                                
-                                                                      level="channel",matchtimeseries=False)
+                                                                      level="channel")
                     
                 except Exception as e:
-                    if (minradius):
+                    if (re.match('The parameter \'includerestricted\' is not supported by the service.',str(e))):
+                        try:
+                            sncl_inventory = self.station_client.get_stations(starttime=_starttime, endtime=_endtime,
+                                                                      network=_network, station=_station,
+                                                                      location=_location, channel=_channel,
+                                                                      latitude=latitude, longitude=longitude,
+                                                                      minradius=minradius, maxradius=maxradius,
+                                                                      level="channel")
+                        except Exception as e:
+                            if (minradius):
+                                err_msg = "No stations found for %s within radius %s-%s degrees of latitude,longitude %s,%s" % (_sncl_pattern,minradius,maxradius,latitude,longitude)
+                            else:
+                                err_msg = "No stations found for %s" % (_sncl_pattern)
+                            self.logger.debug(str(e).strip('\n'))
+                            self.logger.info(err_msg)
+                            continue
+                    elif (minradius):
                         err_msg = "No stations found for %s within radius %s-%s degrees of latitude,longitude %s,%s" % (_sncl_pattern,minradius,maxradius,latitude,longitude)
+                        self.logger.debug(str(e).strip('\n'))
+                        self.logger.info(err_msg)
+                        continue
                     else:
                         err_msg = "No stations found for %s" % (_sncl_pattern)
-                    self.logger.debug(str(e).strip('\n'))
-                    self.logger.info(err_msg)
-                    continue
+                        self.logger.debug(str(e).strip('\n'))
+                        self.logger.info(err_msg)
+                        continue
 
                 self.logger.debug('Adding %s to the availability dataframe' % _sncl_pattern)
 
