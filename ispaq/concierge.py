@@ -311,8 +311,8 @@ class Concierge(object):
                     for _file in matching_files:
                         try:
                             _fileSNCL = _file.split("/")[-1]
-                            _fileYear = _fileSNCL.split(".")[4]
-                            _fileJday = _fileSNCL.split(".")[5]
+                            _fileYear = _fileSNCL.split(".")[5]
+                            _fileJday = _fileSNCL.split(".")[6]
                             _fileDate = UTCDateTime("-".join([_fileYear,_fileJday]))
                             self.fileDates.append([_fileDate])
                         except Exception as e:
@@ -638,8 +638,8 @@ class Concierge(object):
 
                             for root, dirnames, fnames in os.walk(self.dataselect_url):
                                 for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
-                                    file_year = int(fname.split('.')[4])
-                                    file_day = int(fname.split('.')[5])
+                                    file_year = int(fname.split('.')[5])
+                                    file_day = int(fname.split('.')[6])
                                     file_date = (datetime.datetime(file_year, 1, 1) + datetime.timedelta(file_day - 1)).date()
                                     
                                     # Compare the date on the file to the dates of the start and end time (but not the 
@@ -844,8 +844,8 @@ class Concierge(object):
                 matching_files = []
                 for root, dirnames, fnames in os.walk(self.dataselect_url):
                     for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
-                        file_year = int(fname.split('.')[4])
-                        file_day = int(fname.split('.')[5])
+                        file_year = int(fname.split('.')[5])
+                        file_day = int(fname.split('.')[6])
                         file_date = (datetime.datetime(file_year, 1, 1) + datetime.timedelta(file_day - 1)).date()
                         
                         # Compare the date on the file to the dates of the start and end time (but not the 
