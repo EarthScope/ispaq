@@ -93,7 +93,7 @@ def main():
     prefs.add_argument('--sncl_format', required=False,
                         help='format of SNCL aliases and miniSEED file names \nexamples:"N.S.L.C","S.N.L.C"\nwhere N=network code, S=station code, L=location code, C=channel code')
     prefs.add_argument('--sigfigs', required=False, help='number of significant figures used for output columns named "value"')
-    prefs.add_argument('--sds',action='store_true',default=False,help='if set, ISPAQ will look for local data files with Seiscomp SDS naming structure NET.STA.LOC.CHAN.TYPE.YEAR.DAY')
+    prefs.add_argument('--sds_files',action='store_true',default=False,help='if set, ISPAQ will look for local data files with Seiscomp SDS naming format \nNET.STA.LOC.CHAN.TYPE.YEAR.DAY where TYPE=D')
    
     other = parser.add_argument_group('other arguments')
     other.add_argument('--log-level', action='store', default='INFO',

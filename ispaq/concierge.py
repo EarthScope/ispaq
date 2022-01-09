@@ -122,7 +122,7 @@ class Concierge(object):
         self.plot_include = user_request.plot_include
         self.sigfigs = user_request.sigfigs
         self.sncl_format = user_request.sncl_format
-        self.sds = user_request.sds
+        self.sds_files = user_request.sds_files
 
         self.netOrder = int(int(self.sncl_format.index("N"))/2)
         self.staOrder = int(int(self.sncl_format.index("S"))/2)
@@ -300,7 +300,7 @@ class Concierge(object):
             self.fileDates = []
             for sncl_pattern in self.sncl_patterns:
                 matching_files = []
-                if(self.sds):
+                if(self.sds_files):
                     fpattern1 = '%s' % (sncl_pattern + '.D' +  '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]') #seiscomp sds file naming, waveform type D
                 else:
                     fpattern1 = '%s' % (sncl_pattern + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
@@ -315,7 +315,7 @@ class Concierge(object):
                     for _file in matching_files:
                         try:
                             _fileSNCL = _file.split("/")[-1]
-                            if(self.sds):
+                            if(self.sds_files):
                                 _fileYear = _fileSNCL.split(".")[5]
                                 _fileJday = _fileSNCL.split(".")[6]
                             else:
@@ -631,7 +631,7 @@ class Concierge(object):
                                 tmp_sncl_pattern = os.path.splitext(sncl_pattern)[0]
                                 q = os.path.splitext(sncl_pattern)[1][1]
 
-                                if(self.sds):
+                                if(self.sds_files):
                                     fpattern1 = '%s' % (tmp_sncl_pattern + '.D' + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]') #SDS file naming structure, D=waveform data
                                 else:
                                     fpattern1 = '%s' % (tmp_sncl_pattern + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
@@ -642,7 +642,7 @@ class Concierge(object):
                                     fpattern2 = '%s' % (fpattern1 + '.[A-Z]')
 
                             else:
-                                if(self.sds):
+                                if(self.sds_files):
                                     fpattern1 = '%s' % (sncl_pattern + '.D' + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
                                 else:
                                     fpattern1 = '%s' % (sncl_pattern + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
@@ -652,7 +652,7 @@ class Concierge(object):
 
                             for root, dirnames, fnames in os.walk(self.dataselect_url):
                                 for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
-                                    if(self.sds):
+                                    if(self.sds_files):
                                         file_year = int(fname.split('.')[5])
                                         file_day = int(fname.split('.')[6])
                                     else:
@@ -874,7 +874,7 @@ class Concierge(object):
                        
             # Subset based on locally available data ---------------------------
             if self.dataselect_client is None and metric != "simple":
-                if(self.sds):
+                if(self.sds_files):
                     fpattern1 = '%s.D.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))
                 else:
                     fpattern1 = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))
@@ -883,7 +883,7 @@ class Concierge(object):
                 matching_files = []
                 for root, dirnames, fnames in os.walk(self.dataselect_url):
                     for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
-                        if(self.sds):
+                        if(self.sds_files):
                             file_year = int(fname.split('.')[5])
                             file_day = int(fname.split('.')[6])
                         else:
@@ -1031,7 +1031,7 @@ class Concierge(object):
             
             if (nday == 1):
                 _sncl_pattern = self.get_sncl_pattern(network, station, location, channel)
-                if(self.sds):
+                if(self.sds_files):
                     fpattern1 = '%s.D.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))  #seiscomp sds file naming
                 else:
                     fpattern1 = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))
@@ -1162,7 +1162,7 @@ class Concierge(object):
                         end = _endtime
 
                     _sncl_pattern = self.get_sncl_pattern(network, station, location, channel)
-                    if(self.sds):
+                    if(self.sds_files):
                         filename = '%s.D.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))  #seiscomp sds file naming
                     else:
                         filename = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))

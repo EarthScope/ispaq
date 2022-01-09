@@ -147,8 +147,8 @@ class UserRequest(object):
             if 'sncl_format' in json_dict:
                 self.sncl_format = json_dict['sncl_format']
 
-            if 'sds' in json_dict:
-                self.sds = json_dict['sds']
+            if 'sds_files' in json_dict:
+                self.sds_files = json_dict['sds_files']
 
         #     Initialize from arguments       ---------------------------------
 
@@ -169,7 +169,7 @@ class UserRequest(object):
             self.csv_dir = args.csv_dir
             self.sncl_format = args.sncl_format
             self.sigfigs = args.sigfigs
-            self.sds = args.sds
+            self.sds_files = args.sds_files
             
             self.pdf_type = args.pdf_type
             self.pdf_interval = args.pdf_interval
@@ -378,10 +378,10 @@ class UserRequest(object):
                 logger.critical('sncl_format %s is not valid' % self.sncl_format)
                 raise SystemExit
 
-            if self.sds is False:
-                if 'sds' in preferences:
-                    if eval(preferences['sds']) is True:
-                        self.sds = eval(preferences['sds'])
+            if self.sds_files is False:
+                if 'sds_files' in preferences:
+                    if eval(preferences['sds_files']) is True:
+                        self.sds_files = eval(preferences['sds_files'])
 
             # start and end times
             if args.starttime is None:
