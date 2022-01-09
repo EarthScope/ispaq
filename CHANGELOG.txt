@@ -1,3 +1,7 @@
+3.0.1-beta-sds
+ * addition of --sds argument for specifying Seiscomp SDS file naming convention NET.STA.LOC.CHAN.TYPE.YEAR.DAY
+ * bug fix for FDSN station web services that do not support optional parameter includerestricted
+ * bug fix, will not append to TRANSCRIPT log unless '-A' option specified
 3.0.0
  * ports code to Python3
  * includes MUSTANG metrics sample_rate_resp, sample_rate_channel, max_range

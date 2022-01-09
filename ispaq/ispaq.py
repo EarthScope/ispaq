@@ -92,14 +92,14 @@ def main():
                         help='PDF plot graphics options - legend, colorbar, and/or fixed_yaxis_limits, \nor none')
     prefs.add_argument('--sncl_format', required=False,
                         help='format of SNCL aliases and miniSEED file names \nexamples:"N.S.L.C","S.N.L.C"\nwhere N=network code, S=station code, L=location code, C=channel code')
-    prefs.add_argument('--sigfigs', required=False,
-                        help='number of significant figures used for output columns named "value"')
+    prefs.add_argument('--sigfigs', required=False, help='number of significant figures used for output columns named "value"')
+    prefs.add_argument('--sds',action='store_true',default=False,help='if set, ISPAQ will look for local data files with Seiscomp SDS naming structure NET.STA.LOC.CHAN.TYPE.YEAR.DAY')
    
     other = parser.add_argument_group('other arguments')
     other.add_argument('--log-level', action='store', default='INFO',
                         choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],
                         help='log level printed to console, default="INFO"')
-    other.add_argument('-A', '--append', action='store_true', default=True,
+    parser.add_argument('-A', '--append', action='store_true', default=False,
                         help='append to TRANSCRIPT file rather than overwriting')
     parser.add_argument('-V', '--version', action='version',
                         version='%(prog)s ' + __version__)
@@ -109,7 +109,6 @@ def main():
                         help='check for and install newer CRAN IRIS Mustang packages \nand/or update required conda packages, and exit')
     parser.add_argument('-L', '--list-metrics', action='store_true', default=False,
                         help='list names of available metrics and exit')
-
 
     try:
         args = parser.parse_args(sys.argv[1:])
