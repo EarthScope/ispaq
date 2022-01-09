@@ -369,7 +369,7 @@ class UserRequest(object):
                 else:
                     self.sncl_format = "N.S.L.C"
 
-            sncl_expr = re.compile('[SNCL][\.][SNCL][\.][SNCL][\.][SNCL]')
+            sncl_expr = re.compile('[SNCL]\.[SNCL]\.[SNCL]\.[SNCL]\.T|[SNCL]\.[SNCL]\.[SNCL]\.[SNCL]')
             if (not re.match(sncl_expr, self.sncl_format)):
                 logger.critical('sncl_format %s is not valid' % self.sncl_format)
                 raise SystemExit
