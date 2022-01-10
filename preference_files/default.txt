@@ -56,7 +56,8 @@ Preferences:
   sigfigs: 6			# significant figures used to output metric values
   sncl_format: N.S.L.C  	# format of sncl aliases and miniSEED file names, must be some combination of period separated
                           	  N=network,S=station, L=location, C=channel (e.g., N.S.L.C or S.N.L.C).
-  sds_files: False                    # if set to 'True', use Seiscomp SDS file name structure by searching for 'D' type in file name (e.g. NET.STA.LOC.CHAN.D.YEAR.DAY)
+  sds_files: False              # if set to 'True', use Seiscomp SDS file name format with type='D', 
+                                  (e.g. NET.STA.LOC.CHAN.D.YEAR.DAY)
 
 
 # PDF-specific preferences ----------------------------------------------------
