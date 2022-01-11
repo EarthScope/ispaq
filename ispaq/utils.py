@@ -637,7 +637,7 @@ def getSpectra(st, sampling_rate, metric, concierge):
 
     evalResp = None
     respDir = concierge.resp_dir
-    
+
     if (respDir):
         # calling local evalresp -- generate the target file based on the SNCL identifier
         # file pattern:  RESP.<NET>.<STA>.<LOC>.<CHA> or RESP.<STA>.<NET>.<LOC>.<CHA>
@@ -661,6 +661,7 @@ def getSpectra(st, sampling_rate, metric, concierge):
 
     else:    
         # calling the web service 
+        concierge.logger.debug('calling IRIS evalresp web service')
         try:
             evalResp = irisseismic.getEvalresp(concierge.dataselect_url, concierge.dataselect_type, network, station, location, channel, starttime,
                                        minfreq, maxfreq, nfreq, units.lower(), output.lower())

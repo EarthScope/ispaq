@@ -228,7 +228,7 @@ def apply_transferFunction_metric(r_stream1, r_stream2, evalresp1, evalresp2):
 
 #     Functions for PSDMetrics     ---------------------------------------------
 
-def apply_PSD_metric(r_stream, *args, **kwargs):
+def apply_PSD_metric(concierge, r_stream, *args, **kwargs):
     """"
     Invoke the PSDMetric and convert the R dataframe result into
     a Pandas dataframe.
@@ -253,6 +253,7 @@ def apply_PSD_metric(r_stream, *args, **kwargs):
             ###################
         r_listOfLists = R_function(r_stream, evalresp=r_evalresp)
     else:
+        concierge.logger.debug('calling IRIS evalresp web service')
         r_listOfLists = R_function(r_stream)
 
     r_metriclist = r_listOfLists[0]

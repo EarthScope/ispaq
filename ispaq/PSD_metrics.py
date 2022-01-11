@@ -114,7 +114,7 @@ def PSD_metrics(concierge):
                         evalresp = utils.getSpectra(r_stream, sampling_rate, "PSD", concierge)
                     # get corrected PSD
                     try:
-                        (df, PSDcorrected, PDF) = irismustangmetrics.apply_PSD_metric(r_stream, evalresp=evalresp)
+                        (df, PSDcorrected, PDF) = irismustangmetrics.apply_PSD_metric(concierge, r_stream, evalresp=evalresp)
                     except Exception as e:
                         raise
 
