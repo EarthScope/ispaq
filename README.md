@@ -166,20 +166,20 @@ usage: run_ispaq.py [-h] [-P PREFERENCES_FILE] [-M METRICS] [-S STATIONS]
                     [--starttime STARTTIME] [--endtime ENDTIME]
                     [--dataselect_url DATASELECT_URL] [--station_url STATION_URL]
                     [--event_url EVENT_URL] [--resp_dir RESP_DIR]
-                    [--output OUTPUT] [--db_name DB_NAME][--csv_dir CSV_DIR]
-                    [--psd_dir PSD_DIR] [--pdf_dir PDF_DIR]
-                    [--pdf_type PDF_TYPE] [--pdf_interval PDF_INTERVAL]
-                    [--plot_include PLOT_INCLUDE] [--sncl_format SNCL_FORMAT]
-                    [--sigfigs SIGFIGS]
+                    [--output OUTPUT] [--db_name DB_NAME] [--csv_dir CSV_DIR]
+                    [--psd_dir PSD_DIR] [--pdf_dir PDF_DIR] [--pdf_type PDF_TYPE]
+                    [--pdf_interval PDF_INTERVAL] [--plot_include PLOT_INCLUDE]
+                    [--sncl_format SNCL_FORMAT] [--sigfigs SIGFIGS] [--sds_files]
                     [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-A] [-V]
                     [-I] [-U] [-L]
 
-ISPAQ version 3.0.0
+ISPAQ version 3.1.0-beta
 
 single arguments:
   -h, --help                       show this help message and exit
+  -A, --append                     append to TRANSCRIPT file rather than overwriting
   -V, --version                    show program's version number and exit
-  -I, --install-r                  (re)-install CRAN IRIS Mustang packages, and exit
+  -I, --install-r                  install CRAN IRIS Mustang packages, and exit
   -U, --update-r                   check for and install newer CRAN IRIS Mustang packages 
                                    and/or update required conda packages, and exit
   -L, --list-metrics               list names of available metrics and exit
@@ -188,18 +188,18 @@ arguments for running metrics:
   -P PREFERENCES_FILE, --preferences-file PREFERENCES_FILE
                                    path to preference file, default=./preference_files/default.txt
   -M METRICS, --metrics METRICS    single Metrics alias as defined in preference file, or one or 
-                                   more metrics names in a comma-separated list, required
+                                   more metric names in a comma-separated list, required
   -S STATIONS, --stations STATIONS
                                    single Station_SNCLs alias as defined in preference file, or 
-                                   one or more SNCL[Q] in a comma-separated list, required. 
-                                   notes: SNCL[Q] refers to Station.Network.Channel.Location.(optional)Quality.
+                                   one or more SNCL[Q] in a comma-separated list, required.
+                                   notes: SNCL[Q] refers to Station.Network.Channel.Location.(optional)Quality
                                           If using wildcarding, enclose in quotation marks
   --starttime STARTTIME            starttime in ObsPy UTCDateTime format, required for webservice requests 
-                                   and defaults to earliest data file for local data.
+                                   and defaults to earliest data file for local data 
                                    examples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]
   --endtime ENDTIME                endtime in ObsPy UTCDateTime format, default=starttime + 1 day; 
                                    if starttime is also not specified then it defaults to the latest data 
-                                   file for local data.
+                                   file for local data 
                                    examples: YYYY-MM-DD, YYYYMMDD, YYYY-DDD, YYYYDDD[THH:MM:SS]
 
 optional arguments for overriding preference file entries:
@@ -207,8 +207,8 @@ optional arguments for overriding preference file entries:
   --station_url STATION_URL        FDSN webservice or path to stationXML file
   --event_url EVENT_URL            FDSN webservice or path to QuakeML file
   --resp_dir RESP_DIR              path to directory with RESP files
-  --output OUTPUT                  write to .csv file (csv) or sqlite database (db)
-  --db_name DB_NAME                name of sqlite database file, if output=db
+  --output OUTPUT                  write metrics to csv file (csv) or sqlite database file (db). Options: csv, db
+  --db_name DB_NAME                name of sqlite database file, if output=csv
   --csv_dir CSV_DIR                directory to write generated metrics .csv files, if output=csv
   --psd_dir PSD_DIR                directory to write/read existing PSD .csv files, if output=csv
   --pdf_dir PDF_DIR                directory to write generated PDF files
@@ -220,11 +220,20 @@ optional arguments for overriding preference file entries:
                                    examples:"N.S.L.C","S.N.L.C"
                                    where N=network code, S=station code, L=location code, C=channel code
   --sigfigs SIGFIGS                number of significant figures used for output columns named "value"
+  --sds_files                      if set, ISPAQ will look for local data files with Seiscomp SDS naming format 
+                                   NET.STA.LOC.CHAN.TYPE.YEAR.DAY where TYPE=D
 
 other arguments:
   --log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
                                    log level printed to console, default="INFO"
-  -A, --append                     append to TRANSCRIPT file rather than overwriting
+
+If no preference file is specified and the default file ./preference_files/default.txt cannot be found:
+--csv_dir, pdf_dir, and psd_dir default to "."
+--sncl_format defaults to "N.S.C.L"
+--sigfigs defaults to "6"
+--pdf_type defaults to "plot,text"
+--pdf_interval defaults to "aggregated"
+--plot_include defaults to "colorbar,legend"
 ```
 
 For those that prefer to run ISPAQ as a package, you can use the following invocation (using help example):
@@ -329,7 +338,7 @@ or the transfer_function metric.
 
     If you are starting from a dataless SEED, you can create RESP files using [rdseed](http://ds.iris.edu/ds/nodes/dmc/manuals/rdseed/).
 
-**Preferences** has six entries describing ispaq output.
+**Preferences** has eight entries describing ispaq output.
 
 * `output:` either 'db' (write to SQLite database) or 'csv' (write to CSV files)
 * `db_name:` if writing to a database (output=db), the name of the database
@@ -349,6 +358,9 @@ written to a directory structure within 'pdf_dir' based on network code and stat
 * `sncl_format:` should be the format of sncl aliases and miniSEED file names, must be some combination of
  period separated `N`=network, `S`=station, `L`=location, `C`=channel (e.g., `N.S.L.C, S.N.L.C`).
 If no `sncl_format` exists, it defaults to `N.S.L.C`.
+
+* `sds_files:` if set to 'True', ISPAQ will look for files using the SeisComp SDS file naming convention with type='D',
+(e.g. NET.STA.LOC.CHAN.D.YEAR.DAY) when using local data files
 
 **PDF_Preferences** has three entries describing PDF output.
 
@@ -538,6 +550,14 @@ For example, sncl_format `S.N.L.C` will change the file naming convention that I
 Station.Network.Location.Channel.Year.JulianDay.Quality
 ```
 where `Quality` is again optional (e.g. `P19K.TA..BHZ.2016.214.M` or `P19K.TA..BHZ.2016.214`).
+
+If the `sds_files` parameter is set either as a command line flag (`--sds_files`) or set to 'True' in the preference
+file, ISPAQ will look for files using the Seiscomp SDS file name format with type='D', e.g.,
+
+```
+Network.Station.Location.Channel.D.Year.JulianDay
+```
+The sncl_format and optional quality code are also honored when using `sds_format`.
 
 ISPAQ will search for miniSEED files in the directory specified by `dataselect_url` in the preferences file or 
 `--dataselect_url` on the command line. Furthermore, it will recursively follow that directory structure and

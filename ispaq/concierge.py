@@ -122,6 +122,7 @@ class Concierge(object):
         self.plot_include = user_request.plot_include
         self.sigfigs = user_request.sigfigs
         self.sncl_format = user_request.sncl_format
+        self.sds_files = user_request.sds_files
 
         self.netOrder = int(int(self.sncl_format.index("N"))/2)
         self.staOrder = int(int(self.sncl_format.index("S"))/2)
@@ -299,7 +300,10 @@ class Concierge(object):
             self.fileDates = []
             for sncl_pattern in self.sncl_patterns:
                 matching_files = []
-                fpattern1 = '%s' % (sncl_pattern + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
+                if(self.sds_files):
+                    fpattern1 = '%s' % (sncl_pattern + '.D' +  '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]') #seiscomp sds file naming, waveform type D
+                else:
+                    fpattern1 = '%s' % (sncl_pattern + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
                 fpattern2 = '%s' % (fpattern1 + '.[A-Z]')
                 for root, dirnames, fnames in os.walk(self.dataselect_url):
                     for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
@@ -311,8 +315,12 @@ class Concierge(object):
                     for _file in matching_files:
                         try:
                             _fileSNCL = _file.split("/")[-1]
-                            _fileYear = _fileSNCL.split(".")[4]
-                            _fileJday = _fileSNCL.split(".")[5]
+                            if(self.sds_files):
+                                _fileYear = _fileSNCL.split(".")[5]
+                                _fileJday = _fileSNCL.split(".")[6]
+                            else:
+                                _fileYear = _fileSNCL.split(".")[4]
+                                _fileJday = _fileSNCL.split(".")[5]
                             _fileDate = UTCDateTime("-".join([_fileYear,_fileJday]))
                             self.fileDates.append([_fileDate])
                         except Exception as e:
@@ -618,26 +626,37 @@ class Concierge(object):
                         if self.dataselect_client is None:	# Local data
                             # Loop over the available data and add to dataframe if they aren't yet
                             # But only for the requested days 
-                            if len(sncl_pattern.split('.')) > 4:
+                            if (len(sncl_pattern.split('.')) > 4): #expected to be quality code
                                 tmp_sncl_pattern = os.path.splitext(sncl_pattern)[0]
                                 q = os.path.splitext(sncl_pattern)[1][1]
-                                
-                                fpattern1 = '%s' % (tmp_sncl_pattern + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
+
+                                if(self.sds_files):
+                                    fpattern1 = '%s' % (tmp_sncl_pattern + '.D' + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]') #SDS file naming structure, D=waveform data
+                                else:
+                                    fpattern1 = '%s' % (tmp_sncl_pattern + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
+
                                 if q.isalpha():
                                     fpattern2 = '%s' % (fpattern1 + '.' + q)
                                 else:
                                     fpattern2 = '%s' % (fpattern1 + '.[A-Z]')
 
                             else:
-                                fpattern1 = '%s' % (sncl_pattern + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
+                                if(self.sds_files):
+                                    fpattern1 = '%s' % (sncl_pattern + '.D' + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
+                                else:
+                                    fpattern1 = '%s' % (sncl_pattern + '.[12][0-9][0-9][0-9].[0-9][0-9][0-9]')
                                 fpattern2 = '%s' % (fpattern1 + '.[A-Z]')
 
                             matching_files = []
 
                             for root, dirnames, fnames in os.walk(self.dataselect_url):
                                 for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
-                                    file_year = int(fname.split('.')[4])
-                                    file_day = int(fname.split('.')[5])
+                                    if(self.sds_files):
+                                        file_year = int(fname.split('.')[5])
+                                        file_day = int(fname.split('.')[6])
+                                    else:
+                                        file_year = int(fname.split('.')[4])
+                                        file_day = int(fname.split('.')[5])
                                     file_date = (datetime.datetime(file_year, 1, 1) + datetime.timedelta(file_day - 1)).date()
                                     
                                     # Compare the date on the file to the dates of the start and end time (but not the 
@@ -853,16 +872,22 @@ class Concierge(object):
             
                        
             # Subset based on locally available data ---------------------------
-#             if self.dataselect_client is None and metric is not "simple":
             if self.dataselect_client is None and metric != "simple":
-                fpattern1 = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))
+                if(self.sds_files):
+                    fpattern1 = '%s.D.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))
+                else:
+                    fpattern1 = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))
                 fpattern2 = '%s' % (fpattern1 + '.[A-Z]')
                 
                 matching_files = []
                 for root, dirnames, fnames in os.walk(self.dataselect_url):
                     for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
-                        file_year = int(fname.split('.')[4])
-                        file_day = int(fname.split('.')[5])
+                        if(self.sds_files):
+                            file_year = int(fname.split('.')[5])
+                            file_day = int(fname.split('.')[6])
+                        else:
+                            file_year = int(fname.split('.')[4])
+                            file_day = int(fname.split('.')[5])
                         file_date = (datetime.datetime(file_year, 1, 1) + datetime.timedelta(file_day - 1)).date()
                         
                         # Compare the date on the file to the dates of the start and end time (but not the 
@@ -1005,7 +1030,10 @@ class Concierge(object):
             
             if (nday == 1):
                 _sncl_pattern = self.get_sncl_pattern(network, station, location, channel)
-                fpattern1 = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))
+                if(self.sds_files):
+                    fpattern1 = '%s.D.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))  #seiscomp sds file naming
+                else:
+                    fpattern1 = '%s.%s' % (_sncl_pattern,_starttime.strftime('%Y.%j'))
                 fpattern2 = '%s' % (fpattern1 + '.[A-Z]')
                 
                 matching_files = []
@@ -1120,7 +1148,12 @@ class Concierge(object):
                         end = _endtime
 
                     _sncl_pattern = self.get_sncl_pattern(network, station, location, channel)
-                    filename = '%s.%s' % (_sncl_pattern,start.strftime('%Y.%j'))
+
+                    if(self.sds_files):
+                        filename = '%s.D.%s' % (_sncl_pattern,start.strftime('%Y.%j'))  #seiscomp sds file naming
+                    else:
+                        filename = '%s.%s' % (_sncl_pattern,start.strftime('%Y.%j'))
+
                     self.logger.debug("read local miniseed file for %s..." % filename)
                     fpattern1 = self.dataselect_url + '/' + filename 
                     fpattern2 = fpattern1 + '.[A-Z]'
