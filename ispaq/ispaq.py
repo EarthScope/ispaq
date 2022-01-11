@@ -17,7 +17,7 @@ import subprocess
 from _ast import Try
 from numpy.random import sample
 
-__version__ = "3.0.1-beta-sds"
+__version__ = "3.1.0-beta"
 
 # dictionary of currently defined ISPAQ metric groups and business logic
 # for comparison with R package IRISMustangMetrics/ISPAQUtils.R json
