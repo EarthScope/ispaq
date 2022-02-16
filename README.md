@@ -113,7 +113,7 @@ perform installs, updates, or run ISPAQ.
 cd ispaq   #top level directory
 conda update conda
 conda env remove --name ispaq  #if you are upgrading from an existing ISPAQ 2.0 installation to ISPAQ 3.0
-conda create --name ispaq -c conda-forge python=3.8 obspy=1.2.2 numpy=1.21.4
+conda create --name ispaq -c conda-forge python=3.8 obspy=1.2.2 
 conda activate ispaq
 conda install -c conda-forge --file ispaq-conda-install.txt
 ```
@@ -174,7 +174,7 @@ usage: run_ispaq.py [-h] [-P PREFERENCES_FILE] [-M METRICS] [-S STATIONS]
                     [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-A] [-V]
                     [-I] [-U] [-L]
 
-ISPAQ version 3.0.0
+ISPAQ version 3.0.1
 
 single arguments:
   -h, --help                       show this help message and exit
