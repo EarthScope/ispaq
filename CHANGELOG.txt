@@ -4,6 +4,9 @@
  * bug fix for reading local files for event metrics that span day boundaries
  * bug fix, will not append to TRANSCRIPT log unless '-A' option specified
 
+3.0.1
+ * dependency numpy package version must be <1.22 to avoid errors. Added numpy=1.21.4 to the ispaq-conda-install.txt file.
+
 3.0.0
  * ports code to Python3
  * includes MUSTANG metrics sample_rate_resp, sample_rate_channel, max_range
