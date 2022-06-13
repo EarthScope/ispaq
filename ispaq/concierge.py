@@ -1028,7 +1028,7 @@ class Concierge(object):
                         if not inclusiveEnd:
                             _endtime = _endtime - 0.000001
                             
-                        py_stream = obspy.read(filepath)
+                        py_stream = obspy.read(filepath).sort()
                         py_stream = py_stream.slice(_starttime, _endtime, nearest_sample=False)
                       
                         if (StrictVersion(obspy.__version__) < StrictVersion("1.1.0")): 
@@ -1138,7 +1138,7 @@ class Concierge(object):
                         f.close()
 
                 try:
-                    py_stream = obspy.read(x)
+                    py_stream = obspy.read(x).sort()
                     x.close()
                     if not inclusiveEnd:
                             _endtime = _endtime - 0.000001
