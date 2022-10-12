@@ -3,6 +3,7 @@
  * bug fix for FDSN station web services that do not support optional parameter includerestricted
  * bug fix for reading local files for event metrics that span day boundaries
  * bug fix, will not append to TRANSCRIPT log unless '-A' option specified
+ * bug fix, sort out-of-order miniseed segments when reading
 
 3.0.1
  * dependency numpy package version must be <1.22 to avoid errors. Added numpy=1.21.4 to the ispaq-conda-install.txt file.
