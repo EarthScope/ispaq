@@ -134,8 +134,8 @@ Or alternatively, install the IRIS R packages from local files:
 ```
 export MACOSX_DEPLOYMENT_TARGET=10.9    # this line for macOS only
 R CMD INSTALL seismicRoll_1.1.4.tar.gz
-R CMD INSTALL IRISSeismic_1.6.3.tar.gz
-R CMD INSTALL IRISMustangMetrics_2.4.4.tar.gz
+R CMD INSTALL IRISSeismic_1.6.6.tar.gz
+R CMD INSTALL IRISMustangMetrics_2.4.5.tar.gz
 ```
 
 You should run `./run_ispaq.py -U` after you update ISPAQ minor versions to verify that you have both the 
