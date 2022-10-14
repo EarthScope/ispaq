@@ -105,6 +105,7 @@ PDF_Preferences:
 #
 #   BGR, EMSC, ETH, GEONET, GFZ, INGV, IPGP, IRIS, ISC, KOERI,
 #   LMU, NCEDC, NIEP, ODC, ORFEUS, RESIF, SCEDC, USGS, USP
+#   IRISPH5, IESDMC, GEOFON, RESIFPH5, EIDA
 #
 #   FDSN service providers may also be specified as an http:// address:
 #   example, http://service.iris.edu 
