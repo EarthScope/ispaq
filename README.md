@@ -169,7 +169,7 @@ usage: run_ispaq.py [-h] [-P PREFERENCES_FILE] [-M METRICS] [-S STATIONS]
                     [--output OUTPUT] [--db_name DB_NAME] [--csv_dir CSV_DIR]
                     [--psd_dir PSD_DIR] [--pdf_dir PDF_DIR] [--pdf_type PDF_TYPE]
                     [--pdf_interval PDF_INTERVAL] [--plot_include PLOT_INCLUDE]
-                    [--sncl_format SNCL_FORMAT] [--sigfigs SIGFIGS] [--sds_files]
+                    [--sncl_format SNCL_FORMAT] [--sds_files] [--sigfigs SIGFIGS]
                     [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-A] [-V]
                     [-I] [-U] [-L]
 
@@ -219,9 +219,9 @@ optional arguments for overriding preference file entries:
   --sncl_format SNCL_FORMAT        format of SNCL aliases and miniSEED file names 
                                    examples:"N.S.L.C","S.N.L.C"
                                    where N=network code, S=station code, L=location code, C=channel code
-  --sigfigs SIGFIGS                number of significant figures used for output columns named "value"
-  --sds_files                      if set, ISPAQ will look for local data files with Seiscomp SDS naming format 
+  --sds_files                      if set, ISPAQ will look for local data files with Seiscomp SDS naming format
                                    NET.STA.LOC.CHAN.TYPE.YEAR.DAY where TYPE=D
+  --sigfigs SIGFIGS                number of significant figures used for output columns named "value"
 
 other arguments:
   --log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
