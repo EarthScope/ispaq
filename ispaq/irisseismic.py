@@ -8,8 +8,7 @@ Python module containing wrappers for the IRISSeismic R package.
     (http://www.gnu.org/copyleft/lesser.html)
 """
 
-from __future__ import (absolute_import, division, print_function)
-from future.types import newint
+#from future.types import newint
 import pandas as pd
 from obspy import UTCDateTime
 import rpy2.robjects as ro
@@ -366,7 +365,7 @@ def _R_args(*args):
         if arg is None:
             #r_args.append(rinterface.MissingArg)
             r_args.append(rinterface.NULL)
-            # LK commented out the following because it causes issues in python 3 and seems redundant with the catchall else below
+# LK commented out the following because it causes issues in python 3 and seems redundant with the catchall else below
 #         elif isinstance(arg,newint):
 #             ###r_args.append(R_integer(arg))
 #             r_args.append(arg)

@@ -8,8 +8,6 @@ ISPAQ Business Logic for Simple Metrics.
     (http://www.gnu.org/copyleft/lesser.html)
 """
 
-from __future__ import (absolute_import, division, print_function)
-
 import pandas as pd
 
 from obspy import UTCDateTime

@@ -17,7 +17,7 @@ from obspy.signal.headers import clibevresp
 import ctypes as C
 import math as M
 import pandas as pd
-from future.utils import native_str
+#from future.utils import native_str
 from obspy.core.util.base import NamedTemporaryFile
 
 
@@ -153,7 +153,8 @@ def evalresp(sfft, efft, nfft, filename, date, station='*', channel='*',
     """
 
 
-    if isinstance(filename, (str, native_str)):
+    #if isinstance(filename, (str, native_str)):
+    if isinstance(filename, (str)):
         with open(filename, 'rb') as fh:
             data = fh.read()
     elif hasattr(filename, 'read'):

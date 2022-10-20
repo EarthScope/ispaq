@@ -8,8 +8,6 @@ ISPAQ Data Access Expediter.
     (http://www.gnu.org/copyleft/lesser.html)
 """
 
-from __future__ import (absolute_import, division, print_function)
-
 import os
 import sys
 import re

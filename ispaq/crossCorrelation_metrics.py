@@ -9,8 +9,6 @@ ISPAQ Business Logic for Cross-Correlation Metrics.
 """
 # output is polarity_check metric
 
-from __future__ import (absolute_import, division, print_function)
-
 import math
 import numpy as np
 import pandas as pd

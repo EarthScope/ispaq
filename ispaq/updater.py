@@ -8,8 +8,6 @@ Python module containing for updating R packages.
     (http://www.gnu.org/copyleft/lesser.html)
 """
 
-from __future__ import (absolute_import, division, print_function)
-
 import pandas as pd
 import os
 import warnings

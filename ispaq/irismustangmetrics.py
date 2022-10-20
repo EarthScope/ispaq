@@ -19,8 +19,6 @@ functions can be called programmatically from python without the user having
 to know anything about the particular metric function they are calling.
 """
 
-from __future__ import (absolute_import, division, print_function)
-
 import math
 import numpy as np
 import pandas as pd

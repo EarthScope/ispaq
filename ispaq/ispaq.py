@@ -3,8 +3,6 @@
 
 """ispaq.ispaq: provides entry point main()."""
 
-from __future__ import (absolute_import, division, print_function)
-
 # Basic modules
 import os
 import sys
