@@ -649,18 +649,20 @@ class Concierge(object):
 
                             for root, dirnames, fnames in os.walk(self.dataselect_url):
                                 for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
-                                    if(len(fname.split('.')) < 6): #minimum file name length
-                                        continue
-                                    elif(self.sds_files):
-                                        if (len(fname.split('.')[5])==4 and len(fname.split('.')[6])==3):
-                                            file_year = int(fname.split('.')[5])
-                                            file_day = int(fname.split('.')[6])
+                                    if(self.sds_files):
+                                        position5 = fname.split('.')[5]
+                                        position6 = fname.split('.')[6]
+                                        if(fnmatch.fnmatch(position5,'[12][0-9][0-9][0-9]') and fnmatch.fnmatch(position6,'[0-9][0-9][0-9]')):
+                                            file_year = int(position5)
+                                            file_day = int(position6)
                                         else:
                                             continue
                                     else:
-                                        if(len(fname.split('.')[4])==4 and len(fname.split('.')[5])==3): 
-                                            file_year = int(fname.split('.')[4])
-                                            file_day = int(fname.split('.')[5])
+                                        position4 = fname.split('.')[4]
+                                        position5 = fname.split('.')[5]
+                                        if(fnmatch.fnmatch(position4,'[12][0-9][0-9][0-9]') and fnmatch.fnmatch(position5,'[0-9][0-9][0-9]')):
+                                            file_year = int(position4)
+                                            file_day = int(position5)
                                         else:
                                             continue
                                     file_date = (datetime.datetime(file_year, 1, 1) + datetime.timedelta(file_day - 1)).date()
@@ -888,20 +890,23 @@ class Concierge(object):
                 matching_files = []
                 for root, dirnames, fnames in os.walk(self.dataselect_url):
                     for fname in fnmatch.filter(fnames, fpattern1) + fnmatch.filter(fnames, fpattern2):
-                        if(len(fname.split('.')) < 6): #minimum file name length
-                            continue
-                        elif(self.sds_files):
-                            if (len(fname.split('.')[5])==4 and len(fname.split('.')[6])==3):
-                                file_year = int(fname.split('.')[5])
-                                file_day = int(fname.split('.')[6])
+                        if(self.sds_files):
+                            position5 = fname.split('.')[5]
+                            position6 = fname.split('.')[6]
+                            if(fnmatch.fnmatch(position5,'[12][0-9][0-9][0-9]') and fnmatch.fnmatch(position6,'[0-9][0-9][0-9]')):
+                                file_year = int(position5)
+                                file_day = int(position6)
                             else:
                                 continue
                         else:
-                            if(len(fname.split('.')[4])==4 and len(fname.split('.')[5])==3): 
-                                file_year = int(fname.split('.')[4])
-                                file_day = int(fname.split('.')[5])
+                            position4 = fname.split('.')[4]
+                            position5 = fname.split('.')[5]
+                            if(fnmatch.fnmatch(position4,'[12][0-9][0-9][0-9]') and fnmatch.fnmatch(position5,'[0-9][0-9][0-9]')):
+                                file_year = int(position4)
+                                file_day = int(position5)
                             else:
                                 continue
+
                         file_date = (datetime.datetime(file_year, 1, 1) + datetime.timedelta(file_day - 1)).date()
                         
                         # Compare the date on the file to the dates of the start and end time (but not the 
