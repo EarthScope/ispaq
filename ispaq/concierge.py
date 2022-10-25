@@ -652,13 +652,17 @@ class Concierge(object):
                                     if(len(fname.split('.')) < 6): #minimum file name length
                                         continue
                                     elif(self.sds_files):
-                                        file_year = int(fname.split('.')[5])
-                                        file_day = int(fname.split('.')[6])
-                                    elif(fname.split('.')[4] != 'D'): #do not match sds file names
-                                        file_year = int(fname.split('.')[4])
-                                        file_day = int(fname.split('.')[5])
-                                    else: #skip sds file names if not using --sds
-                                        continue
+                                        if (len(fname.split('.')[5])==4 and len(fname.split('.')[6])==3):
+                                            file_year = int(fname.split('.')[5])
+                                            file_day = int(fname.split('.')[6])
+                                        else:
+                                            continue
+                                    else:
+                                        if(len(fname.split('.')[4])==4 and len(fname.split('.')[5])==3): 
+                                            file_year = int(fname.split('.')[4])
+                                            file_day = int(fname.split('.')[5])
+                                        else:
+                                            continue
                                     file_date = (datetime.datetime(file_year, 1, 1) + datetime.timedelta(file_day - 1)).date()
                                     
                                     # Compare the date on the file to the dates of the start and end time (but not the 
@@ -887,13 +891,17 @@ class Concierge(object):
                         if(len(fname.split('.')) < 6): #minimum file name length
                             continue
                         elif(self.sds_files):
-                            file_year = int(fname.split('.')[5])
-                            file_day = int(fname.split('.')[6])
-                        elif(fname.split('.')[4] != 'D'): #do not match sds file names
-                            file_year = int(fname.split('.')[4])
-                            file_day = int(fname.split('.')[5])
+                            if (len(fname.split('.')[5])==4 and len(fname.split('.')[6])==3):
+                                file_year = int(fname.split('.')[5])
+                                file_day = int(fname.split('.')[6])
+                            else:
+                                continue
                         else:
-                            continue
+                            if(len(fname.split('.')[4])==4 and len(fname.split('.')[5])==3): 
+                                file_year = int(fname.split('.')[4])
+                                file_day = int(fname.split('.')[5])
+                            else:
+                                continue
                         file_date = (datetime.datetime(file_year, 1, 1) + datetime.timedelta(file_day - 1)).date()
                         
                         # Compare the date on the file to the dates of the start and end time (but not the 
