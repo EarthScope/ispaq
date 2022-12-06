@@ -54,16 +54,12 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
         con = sqlite3.connect(concierge.db_name)
         
         select_sql = f"SELECT * from psd_corrected WHERE target = '{sncl}'"
-#         select_sql = "SELECT * from psd_corrected WHERE target = '" + sncl +"'"
         if not starttime == "":
             select_sql = f"{select_sql} AND start >= '{sqlstarttime}'"
-#             select_sql = select_sql + " AND start >= '" + sqlstarttime + "'"
         if not endtime == "":
             select_sql = f"{select_sql} AND end <= '{sqlendtime}'"
-#             select_sql = select_sql + " AND end <= '" + sqlendtime + "'"
         
         select_sql = f"{select_sql} AND power != 'nan';"
-#         select_sql = select_sql + " AND power != 'nan';"
         logger.debug(select_sql)
         
         try:
