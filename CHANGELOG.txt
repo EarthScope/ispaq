@@ -4,7 +4,7 @@
  * bug fix for reading local files for event metrics that span day boundaries
  * bug fix, will not append to TRANSCRIPT log unless '-A' option specified
  * bug fix, sort out-of-order miniseed segments when reading
- * recommends creating conda environment using obspy 1.3.1
+ * recommends creating conda environment using obspy 1.4.0
 
 3.0.1
  * dependency numpy package version must be <1.22 to avoid errors. Added numpy=1.21.4 to the ispaq-conda-install.txt file.
