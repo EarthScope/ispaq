@@ -1,3 +1,6 @@
+3.1.1
+ * updated conda pacakge versions when using './run_ispaq.py -U'
+
 3.1.0
  * addition of --sds argument for specifying Seiscomp SDS file naming convention NET.STA.LOC.CHAN.TYPE.YEAR.DAY
  * bug fix for FDSN station web services that do not support optional parameter includerestricted
