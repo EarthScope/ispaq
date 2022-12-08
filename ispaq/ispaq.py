@@ -198,13 +198,13 @@ def main():
         logger.info('Checking for recommended conda packages...')
         x=ro.r("packageVersion('base')")
         x_str = ".".join(map(str,np.array(x.rx(1)).flatten()))
-        if ((StrictVersion(obspy.__version__) < StrictVersion("1.2.2")) 
-                 or (StrictVersion(x_str) < StrictVersion("3.5.1")) ):
-            logger.debug('Obspy 1.2.2 not found')
+        if ((StrictVersion(obspy.__version__) < StrictVersion("1.4.0")) 
+                 or (StrictVersion(x_str) < StrictVersion("3.6.0")) ):
+            logger.debug('obspy>=1.4.0 or r>=3.6 not found')
             logger.info('Updating conda packages...')
-            conda_str = ("conda update -c conda-forge pandas=1.2.3 obspy=1.2.2 r=3.6 " +
+            conda_str = ("conda install -c conda-forge pandas=1.2.3 obspy=1.4.0 r=3.6 " +
                     " r-rcurl=1.98_1.3 r-xml=3.99_0.3 r-dplyr=1.0.6 r-quadprog=1.5_8 r-signal=0.7_6" +
-                    " r-pracma=2.3.3 rpy2=3.1.0 r-stringr=1.4.0")
+                    " r-pracma=2.3.3 rpy2=3.1.0 r-stringr=1.4.0 numpy=1.21.4 r-rcpp=1.0.6")
             subprocess.call(conda_str, shell=True)
             logger.info('(Re)installing IRIS R packages from CRAN')
             try:
