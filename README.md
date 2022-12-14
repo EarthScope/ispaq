@@ -127,7 +127,7 @@ conda list
 Now install the IRIS R packages for ISPAQ using the -I option:
 ```
 export MACOSX_DEPLOYMENT_TARGET=10.9    # this line for macOS only
-./run_ispaq.py -I    #downloads latest packages from CRAN (https://cran.r-project.org)
+python run_ispaq.py -I    #downloads latest packages from CRAN (https://cran.r-project.org)
 ```
 
 Or alternatively, install the IRIS R packages from local files: 
@@ -161,7 +161,7 @@ is used to indicate that the script is in the current directory.
 A list of command-line options is available with the ```--help``` flag:
 
 ```
-(ispaq) bash-3.2$ ./run_ispaq.py -h
+(ispaq) bash-3.2$ python run_ispaq.py -h
 usage: run_ispaq.py [-h] [-P PREFERENCES_FILE] [-M METRICS] [-S STATIONS]
                     [--starttime STARTTIME] [--endtime ENDTIME]
                     [--dataselect_url DATASELECT_URL] [--station_url STATION_URL]
