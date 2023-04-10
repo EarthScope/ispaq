@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import statistics as st
 import os
 
 try:
@@ -108,33 +109,52 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
     pdfDF.reset_index(inplace=True,drop=True)
     
     # Set up dataframes for the max, min, modes for plotting later
-    modesDF = pd.DataFrame(columns=['Frequency','Power'], dtype="object")
-    minsDF = pd.DataFrame(columns=['Frequency','Power'], dtype="object") 
-    maxsDF = pd.DataFrame(columns=['Frequency','Power'], dtype="object");
+    # modesDF = pd.DataFrame(columns=['Frequency','Power'], dtype="object")
+    # mediansDF = pd.DataFrame(columns=['Frequency','Power'], dtype="object")
+    # meansDF = pd.DataFrame(columns=['Frequency','Power'], dtype="object")
+    # minsDF = pd.DataFrame(columns=['Frequency','Power'], dtype="object") 
+    # maxsDF = pd.DataFrame(columns=['Frequency','Power'], dtype="object")
+    statisticsDF = pd.DataFrame(columns=['Frequency','Min','Max','Mean','Median','Mode'], dtype="object")
     
+    pdfDF_grouped = pdfDF.groupby('frequency')
+    for frequency, group in pdfDF_grouped:
+        # This list is to make it easier to calculate mean/median/mode frequency values
+        power_list = [x for x,y in zip(group['power'], group['hits']) for i in range(int(y))]
 
-    # For each *frequency*, sum up the total hits, as well as min, max, mode values
-    for frequency in pdfDF['frequency'].unique():
+        # mode:
+        mode = st.mode(power_list)
+
+        # mean:
+        mean = st.mean(power_list)
+
+        # median:
+        median = st.median(power_list)
+         
         # Sum hits for total column
-        pdfDF.loc[pdfDF['frequency'] == frequency, 'total'] = sum(pdfDF[pdfDF['frequency'] == frequency]['hits'])
+        pdfDF.loc[pdfDF['frequency'] == frequency, 'total'] = group['hits'].sum()
         
-        # Find the min, max, mode
-        powerInd = pdfDF[pdfDF['frequency'] == frequency]['hits'].idxmax()
-        mode = pdfDF.loc[powerInd, 'power']
-        modesDF.loc[len(modesDF)] = [frequency, mode]
+        # # Find the min, max
+
+        # modesDF.loc[len(modesDF)] = [frequency, mode]
+        # mediansDF.loc[len(mediansDF)] = [frequency, median]
+        # meansDF.loc[len(meansDF)] = [frequency, mean]
 
         indWithHits = pdfDF['hits'][pdfDF['frequency'] == frequency].dropna().index
         values = pdfDF['power'][indWithHits].sort_values().reset_index()
         maxVal = values['power'].iloc[-1]
         minVal = values['power'][0]
 
-        maxsDF.loc[len(maxsDF)] = [frequency, maxVal]
-        minsDF.loc[len(minsDF)] = [frequency, minVal]  
+        # maxsDF.loc[len(maxsDF)] = [frequency, maxVal]
+        # minsDF.loc[len(minsDF)] = [frequency, minVal]  
+
+        statisticsDF.loc[len(statisticsDF)] = [frequency, minVal, maxVal, mean, median, mode]
     
+
+
     pdfDF['percent'] = pdfDF['hits'] / pdfDF['total'] * 100 
     printDF = pdfDF[['frequency', 'power','hits']]  
     sortedDF = printDF.sort_values(['frequency','power'])
-    
+
     if 'text' in concierge.pdf_type:
         
         if concierge.output == "csv":
@@ -173,11 +193,11 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
             
         
 
-    return pdfDF, modesDF, maxsDF, minsDF
+    return pdfDF, statisticsDF #modesDF, maxsDF, minsDF
 
 
 
-def plot_PDF(sncl, starttime, endtime, pdfDF, modesDF, maxsDF, minsDF, concierge):
+def plot_PDF(sncl, starttime, endtime, pdfDF, statisticsDF, concierge):
     import matplotlib.pyplot as plt
     
     # Get the logger from the concierge
@@ -296,18 +316,18 @@ def plot_PDF(sncl, starttime, endtime, pdfDF, modesDF, maxsDF, minsDF, concierge
     plt.imshow(plotList, cmap=cmap,  vmin=0, vmax=30, aspect=.4, interpolation='bilinear')
 
     # Add mode
-    xmodes = [freqs.index(freqPos) for freqPos in modesDF['Frequency'].tolist()]
-    ymodes = [powers.index(freqPos) for freqPos in modesDF['Power'].tolist()]
+    xmodes = [freqs.index(freqPos) for freqPos in statisticsDF['Frequency'].tolist()]
+    ymodes = [powers.index(round(freqPos)) for freqPos in statisticsDF['Mode'].tolist()]
     hmode, = plt.plot(xmodes, ymodes, c='k', linewidth=1, label="mode")
     
     # Add min
-    xmins = [freqs.index(freqPos) for freqPos in minsDF['Frequency'].tolist()]
-    ymins = [powers.index(freqPos) for freqPos in minsDF['Power'].tolist()]
+    xmins = [freqs.index(freqPos) for freqPos in statisticsDF['Frequency'].tolist()]
+    ymins = [powers.index(freqPos) for freqPos in statisticsDF['Min'].tolist()]
     hmin, = plt.plot(xmins, ymins, c='r', linewidth=1, label="min")
 
     # Add max
-    xmaxs = [freqs.index(freqPos) for freqPos in maxsDF['Frequency'].tolist()]
-    ymaxs = [powers.index(freqPos) for freqPos in maxsDF['Power'].tolist()]
+    xmaxs = [freqs.index(freqPos) for freqPos in statisticsDF['Frequency'].tolist()]
+    ymaxs = [powers.index(freqPos) for freqPos in statisticsDF['Max'].tolist()]
     hmax, = plt.plot(xmaxs, ymaxs, c='b', linewidth=1, label="max")
     
     # Add noise models
