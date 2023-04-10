@@ -41,7 +41,6 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
         psd.dropna(inplace=True)
 
         # Only include PSDs that are within the time range
-#         psd=psd[(psd['starttime'] >= starttime) & (psd['endtime'] <= endtime)]
         psd=psd[(psd['starttime'] >= starttime) & (psd['starttime'] < endtime)] # Changed to future-proof as PSDs will span the day-boundary
             
 
@@ -108,12 +107,7 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
     # We used (freq, pow) as the index for ease during construction, but can reset them for the rest of the process
     pdfDF.reset_index(inplace=True,drop=True)
     
-    # Set up dataframes for the max, min, modes for plotting later
-    # modesDF = pd.DataFrame(columns=['Frequency','Power'], dtype="object")
-    # mediansDF = pd.DataFrame(columns=['Frequency','Power'], dtype="object")
-    # meansDF = pd.DataFrame(columns=['Frequency','Power'], dtype="object")
-    # minsDF = pd.DataFrame(columns=['Frequency','Power'], dtype="object") 
-    # maxsDF = pd.DataFrame(columns=['Frequency','Power'], dtype="object")
+    # set up dataframe to hold statistics
     statisticsDF = pd.DataFrame(columns=['Frequency','Min','Max','Mean','Median','Mode'], dtype="object")
     
     pdfDF_grouped = pdfDF.groupby('frequency')
@@ -133,22 +127,12 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
         # Sum hits for total column
         pdfDF.loc[pdfDF['frequency'] == frequency, 'total'] = group['hits'].sum()
         
-        # # Find the min, max
-
-        # modesDF.loc[len(modesDF)] = [frequency, mode]
-        # mediansDF.loc[len(mediansDF)] = [frequency, median]
-        # meansDF.loc[len(meansDF)] = [frequency, mean]
-
         indWithHits = pdfDF['hits'][pdfDF['frequency'] == frequency].dropna().index
         values = pdfDF['power'][indWithHits].sort_values().reset_index()
         maxVal = values['power'].iloc[-1]
         minVal = values['power'][0]
 
-        # maxsDF.loc[len(maxsDF)] = [frequency, maxVal]
-        # minsDF.loc[len(minsDF)] = [frequency, minVal]  
-
         statisticsDF.loc[len(statisticsDF)] = [frequency, minVal, maxVal, mean, median, mode]
-    
 
 
     pdfDF['percent'] = pdfDF['hits'] / pdfDF['total'] * 100 
@@ -156,7 +140,6 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
     sortedDF = printDF.sort_values(['frequency','power'])
 
     if 'text' in concierge.pdf_type:
-        
         if concierge.output == "csv":
             logger.debug("Write to csv")
             # Write to file
@@ -193,7 +176,7 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
             
         
 
-    return pdfDF, statisticsDF #modesDF, maxsDF, minsDF
+    return pdfDF, statisticsDF
 
 
 
