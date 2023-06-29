@@ -118,6 +118,16 @@ conda activate ispaq
 conda install -c conda-forge --file ispaq-conda-install.txt
 ```
 
+Alternate instructions for Apple Silicon M1 Mac:
+```
+cd ispaq   
+conda update conda
+conda env remove --name ispaq 
+CONDA_SUBDIR=osx-64 conda create --name ispaq -c conda-forge python=3.8 obspy=1.4.0
+conda activate ispaq
+CONDA_SUBDIR=osx-64 conda install -c conda-forge --file ispaq-conda-install.txt
+```
+
 See what is installed in our (ispaq) environment with:
 
 ```
@@ -126,13 +136,11 @@ conda list
 
 Now install the IRIS R packages for ISPAQ using the -I option:
 ```
-export MACOSX_DEPLOYMENT_TARGET=10.9    # this line for macOS only
 python run_ispaq.py -I    #downloads latest packages from CRAN (https://cran.r-project.org)
 ```
 
 Or alternatively, install the IRIS R packages from local files: 
 ```
-export MACOSX_DEPLOYMENT_TARGET=10.9    # this line for macOS only
 R CMD INSTALL seismicRoll_1.1.4.tar.gz
 R CMD INSTALL IRISSeismic_1.6.6.tar.gz
 R CMD INSTALL IRISMustangMetrics_2.4.5.tar.gz
