@@ -102,7 +102,7 @@ By setting up a [conda virtual environment](https://docs.conda.io/projects/conda
 we assure that our ISPAQ installation is entirely separate from any other installed software.
 
 
-### Creating the ispaq environment for macOS or Linux
+### Creating the ispaq environment
 
 You will go into the ispaq directory that you created with git, update miniconda, then create an 
 environment specially for ispaq. You have to ```activate``` the ISPAQ environment whenever you 
@@ -110,6 +110,7 @@ perform installs, updates, or run ISPAQ.
 
 > _Note:_ If you are upgrading from ISPAQ 2.0 to ISPAQ 3.0+, you should create a new ispaq environment.
 
+Instructions for Linux or macOS (Intel chip)
 ```
 cd ispaq   #top level directory
 conda update conda
@@ -119,7 +120,7 @@ conda activate ispaq
 conda install -c conda-forge --file ispaq-conda-install.txt
 ```
 
-Alternate instructions for macOS with Apple M1 or M2 chip:
+Instructions for macOS (Apple M1 or M2 chip):
 ```
 cd ispaq   
 conda update conda
