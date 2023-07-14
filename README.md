@@ -1,7 +1,7 @@
 # ISPAQ - IRIS System for Portable Assessment of Quality
 
 ISPAQ is a Python client that allows seismic data scientists and instrumentation operators to run data 
-quality metrics on their own workstation, using much of same code as used in IRIS's 
+quality metrics on their own workstation, using much of same code as used in EarthScope's (formerly IRIS) 
 [MUSTANG](http://service.iris.edu/mustang/) data quality web service. It can be installed on Linux 
 and macOS.
 
@@ -27,18 +27,19 @@ MUSTANG.
 
 # Background
 
-[IRIS](http://www.iris.edu/hq/) (Incorporated Research Institutions for Seismology) has developed a 
+[EarthScope] (https://www.earthscope.org) (formerly IRIS) has developed a 
 comprehensive quality assurance system called [MUSTANG](http://service.iris.edu/mustang/).
 
-The MUSTANG system was built to operate at the IRIS DMC and is not generally portable. 
+The MUSTANG system was built to operate at EarthScope and is not generally portable. 
 However, the key MUSTANG component is the Metric Calculators and these are publicly available. 
 While the results of MUSTANG calculations are stored in a database and provided to users via web 
 services, ISPAQ is intended to carry out the process of calculating these metrics locally on the 
 user's workstation. This has the benefit of allowing users to generate just-in-time metrics on data 
 of their choosing, whether stored an FDSN data center or on the user's own data store.
 
-IRIS has over 40 MUSTANG metrics algorithms, most written in R, that are now available in the CRAN 
-(Comprehensive R Archive Network) repository under the name [IRISMustangMetrics](http://cran.r-project.org/). 
+EarthScope has over 40 MUSTANG metrics algorithms, most written in R, that are now available in the 
+[CRAN](http://cran.r-project.org/) (Comprehensive R Archive Network) repository under the name 
+[IRISMustangMetrics](https://cran.r-project.org/web/packages/IRISMustangMetrics/index.html). 
 ISPAQ comes with the latest version of these packages available in CRAN and ISPAQ has an update capability to 
 allow users to seamlessly upgrade these R packages as new releases become available.
 
@@ -47,12 +48,12 @@ ISPAQ contains business logic similar to MUSTANG, such that the computed metrics
 version of MUSTANG that users are free to leverage on their own hardware.
 
 
-#### Questions or comments can be directed to the IRIS DMC Quality Assurance Group at <a href="mailto:dmc_qa@iris.washington.edu">dmc_qa@iris.washington.edu</a>.
+#### Questions or comments can be directed to the EarthScope Quality Assurance Group at <a href="mailto:dmc_qa@iris.washington.edu">dmc_qa@iris.washington.edu</a>.
 
 
 # Installation
 
-ISPAQ is distributed through _GitHub_, via IRIS's public repository (_iris-edu_). You will use a ```git``` 
+ISPAQ is distributed through _GitHub_, via EarthScope's public repository (_EarthScope_). You will use a ```git``` 
 client command to get a copy of the latest stable release. In addition, you will use the ```miniconda``` 
 python package manager to create a customized Python environment designed to run ISPAQ properly. This will 
 include a localized installation of ObsPy and R.
@@ -75,7 +76,7 @@ After you have git installed, you will download the ISPAQ distribution into a di
 from GitHub by opening a text terminal and typing:
 
 ```
-git clone https://github.com/iris-edu/ispaq.git
+git clone https://github.com/EarthScope/ispaq.git
 ```
 
 This will produce a copy of this code distribution in the directory you have chosen. When new ispaq versions 
@@ -97,7 +98,7 @@ Proceed to the [Miniconda](http://conda.pydata.org/miniconda.html) web site to f
 operating system before proceeding with the instructions below. If you can run ```conda``` from the command 
 line, then you know you have it successfully installed.
 
-By setting up a [conda virtual environment](https://conda.io/projects/conda/en/latest/user-guide/concepts.html#conda-environments), 
+By setting up a [conda virtual environment](https://docs.conda.io/projects/conda/en/latest/user-guide/concepts/environments.html), 
 we assure that our ISPAQ installation is entirely separate from any other installed software.
 
 
@@ -118,7 +119,7 @@ conda activate ispaq
 conda install -c conda-forge --file ispaq-conda-install.txt
 ```
 
-Alternate instructions for Apple Silicon M1 Mac:
+Alternate instructions for macOS with Apple M1 or M2 chip:
 ```
 cd ispaq   
 conda update conda
@@ -134,12 +135,12 @@ See what is installed in our (ispaq) environment with:
 conda list
 ```
 
-Now install the IRIS R packages for ISPAQ using the -I option:
+Now install the EarthScope R packages for ISPAQ using the -I option:
 ```
 python run_ispaq.py -I    #downloads latest packages from CRAN (https://cran.r-project.org)
 ```
 
-Or alternatively, install the IRIS R packages from local files: 
+Or alternatively, install the EarthScope R packages from local files: 
 ```
 R CMD INSTALL seismicRoll_1.1.4.tar.gz
 R CMD INSTALL IRISSeismic_1.6.6.tar.gz
@@ -147,7 +148,7 @@ R CMD INSTALL IRISMustangMetrics_2.4.5.tar.gz
 ```
 
 You should run `./run_ispaq.py -U` after you update ISPAQ minor versions to verify that you have both the 
-required minimum versions of anaconda packages and the most recent IRIS R packages.
+required minimum versions of anaconda packages and the most recent EarthScope R packages.
 
 > _Note:_ If you are using macOS and see the error: "'math.h' file not found" when compiling seismicRoll, then it is 
 likely that your command line tools are missing. Try running `xcode-select --install`.
@@ -187,8 +188,8 @@ single arguments:
   -h, --help                       show this help message and exit
   -A, --append                     append to TRANSCRIPT file rather than overwriting
   -V, --version                    show program's version number and exit
-  -I, --install-r                  install CRAN IRIS Mustang packages, and exit
-  -U, --update-r                   check for and install newer CRAN IRIS Mustang packages 
+  -I, --install-r                  install CRAN EarthScope Mustang packages, and exit
+  -U, --update-r                   check for and install newer CRAN EarthScope Mustang packages 
                                    and/or update required conda packages, and exit
   -L, --list-metrics               list names of available metrics and exit
 
@@ -307,12 +308,12 @@ as `Network.Station.Location.Channel[.Quality]`. This format pattern can be modi
 **Data_Access** has four entries describing where to find data, metadata, events, and optionally response files.
 
 * `dataselect_url:` should indicate a *miniSEED* data resource as one of the *FDSN web service aliases* used by ObsPy 
-(e.g. `IRIS`), the IRIS PH5 web service alias 'IRISPH5', an explicit URL pointing to an FDSN web service domain (e.g. `http://service.iris.edu` ), or a file 
+(e.g. `IRIS`), the EarthScope PH5 web service alias 'IRISPH5', an explicit URL pointing to an FDSN web service domain (e.g. `http://service.iris.edu` ), or a file 
 path to a directory containing miniSEED files (_See: "Using Local Data Files", below_).
 
-> _NOTE:_ When data is missing and it is marked as percent_availability=0, the quality code to assign to the target must be inferred. To do this, the current logic is to assign quality "M" for IRIS (fdsnws) derived data, and quality "D" for all other data (IRISPH5, local data, or any other webservice). We are aware that this is too simplistic to truly capture the range of possible quality codes, and have it on our radar to improve with a later release. 
+> _NOTE:_ When data is missing and it is marked as percent_availability=0, the quality code to assign to the target must be inferred. To do this, the current logic is to assign quality "M" for EarthScope (fdsnws) derived data, and quality "D" for all other data (IRISPH5, local data, or any other webservice). We are aware that this is too simplistic to truly capture the range of possible quality codes, and have it on our radar to improve with a later release. 
 
-* `station_url:` should indicate a metadata location as an FDSN web service alias, the IRIS PH5 web service alias 'IRISPH5',
+* `station_url:` should indicate a metadata location as an FDSN web service alias, the EarthScope PH5 web service alias 'IRISPH5',
 an explicit URL, or a path to a file containing metadata in [StationXML](http://www.fdsn.org/xml/station/) format 
 ([schema](http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd)). For web services, this should point to the same place as 
 `dataselect_url` (e.g. `http://service.iris.edu`). For local metadata, StationXML is read at the channel level and any 
@@ -323,7 +324,7 @@ do require metadata information (cross_talk, polarity_check, orientation_check, 
 and will return a log message stating "No available waveforms". 
 
     If you are starting from a *dataless SEED* metadata file, you can create StationXML from this using the 
-[FDSN StationXML-SEED Converter](https://seiscode.iris.washington.edu/projects/stationxml-converter).
+[FDSN StationXML-SEED Converter](https://github.com/iris-edu/stationxml-seed-converter).
 
 * `event_url:` should indicate an *event catalog resource* as an FDSN web service alias (e.g. `USGS`), an 
 explicit URL (e.g. `https://earthquake.usgs.gov`), or a path to a file containing event information in 
@@ -334,8 +335,8 @@ only be used by metrics that require event information in order to be calculated
 orientation_check*).
 
 * `resp_dir:` should be unspecified or absent if local response files are not used. The default behavior
- is to retrieve response information from [IRIS Evalresp](http://service.iris.edu/irisws/evalresp/1/). 
-To use local instrument responses instead of [IRIS Evalresp](http://service.iris.edu/irisws/evalresp/1/),
+ is to retrieve response information from the EarthScope web service [Evalresp](http://service.iris.edu/irisws/evalresp/1/). 
+To use local instrument responses instead of [Evalresp](http://service.iris.edu/irisws/evalresp/1/),
  this parameter should indicate a path to a directory containing response files 
 in [RESP](http://ds.iris.edu/ds/nodes/dmc/data/formats/resp/) format. Local response files are expected to be 
 named `RESP.network.station.location.channel` or `RESP.station.network.location.channel`. Filenames with extension `.txt` 
@@ -503,7 +504,7 @@ or 'Unable to access table psd_corrected' if no the table does not exist, which 
 yet.  
 
 
-For those using [QuARG](https://github.com/iris-edu/quarg), a utility produced by the IRIS DMC for generating quality assurance reports, it is possible 
+For those using [QuARG](https://github.com/EarthScope/quarg), a utility produced by EarthScope for generating quality assurance reports, it is possible 
 to have QuARG read metrics from your local ISPAQ SQLite database rather than from the MUSTANG web services.  Simply point the `metric source` in the QuARG  preference file to the database file produced by ISPAQ and it will use your local metric values.  
 
 
@@ -581,8 +582,8 @@ lead to cases where, for example, a gap is calculated at the start of a day when
 is in the previous day file.
 
 If your miniSEED files are not already split on UTC day boundaries, one tool that can be used for this task is the 
-*dataselect* command-line tool available at [https://github.com/iris-edu/dataselect](https://github.com/iris-edu/dataselect). 
-Follow the [releases](https://github.com/iris-edu/dataselect/releases) link in the README to download the latest 
+*dataselect* command-line tool available at [https://github.com/EarthScope/dataselect](https://github.com/EarthScope/dataselect). 
+Follow the [releases](https://github.com/EarthScope/dataselect/releases) link in the README to download the latest 
 version of the source code. The following example reads the input miniSEED files, splits the records on day
 boundaries, and writes to files named `network.station.location.channel.year.julianday.quality`.
 
@@ -598,7 +599,7 @@ IRISMustangMetrics R packages.
 2021-11-16 12:06:09 - INFO - Running ISPAQ version 3.0.0 on Tue Nov 16 12:06:09 2021
 2021-11-16 12:06:11 - INFO - Checking for recommended conda packages...
 2021-11-16 12:06:11 - INFO - Required conda packages found
-2021-11-16 12:06:11 - INFO - Checking for IRIS R package updates...
+2021-11-16 12:06:11 - INFO - Checking for EarthScope R package updates...
 
               package installed   CRAN  upgrade
 0         seismicRoll     1.1.4  1.1.4    False
@@ -766,7 +767,7 @@ The portion of data available for each day is represented as a percentage. 100% 
 data for the reported start and end time.
 [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/percent_availability/)
 
-> _NOTE:_ percent_availability will only be calculated for target-days that have metadata.  If metadata is available but no data can be retrieved, then it will be marked as percent_availability=0.  In this case, the quality code associated with that target cannot be determined from the data itself and must be inferred. ISPAQ will currently mark data from `IRIS` (fdsnws) as quality "M" and data from all other sources as "D". We are aware that this may not be able to capture the complexity of possible quality codes and will work on improving the logic in a future release.
+> _NOTE:_ percent_availability will only be calculated for target-days that have metadata.  If metadata is available but no data can be retrieved, then it will be marked as percent_availability=0.  In this case, the quality code associated with that target cannot be determined from the data itself and must be inferred. ISPAQ will currently mark data from `EarthScope` (fdsnws) as quality "M" and data from all other sources as "D". We are aware that this may not be able to capture the complexity of possible quality codes and will work on improving the logic in a future release.
 
 * **polarity_check**:
 The signed cross-correlation peak value based on the cross-correlation of two neighboring station channels in 
