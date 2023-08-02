@@ -335,9 +335,10 @@ class UserRequest(object):
                 self.csv_dir = os.path.abspath(os.path.expanduser(self.csv_dir))
 
             if self.psd_dir is None:
-                if 'psd_dir' in preferences:
+                try:
                     self.psd_dir = os.path.abspath(os.path.expanduser(preferences['psd_dir']))
-                else:
+                except:
+                    logger.debug("Unable to resolve psd_dir, using working directory instead")
                     self.psd_dir = os.path.abspath('.')
             else:
                 self.psd_dir = os.path.abspath(os.path.expanduser(self.psd_dir))
