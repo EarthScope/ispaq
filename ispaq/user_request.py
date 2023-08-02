@@ -316,9 +316,10 @@ class UserRequest(object):
                     self.db_name = 'ispaq.db'
             
             if self.pdf_dir is None:
-                if 'pdf_dir' in preferences:
+                try:
                     self.pdf_dir = os.path.abspath(os.path.expanduser(preferences['pdf_dir']))
-                else:
+                except:
+                    logger.debug("Unable to resolve pdf_dir, using working directory instead")
                     self.pdf_dir = os.path.abspath('.')
             else:
                 self.pdf_dir = os.path.abspath(os.path.expanduser(self.pdf_dir))
