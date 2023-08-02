@@ -1,3 +1,7 @@
+3.1.2
+* bug fix for when csv_dir, psd_dir, and/or pdf_dir are blank
+* replaced test_data/RESP.KAPI.II.00.BHZ.txt to a functional resp file
+
 3.1.1
  * updated conda package versions when running './run_ispaq.py -U'
 

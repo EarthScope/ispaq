@@ -316,26 +316,29 @@ class UserRequest(object):
                     self.db_name = 'ispaq.db'
             
             if self.pdf_dir is None:
-                if 'pdf_dir' in preferences:
+                try:
                     self.pdf_dir = os.path.abspath(os.path.expanduser(preferences['pdf_dir']))
-                else:
+                except:
+                    logger.debug("Unable to resolve pdf_dir, using working directory instead")
                     self.pdf_dir = os.path.abspath('.')
             else:
                 self.pdf_dir = os.path.abspath(os.path.expanduser(self.pdf_dir))
 
 
             if self.csv_dir is None:
-                if 'csv_dir' in preferences:
+                try:
                     self.csv_dir = os.path.abspath(os.path.expanduser(preferences['csv_dir']))
-                else:
+                except:
+                    logger.debug("Unable to resolve csv_dir, using working directory instead")
                     self.csv_dir = os.path.abspath('.')
             else:
                 self.csv_dir = os.path.abspath(os.path.expanduser(self.csv_dir))
 
             if self.psd_dir is None:
-                if 'psd_dir' in preferences:
+                try:
                     self.psd_dir = os.path.abspath(os.path.expanduser(preferences['psd_dir']))
-                else:
+                except:
+                    logger.debug("Unable to resolve psd_dir, using working directory instead")
                     self.psd_dir = os.path.abspath('.')
             else:
                 self.psd_dir = os.path.abspath(os.path.expanduser(self.psd_dir))
