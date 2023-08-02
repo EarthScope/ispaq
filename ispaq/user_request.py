@@ -325,9 +325,10 @@ class UserRequest(object):
 
 
             if self.csv_dir is None:
-                if 'csv_dir' in preferences:
+                try:
                     self.csv_dir = os.path.abspath(os.path.expanduser(preferences['csv_dir']))
-                else:
+                except:
+                    logger.debug("Unable to resolve csv_dir, using working directory instead")
                     self.csv_dir = os.path.abspath('.')
             else:
                 self.csv_dir = os.path.abspath(os.path.expanduser(self.csv_dir))
