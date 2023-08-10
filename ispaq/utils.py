@@ -114,9 +114,10 @@ def initialize_orcheck_database_table(dbname, concierge):
         concierge.logger.error(e)
     conn.close()
    
-def initialize_psd_database_table(dbname, concierge):
+def initialize_psd_database_table(dbname, concierge, metric):
+
     conn = sqlite3.connect(dbname)
-    create_table_sql = """ CREATE TABLE IF NOT EXISTS psd_corrected (
+    create_table_sql = f""" CREATE TABLE IF NOT EXISTS {metric} (
                             target text  NOT NULL,
                             frequency float NOT NULL,
                             power float NOT NULL,
@@ -133,9 +134,9 @@ def initialize_psd_database_table(dbname, concierge):
         concierge.logger.error(e)
     conn.close()
     
-def initialize_pdf_database_table(dbname, concierge):
+def initialize_pdf_database_table(dbname, concierge, correction_type):
     conn = sqlite3.connect(dbname)
-    create_table_sql = """ CREATE TABLE IF NOT EXISTS pdf (
+    create_table_sql = f""" CREATE TABLE IF NOT EXISTS pdf_{correction_type} (
                             target text  NOT NULL,
                             frequency float NOT NULL,
                             power float NOT NULL,
@@ -233,14 +234,14 @@ def insert_orcheck_database_table(dbname, row):
     conn.commit()
     conn.close()
        
-def insert_psd_database_table(dbname, row):
+def insert_psd_database_table(dbname, row, metric):
     conn = sqlite3.connect(dbname)
-    insert_sql = f'''INSERT INTO psd_corrected (target, frequency, power, start, end)
+    insert_sql = f'''INSERT INTO {metric} (target, frequency, power, start, end)
   VALUES (?, ?, ?, ?, ?) 
   ON CONFLICT(target, frequency, start, end) 
   DO UPDATE SET power=excluded.power, lddate=excluded.lddate;
   '''
-    newRow = (row['target'], row['frequency'], row['power'], row['starttime'],  row['endtime']);
+    newRow = (row['target'], row['frequency'], row['power'], row['starttime'],  row['endtime'])
 
     cur = conn.cursor()
     
@@ -248,14 +249,14 @@ def insert_psd_database_table(dbname, row):
         cur.execute(insert_sql, newRow)
         
     except:
-        insert_sql = "INSERT or REPLACE INTO psd_corrected (target, frequency, power, start, end) VALUES (?, ?, ?, ?, ?)"
+        insert_sql = f"INSERT or REPLACE INTO {metric} (target, frequency, power, start, end) VALUES (?, ?, ?, ?, ?)"
         cur.execute(insert_sql, newRow)
     conn.commit()
     conn.close()
  
-def insert_pdf_database_table(dbname, row, target, starttime, endtime):
+def insert_pdf_database_table(dbname, row, target, starttime, endtime, correction_type):
     conn = sqlite3.connect(dbname)
-    insert_sql = f'''INSERT INTO pdf (target, frequency, power, hits, start, end)
+    insert_sql = f'''INSERT INTO pdf_{correction_type} (target, frequency, power, hits, start, end)
   VALUES (?, ?, ?, ?, ?,?) 
   ON CONFLICT(target, frequency, power, start, end) 
   DO UPDATE SET hits=excluded.hits, lddate=excluded.lddate;
@@ -266,7 +267,7 @@ def insert_pdf_database_table(dbname, row, target, starttime, endtime):
     try:
         cur.execute(insert_sql, newRow)
     except:
-        insert_sql = "INSERT or REPLACE INTO pdf (target, frequency, power, hits, start, end) VALUES (?, ?, ?, ?, ?, ?)"
+        insert_sql = f"INSERT or REPLACE INTO pdf_{correction_type} (target, frequency, power, hits, start, end) VALUES (?, ?, ?, ?, ?, ?)"
         cur.execute(insert_sql, newRow)
     conn.commit()
     conn.close()
@@ -381,7 +382,7 @@ def format_simple_df(df, sigfigs=6):
 
     return df   
   
-def write_numeric_df(df, filepath, concierge, sigfigs=6):
+def write_numeric_df(df, filepath, concierge, metric, sigfigs=6):
     """
     Write a pretty dataframe with appropriate significant figures to a .csv file.
     :param df: PSD dataframe.
@@ -400,12 +401,12 @@ def write_numeric_df(df, filepath, concierge, sigfigs=6):
         pretty_df.to_csv(filepath, index=False)
     elif output == 'db':
 
-        initialize_psd_database_table(dbname, concierge)
+        initialize_psd_database_table(dbname, concierge, metric)
         for ind,row in pretty_df.iterrows():
-            insert_psd_database_table(dbname, row)
+            insert_psd_database_table(dbname, row, metric)
     # No return value
 
-def write_pdf_df(df, filepath, iappend, sncl, starttime, endtime, concierge, sigfigs=6):
+def write_pdf_df(df, filepath, iappend, sncl, starttime, endtime, concierge, correction_type, sigfigs=6):
     """
     Write a pretty dataframe with appropriate significant figures to a .csv file.
     :param df: PSD dataframe.
@@ -428,9 +429,9 @@ def write_pdf_df(df, filepath, iappend, sncl, starttime, endtime, concierge, sig
         else:
             pretty_df.to_csv(filepath, index=False)
     elif output == 'db':
-        initialize_pdf_database_table(dbname, concierge)
+        initialize_pdf_database_table(dbname, concierge, correction_type)
         for ind,row in pretty_df.iterrows():
-            insert_pdf_database_table(dbname, row, sncl, str(starttime), str(endtime))
+            insert_pdf_database_table(dbname, row, sncl, str(starttime), str(endtime),correction_type)
     # No return value
 
 def format_numeric_df(df, sigfigs=6):

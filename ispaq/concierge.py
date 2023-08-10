@@ -343,7 +343,7 @@ class Concierge(object):
         filename_metrics = ''
         if len(self.user_request.requested_metric_set.split(',')) > 1:
             for metric in sorted(self.user_request.requested_metric_set.split(',')):
-                if metric != 'pdf' and metric != 'psd_corrected':
+                if metric != 'pdf' and metric != 'psd_corrected' and metric != 'psd_uncorrected':
                     filename_metrics = filename_metrics + metric + '-'
             filename_metrics =  filename_metrics[:-1]
         else:

@@ -15,7 +15,7 @@ def find_nearest(array, value):
     idx = (np.abs(array - value)).argmin()
     return idx
 
-def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
+def calculate_PDF(fileDF, sncl, starttime, endtime, concierge, pdf_type):
     # Get the logger from the concierge
     logger = concierge.logger
     
@@ -53,7 +53,7 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
         sqlendtime = str(endtime).split('.')[0]
         con = sqlite3.connect(concierge.db_name)
         
-        select_sql = f"SELECT * from psd_corrected WHERE target = '{sncl}'"
+        select_sql = f"SELECT * from psd_{pdf_type} WHERE target = '{sncl}'"
         if not starttime == "":
             select_sql = f"{select_sql} AND start >= '{sqlstarttime}'"
         if not endtime == "":
@@ -147,9 +147,9 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
                 os.makedirs(subFolder)
     
             if str(start) != str(end):      
-                filename = sncl + '.' + str(start) + '_' + str(end) + '_PDF.csv'
+                filename = sncl + '.' + str(start) + '_' + str(end) + f'_PDF_{pdf_type}.csv'
             else:
-                filename = sncl + '.' + str(start) + '_PDF.csv'
+                filename = sncl + '.' + str(start) + f'_PDF_{pdf_type}.csv'
             filepath = subFolder + filename
     
             
@@ -169,7 +169,7 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
         
         elif concierge.output == "db":
             logger.debug('Writing PDF values to %s' % concierge.db_name)
-            utils.write_pdf_df(sortedDF, "unused", "unused", sncl, starttime, endtime, concierge, sigfigs=concierge.sigfigs)
+            utils.write_pdf_df(sortedDF, "unused", "unused", sncl, starttime, endtime, concierge, pdf_type, sigfigs=concierge.sigfigs)
             
         
 
@@ -177,7 +177,7 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
 
 
 
-def plot_PDF(sncl, starttime, endtime, pdfDF, modesDF, maxsDF, minsDF, concierge):
+def plot_PDF(sncl, starttime, endtime, pdfDF, modesDF, maxsDF, minsDF, concierge, correction_type):
     import matplotlib.pyplot as plt
     
     # Get the logger from the concierge
@@ -353,9 +353,9 @@ def plot_PDF(sncl, starttime, endtime, pdfDF, modesDF, maxsDF, minsDF, concierge
     end = endtime.date
     
     if str(start) != str(end):
-        filename = sncl + '.' + str(start) + '_' + str(end) + '_PDF.png'
+        filename = sncl + '.' + str(start) + '_' + str(end) + f'_PDF_{correction_type}.png'
     else:
-        filename = sncl + '.' + str(start) + '_PDF.png'
+        filename = sncl + '.' + str(start) + f'_PDF_{correction_type}.png'
     filepath = subFolder + filename
     
     logger.info('Saving PDF plot to %s' % (filepath))
