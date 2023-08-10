@@ -231,11 +231,11 @@ def PSD_metrics(concierge):
                 for (index, sncl) in enumerate(snclList):
                     logger.info('%03d Calculating PDF values for %s' % (index, sncl))
                         
-                    [pdfDF,modesDF, maxDF, minDF] = PDF_aggregator.calculate_PDF(fileDF, sncl, starttime, endtime, concierge)
+                    [pdfDF,statisticsDF] = PDF_aggregator.calculate_PDF(fileDF, sncl, starttime, endtime, concierge)
 
         
                     if ('plot' in concierge.pdf_type) and not pdfDF.empty:
-                        PDF_aggregator.plot_PDF(sncl, starttime, endtime, pdfDF, modesDF, maxDF, minDF, concierge)
+                        PDF_aggregator.plot_PDF(sncl, starttime, endtime, pdfDF, statisticsDF, concierge)
                         
                 
 
@@ -267,12 +267,12 @@ def PSD_metrics(concierge):
                 for (index, sncl) in enumerate(snclList):
                     logger.info('%03d Calculating PDF values for %s' % (index, sncl))
                     
-                    [pdfDF,modesDF, maxDF, minDF] = PDF_aggregator.calculate_PDF("", sncl, starttime, endtime, concierge)
+                    [pdfDF, statisticsDF] = PDF_aggregator.calculate_PDF("", sncl, starttime, endtime, concierge)
 
                     
                     
                     if ('plot' in concierge.pdf_type) and not pdfDF.empty:
-                        PDF_aggregator.plot_PDF(sncl, starttime, endtime, pdfDF, modesDF, maxDF, minDF, concierge)
+                        PDF_aggregator.plot_PDF(sncl, starttime, endtime, pdfDF, statisticsDF, concierge)
                         
 
             else:
