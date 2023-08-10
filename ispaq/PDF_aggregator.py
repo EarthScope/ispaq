@@ -15,7 +15,7 @@ def find_nearest(array, value):
     idx = (np.abs(array - value)).argmin()
     return idx
 
-def calculate_PDF(fileDF, sncl, starttime, endtime, concierge, pdf_type):
+def calculate_PDF(fileDF, sncl, starttime, endtime, concierge, correction_type):
     # Get the logger from the concierge
     logger = concierge.logger
     
@@ -53,7 +53,7 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge, pdf_type):
         sqlendtime = str(endtime).split('.')[0]
         con = sqlite3.connect(concierge.db_name)
         
-        select_sql = f"SELECT * from psd_{pdf_type} WHERE target = '{sncl}'"
+        select_sql = f"SELECT * from psd_{correction_type} WHERE target = '{sncl}'"
         if not starttime == "":
             select_sql = f"{select_sql} AND start >= '{sqlstarttime}'"
         if not endtime == "":
@@ -147,9 +147,9 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge, pdf_type):
                 os.makedirs(subFolder)
     
             if str(start) != str(end):      
-                filename = sncl + '.' + str(start) + '_' + str(end) + f'_PDF_{pdf_type}.csv'
+                filename = sncl + '.' + str(start) + '_' + str(end) + f'_PDF_{correction_type}.csv'
             else:
-                filename = sncl + '.' + str(start) + f'_PDF_{pdf_type}.csv'
+                filename = sncl + '.' + str(start) + f'_PDF_{correction_type}.csv'
             filepath = subFolder + filename
     
             
@@ -165,11 +165,11 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge, pdf_type):
             
             with open(filepath, mode='w') as f:
                 f.write(hdr)
-            utils.write_pdf_df(sortedDF, filepath, 'a', sncl, starttime, endtime, concierge, sigfigs=concierge.sigfigs)
+            utils.write_pdf_df(sortedDF, filepath, 'a', sncl, starttime, endtime, concierge, correction_type, sigfigs=concierge.sigfigs)
         
         elif concierge.output == "db":
             logger.debug('Writing PDF values to %s' % concierge.db_name)
-            utils.write_pdf_df(sortedDF, "unused", "unused", sncl, starttime, endtime, concierge, pdf_type, sigfigs=concierge.sigfigs)
+            utils.write_pdf_df(sortedDF, "unused", "unused", sncl, starttime, endtime, concierge, correction_type, sigfigs=concierge.sigfigs)
             
         
 

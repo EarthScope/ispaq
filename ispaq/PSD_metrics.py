@@ -113,6 +113,7 @@ def PSD_metrics(concierge):
 
                     if "psd_uncorrected" in concierge.metric_names:
                         # get uncorrected PSD
+                        logger.debug("Calculating uncorrected PSDs")
                         try:
                             (df, PSDDF, PDF) = irismustangmetrics.apply_PSD_metric(concierge, r_stream, evalresp=evalresp, noCorrection=True)
                         except Exception as e:
@@ -155,6 +156,7 @@ def PSD_metrics(concierge):
                     
                     if "psd_corrected" in concierge.metric_names :
                         # get corrected PSD
+                        logger.debug("Calculating corrected PSDs")
                         try:
                             (df, PSDDF, PDF) = irismustangmetrics.apply_PSD_metric(concierge, r_stream, evalresp=evalresp, noCorrection=False)
                         except Exception as e:
@@ -216,66 +218,68 @@ def PSD_metrics(concierge):
 #         fileDF = pd.DataFrame(columns=["SNCL","FILE"], dtype="object")
         daylist = pd.date_range(start=str(starttime.date), end=str(endtime.date)).tolist()
         
-        if "psd_uncorrected" in concierge.metric_names:
-            # Could include both corrected and uncorrected
-            psd_types = [metric for metric in concierge.metric_names if metric.startswith('psd_')]
+        if (not "psd_uncorrected" in concierge.metric_names) and (not "psd_corrected" in concierge.metric_names):
+            # if no psds are listed, then just try for both types
+            psd_types = ['psd_corrected', 'psd_uncorrected']
         else:
-            # if it is corrected only, or no psd metric is specified, default to corrected
-            psd_types = ['psd_corrected']
-
+            # Could include both corrected and uncorrected, or either/or
+            psd_types = [metric for metric in concierge.metric_names if metric.startswith('psd_')]
 
         # Get a list of the files that exist in the directory within the sncl and timespan, or get psds from the database
         for sncl_pattern in concierge.sncl_patterns:
             logger.debug(sncl_pattern)
-            fullFileList = list(); fullSnclList = list()
-            fileDF = pd.DataFrame(columns=["SNCL","FILE"], dtype="object")
-
-
+            
             for psd_metric in psd_types:
+                fullFileList = list(); fullSnclList = list()
+                fileDF = pd.DataFrame(columns=["SNCL","FILE"], dtype="object")
+
                 if psd_metric == "psd_uncorrected":
-                    fileend = "_PSDUncorrected"
+                    fileend = "_PSDUncorrected.csv"
                     correction_type = 'uncorrected'
                 else:
-                    fileend = "_PSDCorrected"
+                    fileend = "_PSDCorrected.csv"
                     correction_type = 'corrected'
+
                 # if using files on the filesystem
                 if concierge.output == 'csv':
-                    logger.info("Looking for PSD values in CSV files")
+                    # clear out these variables, in case we are looping over both corrected and uncorrected psds
+
+                    logger.info(f"Looking for {correction_type} PSD values in CSV files")
                 
                     # We need to ignore the quality code, if included -- OUTDATED, we DO use quality code now
     #                 if len(sncl_pattern.split('.')) == 5:
     #                     sncl_pattern = sncl_pattern.rsplit('.', 1)[0]
                     
                     ## If no quality code is specified, then wildcard it
-                    if len(sncl_pattern.split('.')) == 4:
-                        sncl_pattern = '%s.?,%s' % (sncl_pattern, sncl_pattern)
+                    snclq_pattern = sncl_pattern
+                    if len(snclq_pattern.split('.')) == 4:
+                        snclq_pattern = '%s.?,%s' % (snclq_pattern, snclq_pattern)
                         logger.info("No quality code specified, wildcarding it")    
                         
-                    
 
                     for day in daylist:
                         day = day.strftime("%Y-%m-%d")
                         files = []
-                        for sncl_pat in sncl_pattern.split(','):
+                        for sncl_pat in snclq_pattern.split(','):
                             fnames = sncl_pat + "_" + str(day) + fileend
                             for root, dirnames, filenames in os.walk(concierge.psd_dir):
                                 for filename in fnmatch.filter(filenames, fnames):
                                     files.append(os.path.join(root, filename))
-                        
+
                         #files = glob.glob(filename,recursive=True)
+    
                         if files:
                             for file in files:
                                 fullFileList.append(file)
                                 fullSnclList.append(file.split('/')[-1].split('_')[0])
                         else:
-                            logger.warning('No PSD files found for %s %s' % (sncl_pattern,day))
+                            logger.warning('No PSD files found for %s %s' % (snclq_pattern,day))
                                 
                             
                     
                     fileDF['FILE'] = fullFileList
                     fileDF['SNCL'] = fullSnclList            
                     snclList = fileDF['SNCL'].unique()
-                    
                     
                     # Extract just the dates
                     start = starttime.date
@@ -315,7 +319,7 @@ def PSD_metrics(concierge):
                     
                     # Retrieve all targets that match
                     try:
-                        snclList = utils.retrieve_psd_unique_targets(concierge.db_name, db_sncl_pattern, starttime, endtime, logger) 
+                        snclList = utils.retrieve_psd_unique_targets(concierge.db_name, db_sncl_pattern, starttime, endtime, logger, correction_type) 
                     except Exception as e:
                         if "no such table" in str(e):
                             logger.warning("Unable to access table %s in %s" % (str(e).split(":")[1], concierge.db_name))

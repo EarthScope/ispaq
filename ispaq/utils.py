@@ -274,10 +274,10 @@ def insert_pdf_database_table(dbname, row, target, starttime, endtime, correctio
      
 
  
-def retrieve_psd_unique_targets(dbname, sncl_pattern, starttime, endtime, logger):
+def retrieve_psd_unique_targets(dbname, sncl_pattern, starttime, endtime, logger, correction_type):
 
     conn = sqlite3.connect(dbname)
-    select_sql = "SELECT DISTINCT target from psd_corrected WHERE target like '" + sncl_pattern +"'"
+    select_sql = f"SELECT DISTINCT target from psd_{correction_type} WHERE target like '" + sncl_pattern +"'"
     if not starttime == "":
         select_sql = select_sql + " AND start >= '" + str(starttime).split('.')[0] + "'"
     if not endtime == "":
