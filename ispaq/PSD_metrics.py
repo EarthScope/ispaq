@@ -110,16 +110,58 @@ def PSD_metrics(concierge):
                     if (concierge.dataselect_type == "ph5ws"):
                         sampling_rate = utils.get_slot(r_stream, 'sampling_rate')
                         evalresp = utils.getSpectra(r_stream, sampling_rate, "PSD", concierge)
-                    # get corrected PSD
-                    try:
-                        (df, PSDcorrected, PDF) = irismustangmetrics.apply_PSD_metric(concierge, r_stream, evalresp=evalresp)
-                    except Exception as e:
-                        raise
 
-                    if not df.empty:
-                        dataframes.append(df)
+                    if "psd_uncorrected" in concierge.metric_names:
+                        # get uncorrected PSD
+                        try:
+                            (df, PSDDF, PDF) = irismustangmetrics.apply_PSD_metric(concierge, r_stream, evalresp=evalresp, noCorrection=True)
+                        except Exception as e:
+                            raise
 
+                        if not df.empty:
+                            dataframes.append(df)
+                        # Write out the corrected PSDs
+                        # Do it this way to have each individual day file properly named with starttime.date
+                        subFolder = '%s/%s/%s/' % (concierge.psd_dir, av.network, av.station)
+                        if not q == "":
+                            filename = '%s.%s_%s_PSDUnCorrected.csv' % (av.snclId, q, starttime.date)
+                        else:
+                            filename = '%s_%s_PSDUnCorrected.csv' % (av.snclId, starttime.date)
+                        filepath = subFolder + filename
+                        
+                        if concierge.output == 'csv':
+                            if not os.path.isdir(subFolder):
+                                logger.info("psd_dir %s does not exist, creating directory" % subFolder)
+                                os.makedirs(subFolder)
+                            logger.info('Writing uncorrected PSD values to %s' % filepath)
+                        
+                        elif concierge.output == 'db':
+                            logger.info('Writing uncorrected PSD values to %s' % concierge.db_name)
+
+                        try:
+                            # Add target
+                            if not q == "":
+                                PSDDF['target'] = '%s.%s' % (av.snclId, q)
+                            else: 
+                                PSDDF['target'] = av.snclId
+                                
+                            PSDDF.rename(columns={'freq':'frequency'}, inplace=True)
+                            PSDDF = PSDDF[['target','starttime','endtime','frequency','power']]
+                            utils.write_numeric_df(PSDDF, filepath, concierge, sigfigs=concierge.sigfigs)
+                        except Exception as e:
+                            logger.debug(e)
+                            logger.error('Unable to write %s' % (filepath))
+                            raise
+                    
                     if "psd_corrected" in concierge.metric_names :
+                        # get corrected PSD
+                        try:
+                            (df, PSDDF, PDF) = irismustangmetrics.apply_PSD_metric(concierge, r_stream, evalresp=evalresp, noCorrection=False)
+                        except Exception as e:
+                            raise
+
+                        if not df.empty:
+                            dataframes.append(df)
                         # Write out the corrected PSDs
                         # Do it this way to have each individual day file properly named with starttime.date
                         subFolder = '%s/%s/%s/' % (concierge.psd_dir, av.network, av.station)
@@ -141,13 +183,13 @@ def PSD_metrics(concierge):
                         try:
                             # Add target
                             if not q == "":
-                                PSDcorrected['target'] = '%s.%s' % (av.snclId, q)
+                                PSDDF['target'] = '%s.%s' % (av.snclId, q)
                             else: 
-                                PSDcorrected['target'] = av.snclId
+                                PSDDF['target'] = av.snclId
                                 
-                            PSDcorrected.rename(columns={'freq':'frequency'}, inplace=True)
-                            PSDcorrected = PSDcorrected[['target','starttime','endtime','frequency','power']]
-                            utils.write_numeric_df(PSDcorrected, filepath, concierge, sigfigs=concierge.sigfigs)
+                            PSDDF.rename(columns={'freq':'frequency'}, inplace=True)
+                            PSDDF = PSDDF[['target','starttime','endtime','frequency','power']]
+                            utils.write_numeric_df(PSDDF, filepath, concierge, sigfigs=concierge.sigfigs)
                         except Exception as e:
                             logger.debug(e)
                             logger.error('Unable to write %s' % (filepath))
@@ -198,7 +240,7 @@ def PSD_metrics(concierge):
                     day = day.strftime("%Y-%m-%d")
                     files = []
                     for sncl_pat in sncl_pattern.split(','):
-                        fnames = sncl_pat + "_" + str(day) + "_PSDCorrected.csv"
+                        fnames = sncl_pat + "_" + str(day) + "_PSD*Corrected.csv"
                         for root, dirnames, filenames in os.walk(concierge.psd_dir):
                             for filename in fnmatch.filter(filenames, fnames):
                                 files.append(os.path.join(root, filename))

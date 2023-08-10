@@ -374,7 +374,7 @@ class Concierge(object):
         if user_request.resp_dir is None:                  # use irisws/evalresp
             self.resp_dir = None                           # use irisws/evalresp
         elif user_request.resp_dir in URL_MAPPINGS.keys(): # use irisws/evalresp
-            self.resp_dir = None 
+            self.resp_dir = None
         else:
             if os.path.exists(os.path.abspath(user_request.resp_dir)):   
                 self.resp_dir = os.path.abspath(user_request.resp_dir)  # directory where RESP files are located 
