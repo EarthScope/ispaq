@@ -1,53 +1,2593 @@
-Error 400: Bad Request
-
-The Resp webservice was unable to understand your request. exception parsing dates
-
-Usage details are available from http://service.iris.edu/irisws/resp/1
-
-Request:
-http://service.iris.edu/irisws/resp/1/query?net=II&sta=KAPI&loc=00&cha=BHZ&starttime=1900-01-01&endtime=2500-01-01
-
-Request Submitted:
-2019/01/23 22:30:27.210 GMT
-
-Service Version:
-ws-response web service - ICAB:1.7.11
-li3:84
-
-192.168.168.1
-java.lang.IllegalArgumentException: exception parsing dates
-	at edu.iris.dmc.wsresp.RequestParser.<init>(RequestParser.java:165)
-	at edu.iris.dmc.wsresp.ResponseServlet._serviceRequest(ResponseServlet.java:156)
-	at edu.iris.dmc.wsresp.ResponseServlet.serviceRequest(ResponseServlet.java:113)
-	at edu.iris.dmc.wsresp.ResponseServlet.doGet(ResponseServlet.java:80)
-	at javax.servlet.http.HttpServlet.service(HttpServlet.java:622)
-	at javax.servlet.http.HttpServlet.service(HttpServlet.java:729)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:292)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:207)
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:240)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:207)
-	at org.apache.catalina.filters.CorsFilter.handleNonCORS(CorsFilter.java:458)
-	at org.apache.catalina.filters.CorsFilter.doFilter(CorsFilter.java:177)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:240)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:207)
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:212)
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:94)
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:141)
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:79)
-	at org.apache.catalina.valves.AbstractAccessLogValve.invoke(AbstractAccessLogValve.java:620)
-	at org.apache.catalina.valves.RemoteIpValve.invoke(RemoteIpValve.java:676)
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:88)
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:502)
-	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1132)
-	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:684)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1539)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.run(NioEndpoint.java:1495)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.IllegalArgumentException: Bad date-time string: 1900-01-01 must match YYYY.DDDThh:mm:ss[.s[s[s]]] or YYYY.MM.DDThh:mm:ss[.s[s[s]]]
-	at edu.iris.dmc.utils.datetime.WsTimeParser.parseDateTimeString(WsTimeParser.java:116)
-	at edu.iris.dmc.wsresp.RequestParser.<init>(RequestParser.java:147)
-	... 30 more
+#
+###################################################################################
+#
+B050F03     Station:     KAPI
+B050F16     Network:     II
+B052F03     Location:    00
+B052F04     Channel:     BHZ
+B052F22     Start date:  1999,037,00:00:00
+B052F23     End date:    2002,016,23:59:59
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/06/1999 to 01/16/2002      |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 1
+B053F05     Response in units lookup:              m/s - Velocity in Meters Per Second
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +1.85180E+03
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      2
+B053F14     Number of poles:                       6
+#              Complex zeroes:
+#              i  real          imag          real_error    imag_error
+B053F10-13     0  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F10-13     1  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+#              Complex poles:
+#              i  real          imag          real_error    imag_error
+B053F15-18     0  -7.63942E-04  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     1  -1.18502E-02  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     2  -2.94000E+00  +2.99940E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     3  -2.94000E+00  -2.99940E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     4  -5.39926E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     5  -1.89158E+01  +0.00000E+00  +0.00000E+00  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/06/1999 to 01/16/2002      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 1
+B058F04     Sensitivity:                           +2.12232E+03
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/06/1999 to 01/16/2002      |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 2
+B053F05     Response in units lookup:              V - Volts
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +1.00000E+00
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      0
+B053F14     Number of poles:                       0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/06/1999 to 01/16/2002      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 2
+B058F04     Sensitivity:                           +5.05816E-01
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/06/1999 to 01/16/2002      |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 3
+B054F05     Response in units lookup:              V - Volts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  0
+B054F10     Number of denominators:                0
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/06/1999 to 01/16/2002      |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  3
+B057F04     Input sample rate (HZ):                 1.0000E+02
+B057F05     Decimation factor:                      00001
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +0.0000E+00
+B057F08     Correction applied (seconds):          +0.0000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/06/1999 to 01/16/2002      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 3
+B058F04     Sensitivity:                           +1.48000E+06
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/06/1999 to 01/16/2002      |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 4
+B054F05     Response in units lookup:              counts - Digital Counts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  99
+B054F10     Number of denominators:                0
+#              Numerator coefficients:
+#              i  coefficient   error
+B054F08-09     0  -3.37741E-07  +0.00000E+00
+B054F08-09     1  -8.62909E-07  +0.00000E+00
+B054F08-09     2  -1.54942E-06  +0.00000E+00
+B054F08-09     3  -2.04037E-06  +0.00000E+00
+B054F08-09     4  -1.60361E-06  +0.00000E+00
+B054F08-09     5  +8.76701E-07  +0.00000E+00
+B054F08-09     6  +6.73039E-06  +0.00000E+00
+B054F08-09     7  +1.70900E-05  +0.00000E+00
+B054F08-09     8  +3.22292E-05  +0.00000E+00
+B054F08-09     9  +5.07341E-05  +0.00000E+00
+B054F08-09    10  +6.87046E-05  +0.00000E+00
+B054F08-09    11  +7.92878E-05  +0.00000E+00
+B054F08-09    12  +7.29083E-05  +0.00000E+00
+B054F08-09    13  +3.85256E-05  +0.00000E+00
+B054F08-09    14  -3.38990E-05  +0.00000E+00
+B054F08-09    15  -1.49824E-04  +0.00000E+00
+B054F08-09    16  -3.05915E-04  +0.00000E+00
+B054F08-09    17  -4.86084E-04  +0.00000E+00
+B054F08-09    18  -6.58988E-04  +0.00000E+00
+B054F08-09    19  -7.78327E-04  +0.00000E+00
+B054F08-09    20  -7.87102E-04  +0.00000E+00
+B054F08-09    21  -6.26427E-04  +0.00000E+00
+B054F08-09    22  -2.48597E-04  +0.00000E+00
+B054F08-09    23  +3.67088E-04  +0.00000E+00
+B054F08-09    24  +1.19836E-03  +0.00000E+00
+B054F08-09    25  +2.16751E-03  +0.00000E+00
+B054F08-09    26  +3.13647E-03  +0.00000E+00
+B054F08-09    27  +3.91289E-03  +0.00000E+00
+B054F08-09    28  +4.26971E-03  +0.00000E+00
+B054F08-09    29  +3.97829E-03  +0.00000E+00
+B054F08-09    30  +2.85239E-03  +0.00000E+00
+B054F08-09    31  +7.97673E-04  +0.00000E+00
+B054F08-09    32  -2.14136E-03  +0.00000E+00
+B054F08-09    33  -5.74629E-03  +0.00000E+00
+B054F08-09    34  -9.61061E-03  +0.00000E+00
+B054F08-09    35  -1.31538E-02  +0.00000E+00
+B054F08-09    36  -1.56670E-02  +0.00000E+00
+B054F08-09    37  -1.63887E-02  +0.00000E+00
+B054F08-09    38  -1.46032E-02  +0.00000E+00
+B054F08-09    39  -9.75057E-03  +0.00000E+00
+B054F08-09    40  -1.53046E-03  +0.00000E+00
+B054F08-09    41  +1.00149E-02  +0.00000E+00
+B054F08-09    42  +2.44562E-02  +0.00000E+00
+B054F08-09    43  +4.09804E-02  +0.00000E+00
+B054F08-09    44  +5.84477E-02  +0.00000E+00
+B054F08-09    45  +7.54974E-02  +0.00000E+00
+B054F08-09    46  +9.06920E-02  +0.00000E+00
+B054F08-09    47  +1.02680E-01  +0.00000E+00
+B054F08-09    48  +1.10357E-01  +0.00000E+00
+B054F08-09    49  +1.13000E-01  +0.00000E+00
+B054F08-09    50  +1.10357E-01  +0.00000E+00
+B054F08-09    51  +1.02680E-01  +0.00000E+00
+B054F08-09    52  +9.06920E-02  +0.00000E+00
+B054F08-09    53  +7.54974E-02  +0.00000E+00
+B054F08-09    54  +5.84477E-02  +0.00000E+00
+B054F08-09    55  +4.09804E-02  +0.00000E+00
+B054F08-09    56  +2.44562E-02  +0.00000E+00
+B054F08-09    57  +1.00149E-02  +0.00000E+00
+B054F08-09    58  -1.53046E-03  +0.00000E+00
+B054F08-09    59  -9.75057E-03  +0.00000E+00
+B054F08-09    60  -1.46032E-02  +0.00000E+00
+B054F08-09    61  -1.63887E-02  +0.00000E+00
+B054F08-09    62  -1.56670E-02  +0.00000E+00
+B054F08-09    63  -1.31538E-02  +0.00000E+00
+B054F08-09    64  -9.61061E-03  +0.00000E+00
+B054F08-09    65  -5.74629E-03  +0.00000E+00
+B054F08-09    66  -2.14136E-03  +0.00000E+00
+B054F08-09    67  +7.97673E-04  +0.00000E+00
+B054F08-09    68  +2.85239E-03  +0.00000E+00
+B054F08-09    69  +3.97829E-03  +0.00000E+00
+B054F08-09    70  +4.26971E-03  +0.00000E+00
+B054F08-09    71  +3.91289E-03  +0.00000E+00
+B054F08-09    72  +3.13647E-03  +0.00000E+00
+B054F08-09    73  +2.16751E-03  +0.00000E+00
+B054F08-09    74  +1.19836E-03  +0.00000E+00
+B054F08-09    75  +3.67088E-04  +0.00000E+00
+B054F08-09    76  -2.48597E-04  +0.00000E+00
+B054F08-09    77  -6.26427E-04  +0.00000E+00
+B054F08-09    78  -7.87102E-04  +0.00000E+00
+B054F08-09    79  -7.78327E-04  +0.00000E+00
+B054F08-09    80  -6.58988E-04  +0.00000E+00
+B054F08-09    81  -4.86084E-04  +0.00000E+00
+B054F08-09    82  -3.05915E-04  +0.00000E+00
+B054F08-09    83  -1.49824E-04  +0.00000E+00
+B054F08-09    84  -3.38990E-05  +0.00000E+00
+B054F08-09    85  +3.85256E-05  +0.00000E+00
+B054F08-09    86  +7.29083E-05  +0.00000E+00
+B054F08-09    87  +7.92878E-05  +0.00000E+00
+B054F08-09    88  +6.87046E-05  +0.00000E+00
+B054F08-09    89  +5.07341E-05  +0.00000E+00
+B054F08-09    90  +3.22292E-05  +0.00000E+00
+B054F08-09    91  +1.70900E-05  +0.00000E+00
+B054F08-09    92  +6.73039E-06  +0.00000E+00
+B054F08-09    93  +8.76701E-07  +0.00000E+00
+B054F08-09    94  -1.60361E-06  +0.00000E+00
+B054F08-09    95  -2.04037E-06  +0.00000E+00
+B054F08-09    96  -1.54942E-06  +0.00000E+00
+B054F08-09    97  -8.62909E-07  +0.00000E+00
+B054F08-09    98  -3.37741E-07  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/06/1999 to 01/16/2002      |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  4
+B057F04     Input sample rate (HZ):                 1.0000E+02
+B057F05     Decimation factor:                      00005
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +0.0000E+00
+B057F08     Correction applied (seconds):          +0.0000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/06/1999 to 01/16/2002      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 4
+B058F04     Sensitivity:                           +2.00000E+00
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/06/1999 to 01/16/2002      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 0
+B058F04     Sensitivity:                           +3.17757E+09
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+###################################################################################
+#
+B050F03     Station:     KAPI
+B050F16     Network:     II
+B052F03     Location:    00
+B052F04     Channel:     BHZ
+B052F22     Start date:  2002,017,00:00:00
+B052F23     End date:    2005,220,23:59:59
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     01/17/2002 to 08/08/2005      |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 1
+B053F05     Response in units lookup:              m/s - Velocity in Meters Per Second
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +1.85150E+03
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      2
+B053F14     Number of poles:                       6
+#              Complex zeroes:
+#              i  real          imag          real_error    imag_error
+B053F10-13     0  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F10-13     1  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+#              Complex poles:
+#              i  real          imag          real_error    imag_error
+B053F15-18     0  -7.63942E-04  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     1  -1.18138E-02  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     2  -2.94000E+00  +2.99940E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     3  -2.94000E+00  -2.99940E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     4  -5.39926E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     5  -1.89158E+01  +0.00000E+00  +0.00000E+00  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     01/17/2002 to 08/08/2005      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 1
+B058F04     Sensitivity:                           +2.12279E+03
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     01/17/2002 to 08/08/2005      |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 2
+B053F05     Response in units lookup:              V - Volts
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +1.00000E+00
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      0
+B053F14     Number of poles:                       0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     01/17/2002 to 08/08/2005      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 2
+B058F04     Sensitivity:                           +5.05816E-01
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     01/17/2002 to 08/08/2005      |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 3
+B054F05     Response in units lookup:              V - Volts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  0
+B054F10     Number of denominators:                0
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     01/17/2002 to 08/08/2005      |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  3
+B057F04     Input sample rate (HZ):                 1.0000E+02
+B057F05     Decimation factor:                      00001
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +0.0000E+00
+B057F08     Correction applied (seconds):          +0.0000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     01/17/2002 to 08/08/2005      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 3
+B058F04     Sensitivity:                           +1.48000E+06
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     01/17/2002 to 08/08/2005      |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 4
+B054F05     Response in units lookup:              counts - Digital Counts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  99
+B054F10     Number of denominators:                0
+#              Numerator coefficients:
+#              i  coefficient   error
+B054F08-09     0  -3.37741E-07  +0.00000E+00
+B054F08-09     1  -8.62909E-07  +0.00000E+00
+B054F08-09     2  -1.54942E-06  +0.00000E+00
+B054F08-09     3  -2.04037E-06  +0.00000E+00
+B054F08-09     4  -1.60361E-06  +0.00000E+00
+B054F08-09     5  +8.76701E-07  +0.00000E+00
+B054F08-09     6  +6.73039E-06  +0.00000E+00
+B054F08-09     7  +1.70900E-05  +0.00000E+00
+B054F08-09     8  +3.22292E-05  +0.00000E+00
+B054F08-09     9  +5.07341E-05  +0.00000E+00
+B054F08-09    10  +6.87046E-05  +0.00000E+00
+B054F08-09    11  +7.92878E-05  +0.00000E+00
+B054F08-09    12  +7.29083E-05  +0.00000E+00
+B054F08-09    13  +3.85256E-05  +0.00000E+00
+B054F08-09    14  -3.38990E-05  +0.00000E+00
+B054F08-09    15  -1.49824E-04  +0.00000E+00
+B054F08-09    16  -3.05915E-04  +0.00000E+00
+B054F08-09    17  -4.86084E-04  +0.00000E+00
+B054F08-09    18  -6.58988E-04  +0.00000E+00
+B054F08-09    19  -7.78327E-04  +0.00000E+00
+B054F08-09    20  -7.87102E-04  +0.00000E+00
+B054F08-09    21  -6.26427E-04  +0.00000E+00
+B054F08-09    22  -2.48597E-04  +0.00000E+00
+B054F08-09    23  +3.67088E-04  +0.00000E+00
+B054F08-09    24  +1.19836E-03  +0.00000E+00
+B054F08-09    25  +2.16751E-03  +0.00000E+00
+B054F08-09    26  +3.13647E-03  +0.00000E+00
+B054F08-09    27  +3.91289E-03  +0.00000E+00
+B054F08-09    28  +4.26971E-03  +0.00000E+00
+B054F08-09    29  +3.97829E-03  +0.00000E+00
+B054F08-09    30  +2.85239E-03  +0.00000E+00
+B054F08-09    31  +7.97673E-04  +0.00000E+00
+B054F08-09    32  -2.14136E-03  +0.00000E+00
+B054F08-09    33  -5.74629E-03  +0.00000E+00
+B054F08-09    34  -9.61061E-03  +0.00000E+00
+B054F08-09    35  -1.31538E-02  +0.00000E+00
+B054F08-09    36  -1.56670E-02  +0.00000E+00
+B054F08-09    37  -1.63887E-02  +0.00000E+00
+B054F08-09    38  -1.46032E-02  +0.00000E+00
+B054F08-09    39  -9.75057E-03  +0.00000E+00
+B054F08-09    40  -1.53046E-03  +0.00000E+00
+B054F08-09    41  +1.00149E-02  +0.00000E+00
+B054F08-09    42  +2.44562E-02  +0.00000E+00
+B054F08-09    43  +4.09804E-02  +0.00000E+00
+B054F08-09    44  +5.84477E-02  +0.00000E+00
+B054F08-09    45  +7.54974E-02  +0.00000E+00
+B054F08-09    46  +9.06920E-02  +0.00000E+00
+B054F08-09    47  +1.02680E-01  +0.00000E+00
+B054F08-09    48  +1.10357E-01  +0.00000E+00
+B054F08-09    49  +1.13000E-01  +0.00000E+00
+B054F08-09    50  +1.10357E-01  +0.00000E+00
+B054F08-09    51  +1.02680E-01  +0.00000E+00
+B054F08-09    52  +9.06920E-02  +0.00000E+00
+B054F08-09    53  +7.54974E-02  +0.00000E+00
+B054F08-09    54  +5.84477E-02  +0.00000E+00
+B054F08-09    55  +4.09804E-02  +0.00000E+00
+B054F08-09    56  +2.44562E-02  +0.00000E+00
+B054F08-09    57  +1.00149E-02  +0.00000E+00
+B054F08-09    58  -1.53046E-03  +0.00000E+00
+B054F08-09    59  -9.75057E-03  +0.00000E+00
+B054F08-09    60  -1.46032E-02  +0.00000E+00
+B054F08-09    61  -1.63887E-02  +0.00000E+00
+B054F08-09    62  -1.56670E-02  +0.00000E+00
+B054F08-09    63  -1.31538E-02  +0.00000E+00
+B054F08-09    64  -9.61061E-03  +0.00000E+00
+B054F08-09    65  -5.74629E-03  +0.00000E+00
+B054F08-09    66  -2.14136E-03  +0.00000E+00
+B054F08-09    67  +7.97673E-04  +0.00000E+00
+B054F08-09    68  +2.85239E-03  +0.00000E+00
+B054F08-09    69  +3.97829E-03  +0.00000E+00
+B054F08-09    70  +4.26971E-03  +0.00000E+00
+B054F08-09    71  +3.91289E-03  +0.00000E+00
+B054F08-09    72  +3.13647E-03  +0.00000E+00
+B054F08-09    73  +2.16751E-03  +0.00000E+00
+B054F08-09    74  +1.19836E-03  +0.00000E+00
+B054F08-09    75  +3.67088E-04  +0.00000E+00
+B054F08-09    76  -2.48597E-04  +0.00000E+00
+B054F08-09    77  -6.26427E-04  +0.00000E+00
+B054F08-09    78  -7.87102E-04  +0.00000E+00
+B054F08-09    79  -7.78327E-04  +0.00000E+00
+B054F08-09    80  -6.58988E-04  +0.00000E+00
+B054F08-09    81  -4.86084E-04  +0.00000E+00
+B054F08-09    82  -3.05915E-04  +0.00000E+00
+B054F08-09    83  -1.49824E-04  +0.00000E+00
+B054F08-09    84  -3.38990E-05  +0.00000E+00
+B054F08-09    85  +3.85256E-05  +0.00000E+00
+B054F08-09    86  +7.29083E-05  +0.00000E+00
+B054F08-09    87  +7.92878E-05  +0.00000E+00
+B054F08-09    88  +6.87046E-05  +0.00000E+00
+B054F08-09    89  +5.07341E-05  +0.00000E+00
+B054F08-09    90  +3.22292E-05  +0.00000E+00
+B054F08-09    91  +1.70900E-05  +0.00000E+00
+B054F08-09    92  +6.73039E-06  +0.00000E+00
+B054F08-09    93  +8.76701E-07  +0.00000E+00
+B054F08-09    94  -1.60361E-06  +0.00000E+00
+B054F08-09    95  -2.04037E-06  +0.00000E+00
+B054F08-09    96  -1.54942E-06  +0.00000E+00
+B054F08-09    97  -8.62909E-07  +0.00000E+00
+B054F08-09    98  -3.37741E-07  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     01/17/2002 to 08/08/2005      |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  4
+B057F04     Input sample rate (HZ):                 1.0000E+02
+B057F05     Decimation factor:                      00005
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +0.0000E+00
+B057F08     Correction applied (seconds):          +0.0000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     01/17/2002 to 08/08/2005      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 4
+B058F04     Sensitivity:                           +2.00000E+00
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     01/17/2002 to 08/08/2005      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 0
+B058F04     Sensitivity:                           +3.17827E+09
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+###################################################################################
+#
+B050F03     Station:     KAPI
+B050F16     Network:     II
+B052F03     Location:    00
+B052F04     Channel:     BHZ
+B052F22     Start date:  2005,221,00:00:00
+B052F23     End date:    2007,318,05:09:59
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/09/2005 to 11/14/2007      |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 1
+B053F05     Response in units lookup:              m/s - Velocity in Meters Per Second
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +1.85111E+03
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      2
+B053F14     Number of poles:                       6
+#              Complex zeroes:
+#              i  real          imag          real_error    imag_error
+B053F10-13     0  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F10-13     1  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+#              Complex poles:
+#              i  real          imag          real_error    imag_error
+B053F15-18     0  -7.63942E-04  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     1  -1.17673E-02  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     2  -2.94000E+00  +2.99940E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     3  -2.94000E+00  -2.99940E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     4  -5.39926E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     5  -1.89158E+01  +0.00000E+00  +0.00000E+00  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/09/2005 to 11/14/2007      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 1
+B058F04     Sensitivity:                           +2.14928E+03
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/09/2005 to 11/14/2007      |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 2
+B053F05     Response in units lookup:              V - Volts
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +1.00000E+00
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      0
+B053F14     Number of poles:                       0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/09/2005 to 11/14/2007      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 2
+B058F04     Sensitivity:                           +5.05816E-01
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/09/2005 to 11/14/2007      |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 3
+B054F05     Response in units lookup:              V - Volts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  0
+B054F10     Number of denominators:                0
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/09/2005 to 11/14/2007      |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  3
+B057F04     Input sample rate (HZ):                 1.0000E+02
+B057F05     Decimation factor:                      00001
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +0.0000E+00
+B057F08     Correction applied (seconds):          +0.0000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/09/2005 to 11/14/2007      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 3
+B058F04     Sensitivity:                           +1.48000E+06
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/09/2005 to 11/14/2007      |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 4
+B054F05     Response in units lookup:              counts - Digital Counts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  99
+B054F10     Number of denominators:                0
+#              Numerator coefficients:
+#              i  coefficient   error
+B054F08-09     0  -3.37741E-07  +0.00000E+00
+B054F08-09     1  -8.62909E-07  +0.00000E+00
+B054F08-09     2  -1.54942E-06  +0.00000E+00
+B054F08-09     3  -2.04037E-06  +0.00000E+00
+B054F08-09     4  -1.60361E-06  +0.00000E+00
+B054F08-09     5  +8.76701E-07  +0.00000E+00
+B054F08-09     6  +6.73039E-06  +0.00000E+00
+B054F08-09     7  +1.70900E-05  +0.00000E+00
+B054F08-09     8  +3.22292E-05  +0.00000E+00
+B054F08-09     9  +5.07341E-05  +0.00000E+00
+B054F08-09    10  +6.87046E-05  +0.00000E+00
+B054F08-09    11  +7.92878E-05  +0.00000E+00
+B054F08-09    12  +7.29083E-05  +0.00000E+00
+B054F08-09    13  +3.85256E-05  +0.00000E+00
+B054F08-09    14  -3.38990E-05  +0.00000E+00
+B054F08-09    15  -1.49824E-04  +0.00000E+00
+B054F08-09    16  -3.05915E-04  +0.00000E+00
+B054F08-09    17  -4.86084E-04  +0.00000E+00
+B054F08-09    18  -6.58988E-04  +0.00000E+00
+B054F08-09    19  -7.78327E-04  +0.00000E+00
+B054F08-09    20  -7.87102E-04  +0.00000E+00
+B054F08-09    21  -6.26427E-04  +0.00000E+00
+B054F08-09    22  -2.48597E-04  +0.00000E+00
+B054F08-09    23  +3.67088E-04  +0.00000E+00
+B054F08-09    24  +1.19836E-03  +0.00000E+00
+B054F08-09    25  +2.16751E-03  +0.00000E+00
+B054F08-09    26  +3.13647E-03  +0.00000E+00
+B054F08-09    27  +3.91289E-03  +0.00000E+00
+B054F08-09    28  +4.26971E-03  +0.00000E+00
+B054F08-09    29  +3.97829E-03  +0.00000E+00
+B054F08-09    30  +2.85239E-03  +0.00000E+00
+B054F08-09    31  +7.97673E-04  +0.00000E+00
+B054F08-09    32  -2.14136E-03  +0.00000E+00
+B054F08-09    33  -5.74629E-03  +0.00000E+00
+B054F08-09    34  -9.61061E-03  +0.00000E+00
+B054F08-09    35  -1.31538E-02  +0.00000E+00
+B054F08-09    36  -1.56670E-02  +0.00000E+00
+B054F08-09    37  -1.63887E-02  +0.00000E+00
+B054F08-09    38  -1.46032E-02  +0.00000E+00
+B054F08-09    39  -9.75057E-03  +0.00000E+00
+B054F08-09    40  -1.53046E-03  +0.00000E+00
+B054F08-09    41  +1.00149E-02  +0.00000E+00
+B054F08-09    42  +2.44562E-02  +0.00000E+00
+B054F08-09    43  +4.09804E-02  +0.00000E+00
+B054F08-09    44  +5.84477E-02  +0.00000E+00
+B054F08-09    45  +7.54974E-02  +0.00000E+00
+B054F08-09    46  +9.06920E-02  +0.00000E+00
+B054F08-09    47  +1.02680E-01  +0.00000E+00
+B054F08-09    48  +1.10357E-01  +0.00000E+00
+B054F08-09    49  +1.13000E-01  +0.00000E+00
+B054F08-09    50  +1.10357E-01  +0.00000E+00
+B054F08-09    51  +1.02680E-01  +0.00000E+00
+B054F08-09    52  +9.06920E-02  +0.00000E+00
+B054F08-09    53  +7.54974E-02  +0.00000E+00
+B054F08-09    54  +5.84477E-02  +0.00000E+00
+B054F08-09    55  +4.09804E-02  +0.00000E+00
+B054F08-09    56  +2.44562E-02  +0.00000E+00
+B054F08-09    57  +1.00149E-02  +0.00000E+00
+B054F08-09    58  -1.53046E-03  +0.00000E+00
+B054F08-09    59  -9.75057E-03  +0.00000E+00
+B054F08-09    60  -1.46032E-02  +0.00000E+00
+B054F08-09    61  -1.63887E-02  +0.00000E+00
+B054F08-09    62  -1.56670E-02  +0.00000E+00
+B054F08-09    63  -1.31538E-02  +0.00000E+00
+B054F08-09    64  -9.61061E-03  +0.00000E+00
+B054F08-09    65  -5.74629E-03  +0.00000E+00
+B054F08-09    66  -2.14136E-03  +0.00000E+00
+B054F08-09    67  +7.97673E-04  +0.00000E+00
+B054F08-09    68  +2.85239E-03  +0.00000E+00
+B054F08-09    69  +3.97829E-03  +0.00000E+00
+B054F08-09    70  +4.26971E-03  +0.00000E+00
+B054F08-09    71  +3.91289E-03  +0.00000E+00
+B054F08-09    72  +3.13647E-03  +0.00000E+00
+B054F08-09    73  +2.16751E-03  +0.00000E+00
+B054F08-09    74  +1.19836E-03  +0.00000E+00
+B054F08-09    75  +3.67088E-04  +0.00000E+00
+B054F08-09    76  -2.48597E-04  +0.00000E+00
+B054F08-09    77  -6.26427E-04  +0.00000E+00
+B054F08-09    78  -7.87102E-04  +0.00000E+00
+B054F08-09    79  -7.78327E-04  +0.00000E+00
+B054F08-09    80  -6.58988E-04  +0.00000E+00
+B054F08-09    81  -4.86084E-04  +0.00000E+00
+B054F08-09    82  -3.05915E-04  +0.00000E+00
+B054F08-09    83  -1.49824E-04  +0.00000E+00
+B054F08-09    84  -3.38990E-05  +0.00000E+00
+B054F08-09    85  +3.85256E-05  +0.00000E+00
+B054F08-09    86  +7.29083E-05  +0.00000E+00
+B054F08-09    87  +7.92878E-05  +0.00000E+00
+B054F08-09    88  +6.87046E-05  +0.00000E+00
+B054F08-09    89  +5.07341E-05  +0.00000E+00
+B054F08-09    90  +3.22292E-05  +0.00000E+00
+B054F08-09    91  +1.70900E-05  +0.00000E+00
+B054F08-09    92  +6.73039E-06  +0.00000E+00
+B054F08-09    93  +8.76701E-07  +0.00000E+00
+B054F08-09    94  -1.60361E-06  +0.00000E+00
+B054F08-09    95  -2.04037E-06  +0.00000E+00
+B054F08-09    96  -1.54942E-06  +0.00000E+00
+B054F08-09    97  -8.62909E-07  +0.00000E+00
+B054F08-09    98  -3.37741E-07  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/09/2005 to 11/14/2007      |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  4
+B057F04     Input sample rate (HZ):                 1.0000E+02
+B057F05     Decimation factor:                      00005
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +0.0000E+00
+B057F08     Correction applied (seconds):          +0.0000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/09/2005 to 11/14/2007      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 4
+B058F04     Sensitivity:                           +1.00000E+00
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/09/2005 to 11/14/2007      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 0
+B058F04     Sensitivity:                           +1.60897E+09
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+###################################################################################
+#
+B050F03     Station:     KAPI
+B050F16     Network:     II
+B052F03     Location:    00
+B052F04     Channel:     BHZ
+B052F22     Start date:  2007,318,05:10:00
+B052F23     End date:    2009,314,06:59:59
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/14/2007 to 11/10/2009      |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 1
+B053F05     Response in units lookup:              m/s - Velocity in Meters Per Second
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +1.85111E+03
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      2
+B053F14     Number of poles:                       6
+#              Complex zeroes:
+#              i  real          imag          real_error    imag_error
+B053F10-13     0  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F10-13     1  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+#              Complex poles:
+#              i  real          imag          real_error    imag_error
+B053F15-18     0  -7.63942E-04  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     1  -1.17673E-02  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     2  -2.94000E+00  +2.99940E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     3  -2.94000E+00  -2.99940E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     4  -5.39926E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     5  -1.89158E+01  +0.00000E+00  +0.00000E+00  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/14/2007 to 11/10/2009      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 1
+B058F04     Sensitivity:                           +2.35208E+03
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/14/2007 to 11/10/2009      |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 2
+B053F05     Response in units lookup:              V - Volts
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +1.00000E+00
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      0
+B053F14     Number of poles:                       0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/14/2007 to 11/10/2009      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 2
+B058F04     Sensitivity:                           +5.00000E-01
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/14/2007 to 11/10/2009      |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 3
+B054F05     Response in units lookup:              V - Volts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  0
+B054F10     Number of denominators:                0
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/14/2007 to 11/10/2009      |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  3
+B057F04     Input sample rate (HZ):                 1.0000E+02
+B057F05     Decimation factor:                      00001
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +0.0000E+00
+B057F08     Correction applied (seconds):          +0.0000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/14/2007 to 11/10/2009      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 3
+B058F04     Sensitivity:                           +7.34000E+05
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/14/2007 to 11/10/2009      |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 4
+B054F05     Response in units lookup:              counts - Digital Counts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  99
+B054F10     Number of denominators:                0
+#              Numerator coefficients:
+#              i  coefficient   error
+B054F08-09     0  -3.37741E-07  +0.00000E+00
+B054F08-09     1  -8.62909E-07  +0.00000E+00
+B054F08-09     2  -1.54942E-06  +0.00000E+00
+B054F08-09     3  -2.04037E-06  +0.00000E+00
+B054F08-09     4  -1.60361E-06  +0.00000E+00
+B054F08-09     5  +8.76701E-07  +0.00000E+00
+B054F08-09     6  +6.73039E-06  +0.00000E+00
+B054F08-09     7  +1.70900E-05  +0.00000E+00
+B054F08-09     8  +3.22292E-05  +0.00000E+00
+B054F08-09     9  +5.07341E-05  +0.00000E+00
+B054F08-09    10  +6.87046E-05  +0.00000E+00
+B054F08-09    11  +7.92878E-05  +0.00000E+00
+B054F08-09    12  +7.29083E-05  +0.00000E+00
+B054F08-09    13  +3.85256E-05  +0.00000E+00
+B054F08-09    14  -3.38990E-05  +0.00000E+00
+B054F08-09    15  -1.49824E-04  +0.00000E+00
+B054F08-09    16  -3.05915E-04  +0.00000E+00
+B054F08-09    17  -4.86084E-04  +0.00000E+00
+B054F08-09    18  -6.58988E-04  +0.00000E+00
+B054F08-09    19  -7.78327E-04  +0.00000E+00
+B054F08-09    20  -7.87102E-04  +0.00000E+00
+B054F08-09    21  -6.26427E-04  +0.00000E+00
+B054F08-09    22  -2.48597E-04  +0.00000E+00
+B054F08-09    23  +3.67088E-04  +0.00000E+00
+B054F08-09    24  +1.19836E-03  +0.00000E+00
+B054F08-09    25  +2.16751E-03  +0.00000E+00
+B054F08-09    26  +3.13647E-03  +0.00000E+00
+B054F08-09    27  +3.91289E-03  +0.00000E+00
+B054F08-09    28  +4.26971E-03  +0.00000E+00
+B054F08-09    29  +3.97829E-03  +0.00000E+00
+B054F08-09    30  +2.85239E-03  +0.00000E+00
+B054F08-09    31  +7.97673E-04  +0.00000E+00
+B054F08-09    32  -2.14136E-03  +0.00000E+00
+B054F08-09    33  -5.74629E-03  +0.00000E+00
+B054F08-09    34  -9.61061E-03  +0.00000E+00
+B054F08-09    35  -1.31538E-02  +0.00000E+00
+B054F08-09    36  -1.56670E-02  +0.00000E+00
+B054F08-09    37  -1.63887E-02  +0.00000E+00
+B054F08-09    38  -1.46032E-02  +0.00000E+00
+B054F08-09    39  -9.75057E-03  +0.00000E+00
+B054F08-09    40  -1.53046E-03  +0.00000E+00
+B054F08-09    41  +1.00149E-02  +0.00000E+00
+B054F08-09    42  +2.44562E-02  +0.00000E+00
+B054F08-09    43  +4.09804E-02  +0.00000E+00
+B054F08-09    44  +5.84477E-02  +0.00000E+00
+B054F08-09    45  +7.54974E-02  +0.00000E+00
+B054F08-09    46  +9.06920E-02  +0.00000E+00
+B054F08-09    47  +1.02680E-01  +0.00000E+00
+B054F08-09    48  +1.10357E-01  +0.00000E+00
+B054F08-09    49  +1.13000E-01  +0.00000E+00
+B054F08-09    50  +1.10357E-01  +0.00000E+00
+B054F08-09    51  +1.02680E-01  +0.00000E+00
+B054F08-09    52  +9.06920E-02  +0.00000E+00
+B054F08-09    53  +7.54974E-02  +0.00000E+00
+B054F08-09    54  +5.84477E-02  +0.00000E+00
+B054F08-09    55  +4.09804E-02  +0.00000E+00
+B054F08-09    56  +2.44562E-02  +0.00000E+00
+B054F08-09    57  +1.00149E-02  +0.00000E+00
+B054F08-09    58  -1.53046E-03  +0.00000E+00
+B054F08-09    59  -9.75057E-03  +0.00000E+00
+B054F08-09    60  -1.46032E-02  +0.00000E+00
+B054F08-09    61  -1.63887E-02  +0.00000E+00
+B054F08-09    62  -1.56670E-02  +0.00000E+00
+B054F08-09    63  -1.31538E-02  +0.00000E+00
+B054F08-09    64  -9.61061E-03  +0.00000E+00
+B054F08-09    65  -5.74629E-03  +0.00000E+00
+B054F08-09    66  -2.14136E-03  +0.00000E+00
+B054F08-09    67  +7.97673E-04  +0.00000E+00
+B054F08-09    68  +2.85239E-03  +0.00000E+00
+B054F08-09    69  +3.97829E-03  +0.00000E+00
+B054F08-09    70  +4.26971E-03  +0.00000E+00
+B054F08-09    71  +3.91289E-03  +0.00000E+00
+B054F08-09    72  +3.13647E-03  +0.00000E+00
+B054F08-09    73  +2.16751E-03  +0.00000E+00
+B054F08-09    74  +1.19836E-03  +0.00000E+00
+B054F08-09    75  +3.67088E-04  +0.00000E+00
+B054F08-09    76  -2.48597E-04  +0.00000E+00
+B054F08-09    77  -6.26427E-04  +0.00000E+00
+B054F08-09    78  -7.87102E-04  +0.00000E+00
+B054F08-09    79  -7.78327E-04  +0.00000E+00
+B054F08-09    80  -6.58988E-04  +0.00000E+00
+B054F08-09    81  -4.86084E-04  +0.00000E+00
+B054F08-09    82  -3.05915E-04  +0.00000E+00
+B054F08-09    83  -1.49824E-04  +0.00000E+00
+B054F08-09    84  -3.38990E-05  +0.00000E+00
+B054F08-09    85  +3.85256E-05  +0.00000E+00
+B054F08-09    86  +7.29083E-05  +0.00000E+00
+B054F08-09    87  +7.92878E-05  +0.00000E+00
+B054F08-09    88  +6.87046E-05  +0.00000E+00
+B054F08-09    89  +5.07341E-05  +0.00000E+00
+B054F08-09    90  +3.22292E-05  +0.00000E+00
+B054F08-09    91  +1.70900E-05  +0.00000E+00
+B054F08-09    92  +6.73039E-06  +0.00000E+00
+B054F08-09    93  +8.76701E-07  +0.00000E+00
+B054F08-09    94  -1.60361E-06  +0.00000E+00
+B054F08-09    95  -2.04037E-06  +0.00000E+00
+B054F08-09    96  -1.54942E-06  +0.00000E+00
+B054F08-09    97  -8.62909E-07  +0.00000E+00
+B054F08-09    98  -3.37741E-07  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/14/2007 to 11/10/2009      |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  4
+B057F04     Input sample rate (HZ):                 1.0000E+02
+B057F05     Decimation factor:                      00005
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +0.0000E+00
+B057F08     Correction applied (seconds):          +0.0000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/14/2007 to 11/10/2009      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 4
+B058F04     Sensitivity:                           +1.00000E+00
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/14/2007 to 11/10/2009      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 0
+B058F04     Sensitivity:                           +8.63213E+08
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+###################################################################################
+#
+B050F03     Station:     KAPI
+B050F16     Network:     II
+B052F03     Location:    00
+B052F04     Channel:     BHZ
+B052F22     Start date:  2009,314,07:00:00
+B052F23     End date:    2010,320,23:59:59
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/10/2009 to 11/16/2010      |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 1
+B053F05     Response in units lookup:              m/s - Velocity in Meters Per Second
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +2.73668E+01
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      2
+B053F14     Number of poles:                       4
+#              Complex zeroes:
+#              i  real          imag          real_error    imag_error
+B053F10-13     0  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F10-13     1  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+#              Complex poles:
+#              i  real          imag          real_error    imag_error
+B053F15-18     0  -7.63942E-04  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     1  -1.17673E-02  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     2  -3.66947E+00  +3.62917E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     3  -3.66947E+00  -3.62917E+00  +0.00000E+00  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/10/2009 to 11/16/2010      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 1
+B058F04     Sensitivity:                           +2.15773E+03
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/10/2009 to 11/16/2010      |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 2
+B053F05     Response in units lookup:              V - Volts
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +1.00000E+00
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      0
+B053F14     Number of poles:                       0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/10/2009 to 11/16/2010      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 2
+B058F04     Sensitivity:                           +1.00000E+00
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/10/2009 to 11/16/2010      |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 3
+B054F05     Response in units lookup:              V - Volts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  0
+B054F10     Number of denominators:                0
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/10/2009 to 11/16/2010      |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  3
+B057F04     Input sample rate (HZ):                 2.0000E+01
+B057F05     Decimation factor:                      00001
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +0.0000E+00
+B057F08     Correction applied (seconds):          +0.0000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/10/2009 to 11/16/2010      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 3
+B058F04     Sensitivity:                           +1.66215E+06
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/10/2009 to 11/16/2010      |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 4
+B054F05     Response in units lookup:              counts - Digital Counts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  67
+B054F10     Number of denominators:                0
+#              Numerator coefficients:
+#              i  coefficient   error
+B054F08-09     0  -3.65342E-17  +0.00000E+00
+B054F08-09     1  +3.67488E-08  +0.00000E+00
+B054F08-09     2  -4.27060E-07  +0.00000E+00
+B054F08-09     3  +1.14502E-06  +0.00000E+00
+B054F08-09     4  -1.87594E-07  +0.00000E+00
+B054F08-09     5  -3.37274E-07  +0.00000E+00
+B054F08-09     6  +2.78747E-06  +0.00000E+00
+B054F08-09     7  -3.74403E-06  +0.00000E+00
+B054F08-09     8  +5.41172E-06  +0.00000E+00
+B054F08-09     9  +7.47336E-06  +0.00000E+00
+B054F08-09    10  -5.17759E-04  +0.00000E+00
+B054F08-09    11  +2.10677E-04  +0.00000E+00
+B054F08-09    12  +4.63258E-05  +0.00000E+00
+B054F08-09    13  -6.08222E-04  +0.00000E+00
+B054F08-09    14  +1.44175E-03  +0.00000E+00
+B054F08-09    15  -2.40627E-03  +0.00000E+00
+B054F08-09    16  +3.22534E-03  +0.00000E+00
+B054F08-09    17  -3.50639E-03  +0.00000E+00
+B054F08-09    18  +2.81441E-03  +0.00000E+00
+B054F08-09    19  -7.71971E-04  +0.00000E+00
+B054F08-09    20  -2.80512E-03  +0.00000E+00
+B054F08-09    21  +7.77805E-03  +0.00000E+00
+B054F08-09    22  -1.35815E-02  +0.00000E+00
+B054F08-09    23  +1.91765E-02  +0.00000E+00
+B054F08-09    24  -2.29704E-02  +0.00000E+00
+B054F08-09    25  +2.40398E-02  +0.00000E+00
+B054F08-09    26  -2.20986E-02  +0.00000E+00
+B054F08-09    27  +8.60734E-03  +0.00000E+00
+B054F08-09    28  +1.17525E-02  +0.00000E+00
+B054F08-09    29  -4.47787E-02  +0.00000E+00
+B054F08-09    30  +9.64923E-02  +0.00000E+00
+B054F08-09    31  -1.91755E-01  +0.00000E+00
+B054F08-09    32  +5.27652E-01  +0.00000E+00
+B054F08-09    33  +7.24167E-01  +0.00000E+00
+B054F08-09    34  -1.56905E-01  +0.00000E+00
+B054F08-09    35  +4.42574E-02  +0.00000E+00
+B054F08-09    36  +3.14168E-03  +0.00000E+00
+B054F08-09    37  -2.66714E-02  +0.00000E+00
+B054F08-09    38  +3.61532E-02  +0.00000E+00
+B054F08-09    39  -3.85687E-02  +0.00000E+00
+B054F08-09    40  +3.10842E-02  +0.00000E+00
+B054F08-09    41  -2.35259E-02  +0.00000E+00
+B054F08-09    42  +1.53211E-02  +0.00000E+00
+B054F08-09    43  -7.40398E-03  +0.00000E+00
+B054F08-09    44  +1.09645E-03  +0.00000E+00
+B054F08-09    45  +3.09797E-03  +0.00000E+00
+B054F08-09    46  -5.19320E-03  +0.00000E+00
+B054F08-09    47  +5.56131E-03  +0.00000E+00
+B054F08-09    48  -4.76110E-03  +0.00000E+00
+B054F08-09    49  +3.38213E-03  +0.00000E+00
+B054F08-09    50  -1.92052E-03  +0.00000E+00
+B054F08-09    51  +7.15218E-04  +0.00000E+00
+B054F08-09    52  +7.67719E-05  +0.00000E+00
+B054F08-09    53  -4.51897E-04  +0.00000E+00
+B054F08-09    54  +5.02700E-04  +0.00000E+00
+B054F08-09    55  -5.65037E-04  +0.00000E+00
+B054F08-09    56  -5.56800E-05  +0.00000E+00
+B054F08-09    57  +1.57736E-05  +0.00000E+00
+B054F08-09    58  -1.41985E-06  +0.00000E+00
+B054F08-09    59  +8.14909E-07  +0.00000E+00
+B054F08-09    60  +6.80795E-07  +0.00000E+00
+B054F08-09    61  -1.25273E-06  +0.00000E+00
+B054F08-09    62  +1.52435E-06  +0.00000E+00
+B054F08-09    63  -2.83336E-07  +0.00000E+00
+B054F08-09    64  -1.06384E-08  +0.00000E+00
+B054F08-09    65  +1.25712E-09  +0.00000E+00
+B054F08-09    66  -5.42954E-11  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/10/2009 to 11/16/2010      |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  4
+B057F04     Input sample rate (HZ):                 2.0000E+01
+B057F05     Decimation factor:                      00001
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +1.6305E+00
+B057F08     Correction applied (seconds):          +1.6305E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/10/2009 to 11/16/2010      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 4
+B058F04     Sensitivity:                           +1.00000E+00
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/10/2009 to 11/16/2010      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 0
+B058F04     Sensitivity:                           +3.58673E+09
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+###################################################################################
+#
+B050F03     Station:     KAPI
+B050F16     Network:     II
+B052F03     Location:    00
+B052F04     Channel:     BHZ
+B052F22     Start date:  2010,321,00:00:00
+B052F23     End date:    2011,322,23:59:59
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/17/2010 to 11/18/2011      |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 1
+B053F05     Response in units lookup:              m/s - Velocity in Meters Per Second
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +1.70918E+01
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      2
+B053F14     Number of poles:                       4
+#              Complex zeroes:
+#              i  real          imag          real_error    imag_error
+B053F10-13     0  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F10-13     1  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+#              Complex poles:
+#              i  real          imag          real_error    imag_error
+B053F15-18     0  -7.63942E-04  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     1  -1.17352E-02  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     2  -2.53714E+00  +3.19393E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     3  -2.53714E+00  -3.19393E+00  +0.00000E+00  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/17/2010 to 11/18/2011      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 1
+B058F04     Sensitivity:                           +2.15651E+03
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/17/2010 to 11/18/2011      |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 2
+B053F05     Response in units lookup:              V - Volts
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +1.00000E+00
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      0
+B053F14     Number of poles:                       0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/17/2010 to 11/18/2011      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 2
+B058F04     Sensitivity:                           +1.00000E+00
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/17/2010 to 11/18/2011      |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 3
+B054F05     Response in units lookup:              V - Volts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  0
+B054F10     Number of denominators:                0
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/17/2010 to 11/18/2011      |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  3
+B057F04     Input sample rate (HZ):                 2.0000E+01
+B057F05     Decimation factor:                      00001
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +0.0000E+00
+B057F08     Correction applied (seconds):          +0.0000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/17/2010 to 11/18/2011      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 3
+B058F04     Sensitivity:                           +1.66215E+06
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/17/2010 to 11/18/2011      |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 4
+B054F05     Response in units lookup:              counts - Digital Counts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  67
+B054F10     Number of denominators:                0
+#              Numerator coefficients:
+#              i  coefficient   error
+B054F08-09     0  -3.65342E-17  +0.00000E+00
+B054F08-09     1  +3.67488E-08  +0.00000E+00
+B054F08-09     2  -4.27060E-07  +0.00000E+00
+B054F08-09     3  +1.14502E-06  +0.00000E+00
+B054F08-09     4  -1.87594E-07  +0.00000E+00
+B054F08-09     5  -3.37274E-07  +0.00000E+00
+B054F08-09     6  +2.78747E-06  +0.00000E+00
+B054F08-09     7  -3.74403E-06  +0.00000E+00
+B054F08-09     8  +5.41172E-06  +0.00000E+00
+B054F08-09     9  +7.47336E-06  +0.00000E+00
+B054F08-09    10  -5.17759E-04  +0.00000E+00
+B054F08-09    11  +2.10677E-04  +0.00000E+00
+B054F08-09    12  +4.63258E-05  +0.00000E+00
+B054F08-09    13  -6.08222E-04  +0.00000E+00
+B054F08-09    14  +1.44175E-03  +0.00000E+00
+B054F08-09    15  -2.40627E-03  +0.00000E+00
+B054F08-09    16  +3.22534E-03  +0.00000E+00
+B054F08-09    17  -3.50639E-03  +0.00000E+00
+B054F08-09    18  +2.81441E-03  +0.00000E+00
+B054F08-09    19  -7.71971E-04  +0.00000E+00
+B054F08-09    20  -2.80512E-03  +0.00000E+00
+B054F08-09    21  +7.77805E-03  +0.00000E+00
+B054F08-09    22  -1.35815E-02  +0.00000E+00
+B054F08-09    23  +1.91765E-02  +0.00000E+00
+B054F08-09    24  -2.29704E-02  +0.00000E+00
+B054F08-09    25  +2.40398E-02  +0.00000E+00
+B054F08-09    26  -2.20986E-02  +0.00000E+00
+B054F08-09    27  +8.60734E-03  +0.00000E+00
+B054F08-09    28  +1.17525E-02  +0.00000E+00
+B054F08-09    29  -4.47787E-02  +0.00000E+00
+B054F08-09    30  +9.64923E-02  +0.00000E+00
+B054F08-09    31  -1.91755E-01  +0.00000E+00
+B054F08-09    32  +5.27652E-01  +0.00000E+00
+B054F08-09    33  +7.24167E-01  +0.00000E+00
+B054F08-09    34  -1.56905E-01  +0.00000E+00
+B054F08-09    35  +4.42574E-02  +0.00000E+00
+B054F08-09    36  +3.14168E-03  +0.00000E+00
+B054F08-09    37  -2.66714E-02  +0.00000E+00
+B054F08-09    38  +3.61532E-02  +0.00000E+00
+B054F08-09    39  -3.85687E-02  +0.00000E+00
+B054F08-09    40  +3.10842E-02  +0.00000E+00
+B054F08-09    41  -2.35259E-02  +0.00000E+00
+B054F08-09    42  +1.53211E-02  +0.00000E+00
+B054F08-09    43  -7.40398E-03  +0.00000E+00
+B054F08-09    44  +1.09645E-03  +0.00000E+00
+B054F08-09    45  +3.09797E-03  +0.00000E+00
+B054F08-09    46  -5.19320E-03  +0.00000E+00
+B054F08-09    47  +5.56131E-03  +0.00000E+00
+B054F08-09    48  -4.76110E-03  +0.00000E+00
+B054F08-09    49  +3.38213E-03  +0.00000E+00
+B054F08-09    50  -1.92052E-03  +0.00000E+00
+B054F08-09    51  +7.15218E-04  +0.00000E+00
+B054F08-09    52  +7.67719E-05  +0.00000E+00
+B054F08-09    53  -4.51897E-04  +0.00000E+00
+B054F08-09    54  +5.02700E-04  +0.00000E+00
+B054F08-09    55  -5.65037E-04  +0.00000E+00
+B054F08-09    56  -5.56800E-05  +0.00000E+00
+B054F08-09    57  +1.57736E-05  +0.00000E+00
+B054F08-09    58  -1.41985E-06  +0.00000E+00
+B054F08-09    59  +8.14909E-07  +0.00000E+00
+B054F08-09    60  +6.80795E-07  +0.00000E+00
+B054F08-09    61  -1.25273E-06  +0.00000E+00
+B054F08-09    62  +1.52435E-06  +0.00000E+00
+B054F08-09    63  -2.83336E-07  +0.00000E+00
+B054F08-09    64  -1.06384E-08  +0.00000E+00
+B054F08-09    65  +1.25712E-09  +0.00000E+00
+B054F08-09    66  -5.42954E-11  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/17/2010 to 11/18/2011      |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  4
+B057F04     Input sample rate (HZ):                 2.0000E+01
+B057F05     Decimation factor:                      00001
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +1.6305E+00
+B057F08     Correction applied (seconds):          +1.6305E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/17/2010 to 11/18/2011      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 4
+B058F04     Sensitivity:                           +1.00000E+00
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/17/2010 to 11/18/2011      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 0
+B058F04     Sensitivity:                           +3.58469E+09
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+###################################################################################
+#
+B050F03     Station:     KAPI
+B050F16     Network:     II
+B052F03     Location:    00
+B052F04     Channel:     BHZ
+B052F22     Start date:  2011,323,00:00:00
+B052F23     End date:    2016,222,23:59:59
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/19/2011 to 08/09/2016      |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 1
+B053F05     Response in units lookup:              m/s - Velocity in Meters Per Second
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +2.40248E+01
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      2
+B053F14     Number of poles:                       4
+#              Complex zeroes:
+#              i  real          imag          real_error    imag_error
+B053F10-13     0  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F10-13     1  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+#              Complex poles:
+#              i  real          imag          real_error    imag_error
+B053F15-18     0  -7.63942E-04  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     1  -1.17352E-02  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     2  -3.12406E+00  +3.69150E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     3  -3.12406E+00  -3.69150E+00  +0.00000E+00  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/19/2011 to 08/09/2016      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 1
+B058F04     Sensitivity:                           +2.14704E+03
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/19/2011 to 08/09/2016      |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 2
+B053F05     Response in units lookup:              V - Volts
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +1.00000E+00
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      0
+B053F14     Number of poles:                       0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/19/2011 to 08/09/2016      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 2
+B058F04     Sensitivity:                           +1.00000E+00
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/19/2011 to 08/09/2016      |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 3
+B054F05     Response in units lookup:              V - Volts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  0
+B054F10     Number of denominators:                0
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/19/2011 to 08/09/2016      |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  3
+B057F04     Input sample rate (HZ):                 2.0000E+01
+B057F05     Decimation factor:                      00001
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +0.0000E+00
+B057F08     Correction applied (seconds):          +0.0000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/19/2011 to 08/09/2016      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 3
+B058F04     Sensitivity:                           +1.66215E+06
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/19/2011 to 08/09/2016      |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 4
+B054F05     Response in units lookup:              counts - Digital Counts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  67
+B054F10     Number of denominators:                0
+#              Numerator coefficients:
+#              i  coefficient   error
+B054F08-09     0  -3.65342E-17  +0.00000E+00
+B054F08-09     1  +3.67488E-08  +0.00000E+00
+B054F08-09     2  -4.27060E-07  +0.00000E+00
+B054F08-09     3  +1.14502E-06  +0.00000E+00
+B054F08-09     4  -1.87594E-07  +0.00000E+00
+B054F08-09     5  -3.37274E-07  +0.00000E+00
+B054F08-09     6  +2.78747E-06  +0.00000E+00
+B054F08-09     7  -3.74403E-06  +0.00000E+00
+B054F08-09     8  +5.41172E-06  +0.00000E+00
+B054F08-09     9  +7.47336E-06  +0.00000E+00
+B054F08-09    10  -5.17759E-04  +0.00000E+00
+B054F08-09    11  +2.10677E-04  +0.00000E+00
+B054F08-09    12  +4.63258E-05  +0.00000E+00
+B054F08-09    13  -6.08222E-04  +0.00000E+00
+B054F08-09    14  +1.44175E-03  +0.00000E+00
+B054F08-09    15  -2.40627E-03  +0.00000E+00
+B054F08-09    16  +3.22534E-03  +0.00000E+00
+B054F08-09    17  -3.50639E-03  +0.00000E+00
+B054F08-09    18  +2.81441E-03  +0.00000E+00
+B054F08-09    19  -7.71971E-04  +0.00000E+00
+B054F08-09    20  -2.80512E-03  +0.00000E+00
+B054F08-09    21  +7.77805E-03  +0.00000E+00
+B054F08-09    22  -1.35815E-02  +0.00000E+00
+B054F08-09    23  +1.91765E-02  +0.00000E+00
+B054F08-09    24  -2.29704E-02  +0.00000E+00
+B054F08-09    25  +2.40398E-02  +0.00000E+00
+B054F08-09    26  -2.20986E-02  +0.00000E+00
+B054F08-09    27  +8.60734E-03  +0.00000E+00
+B054F08-09    28  +1.17525E-02  +0.00000E+00
+B054F08-09    29  -4.47787E-02  +0.00000E+00
+B054F08-09    30  +9.64923E-02  +0.00000E+00
+B054F08-09    31  -1.91755E-01  +0.00000E+00
+B054F08-09    32  +5.27652E-01  +0.00000E+00
+B054F08-09    33  +7.24167E-01  +0.00000E+00
+B054F08-09    34  -1.56905E-01  +0.00000E+00
+B054F08-09    35  +4.42574E-02  +0.00000E+00
+B054F08-09    36  +3.14168E-03  +0.00000E+00
+B054F08-09    37  -2.66714E-02  +0.00000E+00
+B054F08-09    38  +3.61532E-02  +0.00000E+00
+B054F08-09    39  -3.85687E-02  +0.00000E+00
+B054F08-09    40  +3.10842E-02  +0.00000E+00
+B054F08-09    41  -2.35259E-02  +0.00000E+00
+B054F08-09    42  +1.53211E-02  +0.00000E+00
+B054F08-09    43  -7.40398E-03  +0.00000E+00
+B054F08-09    44  +1.09645E-03  +0.00000E+00
+B054F08-09    45  +3.09797E-03  +0.00000E+00
+B054F08-09    46  -5.19320E-03  +0.00000E+00
+B054F08-09    47  +5.56131E-03  +0.00000E+00
+B054F08-09    48  -4.76110E-03  +0.00000E+00
+B054F08-09    49  +3.38213E-03  +0.00000E+00
+B054F08-09    50  -1.92052E-03  +0.00000E+00
+B054F08-09    51  +7.15218E-04  +0.00000E+00
+B054F08-09    52  +7.67719E-05  +0.00000E+00
+B054F08-09    53  -4.51897E-04  +0.00000E+00
+B054F08-09    54  +5.02700E-04  +0.00000E+00
+B054F08-09    55  -5.65037E-04  +0.00000E+00
+B054F08-09    56  -5.56800E-05  +0.00000E+00
+B054F08-09    57  +1.57736E-05  +0.00000E+00
+B054F08-09    58  -1.41985E-06  +0.00000E+00
+B054F08-09    59  +8.14909E-07  +0.00000E+00
+B054F08-09    60  +6.80795E-07  +0.00000E+00
+B054F08-09    61  -1.25273E-06  +0.00000E+00
+B054F08-09    62  +1.52435E-06  +0.00000E+00
+B054F08-09    63  -2.83336E-07  +0.00000E+00
+B054F08-09    64  -1.06384E-08  +0.00000E+00
+B054F08-09    65  +1.25712E-09  +0.00000E+00
+B054F08-09    66  -5.42954E-11  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/19/2011 to 08/09/2016      |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  4
+B057F04     Input sample rate (HZ):                 2.0000E+01
+B057F05     Decimation factor:                      00001
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +1.6305E+00
+B057F08     Correction applied (seconds):          +1.6305E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/19/2011 to 08/09/2016      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 4
+B058F04     Sensitivity:                           +1.00000E+00
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     11/19/2011 to 08/09/2016      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 0
+B058F04     Sensitivity:                           +3.56895E+09
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+###################################################################################
+#
+B050F03     Station:     KAPI
+B050F16     Network:     II
+B052F03     Location:    00
+B052F04     Channel:     BHZ
+B052F22     Start date:  2016,223,00:00:00
+B052F23     End date:    2018,034,07:59:59
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/10/2016 to 02/03/2018      |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 1
+B053F05     Response in units lookup:              m/s - Velocity in Meters Per Second
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +2.99123E+02
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      2
+B053F14     Number of poles:                       5
+#              Complex zeroes:
+#              i  real          imag          real_error    imag_error
+B053F10-13     0  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F10-13     1  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+#              Complex poles:
+#              i  real          imag          real_error    imag_error
+B053F15-18     0  -7.63942E-04  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     1  -1.16500E-02  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     2  -3.58564E+00  +4.22445E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     3  -3.58564E+00  -4.22445E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     4  -9.48727E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/10/2016 to 02/03/2018      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 1
+B058F04     Sensitivity:                           +2.13161E+03
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/10/2016 to 02/03/2018      |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 2
+B053F05     Response in units lookup:              V - Volts
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +1.00000E+00
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      0
+B053F14     Number of poles:                       0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/10/2016 to 02/03/2018      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 2
+B058F04     Sensitivity:                           +1.00000E+00
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/10/2016 to 02/03/2018      |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 3
+B054F05     Response in units lookup:              V - Volts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  0
+B054F10     Number of denominators:                0
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/10/2016 to 02/03/2018      |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  3
+B057F04     Input sample rate (HZ):                 2.0000E+01
+B057F05     Decimation factor:                      00001
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +0.0000E+00
+B057F08     Correction applied (seconds):          +0.0000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/10/2016 to 02/03/2018      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 3
+B058F04     Sensitivity:                           +1.66215E+06
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/10/2016 to 02/03/2018      |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 4
+B054F05     Response in units lookup:              counts - Digital Counts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  67
+B054F10     Number of denominators:                0
+#              Numerator coefficients:
+#              i  coefficient   error
+B054F08-09     0  -3.65342E-17  +0.00000E+00
+B054F08-09     1  +3.67488E-08  +0.00000E+00
+B054F08-09     2  -4.27060E-07  +0.00000E+00
+B054F08-09     3  +1.14502E-06  +0.00000E+00
+B054F08-09     4  -1.87594E-07  +0.00000E+00
+B054F08-09     5  -3.37274E-07  +0.00000E+00
+B054F08-09     6  +2.78747E-06  +0.00000E+00
+B054F08-09     7  -3.74403E-06  +0.00000E+00
+B054F08-09     8  +5.41172E-06  +0.00000E+00
+B054F08-09     9  +7.47336E-06  +0.00000E+00
+B054F08-09    10  -5.17759E-04  +0.00000E+00
+B054F08-09    11  +2.10677E-04  +0.00000E+00
+B054F08-09    12  +4.63258E-05  +0.00000E+00
+B054F08-09    13  -6.08222E-04  +0.00000E+00
+B054F08-09    14  +1.44175E-03  +0.00000E+00
+B054F08-09    15  -2.40627E-03  +0.00000E+00
+B054F08-09    16  +3.22534E-03  +0.00000E+00
+B054F08-09    17  -3.50639E-03  +0.00000E+00
+B054F08-09    18  +2.81441E-03  +0.00000E+00
+B054F08-09    19  -7.71971E-04  +0.00000E+00
+B054F08-09    20  -2.80512E-03  +0.00000E+00
+B054F08-09    21  +7.77805E-03  +0.00000E+00
+B054F08-09    22  -1.35815E-02  +0.00000E+00
+B054F08-09    23  +1.91765E-02  +0.00000E+00
+B054F08-09    24  -2.29704E-02  +0.00000E+00
+B054F08-09    25  +2.40398E-02  +0.00000E+00
+B054F08-09    26  -2.20986E-02  +0.00000E+00
+B054F08-09    27  +8.60734E-03  +0.00000E+00
+B054F08-09    28  +1.17525E-02  +0.00000E+00
+B054F08-09    29  -4.47787E-02  +0.00000E+00
+B054F08-09    30  +9.64923E-02  +0.00000E+00
+B054F08-09    31  -1.91755E-01  +0.00000E+00
+B054F08-09    32  +5.27652E-01  +0.00000E+00
+B054F08-09    33  +7.24167E-01  +0.00000E+00
+B054F08-09    34  -1.56905E-01  +0.00000E+00
+B054F08-09    35  +4.42574E-02  +0.00000E+00
+B054F08-09    36  +3.14168E-03  +0.00000E+00
+B054F08-09    37  -2.66714E-02  +0.00000E+00
+B054F08-09    38  +3.61532E-02  +0.00000E+00
+B054F08-09    39  -3.85687E-02  +0.00000E+00
+B054F08-09    40  +3.10842E-02  +0.00000E+00
+B054F08-09    41  -2.35259E-02  +0.00000E+00
+B054F08-09    42  +1.53211E-02  +0.00000E+00
+B054F08-09    43  -7.40398E-03  +0.00000E+00
+B054F08-09    44  +1.09645E-03  +0.00000E+00
+B054F08-09    45  +3.09797E-03  +0.00000E+00
+B054F08-09    46  -5.19320E-03  +0.00000E+00
+B054F08-09    47  +5.56131E-03  +0.00000E+00
+B054F08-09    48  -4.76110E-03  +0.00000E+00
+B054F08-09    49  +3.38213E-03  +0.00000E+00
+B054F08-09    50  -1.92052E-03  +0.00000E+00
+B054F08-09    51  +7.15218E-04  +0.00000E+00
+B054F08-09    52  +7.67719E-05  +0.00000E+00
+B054F08-09    53  -4.51897E-04  +0.00000E+00
+B054F08-09    54  +5.02700E-04  +0.00000E+00
+B054F08-09    55  -5.65037E-04  +0.00000E+00
+B054F08-09    56  -5.56800E-05  +0.00000E+00
+B054F08-09    57  +1.57736E-05  +0.00000E+00
+B054F08-09    58  -1.41985E-06  +0.00000E+00
+B054F08-09    59  +8.14909E-07  +0.00000E+00
+B054F08-09    60  +6.80795E-07  +0.00000E+00
+B054F08-09    61  -1.25273E-06  +0.00000E+00
+B054F08-09    62  +1.52435E-06  +0.00000E+00
+B054F08-09    63  -2.83336E-07  +0.00000E+00
+B054F08-09    64  -1.06384E-08  +0.00000E+00
+B054F08-09    65  +1.25712E-09  +0.00000E+00
+B054F08-09    66  -5.42954E-11  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/10/2016 to 02/03/2018      |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  4
+B057F04     Input sample rate (HZ):                 2.0000E+01
+B057F05     Decimation factor:                      00001
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +1.6305E+00
+B057F08     Correction applied (seconds):          +1.6305E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/10/2016 to 02/03/2018      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 4
+B058F04     Sensitivity:                           +1.00000E+00
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/10/2016 to 02/03/2018      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 0
+B058F04     Sensitivity:                           +3.54330E+09
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+###################################################################################
+#
+B050F03     Station:     KAPI
+B050F16     Network:     II
+B052F03     Location:    00
+B052F04     Channel:     BHZ
+B052F22     Start date:  2018,034,08:00:00
+B052F23     End date:    2018,227,23:59:59
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/03/2018 to 08/15/2018      |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 1
+B053F05     Response in units lookup:              m/s - Velocity in Meters Per Second
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +2.99123E+02
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      2
+B053F14     Number of poles:                       5
+#              Complex zeroes:
+#              i  real          imag          real_error    imag_error
+B053F10-13     0  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F10-13     1  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+#              Complex poles:
+#              i  real          imag          real_error    imag_error
+B053F15-18     0  -7.63942E-04  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     1  -1.16500E-02  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     2  -3.58564E+00  +4.22445E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     3  -3.58564E+00  -4.22445E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     4  -9.48727E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/03/2018 to 08/15/2018      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 1
+B058F04     Sensitivity:                           +2.13161E+03
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/03/2018 to 08/15/2018      |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 2
+B053F05     Response in units lookup:              V - Volts
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +1.00000E+00
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      0
+B053F14     Number of poles:                       0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/03/2018 to 08/15/2018      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 2
+B058F04     Sensitivity:                           +1.00000E+00
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/03/2018 to 08/15/2018      |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 3
+B054F05     Response in units lookup:              V - Volts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  0
+B054F10     Number of denominators:                0
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/03/2018 to 08/15/2018      |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  3
+B057F04     Input sample rate (HZ):                 2.0000E+01
+B057F05     Decimation factor:                      00001
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +0.0000E+00
+B057F08     Correction applied (seconds):          +0.0000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/03/2018 to 08/15/2018      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 3
+B058F04     Sensitivity:                           +1.66215E+06
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/03/2018 to 08/15/2018      |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 4
+B054F05     Response in units lookup:              counts - Digital Counts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  67
+B054F10     Number of denominators:                0
+#              Numerator coefficients:
+#              i  coefficient   error
+B054F08-09     0  -3.65342E-17  +0.00000E+00
+B054F08-09     1  +3.67488E-08  +0.00000E+00
+B054F08-09     2  -4.27060E-07  +0.00000E+00
+B054F08-09     3  +1.14502E-06  +0.00000E+00
+B054F08-09     4  -1.87594E-07  +0.00000E+00
+B054F08-09     5  -3.37274E-07  +0.00000E+00
+B054F08-09     6  +2.78747E-06  +0.00000E+00
+B054F08-09     7  -3.74403E-06  +0.00000E+00
+B054F08-09     8  +5.41172E-06  +0.00000E+00
+B054F08-09     9  +7.47336E-06  +0.00000E+00
+B054F08-09    10  -5.17759E-04  +0.00000E+00
+B054F08-09    11  +2.10677E-04  +0.00000E+00
+B054F08-09    12  +4.63258E-05  +0.00000E+00
+B054F08-09    13  -6.08222E-04  +0.00000E+00
+B054F08-09    14  +1.44175E-03  +0.00000E+00
+B054F08-09    15  -2.40627E-03  +0.00000E+00
+B054F08-09    16  +3.22534E-03  +0.00000E+00
+B054F08-09    17  -3.50639E-03  +0.00000E+00
+B054F08-09    18  +2.81441E-03  +0.00000E+00
+B054F08-09    19  -7.71971E-04  +0.00000E+00
+B054F08-09    20  -2.80512E-03  +0.00000E+00
+B054F08-09    21  +7.77805E-03  +0.00000E+00
+B054F08-09    22  -1.35815E-02  +0.00000E+00
+B054F08-09    23  +1.91765E-02  +0.00000E+00
+B054F08-09    24  -2.29704E-02  +0.00000E+00
+B054F08-09    25  +2.40398E-02  +0.00000E+00
+B054F08-09    26  -2.20986E-02  +0.00000E+00
+B054F08-09    27  +8.60734E-03  +0.00000E+00
+B054F08-09    28  +1.17525E-02  +0.00000E+00
+B054F08-09    29  -4.47787E-02  +0.00000E+00
+B054F08-09    30  +9.64923E-02  +0.00000E+00
+B054F08-09    31  -1.91755E-01  +0.00000E+00
+B054F08-09    32  +5.27652E-01  +0.00000E+00
+B054F08-09    33  +7.24167E-01  +0.00000E+00
+B054F08-09    34  -1.56905E-01  +0.00000E+00
+B054F08-09    35  +4.42574E-02  +0.00000E+00
+B054F08-09    36  +3.14168E-03  +0.00000E+00
+B054F08-09    37  -2.66714E-02  +0.00000E+00
+B054F08-09    38  +3.61532E-02  +0.00000E+00
+B054F08-09    39  -3.85687E-02  +0.00000E+00
+B054F08-09    40  +3.10842E-02  +0.00000E+00
+B054F08-09    41  -2.35259E-02  +0.00000E+00
+B054F08-09    42  +1.53211E-02  +0.00000E+00
+B054F08-09    43  -7.40398E-03  +0.00000E+00
+B054F08-09    44  +1.09645E-03  +0.00000E+00
+B054F08-09    45  +3.09797E-03  +0.00000E+00
+B054F08-09    46  -5.19320E-03  +0.00000E+00
+B054F08-09    47  +5.56131E-03  +0.00000E+00
+B054F08-09    48  -4.76110E-03  +0.00000E+00
+B054F08-09    49  +3.38213E-03  +0.00000E+00
+B054F08-09    50  -1.92052E-03  +0.00000E+00
+B054F08-09    51  +7.15218E-04  +0.00000E+00
+B054F08-09    52  +7.67719E-05  +0.00000E+00
+B054F08-09    53  -4.51897E-04  +0.00000E+00
+B054F08-09    54  +5.02700E-04  +0.00000E+00
+B054F08-09    55  -5.65037E-04  +0.00000E+00
+B054F08-09    56  -5.56800E-05  +0.00000E+00
+B054F08-09    57  +1.57736E-05  +0.00000E+00
+B054F08-09    58  -1.41985E-06  +0.00000E+00
+B054F08-09    59  +8.14909E-07  +0.00000E+00
+B054F08-09    60  +6.80795E-07  +0.00000E+00
+B054F08-09    61  -1.25273E-06  +0.00000E+00
+B054F08-09    62  +1.52435E-06  +0.00000E+00
+B054F08-09    63  -2.83336E-07  +0.00000E+00
+B054F08-09    64  -1.06384E-08  +0.00000E+00
+B054F08-09    65  +1.25712E-09  +0.00000E+00
+B054F08-09    66  -5.42954E-11  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/03/2018 to 08/15/2018      |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  4
+B057F04     Input sample rate (HZ):                 2.0000E+01
+B057F05     Decimation factor:                      00001
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +1.6305E+00
+B057F08     Correction applied (seconds):          +1.6305E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/03/2018 to 08/15/2018      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 4
+B058F04     Sensitivity:                           +1.00000E+00
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     02/03/2018 to 08/15/2018      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 0
+B058F04     Sensitivity:                           +3.54330E+09
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+###################################################################################
+#
+B050F03     Station:     KAPI
+B050F16     Network:     II
+B052F03     Location:    00
+B052F04     Channel:     BHZ
+B052F22     Start date:  2018,228,00:00:00
+B052F23     End date:    2018,317,06:59:59
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/16/2018 to 11/13/2018      |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 1
+B053F05     Response in units lookup:              m/s - Velocity in Meters Per Second
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +2.86271E+02
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      2
+B053F14     Number of poles:                       5
+#              Complex zeroes:
+#              i  real          imag          real_error    imag_error
+B053F10-13     0  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F10-13     1  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+#              Complex poles:
+#              i  real          imag          real_error    imag_error
+B053F15-18     0  -7.63942E-04  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     1  -1.16500E-02  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     2  -3.34380E+00  +4.09826E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     3  -3.34380E+00  -4.09826E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     4  -9.96443E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/16/2018 to 11/13/2018      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 1
+B058F04     Sensitivity:                           +2.13161E+03
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/16/2018 to 11/13/2018      |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 2
+B053F05     Response in units lookup:              V - Volts
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +1.00000E+00
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      0
+B053F14     Number of poles:                       0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/16/2018 to 11/13/2018      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 2
+B058F04     Sensitivity:                           +1.00000E+00
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/16/2018 to 11/13/2018      |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 3
+B054F05     Response in units lookup:              V - Volts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  0
+B054F10     Number of denominators:                0
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/16/2018 to 11/13/2018      |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  3
+B057F04     Input sample rate (HZ):                 2.0000E+01
+B057F05     Decimation factor:                      00001
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +0.0000E+00
+B057F08     Correction applied (seconds):          +0.0000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/16/2018 to 11/13/2018      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 3
+B058F04     Sensitivity:                           +1.66215E+06
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/16/2018 to 11/13/2018      |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 4
+B054F05     Response in units lookup:              counts - Digital Counts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  67
+B054F10     Number of denominators:                0
+#              Numerator coefficients:
+#              i  coefficient   error
+B054F08-09     0  -3.65342E-17  +0.00000E+00
+B054F08-09     1  +3.67488E-08  +0.00000E+00
+B054F08-09     2  -4.27060E-07  +0.00000E+00
+B054F08-09     3  +1.14502E-06  +0.00000E+00
+B054F08-09     4  -1.87594E-07  +0.00000E+00
+B054F08-09     5  -3.37274E-07  +0.00000E+00
+B054F08-09     6  +2.78747E-06  +0.00000E+00
+B054F08-09     7  -3.74403E-06  +0.00000E+00
+B054F08-09     8  +5.41172E-06  +0.00000E+00
+B054F08-09     9  +7.47336E-06  +0.00000E+00
+B054F08-09    10  -5.17759E-04  +0.00000E+00
+B054F08-09    11  +2.10677E-04  +0.00000E+00
+B054F08-09    12  +4.63258E-05  +0.00000E+00
+B054F08-09    13  -6.08222E-04  +0.00000E+00
+B054F08-09    14  +1.44175E-03  +0.00000E+00
+B054F08-09    15  -2.40627E-03  +0.00000E+00
+B054F08-09    16  +3.22534E-03  +0.00000E+00
+B054F08-09    17  -3.50639E-03  +0.00000E+00
+B054F08-09    18  +2.81441E-03  +0.00000E+00
+B054F08-09    19  -7.71971E-04  +0.00000E+00
+B054F08-09    20  -2.80512E-03  +0.00000E+00
+B054F08-09    21  +7.77805E-03  +0.00000E+00
+B054F08-09    22  -1.35815E-02  +0.00000E+00
+B054F08-09    23  +1.91765E-02  +0.00000E+00
+B054F08-09    24  -2.29704E-02  +0.00000E+00
+B054F08-09    25  +2.40398E-02  +0.00000E+00
+B054F08-09    26  -2.20986E-02  +0.00000E+00
+B054F08-09    27  +8.60734E-03  +0.00000E+00
+B054F08-09    28  +1.17525E-02  +0.00000E+00
+B054F08-09    29  -4.47787E-02  +0.00000E+00
+B054F08-09    30  +9.64923E-02  +0.00000E+00
+B054F08-09    31  -1.91755E-01  +0.00000E+00
+B054F08-09    32  +5.27652E-01  +0.00000E+00
+B054F08-09    33  +7.24167E-01  +0.00000E+00
+B054F08-09    34  -1.56905E-01  +0.00000E+00
+B054F08-09    35  +4.42574E-02  +0.00000E+00
+B054F08-09    36  +3.14168E-03  +0.00000E+00
+B054F08-09    37  -2.66714E-02  +0.00000E+00
+B054F08-09    38  +3.61532E-02  +0.00000E+00
+B054F08-09    39  -3.85687E-02  +0.00000E+00
+B054F08-09    40  +3.10842E-02  +0.00000E+00
+B054F08-09    41  -2.35259E-02  +0.00000E+00
+B054F08-09    42  +1.53211E-02  +0.00000E+00
+B054F08-09    43  -7.40398E-03  +0.00000E+00
+B054F08-09    44  +1.09645E-03  +0.00000E+00
+B054F08-09    45  +3.09797E-03  +0.00000E+00
+B054F08-09    46  -5.19320E-03  +0.00000E+00
+B054F08-09    47  +5.56131E-03  +0.00000E+00
+B054F08-09    48  -4.76110E-03  +0.00000E+00
+B054F08-09    49  +3.38213E-03  +0.00000E+00
+B054F08-09    50  -1.92052E-03  +0.00000E+00
+B054F08-09    51  +7.15218E-04  +0.00000E+00
+B054F08-09    52  +7.67719E-05  +0.00000E+00
+B054F08-09    53  -4.51897E-04  +0.00000E+00
+B054F08-09    54  +5.02700E-04  +0.00000E+00
+B054F08-09    55  -5.65037E-04  +0.00000E+00
+B054F08-09    56  -5.56800E-05  +0.00000E+00
+B054F08-09    57  +1.57736E-05  +0.00000E+00
+B054F08-09    58  -1.41985E-06  +0.00000E+00
+B054F08-09    59  +8.14909E-07  +0.00000E+00
+B054F08-09    60  +6.80795E-07  +0.00000E+00
+B054F08-09    61  -1.25273E-06  +0.00000E+00
+B054F08-09    62  +1.52435E-06  +0.00000E+00
+B054F08-09    63  -2.83336E-07  +0.00000E+00
+B054F08-09    64  -1.06384E-08  +0.00000E+00
+B054F08-09    65  +1.25712E-09  +0.00000E+00
+B054F08-09    66  -5.42954E-11  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/16/2018 to 11/13/2018      |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  4
+B057F04     Input sample rate (HZ):                 2.0000E+01
+B057F05     Decimation factor:                      00001
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +1.6305E+00
+B057F08     Correction applied (seconds):          +1.6305E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/16/2018 to 11/13/2018      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 4
+B058F04     Sensitivity:                           +1.00000E+00
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |     08/16/2018 to 11/13/2018      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 0
+B058F04     Sensitivity:                           +3.54330E+09
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+###################################################################################
+#
+B050F03     Station:     KAPI
+B050F16     Network:     II
+B052F03     Location:    00
+B052F04     Channel:     BHZ
+B052F22     Start date:  2018,317,07:00:00
+B052F23     End date:    No Ending Time
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |    11/13/2018 to No Ending Time   |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 1
+B053F05     Response in units lookup:              m/s - Velocity in Meters Per Second
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +4.00502E+01
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      6
+B053F14     Number of poles:                       7
+#              Complex zeroes:
+#              i  real          imag          real_error    imag_error
+B053F10-13     0  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F10-13     1  +0.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F10-13     2  -5.03000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F10-13     3  -5.57043E+01  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F10-13     4  -2.54648E+01  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F10-13     5  -4.90038E+02  +0.00000E+00  +0.00000E+00  +0.00000E+00
+#              Complex poles:
+#              i  real          imag          real_error    imag_error
+B053F15-18     0  -1.88195E-03  +1.89220E-03  +0.00000E+00  +0.00000E+00
+B053F15-18     1  -1.88195E-03  -1.89220E-03  +0.00000E+00  +0.00000E+00
+B053F15-18     2  -5.18410E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     3  -2.17000E+01  +0.00000E+00  +0.00000E+00  +0.00000E+00
+B053F15-18     4  -5.40000E+01  +5.85000E+01  +0.00000E+00  +0.00000E+00
+B053F15-18     5  -5.40000E+01  -5.85000E+01  +0.00000E+00  +0.00000E+00
+B053F15-18     6  -1.96397E+02  +0.00000E+00  +0.00000E+00  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |    11/13/2018 to No Ending Time   |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 1
+B058F04     Sensitivity:                           +1.08878E+03
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |    Response (Poles and Zeros)     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |    11/13/2018 to No Ending Time   |
+#                  +-----------------------------------+
+#
+B053F03     Transfer function type:                B - Analog response, in Hz
+B053F04     Stage sequence number:                 2
+B053F05     Response in units lookup:              V - Volts
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +1.00000E+00
+B053F08     Normalization frequency:               +5.00000E-02
+B053F09     Number of zeroes:                      0
+B053F14     Number of poles:                       0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |    11/13/2018 to No Ending Time   |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 2
+B058F04     Sensitivity:                           +1.00000E+00
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |    11/13/2018 to No Ending Time   |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 3
+B054F05     Response in units lookup:              V - Volts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  0
+B054F10     Number of denominators:                0
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |    11/13/2018 to No Ending Time   |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  3
+B057F04     Input sample rate (HZ):                 4.0000E+01
+B057F05     Decimation factor:                      00001
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +0.0000E+00
+B057F08     Correction applied (seconds):          +0.0000E+00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |    11/13/2018 to No Ending Time   |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 3
+B058F04     Sensitivity:                           +1.67184E+06
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Response (Coefficients)      |
+#                  |        II  KAPI   00  BHZ         |
+#                  |    11/13/2018 to No Ending Time   |
+#                  +-----------------------------------+
+#
+B054F03     Transfer function type:                D
+B054F04     Stage sequence number:                 4
+B054F05     Response in units lookup:              counts - Digital Counts
+B054F06     Response out units lookup:             counts - Digital Counts
+B054F07     Number of numerators:                  39
+B054F10     Number of denominators:                0
+#              Numerator coefficients:
+#              i  coefficient   error
+B054F08-09     0  +4.18952E-13  +0.00000E+00
+B054F08-09     1  +3.30318E-04  +0.00000E+00
+B054F08-09     2  +1.02921E-03  +0.00000E+00
+B054F08-09     3  -3.14123E-03  +0.00000E+00
+B054F08-09     4  +2.05709E-04  +0.00000E+00
+B054F08-09     5  +1.52521E-03  +0.00000E+00
+B054F08-09     6  -6.23193E-03  +0.00000E+00
+B054F08-09     7  +1.04801E-02  +0.00000E+00
+B054F08-09     8  -1.31202E-02  +0.00000E+00
+B054F08-09     9  +1.07821E-02  +0.00000E+00
+B054F08-09    10  -1.44455E-03  +0.00000E+00
+B054F08-09    11  -1.58729E-02  +0.00000E+00
+B054F08-09    12  +3.95074E-02  +0.00000E+00
+B054F08-09    13  -6.51036E-02  +0.00000E+00
+B054F08-09    14  +8.53716E-02  +0.00000E+00
+B054F08-09    15  -8.91913E-02  +0.00000E+00
+B054F08-09    16  +5.00619E-02  +0.00000E+00
+B054F08-09    17  +8.37233E-01  +0.00000E+00
+B054F08-09    18  +2.66723E-01  +0.00000E+00
+B054F08-09    19  -1.66693E-01  +0.00000E+00
+B054F08-09    20  +9.52840E-02  +0.00000E+00
+B054F08-09    21  -5.09218E-02  +0.00000E+00
+B054F08-09    22  +1.61458E-02  +0.00000E+00
+B054F08-09    23  +7.06362E-03  +0.00000E+00
+B054F08-09    24  -1.83877E-02  +0.00000E+00
+B054F08-09    25  +1.99414E-02  +0.00000E+00
+B054F08-09    26  -1.54895E-02  +0.00000E+00
+B054F08-09    27  +8.52735E-03  +0.00000E+00
+B054F08-09    28  -2.55789E-03  +0.00000E+00
+B054F08-09    29  -1.81103E-03  +0.00000E+00
+B054F08-09    30  +2.42649E-03  +0.00000E+00
+B054F08-09    31  -3.75769E-03  +0.00000E+00
+B054F08-09    32  +4.67293E-04  +0.00000E+00
+B054F08-09    33  +6.33072E-04  +0.00000E+00
+B054F08-09    34  -1.56874E-06  +0.00000E+00
+B054F08-09    35  -1.25480E-05  +0.00000E+00
+B054F08-09    36  +3.21041E-07  +0.00000E+00
+B054F08-09    37  -2.63324E-08  +0.00000E+00
+B054F08-09    38  -5.09997E-08  +0.00000E+00
+#
+#                  +-----------------------------------+
+#                  |            Decimation             |
+#                  |        II  KAPI   00  BHZ         |
+#                  |    11/13/2018 to No Ending Time   |
+#                  +-----------------------------------+
+#
+B057F03     Stage sequence number:                  4
+B057F04     Input sample rate (HZ):                 4.0000E+01
+B057F05     Decimation factor:                      00001
+B057F06     Decimation offset:                      00000
+B057F07     Estimated delay (seconds):             +4.3045E-01
+B057F08     Correction applied (seconds):          +4.3045E-01
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |    11/13/2018 to No Ending Time   |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 4
+B058F04     Sensitivity:                           +1.00000E+00
+B058F05     Frequency of sensitivity:              +0.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        II  KAPI   00  BHZ         |
+#                  |    11/13/2018 to No Ending Time   |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 0
+B058F04     Sensitivity:                           +1.82030E+09
+B058F05     Frequency of sensitivity:              +5.00000E-02
+B058F06     Number of calibrations:                0

@@ -241,49 +241,93 @@ def apply_PSD_metric(concierge, r_stream, *args, **kwargs):
     evalresp = None
     if 'evalresp' in kwargs:
         evalresp = kwargs['evalresp']
+    noCorrection = True
+    if 'noCorrection' in kwargs:
+        noCorrection = kwargs['noCorrection']
+ 
         
     r_listOfLists = None
     r_evalresp = evalresp
-    if  evalresp is not None:
-        with localconverter(ro.default_converter + pandas2ri.converter):
-            ###################
-            r_evalresp = ro.conversion.py2rpy(evalresp)
-            ###################
-        r_listOfLists = R_function(r_stream, evalresp=r_evalresp)
+
+
+
+    if noCorrection == True:
+        r_listOfLists = R_function(r_stream, noCorrection=noCorrection)
+
+        uncorrected = r_listOfLists[1]
+
+        # uncorrected PSD dataframe must be constructed (not returned when noCorrection=True)
+        starts = list()
+        ends = list()
+        frequencies = list()
+        powers = list()
+        for row in uncorrected:
+            for freq,pow in zip(row.slots['freqs'], row.slots['amps']):
+                starts.append(row.slots['starttime'][0])
+                ends.append(row.slots['endtime'][0])
+                frequencies.append(freq)
+                powers.append(pow)
+            
+
+        PSDUncorrected = pd.DataFrame(list(zip(starts, ends, frequencies,powers)),
+               columns =['starttime', 'endtime','freq','power'])
+        
+        # No PDFs for uncorrected psds, from Rcode
+        PDF = pd.DataFrame()
+        # No derived metrics for uncorrected psds
+        df = pd.DataFrame()
+        
+        return (df, PSDUncorrected, PDF)
+
     else:
-        concierge.logger.debug('calling IRIS evalresp web service')
-        r_listOfLists = R_function(r_stream)
+        if  evalresp is not None:
+            with localconverter(ro.default_converter + pandas2ri.converter):
+                ###################
+                r_evalresp = ro.conversion.py2rpy(evalresp)
+                ###################
+            r_listOfLists = R_function(r_stream, evalresp=r_evalresp)
+        else:
+            # Could be IRIS or truly empty
+            concierge.logger.debug('calling IRIS evalresp web service')
+            r_listOfLists = R_function(r_stream)
 
-    r_metriclist = r_listOfLists[0]
+
+        r_metriclist = r_listOfLists[0]
+        if r_metriclist:
+            # Derived Metrics
+            r_dataframe = _R_metricList2DF(r_metriclist)
+            pandas2ri.activate()
+            with localconverter(ro.default_converter + pandas2ri.converter):
+                df = ro.conversion.rpy2py(r_dataframe)
+            pandas2ri.deactivate()
+
+            # Convert columns from R POSIXct to python UTCDateTime
+            df['starttime'] = df['starttime'].apply(UTCDateTime)
+            df['endtime'] = df['endtime'].apply(UTCDateTime)
+
+        # PSDMetric returns no PSD derived metrics 
+        else:   
+            df = pd.DataFrame()
     
-    if r_metriclist:
-        r_dataframe = _R_metricList2DF(r_metriclist)
-
+        # correctedPSD is returned as a dataframe
+        r_correctedPSD = r_listOfLists[2]
         with localconverter(ro.default_converter + pandas2ri.converter):
-            df = ro.conversion.rpy2py(r_dataframe)
+            PSDCorrected = ro.conversion.rpy2py(r_correctedPSD)
 
         # Convert columns from R POSIXct to python UTCDateTime
-        df['starttime'] = df['starttime'].apply(UTCDateTime)
-        df['endtime'] = df['endtime'].apply(UTCDateTime)
+        PSDCorrected.starttime = PSDCorrected.starttime.apply(UTCDateTime)
+        PSDCorrected.endtime = PSDCorrected.endtime.apply(UTCDateTime)
 
-    # PSDMetric returns no PSD derived metrics 
-    else:    
-        df = pd.DataFrame()
-    
-    # correctedPSD is returned as a dataframe
-    r_correctedPSD = r_listOfLists[2]
-    with localconverter(ro.default_converter + pandas2ri.converter):
-        PSDCorrected = ro.conversion.rpy2py(r_correctedPSD)
+        r_PDF = r_listOfLists[3]
+        with localconverter(ro.default_converter + pandas2ri.converter):
+            PDF = ro.conversion.rpy2py(r_PDF)
 
-    # Convert columns from R POSIXct to python UTCDateTime
-    PSDCorrected.starttime = PSDCorrected.starttime.apply(UTCDateTime)
-    PSDCorrected.endtime = PSDCorrected.endtime.apply(UTCDateTime)
+        return (df, PSDCorrected, PDF)
 
-    r_PDF = r_listOfLists[3]
-    with localconverter(ro.default_converter + pandas2ri.converter):
-        PDF = ro.conversion.rpy2py(r_PDF)
 
-    return (df, PSDCorrected, PDF)
+
+
+
 
 
 def apply_PSD_plot(r_stream, filepath, evalresp=None):
