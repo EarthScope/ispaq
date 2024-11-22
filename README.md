@@ -48,7 +48,7 @@ ISPAQ contains business logic similar to MUSTANG, such that the computed metrics
 version of MUSTANG that users are free to leverage on their own hardware.
 
 
-#### Questions or comments can be directed to the EarthScope Quality Assurance Group at <a href="mailto:dmc_qa@iris.washington.edu">dmc_qa@iris.washington.edu</a>.
+#### Questions or comments can be directed to the EarthScope Quality Assurance Group at <a href="mailto:data-help@earthscope.org">data-help@earthscope.org</a>.
 
 
 # Installation
