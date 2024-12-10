@@ -143,9 +143,9 @@ python run_ispaq.py -I    #downloads latest packages from CRAN (https://cran.r-p
 
 Or alternatively, install the EarthScope R packages from local files: 
 ```
-R CMD INSTALL seismicRoll_1.1.4.tar.gz
-R CMD INSTALL IRISSeismic_1.6.6.tar.gz
-R CMD INSTALL IRISMustangMetrics_2.4.5.tar.gz
+R CMD INSTALL seismicRoll_1.1.5.tar.gz
+R CMD INSTALL IRISSeismic_1.6.7.tar.gz
+R CMD INSTALL IRISMustangMetrics_2.4.7.tar.gz
 ```
 
 You should run `./run_ispaq.py -U` after you update ISPAQ minor versions to verify that you have both the 
