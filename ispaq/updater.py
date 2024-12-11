@@ -21,7 +21,6 @@ from rpy2.robjects.conversion import localconverter
 
 
 
-os.environ['MACOSX_DEPLOYMENT_TARGET'] = "10.9"
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
