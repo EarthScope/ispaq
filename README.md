@@ -2,7 +2,7 @@
 
 ISPAQ is a Python client that allows seismic data scientists and instrumentation operators to run data 
 quality metrics on their own workstation, using much of same code as used in EarthScope's (formerly IRIS) 
-[MUSTANG](http://service.iris.edu/mustang/) data quality web service. It can be installed on Linux 
+[MUSTANG](https://service.earthscope.org/mustang/) data quality web service. It can be installed on Linux 
 and macOS.
 
 Users have the ability to create personalized _preference files_ that list combinations
@@ -10,9 +10,9 @@ of station specifiers and statistical metrics of interest, such that they can be
 repeatedly over data from many different time periods. Alternatively, single station specifiers 
 and metrics can be specified on the command line for simple runs or for use in shell scripting.
 
-ISPAQ offers the option for access to [FDSN Web Services](http://www.fdsn.org/webservices/) to retrieve 
+ISPAQ offers the option for access to [FDSN Web Services](https://www.fdsn.org/webservices/) to retrieve 
 seismic data and metadata directly from selected data centers supporting the FDSN protocol. Users also 
-have the option to read local [miniSEED](http://ds.iris.edu/ds/nodes/dmc/data/formats/seed/) files and 
+have the option to read local [miniSEED](https://ds.iris.edu/ds/nodes/dmc/data/formats/seed/) files and 
 metadata on their own workstations and construct on-the-spot data quality analyses on that data.
 
 Output is optionally in CSV format or written to an internal SQLite database for tabular metrics. 
@@ -28,7 +28,7 @@ MUSTANG.
 # Background
 
 [EarthScope] (https://www.earthscope.org) (formerly IRIS) has developed a 
-comprehensive quality assurance system called [MUSTANG](http://service.iris.edu/mustang/).
+comprehensive quality assurance system called [MUSTANG](https://service.earthscope.org/mustang/).
 
 The MUSTANG system was built to operate at EarthScope and is not generally portable. 
 However, the key MUSTANG component is the Metric Calculators and these are publicly available. 
@@ -38,7 +38,7 @@ user's workstation. This has the benefit of allowing users to generate just-in-t
 of their choosing, whether stored an FDSN data center or on the user's own data store.
 
 EarthScope has over 40 MUSTANG metrics algorithms, most written in R, that are now available in the 
-[CRAN](http://cran.r-project.org/) (Comprehensive R Archive Network) repository under the name 
+[CRAN](https://cran.r-project.org/) (Comprehensive R Archive Network) repository under the name 
 [IRISMustangMetrics](https://cran.r-project.org/web/packages/IRISMustangMetrics/index.html). 
 ISPAQ comes with the latest version of these packages available in CRAN and ISPAQ has an update capability to 
 allow users to seamlessly upgrade these R packages as new releases become available.
@@ -90,11 +90,11 @@ git pull origin master
 ## Install the Anaconda Environment
 
 [Anaconda](https://www.anaconda.com) is quickly becoming the *defacto* package manager for 
-scientific applications written python or R. [Miniconda](http://conda.pydata.org/miniconda.html) is a trimmed 
+scientific applications written python or R. [Miniconda](https://conda.pydata.org/miniconda.html) is a trimmed 
 down version of Anaconda that contains the bare necessities without loading a large list of data science packages 
 up front. With miniconda, you can set up a custom python environment with just the packages you need to run ISPAQ.
 
-Proceed to the [Miniconda](http://conda.pydata.org/miniconda.html) web site to find the installer for your
+Proceed to the [Miniconda](https://conda.pydata.org/miniconda.html) web site to find the installer for your
 operating system before proceeding with the instructions below. If you can run ```conda``` from the command 
 line, then you know you have it successfully installed.
 
@@ -258,7 +258,7 @@ If `--log-level` is not specified, the default log-level is `INFO`.
 
 When `--starttime` is invoked without `--endtime`, metrics are run for a single day. Metrics that are defined 
 as day-long metrics (24 hour windows, see metrics documentation at 
-[MUSTANG](http://services.iris.edu/mustang/measurements/1)) will be calculated for the time period 
+[MUSTANG](https://services.iris.edu/mustang/measurements/1)) will be calculated for the time period 
 `00:00:00-23:59:59.9999`. An endtime of `YYYY-DD-MM` is interpreted as  `YYYY-DD-MM 00:00:00` so that 
 e.g., `--starttime=2016-01-01 --endtime=2016-01-02` will also calculate one day of metrics. When an end time 
 greater than one day is requested, metrics will be calculated by cycling through multiple single days to produce 
@@ -309,15 +309,15 @@ as `Network.Station.Location.Channel[.Quality]`. This format pattern can be modi
 **Data_Access** has four entries describing where to find data, metadata, events, and optionally response files.
 
 * `dataselect_url:` should indicate a *miniSEED* data resource as one of the *FDSN web service aliases* used by ObsPy 
-(e.g. `IRIS`), the EarthScope PH5 web service alias 'IRISPH5', an explicit URL pointing to an FDSN web service domain (e.g. `http://service.iris.edu` ), or a file 
+(e.g. `IRIS`), the EarthScope PH5 web service alias 'IRISPH5', an explicit URL pointing to an FDSN web service domain (e.g. `https://service.earthscope.org` ), or a file 
 path to a directory containing miniSEED files (_See: "Using Local Data Files", below_).
 
 > _NOTE:_ When data is missing and it is marked as percent_availability=0, the quality code to assign to the target must be inferred. To do this, the current logic is to assign quality "M" for EarthScope (fdsnws) derived data, and quality "D" for all other data (IRISPH5, local data, or any other webservice). We are aware that this is too simplistic to truly capture the range of possible quality codes, and have it on our radar to improve with a later release. 
 
 * `station_url:` should indicate a metadata location as an FDSN web service alias, the EarthScope PH5 web service alias 'IRISPH5',
-an explicit URL, or a path to a file containing metadata in [StationXML](http://www.fdsn.org/xml/station/) format 
-([schema](http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd)). For web services, this should point to the same place as 
-`dataselect_url` (e.g. `http://service.iris.edu`). For local metadata, StationXML is read at the channel level and any 
+an explicit URL, or a path to a file containing metadata in [StationXML](https://www.fdsn.org/xml/station/) format 
+([schema](https://www.fdsn.org/xml/station/fdsn-station-1.0.xsd)). For web services, this should point to the same place as 
+`dataselect_url` (e.g. `https://service.earthscope.org`). For local metadata, StationXML is read at the channel level and any 
 response information is ignored. Local instrument response (if used) is expected to be in RESP file format and specified 
 in the `resp_dir` entry (see below). If neither webservices or StationXML is available for metadata, the `station_url` entry 
 should be left unspecified (blank). In this case, metrics that do not require metadata will still be calculated. Metrics that 
@@ -336,17 +336,17 @@ only be used by metrics that require event information in order to be calculated
 orientation_check*).
 
 * `resp_dir:` should be unspecified or absent if local response files are not used. The default behavior
- is to retrieve response information from the EarthScope web service [Evalresp](http://service.iris.edu/irisws/evalresp/1/). 
-To use local instrument responses instead of [Evalresp](http://service.iris.edu/irisws/evalresp/1/),
+ is to retrieve response information from the EarthScope web service [Evalresp](https://service.earthscope.org/irisws/evalresp/1/). 
+To use local instrument responses instead of [Evalresp](https://service.earthscope.org/irisws/evalresp/1/),
  this parameter should indicate a path to a directory containing response files 
-in [RESP](http://ds.iris.edu/ds/nodes/dmc/data/formats/resp/) format. Local response files are expected to be 
+in [RESP](https://ds.iris.edu/ds/nodes/dmc/data/formats/resp/) format. Local response files are expected to be 
 named `RESP.network.station.location.channel` or `RESP.station.network.location.channel`. Filenames with extension `.txt` 
 are also acceptable. E.g., `RESP.IU.CASY.00.BH1, RESP.CASY.IU.00.BH1, RESP.IU.CASY.00.BH1.txt.` 
 
     Response information is only needed when generating PSD derived metrics, PDF plots,
 or the transfer_function metric.    
 
-    If you are starting from a dataless SEED, you can create RESP files using [rdseed](http://ds.iris.edu/ds/nodes/dmc/manuals/rdseed/).
+    If you are starting from a dataless SEED, you can create RESP files using [rdseed](https://ds.iris.edu/ds/nodes/dmc/manuals/rdseed/).
 
 **Preferences** has eight entries describing ispaq output.
 
@@ -629,29 +629,29 @@ The command-line argument `-L` will list the names of available metrics.
 The number of times that the 'Amplifier saturation detected' bit in the 'dq_flags' byte is set within a 
 miniSEED file. This data quality flag is set by some dataloggers in the fixed section of the miniSEED header. 
 The flag was intended to indicate that the preamp is being overdriven, but the exact meaning is 
-datalogger-specific. [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/amplifier_saturation/)
+datalogger-specific. [Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/amplifier_saturation/)
 
 * **calibration_signal**:
 The number of times that the 'Calibration signals present' bit in the 'act_flags' byte is set within a miniSEED 
 file. A value of 1 indicates that a calibration signal was being sent to that channel.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/calibration_signal/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/calibration_signal/)
 
 * **clock_locked**:
 The number of times that the 'Clock locked' bit in the 'io_flags' byte is set within a miniSEED file. This 
 clock flag is set to 1 by some dataloggers in the fixed section of the miniSEED header to indicate that its 
 GPS has locked with enough satellites to obtain a time/position fix.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/clock_locked/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/clock_locked/)
 
 * **cross_talk**:
 The correlation coefficient of channel pairs from the same sensor. Data windows are defined by seismic events. 
 Correlation coefficients near 1 may indicate cross-talk between those channels.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/cross_talk/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/cross_talk/)
 
 * **dead_channel_gsn**:
 A boolean measurement providing a TRUE or FALSE indication that the median PSD values of channel exhibit an
 average 5dB deviation below the NLNM in the 4 to 8s period band as measured using a McNamara PDF noise matrix. 
 The TRUE condition is indicated with a numeric representation of '1' and the FALSE condition represented as a '0'.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/dead_channel_gsn/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/dead_channel_gsn/)
     + channels = [BCDHLM][HX].  
 
 * **dead_channel_lin**:
@@ -660,100 +660,100 @@ for a 24 hour period). Values of the PSD mean curve over the band linLoPeriod:li
 by a least squares linear regression of PSD mean ~ log(period). The dead_channel_lin metric is the standard deviation 
 of the fit residuals of this regression. Lower numbers indicate a better fit and a higher likelihood that the mean 
 PSD is linear - an indication that the sensor is not returning expected seismic energy.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/dead_channel_lin/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/dead_channel_lin/)
     + channels = [BCDHM][HX].
 
 * **digital_filter_charging**:
 The number of times that the 'A digital filter may be charging' bit in the 'dq_flags' byte is set within a miniSEED 
 file. Data samples acquired while a datalogger is loading filter parameters - such as after a reboot - may contain 
 a transient.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/digital_filter_charging/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/digital_filter_charging/)
 
 * **digitizer_clipping**:
 The number of times that the 'Digitizer clipping detected' bit in the 'dq_flags' byte is set within a miniSEED file. 
 This flag indicates that the input voltage has exceeded the maximum range of the ADC.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/digitizer_clipping/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/digitizer_clipping/)
 
 * **event_begin**:
 The number of times that the 'Beginning of an event, station trigger' bit in the 'act_flags' byte is set within a 
 miniSEED file. This metric can be used to quickly identify data days that may have events. It may also indicate 
 when trigger parameters need adjusting at a station.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/event_begin/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/event_begin/)
 
 * **event_end**:
 The number of times that the 'End of an event, station detrigger' bit in the 'act_flags' byte is set within a 
 miniSEED file. This metric can be used to quickly identify data days that may have events. It may also indicate 
 when trigger parameters need adjusting at a station.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/event_end/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/event_end/)
 
 * **event_in_progress**:
 The number of times that the 'Event in progress' bit in the 'act_flags' byte is set within a miniSEED file. This 
 metric can be used to quickly identify data days that may have events. It may also indicate when trigger 
 parameters need adjusting at a station.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/event_in_progress/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/event_in_progress/)
 
 * **glitches**:
 The number of times that the 'Glitches detected' bit in the 'dq_flags' byte is set within a miniSEED file. This 
 metric can be used to identify data with large filled values that data users may need to handle in a way that they 
 don't affect their research outcomes.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/glitches/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/glitches/)
 
 * **max_gap**:
 Indicates the size of the largest gap encountered within a 24-hour window.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/max_gap/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/max_gap/)
 
 * **max_overlap**:
 Indicates the size of the largest overlap in seconds encountered within a 24-hour window.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/max_overlap/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/max_overlap/)
 
 * **max_range**:
 This metric calculates the difference between the largest and smallest sample value in a 5 minute rolling window and returns the largest value encountered within a 24-hour timespan.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/max_range/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/max_range/)
 
 * **max_stalta**:
 The STALTAMetric function calculates the maximum of STA/LTA of the incoming seismic signal over a 24 hour period. 
 In order to reduce computation time of the rolling averages, the averaging window is advanced in 1/2 second 
-increments. [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/max_stalta/)
+increments. [Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/max_stalta/)
     + channels = [BHCDES][HPLX].
 
 * **missing_padded_data**:
 The number of times that the 'Missing/padded data present' bit in the 'dq_flags' byte is set within a miniSEED file. 
 This metric can be used to identify data with padded values that data users may need to handle in a way that they 
 don't affect their research outcomes.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/missing_padded_data/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/missing_padded_data/)
 
 * **num_gaps**:
 This metric reports the number of gaps encountered within a 24-hour window.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/num_gaps/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/num_gaps/)
 
 * **num_overlaps**:
 This metric reports the number of overlaps encountered in a 24-hour window.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/num_overlaps/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/num_overlaps/)
 
 * **num_spikes**:
 This metric uses a rolling Hampel filter, a median absolute deviation (MAD) test, to find outliers in a timeseries. 
 The number of discrete spikes is determined after adjacent outliers have been combined into individual spikes.
 NOTE: not to be confused with the spikes metric, which is an SOH flag only.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/num_spikes/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/num_spikes/)
     + channels = [BH][HX].  
 
 * **orientation_check**:
 Determine channel orientations by rotating horizontal channels until the resulting radial component maximizes 
 cross-correlation with the Hilbert transform of the vertical component. This metric uses Rayleigh waves from large, 
 shallow events.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/num_spikes/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/num_spikes/)
     + channels = [BCHLM][HX]. 
 
 * **pct_above_nhnm**:
 Percent above New High Noise Model. Percentage of Probability Density Function values that are above the New 
 High Noise Model. This value is calculated over the entire time period.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/pct_above_nhnm/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/pct_above_nhnm/)
     + channels = [BCDHM][HX].  
 
 * **pct_below_nlnm**:
 Percent below New Low Noise Model. Percentage of Probability Density Function values that are below the New Low Noise 
 Model. This value is calculated over the entire time period.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/pct_below_nlnm/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/pct_below_nlnm/)
     + channels = [BCDHM][HX].  
 
 * **pdf**:
@@ -766,104 +766,104 @@ Probability density function plots and/or text output (controlled by PDF_Prefere
 * **percent_availability**:
 The portion of data available for each day is represented as a percentage. 100% data available means full coverage of 
 data for the reported start and end time.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/percent_availability/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/percent_availability/)
 
 > _NOTE:_ percent_availability will only be calculated for target-days that have metadata.  If metadata is available but no data can be retrieved, then it will be marked as percent_availability=0.  In this case, the quality code associated with that target cannot be determined from the data itself and must be inferred. ISPAQ will currently mark data from `EarthScope` (fdsnws) as quality "M" and data from all other sources as "D". We are aware that this may not be able to capture the complexity of possible quality codes and will work on improving the logic in a future release.
 
 * **polarity_check**:
 The signed cross-correlation peak value based on the cross-correlation of two neighboring station channels in 
 proximity to a large earthquake signal. A negative peak close to -1.0 can indicate reversed polarity.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/polarity_check/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/polarity_check/)
     + channels = [BCFHLM][HX].   
 
 * **pressure_effects**:
 The correlation coefficient of a seismic channel and an LDO pressure channel. Large correlation coefficients may 
 indicate the presence of atmospheric effects in the seismic data.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/pressure_effects/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/pressure_effects/)
     + channels = LH., LDO  
   
 * **psd_corrected**:
 Power spectral density values, corrected for instrument response, in text format (starttime, endtime, 
 frequency, power).
-[Documentation](http://service.iris.edu/mustang/noise-psd/docs/1/help/)
+[Documentation](https://service.earthscope.org/mustang/noise-psd/docs/1/help/)
     + channels = .[HLGNPYXD].
 
 * **sample_max**:
 This metric reports largest amplitude value in counts encountered within a 24-hour window.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_max/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/sample_max/)
 
 * **sample_mean**:
 This metric reports the average amplitude value in counts over a 24-hour window. This mean is one measure of the 
 central tendency of the amplitudes that is calculated from every amplitude value present in the time series. The mean 
 value itself may not occur as an amplitude value in the times series.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_mean/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/sample_mean/)
 
 * **sample_median**:
 This metric reports the middle amplitude value in counts of sorted amplitude values from a 24-hour window. This median 
 is one measure of the central tendency of the amplitudes in a time series when values are arranged in sorted order. 
 The median value itself always occurs as an amplitude value in the times series.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_median/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/sample_median/)
 
 * **sample_min**:
 This metric reports smallest amplitude value in counts encountered within a 24-hour window.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_min/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/sample_min/)
 
 * **sample_rate_channel**:
 A boolean measurement that returns 0 if miniSEED and channel sample rates agree within 1%, or 1 if they disagree. 
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_rate_channel/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/sample_rate_channel/)
 
 * **sample_rate_resp**:
 A boolean measurement that returns 0 if miniSEED and response-derived sample rates agree within 15%, or 1 if they disagree. 
 Response-derived sample rates assume that the high-frequency amplitude rolloff is ~85% of the Nyquist frequency.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_rate_resp/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/sample_rate_resp/)
 
 * **sample_rms**:
 Displays the RMS variance of trace amplitudes within a 24-hour window.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_rms/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/sample_rms/)
 
 * **sample_snr**:
 A ratio of the RMS variance calculated from data 30 seconds before and 30 seconds following the predicted 
 first-arriving P phase.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_snr/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/sample_snr/)
     + channels = .[HLGNPYX].
 
 * **sample_unique**:
 This metric reports the number (count) of unique values in data trace over a 24-hour window. 
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/sample_unique/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/sample_unique/)
 
 * **spikes**:
 The number of times that the 'Spikes detected' bit in the 'dq_flags' byte is set within a miniSEED file. This data 
 quality flag is set by some dataloggers in the fixed section of the miniSEED header when short-duration spikes have 
 been detected in the data. Because spikes have shorter duration than the natural period of most seismic sensors, 
 spikes often indicate a problem introduced at or after the datalogger.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/spikes/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/spikes/)
   
 * **suspect_time_tag**:
 The number of times that the 'Time tag is questionable' bit in the 'dq_flags' byte is set within a miniSEED file. 
 This metric can be used to identify stations with GPS locking problems and data days with potential timing issues.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/suspect_time_tag/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/suspect_time_tag/)
 
 * **telemetry_sync_error**:
 The number of times that the 'Telemetry synchronization error' bit in the 'dq_flags' byte is set within a miniSEED 
 file. This metric can be searched to determine which stations may have telemetry problems or to identify or omit gappy 
 data from a data request.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/telemetry_sync_error/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/telemetry_sync_error/)
 
 * **timing_correction**:
 The number of times that the 'Time correction applied' bit in the 'act_flags' byte is set within a miniSEED file. 
 This clock quality flag is set by the network operator in the fixed section of the miniSEED header when a timing 
 correction stored in field 16 of the miniSEED fixed header has been applied to the data's original time stamp. 
 A value of 0 means that no timing correction has been applied.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/timing_correction/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/timing_correction/)
 
 * **timing_quality**:
 Daily average of the SEED timing quality stored in miniSEED blockette 1001. This value is vendor specific and 
 expressed as a percentage of maximum accuracy. Percentage is NULL if not present in the miniSEED.
-[Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/timing_quality/)
+[Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/timing_quality/)
 
 * **transfer_function**:
 Transfer function metric consisting of the gain ratio, phase difference and magnitude squared of two co-located 
-sensors. [Documentation](http://service.iris.edu/mustang/metrics/docs/1/desc/transfer_function/)
+sensors. [Documentation](https://service.earthscope.org/mustang/metrics/docs/1/desc/transfer_function/)
     + channels = [BCFHLM][HX].
 
 ### Access for restricted data

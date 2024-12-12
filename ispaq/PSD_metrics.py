@@ -6,7 +6,7 @@ ISPAQ Business Logic for PSD Metrics.
     Mazama Science
 :license:
     GNU Lesser General Public License, Version 3
-    (http://www.gnu.org/copyleft/lesser.html)
+    (https://www.gnu.org/copyleft/lesser.html)
 """
 
 import os
@@ -155,9 +155,9 @@ def PSD_metrics(concierge):
 
                     
                 except Exception as e:
-                    if str(e).lower().find('could not resolve host: service.iris.edu') > -1:
+                    if str(e).lower().find('could not resolve host: service.earthscope.org') > -1:
                         logger.debug(e)
-                        logger.error('getEvalresp failed to find service.iris.edu')
+                        logger.error('getEvalresp failed to find service.earthscope.org')
                     elif str(e).lower().find('no psds returned') > -1:
                         logger.warning("IRISMustangMetrics: No PSDs returned for %s" % (av.snclId))
                     else:
@@ -291,7 +291,7 @@ def PSD_metrics(concierge):
         try:
             resp_url = Client("IRIS")
         except Exception as e:
-            logger.error("Could not connect to 'http:/service.iris.edu/irisws/evalresp/1'")
+            logger.error("Could not connect to 'https:/service.earthscope.org/irisws/evalresp/1'")
             return None
 
     # ----- All available SNCLs -------------------------------------------------

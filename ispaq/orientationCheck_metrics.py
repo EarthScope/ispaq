@@ -5,7 +5,7 @@ ISPAQ Business Logic for Orientation Check Metrics.
     Mazama Science
 :license:
     GNU Lesser General Public License, Version 3
-    (http://www.gnu.org/copyleft/lesser.html)
+    (https://www.gnu.org/copyleft/lesser.html)
 """
 
 import numpy as np

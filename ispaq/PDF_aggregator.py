@@ -155,7 +155,7 @@ def calculate_PDF(fileDF, sncl, starttime, endtime, concierge):
             
             logger.info('Writing PDF values to %s' % (filepath))
             
-            # start with header, mimicing output from http://service.iris.edu/mustang/noise-pdf/1/query?
+            # start with header, mimicing output from https://service.earthscope.org/mustang/noise-pdf/1/query?
             hdr = ('#\n' 
                   '# start=%s\n'
                   '# end=%s\n'

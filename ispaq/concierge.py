@@ -5,7 +5,7 @@ ISPAQ Data Access Expediter.
     Mazama Science
 :license:
     GNU Lesser General Public License, Version 3
-    (http://www.gnu.org/copyleft/lesser.html)
+    (https://www.gnu.org/copyleft/lesser.html)
 """
 
 import os
@@ -149,7 +149,7 @@ class Concierge(object):
                                          % (user_request.station_url, user_request.dataselect_url))
 
         elif user_request.dataselect_url == "IRISPH5":
-            self.dataselect_url = "http://service.iris.edu"
+            self.dataselect_url = "https://service.earthscope.org"
             self.dataselect_type = "ph5ws"
             self.dataselect_client = "PH5"
 
@@ -158,7 +158,7 @@ class Concierge(object):
                    self.logger.warning("Station_url should be the same as dataselect_url when retreiving data from IRIS PH5 webservices. Station_url '%s' does not match dataselect_url '%s'"
                                         % (user_request.station_url, user_request.dataselect_url))
 
-        elif "http://" in user_request.dataselect_url or "https://" in user_request.dataselect_url:
+        elif "https://" in user_request.dataselect_url or "https://" in user_request.dataselect_url:
             self.dataselect_url = user_request.dataselect_url
             self.dataselect_type = "fdsnws"
             try:
@@ -185,7 +185,7 @@ class Concierge(object):
 
         # Add station clients and URLs or reference a local file
         if user_request.station_url is None:
-            if ("http://" in self.dataselect_url or "https://" in self.dataselect_url):
+            if ("https://" in self.dataselect_url or "https://" in self.dataselect_url):
                 self.station_url = self.dataselect_url
                 self.logger.info("Using station_url = %s" % self.dataselect_url)
                 if (self.dataselect_type == "ph5ws"):
@@ -214,11 +214,11 @@ class Concierge(object):
                 self.station_url = None
                 self.station_client = None
         elif user_request.station_url == "IRISPH5":
-            self.station_url = "http://service.iris.edu"
+            self.station_url = "https://service.earthscope.org"
             self.station_type = "ph5ws"
             self.station_client = "PH5"
          
-        elif "http://" in user_request.station_url or "https://" in user_request.station_url:
+        elif "https://" in user_request.station_url or "https://" in user_request.station_url:
             self.station_url = user_request.station_url
             try:
                 self.station_client = Client(self.station_url)
@@ -267,7 +267,7 @@ class Concierge(object):
                     self.logger.info("Metrics that require event information cannot be calculated")
                 self.event_url = None
                 self.event_client = None
-        elif "http://" in user_request.event_url or "https://" in user_request.event_url:
+        elif "https://" in user_request.event_url or "https://" in user_request.event_url:
             self.event_url = user_request.event_url
             try:
                 self.event_client = Client(self.event_url)
@@ -426,7 +426,7 @@ class Concierge(object):
         # The fdsnws/station/availability web service will return space characters for location
         # codes that are SPACE SPACE.
         #
-        #   http://service.iris.edu/fdsnws/station/1/
+        #   https://service.earthscope.org/fdsnws/station/1/
         #
         # #Network | Station | Location | Channel | Latitude | Longitude | Elevation | Depth | Azimuth | Dip | Instrument | Scale | ScaleFreq | ScaleUnits | SampleRate | StartTime | EndTime
         # CU|ANWB|00|LHZ|17.66853|-61.78557|39.0|0.0|0.0|-90.0|Streckeisen STS-2 Standard-gain|2.43609E9|0.05|M/S|1.0|2010-02-10T18:35:00|2599-12-31T23:59:59
@@ -1318,7 +1318,7 @@ class Concierge(object):
         # TODO:  of arguments to be used as ws-event parameters.
         ################################################################################
         
-        # https://service.iris.edu/fdsnws/event/1/query?starttime=2013-02-01T00:00:00&endtime=2013-02-02T00:00:00&minmag=5&format=text
+        # https://service.earthscope.org/fdsnws/event/1/query?starttime=2013-02-01T00:00:00&endtime=2013-02-02T00:00:00&minmag=5&format=text
         #
         # #EventID | Time | Latitude | Longitude | Depth | Author | Catalog | Contributor | ContributorID | MagType | Magnitude | MagAuthor | EventLocationName
         # 4075900|2013-02-01T22:18:33|-11.12|165.378|10.0|NEIC|NEIC PDE|NEIC PDE-Q||MW|6.4|GCMT|SANTA CRUZ ISLANDS

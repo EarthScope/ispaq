@@ -5,7 +5,7 @@ ISPAQ Business Logic for Simple Metrics.
     Mazama Science
 :license:
     GNU Lesser General Public License, Version 3
-    (http://www.gnu.org/copyleft/lesser.html)
+    (https://www.gnu.org/copyleft/lesser.html)
 """
 
 import math
@@ -126,7 +126,8 @@ def simple_metrics(concierge):
                     logger.warning('No data available for %s from %s: %s' % (av.snclId, concierge.dataselect_url, e))
                 
                 ## If there is no data, then mark it as 0% availability and move along to next target
-                if (concierge.dataselect_url == 'http://service.iris.edu') and (concierge.dataselect_type == 'fdsnws'):
+                if ((concierge.dataselect_url == 'https://service.iris.edu') or (concierge.dataselect_url == 'https://service.earthscope.org')) \
+                        and (concierge.dataselect_type == 'fdsnws'):
                     q = 'M'
                 else:
                     q = 'D'

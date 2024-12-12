@@ -5,7 +5,7 @@ Python module containing wrappers for the IRISSeismic R package.
     Mazama Science
 :license:
     GNU Lesser General Public License, Version 3
-    (http://www.gnu.org/copyleft/lesser.html)
+    (https://www.gnu.org/copyleft/lesser.html)
 """
 
 # from future.types import newint
@@ -460,7 +460,7 @@ def _userAgent():
 
 
 def getAvailability(
-    client_url="http://service.iris.edu",
+    client_url="https://service.earthscope.org",
     client_type="fdsnws",
     network=None,
     station=None,
@@ -493,7 +493,7 @@ def getAvailability(
 
     .. rubric:: Example
 
-    >>> df = getAvailability("http://service.iris.edu", 'US', 'OXF', '', '', UTCDateTime("2012-06-21"), UTCDateTime("2012-06-28"))
+    >>> df = getAvailability("https://service.earthscope.org", 'US', 'OXF', '', '', UTCDateTime("2012-06-21"), UTCDateTime("2012-06-28"))
     >>> df.shape
     (15, 18)
     >>> df.scale  #doctest: +ELLIPSIS
@@ -550,7 +550,7 @@ def getAvailability(
 
 
 def getChannel(
-    client_url="http://service.iris.edu",
+    client_url="https://service.earthscope.org",
     client_type="fdsnws",
     network=None,
     station=None,
@@ -583,7 +583,7 @@ def getChannel(
 
     .. rubric:: Example
 
-    >>> df = getChannel("http://service.iris.edu", 'US', 'OXF', '', '', UTCDateTime("2012-06-21"), UTCDateTime("2012-06-28"))
+    >>> df = getChannel("https://service.earthscope.org", 'US', 'OXF', '', '', UTCDateTime("2012-06-21"), UTCDateTime("2012-06-28"))
     >>> df.shape
     (18, 18)
     >>> df.scale  #doctest: +ELLIPSIS
@@ -640,7 +640,7 @@ def getChannel(
 
 
 def R_getDataselect(
-    client_url="http://service.iris.edu",
+    client_url="https://service.earthscope.org",
     client_type="fdsnws",
     network=None,
     station=None,
@@ -740,7 +740,7 @@ def getDistaz(latitude, longitude, staLatitude, staLongitude):
 
 
 def getEvalresp(
-    client_url="http://service.iris.edu",
+    client_url="https://service.earthscope.org",
     client_type="fdsnws",
     network=None,
     station=None,
@@ -829,7 +829,7 @@ def getEvent(
 
     .. rubric:: Example
 
-    >>> df = getEvent("http://earthquake.usgs.gov", UTCDateTime("2012-06-21"), UTCDateTime("2012-06-28"), minmag=6)
+    >>> df = getEvent("https://earthquake.usgs.gov", UTCDateTime("2012-06-21"), UTCDateTime("2012-06-28"), minmag=6)
     >>> df.shape
     (2, 13)
     >>> df.eventLocationName  #doctest: +ELLIPSIS
@@ -864,7 +864,7 @@ def getEvent(
 
 
 def getNetwork(
-    client_url="http://service.iris.edu",
+    client_url="https://service.earthscope.org",
     client_type="fdnsws",
     network=None,
     station=None,
@@ -944,7 +944,7 @@ def getNetwork(
 
 
 def R_getSNCL(
-    client_url="http://service.iris.edu",
+    client_url="https://service.earthscope.org",
     client_type="fdsnws",
     sncl=None,
     starttime=None,
@@ -993,7 +993,7 @@ def R_getSNCL(
 
 
 def getStation(
-    client_url="http://service.iris.edu",
+    client_url="https://service.earthscope.org",
     client_type="fdsnws",
     network=None,
     station=None,
@@ -1096,7 +1096,7 @@ def getTraveltime(latitude, longitude, depth, staLatitude, staLongitude):
 
 
 def getUnavailability(
-    client_url="http://service.iris.edu",
+    client_url="https://service.earthscope.org",
     client_type="fdsnws",
     network=None,
     station=None,
