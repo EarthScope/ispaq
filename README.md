@@ -29,9 +29,10 @@ MUSTANG.
 
 In 2023, IRIS (Incorporated Research Institutions for Seismology) and UNAVCO merged
 to form EarthScope Consortium. IRIS (now EarthScope) webservices are unchanged but 
-can now be accessed at \url{https://service.earthscope.org} as well as \url{https://service.iris.edu}.
+can now be accessed at [https://service.earthscope.org](https://service.earthscope.org)
+ as well as [https://service.iris.edu](https://service.iris.edu).
 
-[EarthScope] (https://www.earthscope.org) has developed a 
+[EarthScope](https://www.earthscope.org) has developed a 
 comprehensive quality assurance system called [MUSTANG](https://service.earthscope.org/mustang/).
 
 The MUSTANG system was built to operate at EarthScope and is not generally portable. 
