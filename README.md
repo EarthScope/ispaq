@@ -526,7 +526,7 @@ The following example demonstrates what you should see. _Note:_ Please ignore th
 It will only occur on first use. 
 
 ```
-(ispaq) $ run_ispaq.py -M basicStats -S basicStats --starttime 2010-04-20 --log-level INFO
+(ispaq) $ ./run_ispaq.py -M basicStats -S basicStats --starttime 2010-04-20 --log-level INFO
 2017-05-26 13:58:12 - INFO - Running ISPAQ version 1.0.0 on Fri May 26 13:58:12 2017
 ~/miniconda2/envs/ispaq/lib/python2.7/site-packages/matplotlib/font_manager.py:273: UserWarning: Matplotlib is 
 building the font cache using fc-list. This may take a moment. 
