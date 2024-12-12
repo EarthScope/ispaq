@@ -1,8 +1,8 @@
 3.1.3
  * fixes compile issue with XCode 16
- * updated installation to R=4.2 and other package version updates
- * changed service.iris.edu to service.earthscope.org
- * changed http to https
+ * updates installation to R=4.2 and other package version updates
+ * transitions service.iris.edu to service.earthscope.org
+ * changes http to https
 
 3.1.2
  * bug fix for when csv_dir, psd_dir, and/or pdf_dir are blank
