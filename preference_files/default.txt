@@ -39,9 +39,10 @@ Station_SNCLs:
 # Data and Metadata source ----------------------------------------------------
 Data_Access:
 
-  dataselect_url: IRIS    #one of: ObsPy FDSN service name, IRISPH5, url pointing to FDSN web service, or local data directory
-  station_url: IRIS       #one of: ObsPy FDSN service name, IRISPH5, url pointing to FDSN web service, or path to local StationXML file      
-  event_url: IRIS         #one of: ObsPy FDSN service name, url pointing to FDSN web service, or path to local QUAKEML file
+  dataselect_url: IRIS    #one of: ObsPy FDSN service name, EARTHSCOPE, IRISPH5, url pointing to FDSN web service, or local data directory
+                          #(EARTHSCOPE is an alias for IRIS)
+  station_url: IRIS       #one of: ObsPy FDSN service name, EARTHSCOPE, IRISPH5, url pointing to FDSN web service, or path to local StationXML file      
+  event_url: USGS         #one of: ObsPy FDSN service name, EARTHSCOPE, url pointing to FDSN web service, or path to local QUAKEML file
   resp_dir:               #directory containing local response RESP files, if used.
  
 

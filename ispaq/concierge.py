@@ -130,6 +130,14 @@ class Concierge(object):
         # Keep a /dev/null pipe handy in case we want to bit-dump output
         self.dev_null = open(os.devnull,"w")
         
+        # add alias of EARTHSCOPE for IRIS
+        if user_request.dataselect_url.upper() == "EARTHSCOPE":
+            user_request.dataselect_url = "IRIS"
+        if user_request.station_url.upper() == "EARTHSCOPE":
+            user_request.station_url = "IRIS"
+        if (user_request.event_url == IRIS or user_request.event_url.upper() == "EARTHSCOPE"):
+            user_request.event_url = "USGS"
+            
         # Add dataselect clients and URLs or reference a local file
         self.dataselect_type = None
         if user_request.dataselect_url in URL_MAPPINGS.keys():
@@ -1317,7 +1325,7 @@ class Concierge(object):
         # TODO:  of arguments to be used as ws-event parameters.
         ################################################################################
         
-        # https://service.earthscope.org/fdsnws/event/1/query?starttime=2013-02-01T00:00:00&endtime=2013-02-02T00:00:00&minmag=5&format=text
+        # https:/earthquake.usgs.gov/fdsnws/event/1/query?starttime=2013-02-01T00:00:00&endtime=2013-02-02T00:00:00&minmag=5&format=text
         #
         # #EventID | Time | Latitude | Longitude | Depth | Author | Catalog | Contributor | ContributorID | MagType | Magnitude | MagAuthor | EventLocationName
         # 4075900|2013-02-01T22:18:33|-11.12|165.378|10.0|NEIC|NEIC PDE|NEIC PDE-Q||MW|6.4|GCMT|SANTA CRUZ ISLANDS

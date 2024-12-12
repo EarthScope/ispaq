@@ -3,6 +3,10 @@
  * updates installation to R=4.2 and other package version updates
  * transitions service.iris.edu to service.earthscope.org
  * changes http to https
+ * adds EARTHSCOPE as alias of IRIS
+ * the default event service is USGS
+ * makes explicit that event services directed to IRIS or EARTHSCOPE use
+ https://earthquake.usgs.gov/fdsnws/event/1/ 
 
 3.1.2
  * bug fix for when csv_dir, psd_dir, and/or pdf_dir are blank
