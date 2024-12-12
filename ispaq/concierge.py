@@ -135,7 +135,7 @@ class Concierge(object):
             user_request.dataselect_url = "IRIS"
         if user_request.station_url.upper() == "EARTHSCOPE":
             user_request.station_url = "IRIS"
-        if (user_request.event_url == IRIS or user_request.event_url.upper() == "EARTHSCOPE"):
+        if (user_request.event_url == "IRIS" or user_request.event_url.upper() == "EARTHSCOPE"):
             user_request.event_url = "USGS"
             
         # Add dataselect clients and URLs or reference a local file
