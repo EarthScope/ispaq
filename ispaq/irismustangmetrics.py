@@ -5,7 +5,7 @@ Python module containing wrappers for the IRISMustangMetrics R package.
     Mazama Science
 :license:
     GNU Lesser General Public License, Version 3
-    (http://www.gnu.org/copyleft/lesser.html)
+    (https://www.gnu.org/copyleft/lesser.html)
     
 Metrics from the IRISMustangMetrics package fall into several categories
 depending on the following factors:

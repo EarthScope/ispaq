@@ -6,7 +6,7 @@ ISPAQ Business Logic for sampleRate Metrics.
     Mazama Science
 :license:
     GNU Lesser General Public License, Version 3
-    (http://www.gnu.org/copyleft/lesser.html)
+    (https://www.gnu.org/copyleft/lesser.html)
 """
 
 import os
@@ -131,9 +131,9 @@ def sampleRate_metrics(concierge):
                         dataframes.append(df1)
                 
                 except Exception as e:
-                    if str(e).lower().find('could not resolve host: service.iris.edu') > -1:
+                    if str(e).lower().find('could not resolve host: service.earthscope.org') > -1:
                         logger.debug(e)
-                        logger.error('getEvalresp failed to find service.iris.edu')
+                        logger.error('getEvalresp failed to find service.earthscope.org')
                     else:
                         logger.error(e)
                     logger.warning('sampleRateResp metric calculation failed for %s' % (av.snclId))

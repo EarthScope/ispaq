@@ -5,7 +5,7 @@ Python module containing for updating R packages.
     Mazama Science
 :license:
     GNU Lesser General Public License, Version 3
-    (http://www.gnu.org/copyleft/lesser.html)
+    (https://www.gnu.org/copyleft/lesser.html)
 """
 
 import pandas as pd
@@ -21,7 +21,6 @@ from rpy2.robjects.conversion import localconverter
 
 
 
-os.environ['MACOSX_DEPLOYMENT_TARGET'] = "10.9"
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 

@@ -5,7 +5,7 @@ ISPAQ Data Access Expediter.
     Mazama Science
 :license:
     GNU Lesser General Public License, Version 3
-    (http://www.gnu.org/copyleft/lesser.html)
+    (https://www.gnu.org/copyleft/lesser.html)
 """
 
 import os
@@ -130,6 +130,14 @@ class Concierge(object):
         # Keep a /dev/null pipe handy in case we want to bit-dump output
         self.dev_null = open(os.devnull,"w")
         
+        # add alias of EARTHSCOPE for IRIS
+        if user_request.dataselect_url.upper() == "EARTHSCOPE":
+            user_request.dataselect_url = "IRIS"
+        if user_request.station_url.upper() == "EARTHSCOPE":
+            user_request.station_url = "IRIS"
+        if (user_request.event_url == "IRIS" or user_request.event_url.upper() == "EARTHSCOPE"):
+            user_request.event_url = "USGS"
+            
         # Add dataselect clients and URLs or reference a local file
         self.dataselect_type = None
         if user_request.dataselect_url in URL_MAPPINGS.keys():
@@ -149,7 +157,7 @@ class Concierge(object):
                                          % (user_request.station_url, user_request.dataselect_url))
 
         elif user_request.dataselect_url == "IRISPH5":
-            self.dataselect_url = "http://service.iris.edu"
+            self.dataselect_url = "https://service.earthscope.org"
             self.dataselect_type = "ph5ws"
             self.dataselect_client = "PH5"
 
@@ -214,7 +222,7 @@ class Concierge(object):
                 self.station_url = None
                 self.station_client = None
         elif user_request.station_url == "IRISPH5":
-            self.station_url = "http://service.iris.edu"
+            self.station_url = "https://service.earthscope.org"
             self.station_type = "ph5ws"
             self.station_client = "PH5"
          
@@ -426,7 +434,7 @@ class Concierge(object):
         # The fdsnws/station/availability web service will return space characters for location
         # codes that are SPACE SPACE.
         #
-        #   http://service.iris.edu/fdsnws/station/1/
+        #   https://service.earthscope.org/fdsnws/station/1/
         #
         # #Network | Station | Location | Channel | Latitude | Longitude | Elevation | Depth | Azimuth | Dip | Instrument | Scale | ScaleFreq | ScaleUnits | SampleRate | StartTime | EndTime
         # CU|ANWB|00|LHZ|17.66853|-61.78557|39.0|0.0|0.0|-90.0|Streckeisen STS-2 Standard-gain|2.43609E9|0.05|M/S|1.0|2010-02-10T18:35:00|2599-12-31T23:59:59
@@ -703,7 +711,6 @@ class Concierge(object):
             # For example, during crossCorrelation.  Otherwise it creates a bloated
             # availability dataframe with the same sncls repeating #sncl_patterns times
             loopCounter += 1
-#             if (network is "*" and station is "*" and location is "*" and loopCounter > 1):
             if (network == "*" and station == "*" and location == "*" and loopCounter > 1):
                 continue
 
@@ -1318,7 +1325,7 @@ class Concierge(object):
         # TODO:  of arguments to be used as ws-event parameters.
         ################################################################################
         
-        # https://service.iris.edu/fdsnws/event/1/query?starttime=2013-02-01T00:00:00&endtime=2013-02-02T00:00:00&minmag=5&format=text
+        # https:/earthquake.usgs.gov/fdsnws/event/1/query?starttime=2013-02-01T00:00:00&endtime=2013-02-02T00:00:00&minmag=5&format=text
         #
         # #EventID | Time | Latitude | Longitude | Depth | Author | Catalog | Contributor | ContributorID | MagType | Magnitude | MagAuthor | EventLocationName
         # 4075900|2013-02-01T22:18:33|-11.12|165.378|10.0|NEIC|NEIC PDE|NEIC PDE-Q||MW|6.4|GCMT|SANTA CRUZ ISLANDS

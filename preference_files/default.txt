@@ -39,9 +39,10 @@ Station_SNCLs:
 # Data and Metadata source ----------------------------------------------------
 Data_Access:
 
-  dataselect_url: IRIS    #one of: ObsPy FDSN service name, IRISPH5, url pointing to FDSN web service, or local data directory
-  station_url: IRIS       #one of: ObsPy FDSN service name, IRISPH5, url pointing to FDSN web service, or path to local StationXML file      
-  event_url: IRIS         #one of: ObsPy FDSN service name, url pointing to FDSN web service, or path to local QUAKEML file
+  dataselect_url: IRIS    #one of: ObsPy FDSN service name, EARTHSCOPE, IRISPH5, url pointing to FDSN web service, or local data directory
+                          #(EARTHSCOPE is an alias for IRIS)
+  station_url: IRIS       #one of: ObsPy FDSN service name, EARTHSCOPE, IRISPH5, url pointing to FDSN web service, or path to local StationXML file      
+  event_url: USGS         #one of: ObsPy FDSN service name, EARTHSCOPE, url pointing to FDSN web service, or path to local QUAKEML file
   resp_dir:               #directory containing local response RESP files, if used.
  
 
@@ -107,8 +108,8 @@ PDF_Preferences:
 #   LMU, NCEDC, NIEP, ODC, ORFEUS, RESIF, SCEDC, USGS, USP
 #   IRISPH5, IESDMC, GEOFON, RESIFPH5, EIDA
 #
-#   FDSN service providers may also be specified as an http:// address:
-#   example, http://service.iris.edu 
+#   FDSN service providers may also be specified as an https:// address:
+#   example, https://service.earthscope.org 
 #
 #   Specified FDSN service provider must be the same for dataselect_url and station_url
 #   and you should not specify one as FDSN and the other as local
@@ -116,7 +117,7 @@ PDF_Preferences:
 #   The FDSN event service must provide an option for text output.
 #
 # To access the IRIS PH5 archive, use the IRISPH5 name. This will direct ISPAQ to
-# http://service.iris.edu/ph5ws for data and metadata.
+# https://service.earthscope.org/ph5ws for data and metadata.
 # This must be the same for dataselect_url and station_url.
 #
 # To use local data you must instead specify local paths:
@@ -127,7 +128,7 @@ PDF_Preferences:
 #  * resp_dir: directory containing local response RESP files, if used.
 #
 # If resp_dir is left blank with no directory specified, ISPAQ defaults to the IRIS DMC evalresp web 
-# service http://service.iris.edu/irisws/evalresp/1/
+# service https://service.earthscope.org/irisws/evalresp/1/
 #
 # NOTE: Directory names should not match FDSN provider names.
 

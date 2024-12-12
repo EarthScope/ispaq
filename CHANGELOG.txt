@@ -1,6 +1,16 @@
+3.2.0
+ * fixes compile issue with XCode 16
+ * updates installation to R=4.2 and other package version updates
+ * adds EARTHSCOPE as alias of IRIS
+ * updates service.iris.edu references to service.earthscope.org
+ * changes http to https
+ * the default event service is USGS
+ * makes explicit that event services directed to IRIS or EARTHSCOPE use
+ "https://earthquake.usgs.gov/fdsnws/event/1/" 
+
 3.1.2
-* bug fix for when csv_dir, psd_dir, and/or pdf_dir are blank
-* replaced test_data/RESP.KAPI.II.00.BHZ.txt to a functional resp file
+ * bug fix for when csv_dir, psd_dir, and/or pdf_dir are blank
+ * replaced test_data/RESP.KAPI.II.00.BHZ.txt to a functional resp file
 
 3.1.1
  * updated conda package versions when running './run_ispaq.py -U'

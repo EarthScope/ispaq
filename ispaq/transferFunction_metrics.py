@@ -5,7 +5,7 @@ ISPAQ Business Logic for transfer Metrics.
     Mazama Science
 :license:
     GNU Lesser General Public License, Version 3
-    (http://www.gnu.org/copyleft/lesser.html)
+    (https://www.gnu.org/copyleft/lesser.html)
 """
 
 import itertools # for combintations
@@ -62,7 +62,7 @@ def transferFunction_metrics(concierge):
         try:
             resp_url = Client("IRIS")
         except Exception as e:
-            logger.error("Could not connect to 'http:/service.iris.edu/irisws/evalresp/1'") 
+            logger.error("Could not connect to 'https:/service.earthscope.org/irisws/evalresp/1'") 
             return None
         
     # Container for all of the metrics dataframes generated

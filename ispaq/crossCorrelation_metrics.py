@@ -5,7 +5,7 @@ ISPAQ Business Logic for Cross-Correlation Metrics.
     Mazama Science
 :license:
     GNU Lesser General Public License, Version 3
-    (http://www.gnu.org/copyleft/lesser.html)
+    (https://www.gnu.org/copyleft/lesser.html)
 """
 # output is polarity_check metric
 
