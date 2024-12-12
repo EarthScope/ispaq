@@ -315,7 +315,7 @@ def main():
             logger.info("Updating conda packages...")
             conda_str = (
                 "conda install -c conda-forge pandas=1.2.3 obspy=1.4.0 r=4.2 "
-                + " r-rcurl=1.98-1.14 r-xml=3.99-0.17 r-dplyr=1.1.4 r-quadprog=1.5-8 r-signal=1.8-0"
+                + " r-rcurl=1.98-1.14 r-xml=3.99-0.17 r-dplyr=1.1.4 r-quadprog=1.5_8 r-signal=1.8-0"
                 + " r-pracma=2.4.4 rpy2=3.5.11 r-stringr=1.5.1 numpy=1.21.4 r-rcpp=1.0.12"
             )
             subprocess.call(conda_str, shell=True)
