@@ -196,14 +196,14 @@ def main():
         "--install-r",
         action="store_true",
         default=False,
-        help="install CRAN IRIS Mustang packages, and exit",
+        help="install CRAN EarthScope Mustang packages, and exit",
     )
     parser.add_argument(
         "-U",
         "--update-r",
         action="store_true",
         default=False,
-        help="check for and install newer CRAN IRIS Mustang packages \nand/or update required conda packages, and exit",
+        help="check for and install newer CRAN EarthScope Mustang packages \nand/or update required conda packages, and exit",
     )
     parser.add_argument(
         "-L",
@@ -251,7 +251,7 @@ def main():
         % (__version__, datetime.datetime.now().strftime("%c"))
     )
 
-    # check that IRIS CRAN packages are installed
+    # check that EarthScope CRAN packages are installed
 
     import obspy
     from distutils.version import StrictVersion
@@ -277,7 +277,7 @@ def main():
             print("IRIS R package " + package + " is not installed")
             flag = 1
     if flag == 1:
-        print("\nAttempting to install IRIS R packages from CRAN")
+        print("\nAttempting to install EarthScope R packages from CRAN")
         updater.install_IRIS_packages_missing(IRIS_packages, logger)
 
     # Validate the args --------------------------------------------------------
@@ -300,7 +300,7 @@ def main():
     _R_install_packages = ro.r("utils::install.packages")
 
     if args.install_r:
-        logger.info("(Re)installing IRIS R packages from CRAN")
+        logger.info("(Re)installing EarthScope R packages from CRAN")
         updater.install_IRIS_packages(IRIS_packages, logger)
         sys.exit(0)
 
@@ -309,17 +309,17 @@ def main():
         x = ro.r("packageVersion('base')")
         x_str = ".".join(map(str, np.array(x.rx(1)).flatten()))
         if (StrictVersion(obspy.__version__) < StrictVersion("1.4.0")) or (
-            StrictVersion(x_str) < StrictVersion("3.6.0")
+            StrictVersion(x_str) < StrictVersion("4.2.0")
         ):
-            logger.debug("obspy>=1.4.0 or r>=3.6 not found")
+            logger.debug("obspy>=1.4.0 or r>=4.2 not found")
             logger.info("Updating conda packages...")
             conda_str = (
-                "conda install -c conda-forge pandas=1.2.3 obspy=1.4.0 r=3.6 "
-                + " r-rcurl=1.98_1.3 r-xml=3.99_0.3 r-dplyr=1.0.6 r-quadprog=1.5_8 r-signal=0.7_6"
-                + " r-pracma=2.3.3 rpy2=3.1.0 r-stringr=1.4.0 numpy=1.21.4 r-rcpp=1.0.6"
+                "conda install -c conda-forge pandas=1.2.3 obspy=1.4.0 r=4.2 "
+                + " r-rcurl=1.98-1.14 r-xml=3.99-0.17 r-dplyr=1.1.4 r-quadprog=1.5-8 r-signal=1.8-0"
+                + " r-pracma=2.4.4 rpy2=3.5.11 r-stringr=1.5.1 numpy=1.21.4 r-rcpp=1.0.12"
             )
             subprocess.call(conda_str, shell=True)
-            logger.info("(Re)installing IRIS R packages from CRAN")
+            logger.info("(Re)installing EarthScope R packages from CRAN")
             try:
                 for package in IRIS_packages:
                     _R_install_packages(package)
@@ -329,14 +329,14 @@ def main():
         else:
             logger.info("Required conda packages found")
 
-        logger.info("Checking for IRIS R package updates...")
+        logger.info("Checking for EarthScope R package updates...")
         df = updater.get_IRIS_package_versions(IRIS_packages, logger)
         print("\n%s\n" % df)
         updater.update_IRIS_packages(IRIS_packages, logger)
         sys.exit(0)
 
     if args.list_metrics:
-        logger.info("Checking for available metrics in IRIS R packages...")
+        logger.info("Checking for available metrics in EarthScope R packages...")
         from . import irismustangmetrics
 
         default_function_dict = irismustangmetrics.function_metadata()
@@ -387,11 +387,11 @@ def main():
     from .transferFunction_metrics import transferFunction_metrics
     from .sampleRate_metrics import sampleRate_metrics
 
-    if StrictVersion(obspy.__version__) < StrictVersion("1.2.2"):
+    if StrictVersion(obspy.__version__) < StrictVersion("1.4.0"):
         print(
             "Please update ObsPy version "
             + str(obspy.__version__)
-            + " to version 1.2.2"
+            + " to version 1.4.0"
         )
         message = "Would you like to update obspy now? [y]/n: "
         answer = raw_input(message).lower()
@@ -402,7 +402,7 @@ def main():
             message = "Would you like to update obspy now? [y]/n: "
             answer = raw_input(message).lower()
         if answer in accepted_answer:
-            subprocess.call("conda install -c conda-forge obspy=1.2.2", shell=True)
+            subprocess.call("conda install -c conda-forge obspy=1.4.0", shell=True)
         elif answer in rejected_answer:
             print("Exiting now without updating conda packages.")
             raise SystemExit
