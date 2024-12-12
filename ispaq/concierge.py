@@ -158,7 +158,7 @@ class Concierge(object):
                    self.logger.warning("Station_url should be the same as dataselect_url when retreiving data from IRIS PH5 webservices. Station_url '%s' does not match dataselect_url '%s'"
                                         % (user_request.station_url, user_request.dataselect_url))
 
-        elif "https://" in user_request.dataselect_url or "https://" in user_request.dataselect_url:
+        elif "http://" in user_request.dataselect_url or "https://" in user_request.dataselect_url:
             self.dataselect_url = user_request.dataselect_url
             self.dataselect_type = "fdsnws"
             try:
@@ -185,7 +185,7 @@ class Concierge(object):
 
         # Add station clients and URLs or reference a local file
         if user_request.station_url is None:
-            if ("https://" in self.dataselect_url or "https://" in self.dataselect_url):
+            if ("http://" in self.dataselect_url or "https://" in self.dataselect_url):
                 self.station_url = self.dataselect_url
                 self.logger.info("Using station_url = %s" % self.dataselect_url)
                 if (self.dataselect_type == "ph5ws"):
@@ -218,7 +218,7 @@ class Concierge(object):
             self.station_type = "ph5ws"
             self.station_client = "PH5"
          
-        elif "https://" in user_request.station_url or "https://" in user_request.station_url:
+        elif "http://" in user_request.station_url or "https://" in user_request.station_url:
             self.station_url = user_request.station_url
             try:
                 self.station_client = Client(self.station_url)
@@ -267,7 +267,7 @@ class Concierge(object):
                     self.logger.info("Metrics that require event information cannot be calculated")
                 self.event_url = None
                 self.event_client = None
-        elif "https://" in user_request.event_url or "https://" in user_request.event_url:
+        elif "http://" in user_request.event_url or "https://" in user_request.event_url:
             self.event_url = user_request.event_url
             try:
                 self.event_client = Client(self.event_url)
@@ -703,7 +703,6 @@ class Concierge(object):
             # For example, during crossCorrelation.  Otherwise it creates a bloated
             # availability dataframe with the same sncls repeating #sncl_patterns times
             loopCounter += 1
-#             if (network is "*" and station is "*" and location is "*" and loopCounter > 1):
             if (network == "*" and station == "*" and location == "*" and loopCounter > 1):
                 continue
 
