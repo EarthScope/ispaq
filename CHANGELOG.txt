@@ -1,3 +1,6 @@
+3.2.1
+ * fixes bug related to unspecified station_url or event_url
+
 3.2.0
  * fixes compile issue with XCode 16
  * updates installation to R=4.2 and other package version updates
