@@ -648,7 +648,7 @@ def getSpectra(st, sampling_rate, metric, concierge):
 
                 try:
                     evalResp = evresp.getEvalresp(localFiles, network, station, location, channel, starttime,
-                                       minfreq, maxfreq, nfreq, units.upper(), output.upper(), "LOG", debugMode)
+                                    minfreq, maxfreq, nfreq, units.upper(), output.upper(), "LOG", debugMode)
                 except Exception as e:
                     raise 
 
@@ -657,11 +657,12 @@ def getSpectra(st, sampling_rate, metric, concierge):
         if evalResp is None:
             raise EvalrespException('No RESP file found at %s[.txt] or %s[.txt]' % (localFile,localFile2))
 
-    else:    
-        # calling the web service 
-        concierge.logger.debug('calling IRIS evalresp web service')
+    else:   
+        ### ONLY hits this block of code if it is IRISPH5 (otherwise we are local - above - or IRISWS which does not create an evalresp object first) 
+        concierge.logger.debug(f'calling {concierge.station_url} - {concierge.station_type} evalresp web service')
         try:
-            evalResp = irisseismic.getEvalresp(concierge.dataselect_url, concierge.dataselect_type, network, station, location, channel, starttime,
+
+            evalResp = irisseismic.getEvalresp(concierge.station_url, concierge.station_type, network, station, location, channel, starttime,
                                        minfreq, maxfreq, nfreq, units.lower(), output.lower())
         except Exception as e:
             raise

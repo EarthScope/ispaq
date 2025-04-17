@@ -104,12 +104,10 @@ def PSD_metrics(concierge):
             if any(key in function_metadata for key in ("PSD","PSDText")) :
                 try:
                     evalresp = None
-                    if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
+                    if (concierge.resp_dir) or (concierge.station_type == "ph5ws"):   # if resp_dir: run evalresp on local RESP file instead of web service
                         sampling_rate = utils.get_slot(r_stream, 'sampling_rate')
                         evalresp = utils.getSpectra(r_stream, sampling_rate, "PSD", concierge)
-                    if (concierge.dataselect_type == "ph5ws"):
-                        sampling_rate = utils.get_slot(r_stream, 'sampling_rate')
-                        evalresp = utils.getSpectra(r_stream, sampling_rate, "PSD", concierge)
+                    
                     # get corrected PSD
                     try:
                         (df, PSDcorrected, PDF) = irismustangmetrics.apply_PSD_metric(concierge, r_stream, evalresp=evalresp)
