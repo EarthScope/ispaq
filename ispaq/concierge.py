@@ -140,28 +140,22 @@ class Concierge(object):
             if (user_request.event_url == "IRIS" or user_request.event_url.upper() == "EARTHSCOPE"):
                 user_request.event_url = "USGS"
             
-        # Add dataselect clients and URLs or reference a local file
+        ## Add dataselect clients and URLs or reference a local file
         self.dataselect_type = None
         if user_request.dataselect_url in URL_MAPPINGS.keys():
             # Get data from FDSN dataselect service
             self.dataselect_url = URL_MAPPINGS[user_request.dataselect_url]
             self.dataselect_type = "fdsnws"
+
+            if user_request.dataselect_url == "IRISPH5":
+                self.dataselect_type = "ph5ws"
+
             try:
                 self.dataselect_client = Client(self.dataselect_url)
             except Exception as e:
                 err_msg = e
                 self.logger.critical(err_msg)
                 raise SystemExit
-
-            if user_request.station_url is not None:    
-                if user_request.station_url != user_request.dataselect_url:
-                    self.logger.warning("Station_url should be the same as dataselect_url when retrieving data from FDSN webservices. Station_url '%s' does not match dataselect_url '%s'" 
-                                         % (user_request.station_url, user_request.dataselect_url))
-
-        elif user_request.dataselect_url == "IRISPH5":
-            self.dataselect_url = "https://service.earthscope.org"
-            self.dataselect_type = "ph5ws"
-            self.dataselect_client = "PH5"
 
             if user_request.station_url is not None:
                if user_request.station_url != user_request.dataselect_url:
@@ -193,22 +187,18 @@ class Concierge(object):
                 self.logger.critical(err_msg)
                 raise SystemExit
 
-        # Add station clients and URLs or reference a local file
+        ## Add station clients and URLs or reference a local file
         if user_request.station_url is None:
             if ("http://" in self.dataselect_url or "https://" in self.dataselect_url):
                 self.station_url = self.dataselect_url
                 self.logger.info("Using station_url = %s" % self.dataselect_url)
-                if (self.dataselect_type == "ph5ws"):
-                    self.station_type = "ph5ws"
-                    self.station_client = "PH5"
-                else:
-                    try:
-                        self.station_client = Client(self.station_url)
-                    except Exception as e:
-                        self.logger.warning(e)
-                        self.logger.info("Metrics that require metadata information cannot be calculated")
-                        self.station_url = None
-                        self.station_client = None
+                try:
+                    self.station_client = Client(self.station_url)
+                except Exception as e:
+                    self.logger.warning(e)
+                    self.logger.info("Metrics that require metadata information cannot be calculated")
+                    self.station_url = None
+                    self.station_client = None
             else:
                 self.logger.info("No station_url found")
                 self.logger.info("Metrics that require metadata information cannot be calculated")
@@ -216,17 +206,18 @@ class Concierge(object):
                 self.station_client = None
         elif user_request.station_url in URL_MAPPINGS.keys():
             self.station_url = URL_MAPPINGS[user_request.station_url]
+            self.station_type = "fdsnws"
+            
+            if user_request.station_url == "IRISPH5":
+                self.station_type = "ph5ws"
+
             try:
-                self.station_client = Client(self.station_url)
+                self.station_client = Client(user_request.station_url)
             except Exception as e:
                 self.logger.warning(e)
                 self.logger.info("Metrics that require metadata information cannot be calculated")
                 self.station_url = None
                 self.station_client = None
-        elif user_request.station_url == "IRISPH5":
-            self.station_url = "https://service.earthscope.org"
-            self.station_type = "ph5ws"
-            self.station_client = "PH5"
          
         elif "http://" in user_request.station_url or "https://" in user_request.station_url:
             self.station_url = user_request.station_url
@@ -384,7 +375,10 @@ class Concierge(object):
         if user_request.resp_dir is None:                  # use irisws/evalresp
             self.resp_dir = None                           # use irisws/evalresp
         elif user_request.resp_dir in URL_MAPPINGS.keys(): # use irisws/evalresp
-            self.resp_dir = None 
+        #     if user_request.resp_dir == "IRISPH5":
+        #         self.resp_dir = user_request.resp_dir
+        #     else:
+                self.resp_dir = None 
         else:
             if os.path.exists(os.path.abspath(user_request.resp_dir)):   
                 self.resp_dir = os.path.abspath(user_request.resp_dir)  # directory where RESP files are located 
@@ -753,6 +747,8 @@ class Concierge(object):
             else:
                 _channel = channel
                 
+            
+            
             _sncl_pattern = self.get_sncl_pattern(_network, _station, _location, _channel)
 
             
@@ -773,7 +769,7 @@ class Concierge(object):
                         
                 if df is None:
                     continue 
-            elif self.station_client == "PH5":
+            elif self.station_type == "ph5ws":
                 self.logger.debug("read IRISPH5 station web services %s/%s for %s,%s,%s,%s,%s,%s" % (self.station_url,self.station_type,_network, _station, _location, _channel, _starttime.strftime('%Y.%j'), _endtime.strftime('%Y.%j')))
                 try:
                     df = irisseismic.getAvailability(self.station_url,self.station_type,network=_network, station=_station,
@@ -972,6 +968,7 @@ class Concierge(object):
                         next
                 df = df[df.dist.str.contains("KEEP")]
             df = df.drop('dist', 1)
+            
 
             # Append this dataframe
             if df.shape[0] == 0:
@@ -979,7 +976,6 @@ class Concierge(object):
             else:
                 #if df.snclId not in sncl_pattern_dataframes[:].snclId:
                 sncl_pattern_dataframes.append(df)	# tack the dataframes together
-
         # END of sncl_patterns loop --------------------------------------------
  
         if len(sncl_pattern_dataframes) == 0:
