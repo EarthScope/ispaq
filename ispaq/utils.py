@@ -658,7 +658,9 @@ def getSpectra(st, sampling_rate, metric, concierge):
             raise EvalrespException('No RESP file found at %s[.txt] or %s[.txt]' % (localFile,localFile2))
 
     else:   
-        ### ONLY hits this block of code if it is IRISPH5 (otherwise we are local - above - or IRISWS which does not create an evalresp object first) 
+        ## Use web services
+        ### For PSDs, only hits this for ph5ws
+        ### For transfer_function, will hit for any web service
         concierge.logger.debug(f'calling {concierge.station_url} - {concierge.station_type} evalresp web service')
         try:
 
