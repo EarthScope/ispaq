@@ -191,7 +191,9 @@ class Concierge(object):
         if user_request.station_url is None:
             if ("http://" in self.dataselect_url or "https://" in self.dataselect_url):
                 self.station_url = self.dataselect_url
+                self.station_type = self.dataselect_type
                 self.logger.info("Using station_url = %s" % self.dataselect_url)
+
                 try:
                     self.station_client = Client(self.station_url)
                 except Exception as e:
