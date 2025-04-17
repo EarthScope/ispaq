@@ -151,7 +151,7 @@ class Concierge(object):
                 self.dataselect_type = "ph5ws"
 
             try:
-                self.dataselect_client = Client(self.dataselect_url)
+                self.dataselect_client = Client(user_request.dataselect_url)
             except Exception as e:
                 err_msg = e
                 self.logger.critical(err_msg)
