@@ -164,6 +164,10 @@ class Concierge(object):
         elif "http://" in user_request.dataselect_url or "https://" in user_request.dataselect_url:
             self.dataselect_url = user_request.dataselect_url
             self.dataselect_type = "fdsnws"
+
+            if "ph5ws" in user_request.dataselect_url:
+                self.dataselect_type = "ph5ws"
+                
             try:
                 self.dataselect_client = Client(self.dataselect_url)
             except Exception as e:
@@ -180,6 +184,7 @@ class Concierge(object):
             if os.path.exists(os.path.abspath(user_request.dataselect_url)):
                 # Get data from local miniseed files
                 self.dataselect_url = os.path.abspath(user_request.dataselect_url)
+                self.dataselect_type = None
                 self.dataselect_client = None
             else:
                 err_msg = "Cannot find dataselect_url: '%s'" % user_request.dataselect_url
@@ -222,6 +227,11 @@ class Concierge(object):
          
         elif "http://" in user_request.station_url or "https://" in user_request.station_url:
             self.station_url = user_request.station_url
+            self.station_type = 'fdsnws'
+
+            if "ph5ws" in user_request.station_url:
+                self.station_type = 'ph5ws'
+
             try:
                 self.station_client = Client(self.station_url)
             except Exception as e:
@@ -233,6 +243,7 @@ class Concierge(object):
             if os.path.exists(os.path.abspath(user_request.station_url)):
                 # Get data from local StationXML files
                 self.station_url = os.path.abspath(user_request.station_url)
+                self.station_type = None
                 self.station_client = None
             else:
                 err_msg = "Cannot find station_url '%s'" % user_request.station_url
