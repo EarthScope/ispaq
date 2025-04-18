@@ -373,8 +373,8 @@ class Concierge(object):
         self.filtered_availability = None
 
         # Add local response files if used
-        if user_request.resp_dir is None:                  # use irisws/evalresp
-            self.resp_dir = None                           # use irisws/evalresp
+        if user_request.resp_dir is None:                  # use EarthScope evalresp web service
+            self.resp_dir = None                           # use EarthScope evalresp web service
         elif user_request.resp_dir in URL_MAPPINGS.keys(): # use EarthScope evalresp web service
             self.resp_dir = None 
         else:
