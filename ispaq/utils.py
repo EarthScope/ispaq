@@ -659,11 +659,15 @@ def getSpectra(st, sampling_rate, metric, concierge):
 
     else:   
         ## Use web services
-        concierge.logger.debug(f'calling {concierge.station_url} - {concierge.station_type} evalresp web service')
         try:
-
-            evalResp = irisseismic.getEvalresp(concierge.station_url, concierge.station_type, network, station, location, channel, starttime,
-                                       minfreq, maxfreq, nfreq, units.lower(), output.lower())
+            if concierge.station_type == None:
+                concierge.logger.debug(f'calling irisws evalresp web service')
+                evalResp = irisseismic.getEvalresp(network=network, station=station, location=location, channel=channel, time=starttime,
+                                       minfreq=minfreq, maxfreq=maxfreq, nfreq=nfreq, units=units.lower(), output=output.lower())
+            else:
+                concierge.logger.debug(f'calling {concierge.station_url} - {concierge.station_type} evalresp web service')
+                evalResp = irisseismic.getEvalresp(client_url=concierge.station_url, client_type=concierge.station_type,network=network, station=station, location=location, channel=channel, time=starttime,
+                                       minfreq=minfreq, maxfreq=maxfreq, nfreq=nfreq, units=units.lower(), output=output.lower())
         except Exception as e:
             raise
     return(evalResp)
