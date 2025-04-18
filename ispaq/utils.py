@@ -659,8 +659,6 @@ def getSpectra(st, sampling_rate, metric, concierge):
 
     else:   
         ## Use web services
-        ### For PSDs, only hits this for ph5ws
-        ### For transfer_function, will hit for any web service
         concierge.logger.debug(f'calling {concierge.station_url} - {concierge.station_type} evalresp web service')
         try:
 
