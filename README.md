@@ -323,8 +323,7 @@ path to a directory containing miniSEED files (_See: "Using Local Data Files", b
 * `station_url:` should indicate a metadata location as an FDSN web service alias, EARTHSCOPE (an alias of 'IRIS'),
 the EarthScope PH5 web service alias 'IRISPH5',
 an explicit URL, or a path to a file containing metadata in [StationXML](https://www.fdsn.org/xml/station/) format 
-([schema](https://www.fdsn.org/xml/station/fdsn-station-1.0.xsd)). For web services, this should point to the same place as 
-`dataselect_url` (e.g. `https://service.earthscope.org`). For local metadata, StationXML is read at the channel level and any 
+([schema](https://www.fdsn.org/xml/station/fdsn-station-1.0.xsd)). If both `dataselect_url` and `station_url` point to web services, they should point to the same location (e.g. `https://service.earthscope.org`). For local metadata, StationXML is read at the channel level and any 
 response information is ignored. Local instrument response (if used) is expected to be in RESP file format and specified 
 in the `resp_dir` entry (see below). If neither webservices or StationXML is available for metadata, the `station_url` entry 
 should be left unspecified (blank). In this case, metrics that do not require metadata will still be calculated. Metrics that 
@@ -344,7 +343,7 @@ orientation_check*). The EarthScope event service is deprecated and event_urls d
 redirect to the USGS event service at https://earthquake.usgs.gov.
 
 * `resp_dir:` should be unspecified or absent if local response files are not used. The default behavior
- is to retrieve response information from the EarthScope web service [Evalresp](https://service.earthscope.org/irisws/evalresp/1/). 
+ is to retrieve response information from the EarthScope web service [Evalresp](https://service.earthscope.org/irisws/evalresp/1/). If the Earthscope PH5 service (IRISPH5) is the source for the `station_url`, then it will default to the [ph5 Evalresp] (https://service.earthscope.org/ph5ws/evalresp/1/) instead. 
 To use local instrument responses instead of [Evalresp](https://service.earthscope.org/irisws/evalresp/1/),
  this parameter should indicate a path to a directory containing response files 
 in [RESP](https://ds.iris.edu/ds/nodes/dmc/data/formats/resp/) format. Local response files are expected to be 
