@@ -159,7 +159,7 @@ class Concierge(object):
 
             if user_request.station_url is not None:
                if user_request.station_url != user_request.dataselect_url:
-                   self.logger.warning("Station_url should be the same as dataselect_url when retreiving data from IRIS PH5 webservices. Station_url '%s' does not match dataselect_url '%s'"
+                   self.logger.warning("Station_url should be the same as dataselect_url when retrieving data from IRIS PH5 webservices. Station_url '%s' does not match dataselect_url '%s'"
                                         % (user_request.station_url, user_request.dataselect_url))
 
         elif "http://" in user_request.dataselect_url or "https://" in user_request.dataselect_url:
@@ -174,7 +174,7 @@ class Concierge(object):
 
             if user_request.station_url is not None:
                 if user_request.station_url != user_request.dataselect_url:
-                    self.logger.warning("Station_url should be the same as dataselect_url when retreiving data from FDSN webservices. Station_url '%s' does not match dataselect_url '%s'" 
+                    self.logger.warning("Station_url should be the same as dataselect_url when retrieving data from FDSN webservices. Station_url '%s' does not match dataselect_url '%s'" 
                                          % (user_request.station_url, user_request.dataselect_url))
 
         else:
