@@ -108,7 +108,7 @@ def PSD_metrics(concierge):
                         sampling_rate = utils.get_slot(r_stream, 'sampling_rate')
                         evalresp = utils.getSpectra(r_stream, sampling_rate, "PSD", concierge)
                     except Exception as e:
-                            logger.warning('"PSD_metric" metric calculation failed for %s: %s' % (r_stream.snclId, e))
+                            logger.warning('"PSD_metric" metric calculation failed for %s: %s' % (av.snclId, e))
 
                     # get corrected PSD
                     try:
