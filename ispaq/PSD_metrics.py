@@ -103,7 +103,6 @@ def PSD_metrics(concierge):
             # Run the PSD metric ----------------------------------------
             if any(key in function_metadata for key in ("PSD","PSDText")) :
                 try:
-                    logger.info('Running evalresp')
                     try:
                         sampling_rate = utils.get_slot(r_stream, 'sampling_rate')
                         evalresp = utils.getSpectra(r_stream, sampling_rate, "PSD", concierge)
