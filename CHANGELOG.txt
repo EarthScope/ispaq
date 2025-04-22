@@ -1,3 +1,6 @@
+3.3.0
+ * adds more support for EarthScope PH5 data and https://service.earthscope.org/ph5ws/evalresp
+
 3.2.1
  * fixes bug related to unspecified station_url or event_url
 
