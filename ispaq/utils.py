@@ -648,7 +648,7 @@ def getSpectra(st, sampling_rate, metric, concierge):
 
                 try:
                     evalResp = evresp.getEvalresp(localFiles, network, station, location, channel, starttime,
-                                       minfreq, maxfreq, nfreq, units.upper(), output.upper(), "LOG", debugMode)
+                                    minfreq, maxfreq, nfreq, units.upper(), output.upper(), "LOG", debugMode)
                 except Exception as e:
                     raise 
 
@@ -657,12 +657,17 @@ def getSpectra(st, sampling_rate, metric, concierge):
         if evalResp is None:
             raise EvalrespException('No RESP file found at %s[.txt] or %s[.txt]' % (localFile,localFile2))
 
-    else:    
-        # calling the web service 
-        concierge.logger.debug('calling IRIS evalresp web service')
+    else:   
+        ## Use web services
         try:
-            evalResp = irisseismic.getEvalresp(concierge.dataselect_url, concierge.dataselect_type, network, station, location, channel, starttime,
-                                       minfreq, maxfreq, nfreq, units.lower(), output.lower())
+            if concierge.station_type == None:
+                concierge.logger.debug(f'calling irisws evalresp web service')
+                evalResp = irisseismic.getEvalresp(network=network, station=station, location=location, channel=channel, time=starttime,
+                                       minfreq=minfreq, maxfreq=maxfreq, nfreq=nfreq, units=units.lower(), output=output.lower())
+            else:
+                concierge.logger.debug(f'calling {concierge.station_url} - {concierge.station_type} evalresp web service')
+                evalResp = irisseismic.getEvalresp(client_url=concierge.station_url, client_type=concierge.station_type,network=network, station=station, location=location, channel=channel, time=starttime,
+                                       minfreq=minfreq, maxfreq=maxfreq, nfreq=nfreq, units=units.lower(), output=output.lower())
         except Exception as e:
             raise
     return(evalResp)

@@ -103,13 +103,12 @@ def PSD_metrics(concierge):
             # Run the PSD metric ----------------------------------------
             if any(key in function_metadata for key in ("PSD","PSDText")) :
                 try:
-                    evalresp = None
-                    if (concierge.resp_dir):   # if resp_dir: run evalresp on local RESP file instead of web service
+                    try:
                         sampling_rate = utils.get_slot(r_stream, 'sampling_rate')
                         evalresp = utils.getSpectra(r_stream, sampling_rate, "PSD", concierge)
-                    if (concierge.dataselect_type == "ph5ws"):
-                        sampling_rate = utils.get_slot(r_stream, 'sampling_rate')
-                        evalresp = utils.getSpectra(r_stream, sampling_rate, "PSD", concierge)
+                    except Exception as e:
+                            logger.warning('"PSD_metric" metric calculation failed for %s: %s' % (av.snclId, e))
+
                     # get corrected PSD
                     try:
                         (df, PSDcorrected, PDF) = irismustangmetrics.apply_PSD_metric(concierge, r_stream, evalresp=evalresp)
