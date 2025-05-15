@@ -53,9 +53,9 @@ Preferences:
 
   output: db          	 	# whether to write metrics to a csv file or a sqlite database. options: csv, db
   db_name: ispaq.db		# if writing to a database (output=db), the name of the database
-  csv_dir: test_out/csv/		# directory to contain generated metrics .csv files
-  psd_dir: test_out/PSDs/		# directory to find PSD csv files (will have subdirectories based on network and station code)
-  pdf_dir: test_out/PDFs/		# directory to contain PDF files (will have subdirectories based on network and station code)
+  csv_dir: csv/		# directory to contain generated metrics .csv files
+  psd_dir: PSDs/		# directory to find PSD csv files (will have subdirectories based on network and station code)
+  pdf_dir: PDFs/		# directory to contain PDF files (will have subdirectories based on network and station code)
   sigfigs: 6			# significant figures used to output metric values
   sncl_format: N.S.L.C  	# format of sncl aliases and miniSEED file names, must be some combination of period separated
                           	  N=network,S=station, L=location, C=channel (e.g., N.S.L.C or S.N.L.C)
