@@ -12,8 +12,7 @@ import datetime
 import logging
 import numpy as np
 import subprocess
-from _ast import Try
-from numpy.random import sample
+
 
 __version__ = "3.3.0"
 
@@ -268,8 +267,6 @@ def main():
 
     with localconverter(ro.default_converter + pandas2ri.converter):
         installed_names = list(ro.conversion.rpy2py(r_installed.rownames))
-
-        # installed_names = ro.conversion.rpy2py(r_installed.rownames).tolist()
 
     flag = 0
     for package in IRIS_packages:

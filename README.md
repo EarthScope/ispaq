@@ -120,7 +120,7 @@ Instructions for Linux or macOS (Intel chip)
 cd ispaq   #top level directory
 conda update conda
 conda env remove --name ispaq  #if you are upgrading from an existing ISPAQ 2.0 installation to ISPAQ 3.0
-conda create --name ispaq -c conda-forge python=3.8 obspy=1.4.0
+conda create --name ispaq -c conda-forge python=3.12 obspy=1.4.2
 conda activate ispaq
 conda install -c conda-forge --file ispaq-conda-install.txt
 ```
@@ -130,7 +130,7 @@ Instructions for macOS (Apple M1 or M2 chip):
 cd ispaq   
 conda update conda
 conda env remove --name ispaq 
-CONDA_SUBDIR=osx-64 conda create --name ispaq -c conda-forge python=3.8 obspy=1.4.0
+CONDA_SUBDIR=osx-64 conda create --name ispaq -c conda-forge python=3.12 obspy=1.4.2
 conda activate ispaq
 CONDA_SUBDIR=osx-64 conda install -c conda-forge --file ispaq-conda-install.txt
 ```

@@ -137,7 +137,7 @@ def R_float(x):
     [1.500000, 2.500000, 3.500000]
     """
     if x is None:
-        return np.NaN
+        return np.nan
     else:
         if isinstance(x, float) or isinstance(x, int):
             x = [x]
@@ -252,8 +252,8 @@ def R_TraceHeader(stats, latitude, longitude, elevation, depth, azimuth, dip):
 def R_Trace(
     trace,
     sensor="",
-    scale=np.NaN,
-    scalefreq=np.NaN,
+    scale=np.nan,
+    scalefreq=np.nan,
     scaleunits="",
     latitude=None,
     longitude=None,
@@ -298,8 +298,8 @@ def R_Stream(
     dq_flags=[0, 0, 0, 0, 0, 0, 0, 0],
     timing_qual=None,
     sensor="",
-    scale=np.NaN,
-    scalefreq=np.NaN,
+    scale=np.nan,
+    scalefreq=np.nan,
     scaleunits="",
     latitude=None,
     longitude=None,
@@ -329,27 +329,25 @@ def R_Stream(
     r_listOfTraces = R_list(len(stream.traces))
 
     for i in range(len(stream.traces)):
-        numpy2ri.activate()
-        r_listOfTraces[i] = R_Trace(
-            stream.traces[i],
-            sensor,
-            scale,
-            scalefreq,
-            scaleunits,
-            latitude,
-            longitude,
-            elevation,
-            depth,
-            azimuth,
-            dip,
-        )
-        numpy2ri.deactivate()
+        with localconverter(ro.default_converter + numpy2ri.converter):
+            r_listOfTraces[i] = R_Trace(
+                stream.traces[i],
+                sensor,
+                scale,
+                scalefreq,
+                scaleunits,
+                latitude,
+                longitude,
+                elevation,
+                depth,
+                azimuth,
+                dip,
+            )
 
     # Create R Stream object
     r_stream = ro.r('new("Stream")')
 
     if timing_qual is None:
-        numpy2ri.activate()
         r_stream = _R_initialize(
             r_stream,
             requestedStarttime=R_POSIXct(requestedStarttime),
@@ -359,11 +357,8 @@ def R_Stream(
             dq_flags=R_integer(dq_flags),
             traces=r_listOfTraces,
         )
-        numpy2ri.deactivate()
 
     else:
-
-        numpy2ri.activate()
         r_stream = _R_initialize(
             r_stream,
             requestedStarttime=R_POSIXct(requestedStarttime),
@@ -374,7 +369,6 @@ def R_Stream(
             timing_qual=timing_qual,
             traces=r_listOfTraces,
         )
-        numpy2ri.deactivate()
     return r_stream
 
 
@@ -630,7 +624,6 @@ def getChannel(
 
     with localconverter(ro.default_converter + pandas2ri.converter):
         df = ro.conversion.rpy2py(r_df)
-    #     df = pandas2ri.ri2py(r_df)    #deprecated
 
     # Convert columns from R POSIXct to python UTCDateTime
     df.starttime = df.starttime.apply(UTCDateTime)
@@ -692,8 +685,6 @@ def R_getDataselect(
         quality, repository, inclusiveEnd, ignoreEpoch
     )
 
-    # pandas2ri.activate()    # this facilitates the easy conversion from the r object r_installed into a python object
-
     # Call the function and return an R Stream
     r_stream = _R_getDataselect(
         r_client,
@@ -708,7 +699,6 @@ def R_getDataselect(
         inclusiveEnd=inclusiveEnd,
         ignoreEpoch=ignoreEpoch,
     )
-    # pandas2ri.deactivate()
     return r_stream
 
 
@@ -735,7 +725,6 @@ def getDistaz(latitude, longitude, staLatitude, staLongitude):
     r_df = _R_getDistaz(r_client, latitude, longitude, staLatitude, staLongitude)
     with localconverter(ro.default_converter + pandas2ri.converter):
         df = ro.conversion.rpy2py(r_df)
-    #     df = pandas2ri.ri2py(r_df)    # deprecated
     return df
 
 
@@ -855,7 +844,6 @@ def getEvent(
     )
     with localconverter(ro.default_converter + pandas2ri.converter):
         df = ro.conversion.rpy2py(r_df)
-    #     df = pandas2ri.ri2py(r_df)    # deprecated
 
     # Convert columns from R POSIXct to python UTCDateTime
     df.time = df.time.apply(UTCDateTime)
@@ -934,7 +922,6 @@ def getNetwork(
     )
     with localconverter(ro.default_converter + pandas2ri.converter):
         df = ro.conversion.rpy2py(r_df)
-    #     df = pandas2ri.ri2py(r_df)    # deprecated
 
     # Convert columns from R POSIXct to python UTCDateTime
     df.starttime = df.starttime.apply(UTCDateTime)
@@ -1063,7 +1050,6 @@ def getStation(
     )
     with localconverter(ro.default_converter + pandas2ri.converter):
         df = ro.conversion.rpy2py(r_df)
-    #     df = pandas2ri.ri2py(r_df)    # deprecated
 
     # Convert columns from R POSIXct to python UTCDateTime
     df.starttime = df.starttime.apply(UTCDateTime)
@@ -1091,7 +1077,6 @@ def getTraveltime(latitude, longitude, depth, staLatitude, staLongitude):
     )
     with localconverter(ro.default_converter + pandas2ri.converter):
         df = ro.conversion.rpy2py(r_df)
-    #     df = pandas2ri.ri2py(r_df)    # deprecated
     return df
 
 
@@ -1166,7 +1151,6 @@ def getUnavailability(
     )
     with localconverter(ro.default_converter + pandas2ri.converter):
         df = ro.conversion.rpy2py(r_df)
-    #     df = pandas2ri.ri2py(r_df)    # deprecated
 
     # Convert columns from R POSIXct to python UTCDateTime
     df.starttime = df.starttime.apply(UTCDateTime)
@@ -1201,7 +1185,6 @@ def surfaceDistance(lat1, lon1, lat2, lon2):
     r_result = R_function(R_float(lat1), R_float(lon1), R_float(lat2), R_float(lon2))
     with localconverter(ro.default_converter + pandas2ri.converter):
         result = ro.conversion.rpy2py(r_result)
-    #     result = pandas2ri.ri2py(r_result)    # deprecated
 
     return result
 
@@ -1288,18 +1271,16 @@ def trim_taper_filter(stN, stE, stZ, max_length, taper, filterArgs):
 
 # rotate2D is needed in orientationCheck_metrics.py
 def rotate2D(st1, st2, angle):
-    pandas2ri.activate()
-    R_function = ro.r("IRISSeismic::rotate2D")
+    with localconverter(ro.default_converter + pandas2ri.converter):
+        R_function = ro.r("IRISSeismic::rotate2D")
 
-    try:
-        r_list = R_function(st1, st2, angle)
-        returnList = []
-        returnList.append(r_list[0])
-        returnList.append(r_list[1])
-    except Exception as e:
-        returnList = e
-
-    pandas2ri.deactivate()
+        try:
+            r_list = R_function(st1, st2, angle)
+            returnList = []
+            returnList.append(r_list[0])
+            returnList.append(r_list[1])
+        except Exception as e:
+            returnList = e
 
     return returnList
 
@@ -1324,7 +1305,7 @@ def generalValueMetric(
     elementValues = R_character(elementValues)
     R_function = ro.r("methods::new")
 
-    pandas2ri.activate()
+    # with localconverter(ro.default_converter + pandas2ri.converter):
     if valueStrings is not None:
         valueStrings = R_character(valueStrings)
         r_metric = R_function(
@@ -1347,11 +1328,11 @@ def generalValueMetric(
             elementNames,
             elementValues,
         )
+        ###
     r_metricList = _R_list(r_metric)
     r_dataframe = _R_metricList2DF(r_metricList)
-
-    df = ro.conversion.rpy2py(r_dataframe)
-    pandas2ri.deactivate()
+    with localconverter(ro.default_converter + pandas2ri.converter):
+        df = ro.conversion.rpy2py(r_dataframe)
     return df
 
 
