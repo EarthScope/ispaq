@@ -68,7 +68,6 @@ def apply_simple_metric(
     :return:
     """
 
-    #     if metric_function_name is 'numSpikes':
     if metric_function_name == "numSpikes":
         function = "IRISMustangMetrics::spikesMetric"
     else:
@@ -85,7 +84,6 @@ def apply_simple_metric(
 
     except:
         # The stream being empty will trigger this, so mark percent_Availability=0
-        #         snclq = av.snclId + '.M'    # Obsolete now that new logic is in place in simple_metrics.py
         df = pd.DataFrame(
             columns=[
                 "metricName",
@@ -99,7 +97,7 @@ def apply_simple_metric(
 
         df.loc[len(df.index)] = [
             "percent_availability",
-            snclq,
+            av.snclId + ".M",
             starttime,
             endtime,
             -9,
@@ -168,7 +166,6 @@ def apply_sampleRateChannel_metric(r_stream, channel_pct, chan_rate):
     r_dataframe = _R_metricList2DF(r_metriclist)
 
     # Convert to a pandas dataframe
-
     with localconverter(ro.default_converter + pandas2ri.converter):
         df = ro.conversion.rpy2py(r_dataframe)
 
@@ -221,14 +218,10 @@ def apply_transferFunction_metric(r_stream1, r_stream2, evalresp1, evalresp2):
 
     R_function = robjects.r("IRISMustangMetrics::transferFunctionMetric")
 
-    # NOTE:  Conversion of dataframes only works if you activate but we don't want conversion
-    # NOTE:  to always be automatic so we deactivate() after we're done converting.
-
     with localconverter(ro.default_converter + pandas2ri.converter):
         r_evalresp1 = ro.conversion.py2rpy(evalresp1)
         r_evalresp2 = ro.conversion.py2rpy(evalresp2)
 
-    # TODO:  Can we just activate/deactivate before/after R_function() without converting
     # TODO:  r_evalresp1/2 ahead of time?
 
     # Calculate the metric
@@ -267,9 +260,7 @@ def apply_PSD_metric(concierge, r_stream, *args, **kwargs):
     r_evalresp = evalresp
     if evalresp is not None:
         with localconverter(ro.default_converter + pandas2ri.converter):
-            ###################
             r_evalresp = ro.conversion.py2rpy(evalresp)
-            ###################
         r_listOfLists = R_function(r_stream, evalresp=r_evalresp)
     else:
         concierge.logger.debug("calling IRIS evalresp web service")
@@ -326,8 +317,6 @@ def apply_PSD_plot(r_stream, filepath, evalresp=None):
 
         # convert pandas df to R df as parameter automatically
         if evalresp is not None:
-            #         with localconverter(robjects.default_converter + pandas2ri.converter):
-            #             r_evalresp = robjects.conversion.py2rpy(evalresp)
             r_evalresp = pandas2ri.py2ri(evalresp)  # convert to R dataframe
             result = robjects.r("IRISSeismic::psdPlot")(
                 r_psdList, style="pdf", evalresp=r_evalresp
