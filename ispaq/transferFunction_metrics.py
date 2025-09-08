@@ -22,10 +22,7 @@ from .concierge import NoAvailableDataError
 from . import utils
 from . import irisseismic
 from . import irismustangmetrics
-import rpy2.robjects as ro
-from rpy2.robjects import pandas2ri
 from rpy2.robjects.packages import importr
-from rpy2.robjects.conversion import localconverter
 
 
 def transferFunction_metrics(concierge):
@@ -78,7 +75,6 @@ def transferFunction_metrics(concierge):
     nday = int(delta) + 1
 
     # Create an initial availability that spans the entire requested period to ensure that all files are included
-    #     if nday > 1 and concierge.station_client is None:
     if concierge.station_client is None:
         try:
             initialAvailability = concierge.get_availability(
@@ -112,13 +108,11 @@ def transferFunction_metrics(concierge):
         except Exception as e:
             logger.debug(e)
             logger.error("concierge.get_availability() failed")
-            #             return None
             continue
 
         if availability is None:
             logger.debug("skipping window with no available data")
             continue
-        #             return None
 
         # Apply the channelFilter
         availability = availability[availability.channel.str.contains(channelFilter)]
@@ -402,7 +396,6 @@ def transferFunction_metrics(concierge):
 
                         # Hard telling why there are so many channels, so mark them "D" for drop
                         # Metadata errors can cause cases like this
-                        # logger.debug(xyAvailability)
 
                         if xyAvailability.shape[0] >= 3:
                             for i in range(xyAvailability.shape[0]):
