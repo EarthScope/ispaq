@@ -302,19 +302,28 @@ def main():
         sys.exit(0)
 
     if args.update_r:
+        from .versions import get_required_versions, get_package_versions
+
+        required_versions = get_required_versions()
+        all_versions = get_package_versions()
+
         logger.info("Checking for recommended conda packages...")
         x = ro.r("packageVersion('base')")
         x_str = ".".join(map(str, np.array(x.rx(1)).flatten()))
-        if (StrictVersion(obspy.__version__) < StrictVersion("1.4.0")) or (
-            StrictVersion(x_str) < StrictVersion("4.2.0")
-        ):
-            logger.debug("obspy>=1.4.0 or r>=4.2 not found")
-            logger.info("Updating conda packages...")
-            conda_str = (
-                "conda install -c conda-forge pandas=1.2.3 obspy=1.4.0 r=4.2 "
-                + " r-rcurl=1.98_1.14 r-xml=3.99_0.17 r-dplyr=1.1.4 r-quadprog=1.5_8 r-signal=1.8_0"
-                + " r-pracma=2.4.4 rpy2=3.5.11 r-stringr=1.5.1 numpy=1.21.4 r-rcpp=1.0.12"
+        ## TEMPORARY MEASURE
+        x_str = "1.0.0"
+        ##
+        if (
+            StrictVersion(obspy.__version__) < StrictVersion(required_versions["obspy"])
+        ) or (StrictVersion(x_str) < StrictVersion(required_versions["r"])):
+            logger.debug(
+                f"obspy>={required_versions['obspy']} or r>={required_versions['r']} not found"
             )
+            logger.info("Updating conda packages...")
+
+            # Build conda install string from conda file
+            packages = " ".join([f"{pkg}={ver}" for pkg, ver in all_versions.items()])
+            conda_str = f"conda install -c conda-forge {packages}"
             subprocess.call(conda_str, shell=True)
             logger.info("(Re)installing EarthScope R packages from CRAN")
             try:
@@ -384,22 +393,27 @@ def main():
     from .transferFunction_metrics import transferFunction_metrics
     from .sampleRate_metrics import sampleRate_metrics
 
-    if StrictVersion(obspy.__version__) < StrictVersion("1.4.0"):
+    from .versions import get_required_versions
+
+    required_versions = get_required_versions()
+
+    if StrictVersion(obspy.__version__) < StrictVersion(required_versions["obspy"]):
         print(
-            "Please update ObsPy version "
-            + str(obspy.__version__)
-            + " to version 1.4.0"
+            f"Please update ObsPy version {obspy.__version__} to version {required_versions['obspy']}"
         )
         message = "Would you like to update obspy now? [y]/n: "
-        answer = raw_input(message).lower()
+        answer = input(message).lower()
         accepted_answer = ["", "yes", "y"]
         rejected_answer = ["n", "no"]
         while (answer not in accepted_answer) and (answer not in rejected_answer):
             print("Invalid choice: " + answer)
             message = "Would you like to update obspy now? [y]/n: "
-            answer = raw_input(message).lower()
+            answer = input(message).lower()
         if answer in accepted_answer:
-            subprocess.call("conda install -c conda-forge obspy=1.4.0", shell=True)
+            subprocess.call(
+                f"conda install -c conda-forge obspy={required_versions['obspy']}",
+                shell=True,
+            )
         elif answer in rejected_answer:
             print("Exiting now without updating conda packages.")
             raise SystemExit
