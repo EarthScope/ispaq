@@ -314,7 +314,7 @@ def main():
             StrictVersion(obspy.__version__) < StrictVersion(required_versions["obspy"])
         ) or (StrictVersion(x_str) < StrictVersion(required_versions["r"])):
             logger.debug(
-                f"obspy>={required_versions['obspy']} or r>={required_versions['r']} not found"
+                f"obspy>={required_versions['obspy']} or r-base>={required_versions['r']} not found"
             )
             logger.info("Updating conda packages...")
 
