@@ -23,6 +23,7 @@ except:
     from . import irismustangmetrics
     from .ispaq import currentispaq
 
+
 class UserRequest(object):
     """
     The UserRequest class is in charge of parsing arguments issued on the
@@ -52,10 +53,8 @@ class UserRequest(object):
     to simplify access to data and metadata when requested by downstream
     business logic code.
     """
-    def __init__(self,
-                 args=None,
-                 json_representation=None, dummy=False,
-                 logger=None):
+
+    def __init__(self, args=None, json_representation=None, dummy=False, logger=None):
         """
         Creates a UserRequest object.
 
@@ -71,82 +70,98 @@ class UserRequest(object):
         self.args = args
 
         #     Initialize a dummy object     -----------------------------------
-        
+
         logger.debug("User request initialization")
- 
+
         if dummy:
             # Information coming in from the command line
             self.requested_starttime = UTCDateTime("2002-04-20")
             self.requested_endtime = UTCDateTime("2002-04-21")
-            self.requested_metric_set = 'dummy_metric_set'
-            self.requested_sncl_set = 'dummy_sncl_set'
+            self.requested_metric_set = "dummy_metric_set"
+            self.requested_sncl_set = "dummy_sncl_set"
             # Metric and SNCL information from the preferences file
-            self.metrics = ['sample_min', 'sample_rms']
-            self.sncls = ['US.OXF..BH?']
+            self.metrics = ["sample_min", "sample_rms"]
+            self.sncls = ["US.OXF..BH?"]
             # Data access information from the preferences file
             self.event_url = "USGS"
             self.station_url = "IRIS"
             self.dataselect_url = "IRIS"
             # Metric functions determined by querying the R package
             self.invalid_metrics = None
-            self.function_by_logic = {'simple': {'basicStats': {'businessLogic': 'simple',
-                                                                'elementNames': ['value'],
-                                                                'fullDay': True,
-                                                                'metrics': ['sample_min', 'sample_rms'],
-                                                                'outputType': 'GeneralValue',
-                                                                'speed': 'fast',
-                                                                'streamCount': 1}}}
-            self.preferences = {'output': 'csv',
-                                'db_name': 'ispaq.db',
-                                'pdf_dir': '.',
-                                'csv_dir': '.',
-                                'psd_dir': '.',
-                                'sigfigs': 6,
-                                'sncl_format': 'N.S.L.C'}
-            self.pdf_preferences = {'pdf_type': 'plot, text',
-                                    'pdf_interval': 'aggregated',
-                                    'plot_include':'colorbar, legend'}
+            self.function_by_logic = {
+                "simple": {
+                    "basicStats": {
+                        "businessLogic": "simple",
+                        "elementNames": ["value"],
+                        "fullDay": True,
+                        "metrics": ["sample_min", "sample_rms"],
+                        "outputType": "GeneralValue",
+                        "speed": "fast",
+                        "streamCount": 1,
+                    }
+                }
+            }
+            self.preferences = {
+                "output": "csv",
+                "db_name": "ispaq.db",
+                "pdf_dir": ".",
+                "csv_dir": ".",
+                "psd_dir": ".",
+                "sigfigs": 6,
+                "sncl_format": "N.S.L.C",
+            }
+            self.pdf_preferences = {
+                "pdf_type": "plot, text",
+                "pdf_interval": "aggregated",
+                "plot_include": "colorbar, legend",
+            }
 
         #     Initialize from JSON     ----------------------------------------
-        
+
         elif json_representation is not None:
-            
+
             # Load json dictionary from file (or string)
             try:
-                with open(os.path.expanduser(json_representation), 'r') as infile:
+                with open(os.path.expanduser(json_representation), "r") as infile:
                     json_dict = json.load(infile)
             except IOError:
                 json_dict = json.loads(json_representation)
 
             # Information coming in from the command line
-            self.requested_starttime = UTCDateTime(json_dict['requested_starttime']["timestamp"])
-            self.requested_endtime = UTCDateTime(json_dict['requested_endtime']["timestamp"])
-            self.requested_metric_set = json_dict['requested_metric_set']
-            self.requested_sncl_set = json_dict['requested_sncl_set']
-            
+            self.requested_starttime = UTCDateTime(
+                json_dict["requested_starttime"]["timestamp"]
+            )
+            self.requested_endtime = UTCDateTime(
+                json_dict["requested_endtime"]["timestamp"]
+            )
+            self.requested_metric_set = json_dict["requested_metric_set"]
+            self.requested_sncl_set = json_dict["requested_sncl_set"]
+
             # Metric and SNCL information from the preferences file
-            self.metrics = json_dict['metrics']
-            self.sncls = json_dict['sncls']
-            
+            self.metrics = json_dict["metrics"]
+            self.sncls = json_dict["sncls"]
+
             # Data access information from the preferences file
-            self.event_url = json_dict['event_url']
-            self.station_url = json_dict['station_url']
-            self.dataselect_url = json_dict['dataselect_url']
-            
+            self.event_url = json_dict["event_url"]
+            self.station_url = json_dict["station_url"]
+            self.dataselect_url = json_dict["dataselect_url"]
+
             # Metric functions determined by querying the R package
-            self.invalid_metrics = json_dict['invalid_metrics']
-            self.function_by_logic = json_dict['function_by_logic']
+            self.invalid_metrics = json_dict["invalid_metrics"]
+            self.function_by_logic = json_dict["function_by_logic"]
 
             # Additional metadata for local access
-            self.resp_dir = None   # resp_dir is optional for activating local evalresp on RESP files
-            if 'resp_dir' in json_dict:
-                self.resp_dir = json_dict['resp_dir'] 
+            self.resp_dir = (
+                None  # resp_dir is optional for activating local evalresp on RESP files
+            )
+            if "resp_dir" in json_dict:
+                self.resp_dir = json_dict["resp_dir"]
 
-            if 'sncl_format' in json_dict:
-                self.sncl_format = json_dict['sncl_format']
+            if "sncl_format" in json_dict:
+                self.sncl_format = json_dict["sncl_format"]
 
-            if 'sds_files' in json_dict:
-                self.sds_files = json_dict['sds_files']
+            if "sds_files" in json_dict:
+                self.sds_files = json_dict["sds_files"]
 
         #     Initialize from arguments       ---------------------------------
 
@@ -161,47 +176,57 @@ class UserRequest(object):
             self.dataselect_url = args.dataselect_url
             self.event_url = args.event_url
             self.resp_dir = args.resp_dir
-            
+
             self.output = args.output
             self.db_name = args.db_name
             self.csv_dir = args.csv_dir
             self.sncl_format = args.sncl_format
             self.sigfigs = args.sigfigs
             self.sds_files = args.sds_files
-            
+
             self.pdf_type = args.pdf_type
             self.pdf_interval = args.pdf_interval
             self.plot_include = args.plot_include
             self.pdf_dir = args.pdf_dir
             self.psd_dir = args.psd_dir
-            
-            
 
             #     Load preferences from file      -----------------------------
 
             # Metric and SNCL information from the preferences file
-            metric_sets, sncl_sets, data_access, preferences, pdf_preferences = {}, {}, {}, {}, {}
+            metric_sets, sncl_sets, data_access, preferences, pdf_preferences = (
+                {},
+                {},
+                {},
+                {},
+                {},
+            )
             currentSection = None
             multiValue = False
 
             if self.preferences_file is None:
-                self.preferences_file=os.path.expanduser('./preference_files/default.txt')
-            elif (not os.path.isfile(self.preferences_file)):
-                logger.critical("Cannot find preference file %s" % self.preferences_file)
+                self.preferences_file = os.path.expanduser(
+                    "./preference_files/default.txt"
+                )
+            elif not os.path.isfile(self.preferences_file):
+                logger.critical(
+                    "Cannot find preference file %s" % self.preferences_file
+                )
                 raise SystemExit
             else:
-                self.preferences_file = os.path.abspath(os.path.expanduser(self.preferences_file))   
+                self.preferences_file = os.path.abspath(
+                    os.path.expanduser(self.preferences_file)
+                )
 
             logger.debug("preferences_file %s" % self.preferences_file)
 
-            if os.path.isfile(self.preferences_file): 
-                with open(self.preferences_file,"r") as preferences_file:
+            if os.path.isfile(self.preferences_file):
+                with open(self.preferences_file, "r") as preferences_file:
                     for line in preferences_file:  # parse file
-                        line = line.split('#')[0].strip()  # remove comments
+                        line = line.split("#")[0].strip()  # remove comments
                         if line.lower() == "metrics:":  # metric header
                             currentSection = metric_sets
                             multiValue = True
-                        elif line.lower() in ['sncls:','station_sncls:','stations:']:
+                        elif line.lower() in ["sncls:", "station_sncls:", "stations:"]:
                             currentSection = sncl_sets
                             multiValue = True
                         elif line.lower() == "data_access:":
@@ -214,7 +239,7 @@ class UserRequest(object):
                             currentSection = pdf_preferences
                             multiValue = True
                         elif currentSection is not None:  # line following header
-                            entry = line.split(':',1)
+                            entry = line.split(":", 1)
                             if len(entry) <= 1:  # empty line
                                 name, values = None, None
                                 continue
@@ -222,12 +247,16 @@ class UserRequest(object):
                                 name = entry[0]
                                 # check for key with empty value entry, implies optional or default, set value to None in array
                                 values = None
-                                if name is not None and len(entry) > 1:             # we have a value or set of comma separated values
-                                    values = entry[1].strip().split(',')
+                                if (
+                                    name is not None and len(entry) > 1
+                                ):  # we have a value or set of comma separated values
+                                    values = entry[1].strip().split(",")
                                     values = [value.strip() for value in values]
-                                    values = [i for i in values if i]  # remove empty strings
-                                    #values = filter(None, values)  # this no longer works in python 3
-                                        
+                                    values = [
+                                        i for i in values if i
+                                    ]  # remove empty strings
+                                    # values = filter(None, values)  # this no longer works in python 3
+
                             # attempt robust assignment of name to value(s) -- currentSection is the current dictionary of interest
                             if name is None:  # sanity check
                                 continue
@@ -238,9 +267,11 @@ class UserRequest(object):
                             else:
                                 currentSection[name] = values[0]
             else:
-                logger.warning("Cannot find preference file %s, continuing with program defaults" % self.preferences_file)
-                 
-      
+                logger.warning(
+                    "Cannot find preference file %s, continuing with program defaults"
+                    % self.preferences_file
+                )
+
             # Check for special keyword to exit after loading preferences
             # Be sure to save object instance variables needed from the preference files
             pref_keyword = "LOAD_PREFS_ONLY"
@@ -250,139 +281,160 @@ class UserRequest(object):
                 self.data_access = data_access
                 self.preferences = preferences
                 return
-            
+
             # Check for missing Data_Access values
 
             if self.dataselect_url is None:
                 if os.path.isfile(self.preferences_file):
-                    if 'dataselect_url' not in data_access.keys():
-                        logger.critical("Preference file is missing Data_Access: dataselect_url entry.")
+                    if "dataselect_url" not in data_access.keys():
+                        logger.critical(
+                            "Preference file is missing Data_Access: dataselect_url entry."
+                        )
                         raise SystemExit
-                    if data_access['dataselect_url'] is None:
-                        logger.critical("Preference file Data_Access: dataselect_url is not specified.")
+                    if data_access["dataselect_url"] is None:
+                        logger.critical(
+                            "Preference file Data_Access: dataselect_url is not specified."
+                        )
                         raise SystemExit
                     else:
-                        self.dataselect_url = data_access['dataselect_url']
+                        self.dataselect_url = data_access["dataselect_url"]
                 else:
-                    logger.critical("Reading user input or preferences: no dataselect_url found")
+                    logger.critical(
+                        "Reading user input or preferences: no dataselect_url found"
+                    )
                     raise SystemExit
 
             if self.station_url is None:
-                if 'station_url' in data_access.keys():
-                    self.station_url = data_access['station_url']
+                if "station_url" in data_access.keys():
+                    self.station_url = data_access["station_url"]
 
             if self.event_url is None:
-                if 'event_url' in data_access.keys():
-                    self.event_url = data_access['event_url']                   
+                if "event_url" in data_access.keys():
+                    self.event_url = data_access["event_url"]
 
             if self.resp_dir is None:
-                if 'resp_dir' in data_access:
-                    self.resp_dir = data_access['resp_dir']
+                if "resp_dir" in data_access:
+                    self.resp_dir = data_access["resp_dir"]
 
-
-            # assign station and metrics aliases 
+            # assign station and metrics aliases
             try:
                 self.metrics = metric_sets[self.requested_metric_set]  # list assignment
             except KeyError as e:
                 # assign indicated metric anyway and we will perform a validation check
-                logger.debug('Explicit metric detected %s' % e)
-                self.metrics = self.requested_metric_set.split(',')  # allow for comma-separated entries
+                logger.debug("Explicit metric detected %s" % e)
+                self.metrics = self.requested_metric_set.split(
+                    ","
+                )  # allow for comma-separated entries
 
             try:
                 self.sncls = sncl_sets[self.requested_sncl_set]  # list assignment
             except KeyError as e:
                 # a non-matching station alias might be an actual SNCL name
                 # instead of a preferences alias
-                logger.debug('Explicit SNCL detected %s' % e)
-                reg_expr = '([a-zA-Z0-9_*?]+?\.){2}[a-zA-Z0-9_*?]*?\.[a-zA-Z0-9_*?]+?'
-                if re.search(reg_expr, self.requested_sncl_set):  # best guess for validity
-                    self.sncls = self.requested_sncl_set.split(',')  # allow for comma-separated entries
+                logger.debug("Explicit SNCL detected %s" % e)
+                reg_expr = r"([a-zA-Z0-9_*?]+?\.){2}[a-zA-Z0-9_*?]*?\.[a-zA-Z0-9_*?]+?"
+                if re.search(
+                    reg_expr, self.requested_sncl_set
+                ):  # best guess for validity
+                    self.sncls = self.requested_sncl_set.split(
+                        ","
+                    )  # allow for comma-separated entries
                 else:
-                    logger.critical('Invalid station parameter: %s' % e)
+                    logger.critical("Invalid station parameter: %s" % e)
                     raise SystemExit
-            
+
             #     Add individual preferences     ------------------------------
-            
+
             if self.output is None:
-                if 'output' in preferences:
-                    self.output = preferences['output']
+                if "output" in preferences:
+                    self.output = preferences["output"]
                 else:
-                    self.output = 'csv'
-            
+                    self.output = "csv"
+
             if self.db_name is None:
-                if 'db_name' in preferences:
-                    self.db_name = preferences['db_name']
+                if "db_name" in preferences:
+                    self.db_name = preferences["db_name"]
                 else:
-                    self.db_name = 'ispaq.db'
-            
+                    self.db_name = "ispaq.db"
+
             if self.pdf_dir is None:
                 try:
-                    self.pdf_dir = os.path.abspath(os.path.expanduser(preferences['pdf_dir']))
+                    self.pdf_dir = os.path.abspath(
+                        os.path.expanduser(preferences["pdf_dir"])
+                    )
                 except:
-                    logger.debug("Unable to resolve pdf_dir, using working directory instead")
-                    self.pdf_dir = os.path.abspath('.')
+                    logger.debug(
+                        "Unable to resolve pdf_dir, using working directory instead"
+                    )
+                    self.pdf_dir = os.path.abspath(".")
             else:
                 self.pdf_dir = os.path.abspath(os.path.expanduser(self.pdf_dir))
 
-
             if self.csv_dir is None:
                 try:
-                    self.csv_dir = os.path.abspath(os.path.expanduser(preferences['csv_dir']))
+                    self.csv_dir = os.path.abspath(
+                        os.path.expanduser(preferences["csv_dir"])
+                    )
                 except:
-                    logger.debug("Unable to resolve csv_dir, using working directory instead")
-                    self.csv_dir = os.path.abspath('.')
+                    logger.debug(
+                        "Unable to resolve csv_dir, using working directory instead"
+                    )
+                    self.csv_dir = os.path.abspath(".")
             else:
                 self.csv_dir = os.path.abspath(os.path.expanduser(self.csv_dir))
 
             if self.psd_dir is None:
                 try:
-                    self.psd_dir = os.path.abspath(os.path.expanduser(preferences['psd_dir']))
+                    self.psd_dir = os.path.abspath(
+                        os.path.expanduser(preferences["psd_dir"])
+                    )
                 except:
-                    logger.debug("Unable to resolve psd_dir, using working directory instead")
-                    self.psd_dir = os.path.abspath('.')
+                    logger.debug(
+                        "Unable to resolve psd_dir, using working directory instead"
+                    )
+                    self.psd_dir = os.path.abspath(".")
             else:
                 self.psd_dir = os.path.abspath(os.path.expanduser(self.psd_dir))
 
             if self.pdf_type is None:
-                if 'pdf_type' in pdf_preferences:
-                    self.pdf_type = pdf_preferences['pdf_type']
+                if "pdf_type" in pdf_preferences:
+                    self.pdf_type = pdf_preferences["pdf_type"]
                 else:
-                    self.pdf_type = 'plot, text'
-            
+                    self.pdf_type = "plot, text"
+
             if self.pdf_interval is None:
-                if 'pdf_interval' in pdf_preferences:
-                    self.pdf_interval = pdf_preferences['pdf_interval']
+                if "pdf_interval" in pdf_preferences:
+                    self.pdf_interval = pdf_preferences["pdf_interval"]
                 else:
-                    self.pdf_interval = 'aggregated'
+                    self.pdf_interval = "aggregated"
 
             if self.plot_include is None:
-                if 'plot_include' in pdf_preferences:
-                    self.plot_include = pdf_preferences['plot_include']
+                if "plot_include" in pdf_preferences:
+                    self.plot_include = pdf_preferences["plot_include"]
                 else:
-                    self.plot_include = 'legend, colorbar'
-
+                    self.plot_include = "legend, colorbar"
 
             if self.sigfigs is None:
-                if 'sigfigs' in preferences:
-                    self.sigfigs = preferences['sigfigs']
+                if "sigfigs" in preferences:
+                    self.sigfigs = preferences["sigfigs"]
                 else:
                     self.sigfigs = 6
             if self.sncl_format is None:
-                #if preferences.has_key('sncl_format'):    # deprecated has_key
-                if 'sncl_format' in preferences:
-                    self.sncl_format = preferences['sncl_format']
+                # if preferences.has_key('sncl_format'):    # deprecated has_key
+                if "sncl_format" in preferences:
+                    self.sncl_format = preferences["sncl_format"]
                 else:
                     self.sncl_format = "N.S.L.C"
 
-            sncl_expr = re.compile('[SNCL]\.[SNCL]\.[SNCL]\.[SNCL]')
-            if (not re.match(sncl_expr, self.sncl_format)):
-                logger.critical('sncl_format %s is not valid' % self.sncl_format)
+            sncl_expr = re.compile(r"[SNCL]\.[SNCL]\.[SNCL]\.[SNCL]")
+            if not re.match(sncl_expr, self.sncl_format):
+                logger.critical("sncl_format %s is not valid" % self.sncl_format)
                 raise SystemExit
 
             if self.sds_files is False:
-                if 'sds_files' in preferences:
-                    if eval(preferences['sds_files']) is True:
-                        self.sds_files = eval(preferences['sds_files'])
+                if "sds_files" in preferences:
+                    if eval(preferences["sds_files"]) is True:
+                        self.sds_files = eval(preferences["sds_files"])
 
             # start and end times
             if args.starttime is None:
@@ -398,14 +450,14 @@ class UserRequest(object):
                 if args.starttime is None:
                     self.requested_endtime = None
                 else:
-                    self.requested_endtime = self.requested_starttime + (24*60*60)
+                    self.requested_endtime = self.requested_starttime + (24 * 60 * 60)
             else:
                 try:
                     self.requested_endtime = UTCDateTime(args.endtime)
                 except Exception as e:
                     logger.critical("Invalid end time %s" % args.endtime)
                     raise SystemExit
-            
+
             #     Find required metric functions     --------------------------
 
             # Obtain a dictionary from ispaq.irismustangmetrics of the following form:
@@ -420,7 +472,7 @@ class UserRequest(object):
             # Determine which functions and logic types are required
             valid_function_names = set()
             valid_logic_types = set()
-            
+
             # Keep track of valid metrics (typos might cause some to not be found)
             valid_metrics = set()
 
@@ -428,70 +480,86 @@ class UserRequest(object):
             for function_name in default_function_dict:
                 default_function = default_function_dict[function_name]
                 for metric in self.metrics:
-                    if metric in default_function['metrics'] and metric not in ['pdf_text','pdf_plot']:
+                    if metric in default_function["metrics"] and metric not in [
+                        "pdf_text",
+                        "pdf_plot",
+                    ]:
                         valid_function_names.add(function_name)
-                        valid_logic_types.add(default_function['businessLogic'])
+                        valid_logic_types.add(default_function["businessLogic"])
                         valid_metrics.add(metric)
 
             # Warn of invalid metrics
             invalid_metrics = set(self.metrics).difference(valid_metrics)
             if len(invalid_metrics):
-                logger.warning('The following metric names are invalid and were ignored: ' + str(list(invalid_metrics)))
+                logger.warning(
+                    "The following metric names are invalid and were ignored: "
+                    + str(list(invalid_metrics))
+                )
             if not len(valid_metrics):
-                logger.critical('No valid metrics exist')
+                logger.critical("No valid metrics exist")
                 raise SystemExit
 
             # check for empty sncl and metrics entries
             if self.sncls is None or len(set(self.sncls)) == 0:
-                logger.critical('No valid stations exist')
+                logger.critical("No valid stations exist")
                 raise SystemExit
             if self.metrics is None or len(set(self.metrics)) == 0:
-                logger.critical('No valid metrics exist')
+                logger.critical("No valid metrics exist")
                 raise SystemExit
-            
+
             # Check for metrics that may require a more recent version of ISPAQ --------------------
             ispq = currentispaq()
             versionMetric = []
-            
+
             for function_name in valid_function_names:
                 default_function = default_function_dict[function_name]
-                bLogic = default_function['businessLogic']
-                if bLogic not in ispq:    
-                    for metric_name in set(default_function['metrics']).intersection(valid_metrics):
+                bLogic = default_function["businessLogic"]
+                if bLogic not in ispq:
+                    for metric_name in set(default_function["metrics"]).intersection(
+                        valid_metrics
+                    ):
                         versionMetric.append(metric_name)
                 else:
                     if function_name not in ispq[bLogic]:
-                        for metric_name in set(default_function['metrics']).intersection(valid_metrics):
+                        for metric_name in set(
+                            default_function["metrics"]
+                        ).intersection(valid_metrics):
                             versionMetric.append(metric_name)
- 
-            if len(versionMetric):
-                logger.warning("The following metrics will not run with this version of ISPAQ: " + str([str(x) for x in versionMetric]))
 
-            # Now reconstruct the reorganized function_by_logic dictionary with only 
+            if len(versionMetric):
+                logger.warning(
+                    "The following metrics will not run with this version of ISPAQ: "
+                    + str([str(x) for x in versionMetric])
+                )
+
+            # Now reconstruct the reorganized function_by_logic dictionary with only
             # user requested logic types, functions and metrics that can run on this ISPAQ version
             function_by_logic = {}
             for logic_type in set(ispq).intersection(valid_logic_types):
                 function_by_logic[logic_type] = {}
-                for function_name in set(ispq[logic_type]).intersection(valid_function_names):
+                for function_name in set(ispq[logic_type]).intersection(
+                    valid_function_names
+                ):
                     function = default_function_dict[function_name]
-                    if function['businessLogic'] == logic_type:
+                    if function["businessLogic"] == logic_type:
                         # Modify the metric names associated with this function
-                        function['metrics'] = list( set(function['metrics']).intersection(valid_metrics) )
+                        function["metrics"] = list(
+                            set(function["metrics"]).intersection(valid_metrics)
+                        )
                         function_by_logic[logic_type][function_name] = function
 
             if not len(function_by_logic):
-                logger.critical('No valid metrics exist')
+                logger.critical("No valid metrics exist")
                 raise SystemExit
 
             # Assign the invalid metrics and restructured function_by_logic dictionary
             self.invalid_metrics = list(invalid_metrics)
             self.function_by_logic = function_by_logic
 
-
     def json_dump(self, file_loc=None, pretty=False):
         """
         Dump a dictionary of UserRequest properties as a json string.
-        
+
         Does not catch IOError if file_loc is invalid
         :param file_loc: location to write json
         :return: json string representation of internal properties
@@ -506,21 +574,26 @@ class UserRequest(object):
         """
 
         if pretty:
-            json_string = json.dumps(self, default=lambda o: o.__dict__,
-                                     sort_keys=True, indent=4, separators=(',', ': '))
+            json_string = json.dumps(
+                self,
+                default=lambda o: o.__dict__,
+                sort_keys=True,
+                indent=4,
+                separators=(",", ": "),
+            )
         else:
-            json_string = json.dumps(self, default=lambda o: o.__dict__,
-                                     sort_keys=True)
+            json_string = json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)
 
         if file_loc is not None:
-            with open(os.path.expanduser(file_loc), 'w') as outfile:
+            with open(os.path.expanduser(file_loc), "w") as outfile:
                 outfile.write(json_string)
         return json_string
 
     def __str__(self):
         return self.json_dump()
-        
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     import doctest
+
     doctest.testmod(exclude_empty=True)
