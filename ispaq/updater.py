@@ -73,7 +73,7 @@ def get_IRIS_package_versions(IRIS_packages, logger):
     """
     Return a dataframe of version information for IRIS R packages used in ISPAQ.
     """
-
+    #
     # Get version information for locally installed and CRAN available IRIS_packages
     r_installed = ro.r(
         "installed.packages()[c('seismicRoll','IRISSeismic','IRISMustangMetrics'),'Version']"
