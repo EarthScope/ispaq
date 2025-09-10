@@ -310,9 +310,6 @@ def main():
         logger.info("Checking for recommended conda packages...")
         x = ro.r("packageVersion('base')")
         x_str = ".".join(map(str, np.array(x.rx(1)).flatten()))
-        ## TEMPORARY MEASURE
-        x_str = "1.0.0"
-        ##
         if (
             StrictVersion(obspy.__version__) < StrictVersion(required_versions["obspy"])
         ) or (StrictVersion(x_str) < StrictVersion(required_versions["r"])):
