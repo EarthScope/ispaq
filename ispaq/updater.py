@@ -74,38 +74,36 @@ def get_IRIS_package_versions(IRIS_packages, logger):
     Return a dataframe of version information for IRIS R packages used in ISPAQ.
     """
 
-    with localconverter(ro.default_converter + pandas2ri.converter):
-        # Get version information for locally installed and CRAN available IRIS_packages
-        r_installed = ro.r(
-            "installed.packages()[c('seismicRoll','IRISSeismic','IRISMustangMetrics'),'Version']"
-        )
-        installed_versions = r_installed.tolist()
-        r_available = ro.r(
-            "available.packages(repos='https://cloud.r-project.org')[c('seismicRoll','IRISSeismic','IRISMustangMetrics'),'Version']"
-        )
-        cran_versions = r_available.tolist()
+    r_installed = ro.r(
+        "installed.packages()[c('seismicRoll','IRISSeismic','IRISMustangMetrics'),'Version']"
+    )
+    installed_versions = list(ro.conversion.rpy2py(r_installed))
+    r_available = ro.r(
+        "available.packages(repos='https://cloud.r-project.org')[c('seismicRoll','IRISSeismic','IRISMustangMetrics'),'Version']"
+    )
+    cran_versions = list(ro.conversion.rpy2py(r_available))
 
-        # Find any 'old' installed packages that available for an upgrade
-        r_old = ro.r("old.packages(repos='https://cloud.r-project.org')[,'Package']")
-        old = r_old.tolist()
+    # Find any 'old' installed packages that available for an upgrade
+    r_old = ro.r("old.packages(repos='https://cloud.r-project.org')[,'Package']")
+    old = list(ro.conversion.rpy2py(r_old))
 
-        # Create a needsUpgrade array
-        upgrade = [False, False, False]
-        for i in range(len(IRIS_packages)):
-            if IRIS_packages[i] in old:
-                upgrade[i] = True
+    # Create a needsUpgrade array
+    upgrade = [False, False, False]
+    for i in range(len(IRIS_packages)):
+        if IRIS_packages[i] in old:
+            upgrade[i] = True
 
-        # Put information in a dataframe
-        df = pd.DataFrame(
-            {
-                "package": IRIS_packages,
-                "installed": installed_versions,
-                "CRAN": cran_versions,
-                "upgrade": upgrade,
-            }
-        )
-        # Reorder columns from default alphabetic
-        df = df[["package", "installed", "CRAN", "upgrade"]]
+    # Put information in a dataframe
+    df = pd.DataFrame(
+        {
+            "package": IRIS_packages,
+            "installed": installed_versions,
+            "CRAN": cran_versions,
+            "upgrade": upgrade,
+        }
+    )
+    # Reorder columns from default alphabetic
+    df = df[["package", "installed", "CRAN", "upgrade"]]
 
     return df
 
