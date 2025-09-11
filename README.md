@@ -150,7 +150,7 @@ Or alternatively, install the EarthScope R packages from local files:
 ```
 R CMD INSTALL seismicRoll_1.1.5.tar.gz
 R CMD INSTALL IRISSeismic_1.7.0.tar.gz
-R CMD INSTALL IRISMustangMetrics_2.4.7.tar.gz
+R CMD INSTALL IRISMustangMetrics_2.4.8.tar.gz
 ```
 
 You should run `./run_ispaq.py -U` after you update ISPAQ minor versions to verify that you have both the 
