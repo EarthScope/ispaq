@@ -216,7 +216,7 @@ def plot_PDF(sncl, starttime, endtime, pdfDF, modesDF, maxsDF, minsDF, concierge
 
     powers = sorted(range(p1, p2 + 1), reverse=True)
     freqs = sorted(pdfDF["frequency"].unique(), reverse=True)
-    plotDF = pd.DataFrame(0, index=powers, columns=freqs)
+    plotDF = pd.DataFrame(0, index=powers, columns=freqs, dtype=float)
 
     # Create a new dataframe for plotting: rows are powers, columns are periods, value is percent of hits
     nonZeroFreqs = []
