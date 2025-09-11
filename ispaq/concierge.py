@@ -180,7 +180,7 @@ class Concierge(object):
             if user_request.station_url is not None:
                 if user_request.station_url != user_request.dataselect_url:
                     self.logger.warning(
-                        "Station_url should be the same as dataselect_url when retrieving data from FDSN or PH5 web services. Station_url '%s' does not match dataselect_url '%s'"
+                        f"Station_url should be the same as dataselect_url when retrieving data from FDSN or PH5 web services. Station_url '{user_request.station_url}' does not match dataselect_url '{user_request.dataselect_url}'"
                     )
 
         elif (
