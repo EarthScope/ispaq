@@ -120,7 +120,7 @@ Instructions for Linux or macOS (Intel chip)
 cd ispaq   #top level directory
 conda update conda
 conda env remove --name ispaq  #if you are upgrading from an existing ISPAQ 2.0 installation to ISPAQ 3.0
-conda create --name ispaq -c conda-forge python=3.8 obspy=1.4.0
+conda create --name ispaq -c conda-forge python=3.12
 conda activate ispaq
 conda install -c conda-forge --file ispaq-conda-install.txt
 ```
@@ -130,7 +130,7 @@ Instructions for macOS (Apple M1 or M2 chip):
 cd ispaq   
 conda update conda
 conda env remove --name ispaq 
-CONDA_SUBDIR=osx-64 conda create --name ispaq -c conda-forge python=3.8 obspy=1.4.0
+CONDA_SUBDIR=osx-64 conda create --name ispaq -c conda-forge python=3.12
 conda activate ispaq
 CONDA_SUBDIR=osx-64 conda install -c conda-forge --file ispaq-conda-install.txt
 ```
@@ -149,8 +149,8 @@ python run_ispaq.py -I    #downloads latest packages from CRAN (https://cran.r-p
 Or alternatively, install the EarthScope R packages from local files: 
 ```
 R CMD INSTALL seismicRoll_1.1.5.tar.gz
-R CMD INSTALL IRISSeismic_1.6.7.tar.gz
-R CMD INSTALL IRISMustangMetrics_2.4.7.tar.gz
+R CMD INSTALL IRISSeismic_1.7.0.tar.gz
+R CMD INSTALL IRISMustangMetrics_2.4.8.tar.gz
 ```
 
 You should run `./run_ispaq.py -U` after you update ISPAQ minor versions to verify that you have both the 
@@ -188,7 +188,7 @@ usage: run_ispaq.py [-h] [-P PREFERENCES_FILE] [-M METRICS] [-S STATIONS]
                     [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-A] [-V]
                     [-I] [-U] [-L]
 
-ISPAQ version 3.1.0
+ISPAQ version 3.4.0
 
 single arguments:
   -h, --help                       show this help message and exit

@@ -1,3 +1,7 @@
+3.4.0
+ * move to use python3.12
+ * bumps dependencies
+
 3.3.0
  * adds more support for EarthScope PH5 data and https://service.earthscope.org/ph5ws/evalresp
 
