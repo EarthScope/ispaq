@@ -9,6 +9,7 @@ Python module containing wrappers for the IRISSeismic R package.
 """
 
 # from future.types import newint
+import logging
 import pandas as pd
 from obspy import UTCDateTime
 import rpy2.robjects as ro
@@ -48,7 +49,6 @@ _R_initialize = ro.r("IRISSeismic::initialize")  # initialization of various obj
 _R_slice = ro.r("IRISSeismic::slice")
 
 # All webservice functions from IRISSeismic
-_R_getAvailability = ro.r("IRISSeismic::getAvailability")  #
 _R_getChannel = ro.r("IRISSeismic::getChannel")  #
 _R_getDataselect = ro.r("IRISSeismic::getDataselect")  #
 _R_getDistaz = ro.r("IRISSeismic::getDistaz")  #
@@ -442,7 +442,7 @@ def _userAgent():
     Create user agent string for use with new("IrisClient")
     """
     # ispaq_version = ispaq.__version__
-    ispaq_version = "3.4.0"
+    ispaq_version = "3.3.0"
 
     r_agent_string = ro.r(
         "paste0('IRISSeismic/',installed.packages()['IRISSeismic','Version'],' RCurl/',installed.packages()['RCurl','Version'],' R/',R.version$major,'.',R.version$minor,' ',version$platform,' ISPAQ/')"
@@ -469,78 +469,31 @@ def getAvailability(
     maxradius=None,
 ):
     """
-    Returns a pandas dataframe with channel metadata.
-    :param client_url: FDSN web services site URL
-    :param client_type: usually fdsnws, for IRIS PH5 archive use ph5ws
-    :param network: sncl network (string)
-    :param station: sncl station (string)
-    :param location: sncl location (string)
-    :param channel: sncl channel (string)
-    :param starttime: ObsPy UTCDateTime object.
-    :param endtime: ObsPy UTCDateTime object.
-    :param includerestricted: True/False
-    :param latitude: Optional latitude used when specifying a location and radius.
-    :param longitude: Optional longitude used when specifying a location and radius.
-    :param minradius: Optional minimum radius used when specifying a location and radius.
-    :param maxradius: Optional maximum radius used when specifying a location and radius.
-    :return: pandas dataframe of channel metadata.
+    Deprecated. Use getChannel instead.
 
-    .. rubric:: Example
-
-    >>> df = getAvailability("https://service.earthscope.org", 'US', 'OXF', '', '', UTCDateTime("2012-06-21"), UTCDateTime("2012-06-28"))
-    >>> df.shape
-    (15, 18)
-    >>> df.scale  #doctest: +ELLIPSIS
-    1     629145000
-    2     629145000
-    ...
+    The upstream availability web service this function relied on is no longer
+    supported. getChannel returns equivalent data and should be used in its place.
     """
-    user_agent = _userAgent()
-    cmd = (
-        'new("IrisClient", site="'
-        + client_url
-        + '", service_type="'
-        + client_type
-        + '", useragent="'
-        + user_agent
-        + '")'
+    logging.getLogger(__name__).warning(
+        "getAvailability is deprecated and will not work — the IRISSeismic package that is  "
+        "called has been discontinued. Use getChannel instead, which returns the "
+        "same data."
     )
-    # cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '")'
-    r_client = ro.r(cmd)
-
-    starttime = R_POSIXct(starttime)
-    endtime = R_POSIXct(endtime)
-
-    (includerestricted, latitude, longitude, minradius, maxradius) = (
-        _R_stationExtraArgs(
-            includerestricted, latitude, longitude, minradius, maxradius
-        )
+    return getChannel(
+        client_url=client_url,
+        client_type=client_type,
+        network=network,
+        station=station,
+        location=location,
+        channel=channel,
+        starttime=starttime,
+        endtime=endtime,
+        includerestricted=includerestricted,
+        latitude=latitude,
+        longitude=longitude,
+        minradius=minradius,
+        maxradius=maxradius,
     )
-
-    # Call the function and return a pandas dataframe with the results
-    r_df = _R_getAvailability(
-        r_client,
-        network,
-        station,
-        location,
-        channel,
-        starttime,
-        endtime,
-        includerestricted,
-        latitude,
-        longitude,
-        minradius,
-        maxradius,
-    )
-
-    with localconverter(ro.default_converter + pandas2ri.converter):
-        df = ro.conversion.rpy2py(r_df)
-
-    # Convert columns from R POSIXct to python UTCDateTime
-    df.starttime = df.starttime.apply(UTCDateTime)
-    df.endtime = df.endtime.apply(UTCDateTime)
-
-    return df
 
 
 def getChannel(
@@ -600,10 +553,8 @@ def getChannel(
     # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    (includerestricted, latitude, longitude, minradius, maxradius) = (
-        _R_stationExtraArgs(
-            includerestricted, latitude, longitude, minradius, maxradius
-        )
+    includerestricted, latitude, longitude, minradius, maxradius = _R_stationExtraArgs(
+        includerestricted, latitude, longitude, minradius, maxradius
     )
 
     # Call the function and return a pandas dataframe with the results
@@ -681,7 +632,7 @@ def R_getDataselect(
     # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    (quality, repository, inclusiveEnd, ignoreEpoch) = _R_args(
+    quality, repository, inclusiveEnd, ignoreEpoch = _R_args(
         quality, repository, inclusiveEnd, ignoreEpoch
     )
 
@@ -772,7 +723,7 @@ def getEvalresp(
 
     # Convert python arguments to R equivalents
     time = R_POSIXct(time)
-    (minfreq, maxfreq, nfreq, units, output) = _R_args(
+    minfreq, maxfreq, nfreq, units, output = _R_args(
         minfreq, maxfreq, nfreq, units, output
     )
 
@@ -834,7 +785,7 @@ def getEvent(
     # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    (minmag, maxmag, magtype, mindepth, maxdepth) = _R_args(
+    minmag, maxmag, magtype, mindepth, maxdepth = _R_args(
         minmag, maxmag, magtype, mindepth, maxdepth
     )
 
@@ -899,10 +850,8 @@ def getNetwork(
     # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    (includerestricted, latitude, longitude, minradius, maxradius) = (
-        _R_stationExtraArgs(
-            includerestricted, latitude, longitude, minradius, maxradius
-        )
+    includerestricted, latitude, longitude, minradius, maxradius = _R_stationExtraArgs(
+        includerestricted, latitude, longitude, minradius, maxradius
     )
 
     # Call the function and return a pandas dataframe with the results
@@ -970,7 +919,7 @@ def R_getSNCL(
     # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    (quality, repository, inclusiveEnd, ignoreEpoch) = _R_args(
+    quality, repository, inclusiveEnd, ignoreEpoch = _R_args(
         quality, repository, inclusiveEnd, ignoreEpoch
     )
 
@@ -1027,10 +976,8 @@ def getStation(
     # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    (includerestricted, latitude, longitude, minradius, maxradius) = (
-        _R_stationExtraArgs(
-            includerestricted, latitude, longitude, minradius, maxradius
-        )
+    includerestricted, latitude, longitude, minradius, maxradius = _R_stationExtraArgs(
+        includerestricted, latitude, longitude, minradius, maxradius
     )
 
     # Call the function and return a pandas dataframe with the results
@@ -1128,10 +1075,8 @@ def getUnavailability(
     # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    (includerestricted, latitude, longitude, minradius, maxradius) = (
-        _R_stationExtraArgs(
-            includerestricted, latitude, longitude, minradius, maxradius
-        )
+    includerestricted, latitude, longitude, minradius, maxradius = _R_stationExtraArgs(
+        includerestricted, latitude, longitude, minradius, maxradius
     )
 
     # Call the function and return a pandas dataframe with the results
