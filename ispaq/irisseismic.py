@@ -49,6 +49,7 @@ _R_initialize = ro.r("IRISSeismic::initialize")  # initialization of various obj
 _R_slice = ro.r("IRISSeismic::slice")
 
 # All webservice functions from IRISSeismic
+_R_getAvailability = ro.r("IRISSeismic::getAvailability")  #
 _R_getChannel = ro.r("IRISSeismic::getChannel")  #
 _R_getDataselect = ro.r("IRISSeismic::getDataselect")  #
 _R_getDistaz = ro.r("IRISSeismic::getDistaz")  #
@@ -468,33 +469,81 @@ def getAvailability(
     maxradius=None,
 ):
     """
-    Deprecated. Use getChannel instead.
+    Returns a pandas dataframe with channel metadata.
+    :param client_url: FDSN web services site URL
+    :param client_type: usually fdsnws, for IRIS PH5 archive use ph5ws
+    :param network: sncl network (string)
+    :param station: sncl station (string)
+    :param location: sncl location (string)
+    :param channel: sncl channel (string)
+    :param starttime: ObsPy UTCDateTime object.
+    :param endtime: ObsPy UTCDateTime object.
+    :param includerestricted: True/False
+    :param latitude: Optional latitude used when specifying a location and radius.
+    :param longitude: Optional longitude used when specifying a location and radius.
+    :param minradius: Optional minimum radius used when specifying a location and radius.
+    :param maxradius: Optional maximum radius used when specifying a location and radius.
+    :return: pandas dataframe of channel metadata.
 
-    The upstream station web service this function relied on no longer
-    supports the `matchtimeseries` or `includeavailability` parameters.
-    getChannel returns equivalent data and should be used in its place.
+    .. rubric:: Example
+
+    >>> df = getAvailability("https://service.earthscope.org", 'US', 'OXF', '', '', UTCDateTime("2012-06-21"), UTCDateTime("2012-06-28"))
+    >>> df.shape
+    (15, 18)
+    >>> df.scale  #doctest: +ELLIPSIS
+    1     629145000
+    2     629145000
+    ...
     """
     logging.getLogger(__name__).warning(
-        "getAvailability is deprecated.  https://service.earthscope.org/fdsnws/station "
-        "no longer supports parameters 'matchtimeseries' or 'includeavailability'. "
-        "The upstream IRISSeismic::getAvailability function has been deprecated. "
-        "This function now returns the same result as `getChannel`."
+        "getAvailability will be deprecated in a future release. "
+        "The upstream IRISSeismic::getAvailability has been altered to remove the "
+        "'matchtimeseries' and 'includeavailability' parameters, so its output now "
+        "matches that of getChannel."
     )
-    return getChannel(
-        client_url=client_url,
-        client_type=client_type,
-        network=network,
-        station=station,
-        location=location,
-        channel=channel,
-        starttime=starttime,
-        endtime=endtime,
-        includerestricted=includerestricted,
-        latitude=latitude,
-        longitude=longitude,
-        minradius=minradius,
-        maxradius=maxradius,
+    user_agent = _userAgent()
+    cmd = (
+        'new("IrisClient", site="'
+        + client_url
+        + '", service_type="'
+        + client_type
+        + '", useragent="'
+        + user_agent
+        + '")'
     )
+    r_client = ro.r(cmd)
+
+    starttime = R_POSIXct(starttime)
+    endtime = R_POSIXct(endtime)
+
+    includerestricted, latitude, longitude, minradius, maxradius = _R_stationExtraArgs(
+        includerestricted, latitude, longitude, minradius, maxradius
+    )
+
+    # Call the function and return a pandas dataframe with the results
+    r_df = _R_getAvailability(
+        r_client,
+        network,
+        station,
+        location,
+        channel,
+        starttime,
+        endtime,
+        includerestricted,
+        latitude,
+        longitude,
+        minradius,
+        maxradius,
+    )
+
+    with localconverter(ro.default_converter + pandas2ri.converter):
+        df = ro.conversion.rpy2py(r_df)
+
+    # Convert columns from R POSIXct to python UTCDateTime
+    df.starttime = df.starttime.apply(UTCDateTime)
+    df.endtime = df.endtime.apply(UTCDateTime)
+
+    return df
 
 
 def getChannel(
