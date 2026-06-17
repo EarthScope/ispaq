@@ -441,8 +441,7 @@ def _userAgent():
     """
     Create user agent string for use with new("IrisClient")
     """
-    # ispaq_version = ispaq.__version__
-    ispaq_version = "3.3.0"
+    ispaq_version = ispaq.__version__
 
     r_agent_string = ro.r(
         "paste0('IRISSeismic/',installed.packages()['IRISSeismic','Version'],' RCurl/',installed.packages()['RCurl','Version'],' R/',R.version$major,'.',R.version$minor,' ',version$platform,' ISPAQ/')"
