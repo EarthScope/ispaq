@@ -470,13 +470,15 @@ def getAvailability(
     """
     Deprecated. Use getChannel instead.
 
-    The upstream availability web service this function relied on is no longer
-    supported. getChannel returns equivalent data and should be used in its place.
+    The upstream station web service this function relied on no longer
+    supports the `matchtimeseries` or `includeavailability` parameters.
+    getChannel returns equivalent data and should be used in its place.
     """
     logging.getLogger(__name__).warning(
-        "getAvailability is deprecated and will not work — the IRISSeismic package that is  "
-        "called has been discontinued. Use getChannel instead, which returns the "
-        "same data."
+        "getAvailability is deprecated.  https://service.earthscope.org/fdsnws/station "
+        "no longer supports parameters 'matchtimeseries' or 'includeavailability'. "
+        "The upstream IRISSeismic::getAvailability function has been deprecated. "
+        "This function now returns the same result as `getChannel`."
     )
     return getChannel(
         client_url=client_url,
