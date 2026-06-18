@@ -496,10 +496,12 @@ def getAvailability(
     ...
     """
     logging.getLogger(__name__).warning(
-        "getAvailability will be deprecated in a future release. "
-        "The upstream IRISSeismic::getAvailability has been altered to remove the "
-        "'matchtimeseries' and 'includeavailability' parameters, so its output now "
-        "matches that of getChannel."
+        "getAvailability is deprecated and will be removed in a future release, "
+        "use getChannel instead. "
+        "The EarthScope fdsnws/station service no longer supports the 'matchtimeseries' "
+        "and 'includeavailability' parameters, so the upstream "
+        "IRISSeismic::getAvailability has removed the 'matchtimeseries' and "
+        "'includeavailability' parameters; its output now matches getChannel."
     )
     user_agent = _userAgent()
     cmd = (
