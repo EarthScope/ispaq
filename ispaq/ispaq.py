@@ -13,8 +13,7 @@ import logging
 import numpy as np
 import subprocess
 
-
-__version__ = "3.4.0"
+__version__ = "3.5.0"
 
 # dictionary of currently defined ISPAQ metric groups and business logic
 # for comparison with R package IRISMustangMetrics/ISPAQUtils.R json
@@ -224,8 +223,11 @@ def main():
     # Full DEBUG level logging goes to ISPAQ_TRANSCRIPT.log
     # Console logging level is set by the '--log-level' argument
 
-    logger = logging.getLogger(__name__)
+    # Use the 'ispaq' parent logger so all ispaq.* child loggers (e.g.
+    # ispaq.irisseismic, ispaq.concierge) propagate here and share these handlers.
+    logger = logging.getLogger("ispaq")
     logger.setLevel(logging.DEBUG)
+    logger.propagate = False
 
     formatter = logging.Formatter(
         "%(asctime)s - %(levelname)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
@@ -412,8 +414,9 @@ def main():
                 shell=True,
             )
         elif answer in rejected_answer:
-            print("Exiting now without updating conda packages.")
-            raise SystemExit
+            logger.warning(
+                f"Continuing with ObsPy {obspy.__version__}. Some features may not work as expected."
+            )
 
     # Create UserRequest object ------------------------------------------------
     #

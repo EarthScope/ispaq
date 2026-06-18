@@ -1022,7 +1022,7 @@ class Concierge(object):
                     )
                 )
                 try:
-                    df = irisseismic.getAvailability(
+                    df = irisseismic.getChannel(
                         self.station_url,
                         self.station_type,
                         network=_network,
