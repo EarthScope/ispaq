@@ -366,7 +366,7 @@ def R_Stream(
             act_flags=R_integer(act_flags),
             io_flags=R_integer(io_flags),
             dq_flags=R_integer(dq_flags),
-            timing_qual=timing_qual,
+            timing_qual=R_float(timing_qual),
             traces=r_listOfTraces,
         )
     return r_stream
