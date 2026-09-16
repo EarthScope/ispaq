@@ -1,4 +1,4 @@
-# ISPAQ - IRIS System for Portable Assessment of Quality
+# ISPAQ - EarthScope System for Portable Assessment of Quality
 
 ISPAQ is a Python client that allows seismic data scientists and instrumentation operators to run data 
 quality metrics on their own workstation, using much of same code as used in EarthScope's (formerly IRIS) 
