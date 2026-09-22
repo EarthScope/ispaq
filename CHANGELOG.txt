@@ -1,3 +1,6 @@
+3.5.0
+ * updates to use IRISSeismic version 1.10.0
+
 3.4.0
  * move to use python3.12
  * bumps dependencies
