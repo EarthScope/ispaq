@@ -9,6 +9,7 @@ Python module containing wrappers for the IRISSeismic R package.
 """
 
 # from future.types import newint
+import logging
 import pandas as pd
 from obspy import UTCDateTime
 import rpy2.robjects as ro
@@ -60,6 +61,7 @@ _R_getSNCL = ro.r("IRISSeismic::getSNCL")  #
 _R_getStation = ro.r("IRISSeismic::getStation")  #
 _R_getTraveltime = ro.r("IRISSeismic::getTraveltime")  #
 _R_getUnavailability = ro.r("IRISSeismic::getUnavailability")  #
+_R_taupTraveltime = ro.r("IRISSeismic::taupTraveltime")
 
 # IRISMustangMetrics helper functions
 _R_metricList2DF = ro.r("IRISMustangMetrics::metricList2DF")
@@ -441,8 +443,7 @@ def _userAgent():
     """
     Create user agent string for use with new("IrisClient")
     """
-    # ispaq_version = ispaq.__version__
-    ispaq_version = "3.4.0"
+    ispaq_version = ispaq.__version__
 
     r_agent_string = ro.r(
         "paste0('IRISSeismic/',installed.packages()['IRISSeismic','Version'],' RCurl/',installed.packages()['RCurl','Version'],' R/',R.version$major,'.',R.version$minor,' ',version$platform,' ISPAQ/')"
@@ -495,6 +496,14 @@ def getAvailability(
     2     629145000
     ...
     """
+    logging.getLogger(__name__).warning(
+        "getAvailability is deprecated and will be removed in a future release, "
+        "use getChannel instead. "
+        "The EarthScope fdsnws/station service no longer supports the 'matchtimeseries' "
+        "and 'includeavailability' parameters, so the upstream "
+        "IRISSeismic::getAvailability has removed the 'matchtimeseries' and "
+        "'includeavailability' parameters; its output now matches getChannel."
+    )
     user_agent = _userAgent()
     cmd = (
         'new("IrisClient", site="'
@@ -505,16 +514,13 @@ def getAvailability(
         + user_agent
         + '")'
     )
-    # cmd = 'new("IrisClient", site="' + client_url + '", service_type="' + client_type + '")'
     r_client = ro.r(cmd)
 
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
 
-    (includerestricted, latitude, longitude, minradius, maxradius) = (
-        _R_stationExtraArgs(
-            includerestricted, latitude, longitude, minradius, maxradius
-        )
+    includerestricted, latitude, longitude, minradius, maxradius = _R_stationExtraArgs(
+        includerestricted, latitude, longitude, minradius, maxradius
     )
 
     # Call the function and return a pandas dataframe with the results
@@ -600,10 +606,8 @@ def getChannel(
     # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    (includerestricted, latitude, longitude, minradius, maxradius) = (
-        _R_stationExtraArgs(
-            includerestricted, latitude, longitude, minradius, maxradius
-        )
+    includerestricted, latitude, longitude, minradius, maxradius = _R_stationExtraArgs(
+        includerestricted, latitude, longitude, minradius, maxradius
     )
 
     # Call the function and return a pandas dataframe with the results
@@ -681,7 +685,7 @@ def R_getDataselect(
     # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    (quality, repository, inclusiveEnd, ignoreEpoch) = _R_args(
+    quality, repository, inclusiveEnd, ignoreEpoch = _R_args(
         quality, repository, inclusiveEnd, ignoreEpoch
     )
 
@@ -772,7 +776,7 @@ def getEvalresp(
 
     # Convert python arguments to R equivalents
     time = R_POSIXct(time)
-    (minfreq, maxfreq, nfreq, units, output) = _R_args(
+    minfreq, maxfreq, nfreq, units, output = _R_args(
         minfreq, maxfreq, nfreq, units, output
     )
 
@@ -834,7 +838,7 @@ def getEvent(
     # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    (minmag, maxmag, magtype, mindepth, maxdepth) = _R_args(
+    minmag, maxmag, magtype, mindepth, maxdepth = _R_args(
         minmag, maxmag, magtype, mindepth, maxdepth
     )
 
@@ -899,10 +903,8 @@ def getNetwork(
     # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    (includerestricted, latitude, longitude, minradius, maxradius) = (
-        _R_stationExtraArgs(
-            includerestricted, latitude, longitude, minradius, maxradius
-        )
+    includerestricted, latitude, longitude, minradius, maxradius = _R_stationExtraArgs(
+        includerestricted, latitude, longitude, minradius, maxradius
     )
 
     # Call the function and return a pandas dataframe with the results
@@ -970,7 +972,7 @@ def R_getSNCL(
     # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    (quality, repository, inclusiveEnd, ignoreEpoch) = _R_args(
+    quality, repository, inclusiveEnd, ignoreEpoch = _R_args(
         quality, repository, inclusiveEnd, ignoreEpoch
     )
 
@@ -1027,10 +1029,8 @@ def getStation(
     # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    (includerestricted, latitude, longitude, minradius, maxradius) = (
-        _R_stationExtraArgs(
-            includerestricted, latitude, longitude, minradius, maxradius
-        )
+    includerestricted, latitude, longitude, minradius, maxradius = _R_stationExtraArgs(
+        includerestricted, latitude, longitude, minradius, maxradius
     )
 
     # Call the function and return a pandas dataframe with the results
@@ -1079,6 +1079,24 @@ def getTraveltime(latitude, longitude, depth, staLatitude, staLongitude):
         df = ro.conversion.rpy2py(r_df)
     return df
 
+def taupTraveltime(latitude, longitude, depth, staLatitude, staLongitude):
+    """
+    Returns a pandas dataframe with seismic traveltime data from the
+    TauP Toolkit (Crotwell, et al., 1999) as used by the IRISSeismic package
+    on CRAN. 
+    :param latitude: Latitude of seismic event.
+    :param longitude: Longitude of seismic event.
+    :param depth: depth of the seismic event.
+    :param staLatitude: Latitude of seismic station.
+    :param staLongitude: Longitude of seismic station.
+    """
+    # Call the function and return a pandas dataframe with the results
+    r_df = _R_taupTraveltime(
+        latitude, longitude, depth, staLatitude, staLongitude
+    )
+    with localconverter(ro.default_converter + pandas2ri.converter):
+        df = ro.conversion.rpy2py(r_df)
+    return df
 
 def getUnavailability(
     client_url="https://service.earthscope.org",
@@ -1128,10 +1146,8 @@ def getUnavailability(
     # Convert python arguments to R equivalents
     starttime = R_POSIXct(starttime)
     endtime = R_POSIXct(endtime)
-    (includerestricted, latitude, longitude, minradius, maxradius) = (
-        _R_stationExtraArgs(
-            includerestricted, latitude, longitude, minradius, maxradius
-        )
+    includerestricted, latitude, longitude, minradius, maxradius = _R_stationExtraArgs(
+        includerestricted, latitude, longitude, minradius, maxradius
     )
 
     # Call the function and return a pandas dataframe with the results
