@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+ <FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:iris="http://www.fdsn.org/xml/station/1/iris" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.1.xsd" schemaVersion="1.1">
+  <Source>EarthScope</Source>
+  <Sender>EarthScope</Sender>
+  <Module>EarthScope WEB SERVICE: fdsnws-station | version: 1.1.56</Module>
+  <ModuleURI>https://service.earthscope.org/fdsnws/station/1/query?net=IU&amp;sta=QSPA&amp;loc=00&amp;cha=VH1&amp;starttime=2026-01-01&amp;level=channel&amp;format=xml&amp;includecomments=true&amp;nodata=404</ModuleURI>
+  <Created>2026-08-05T20:29:05.8892</Created>
+  <Network code="IU" startDate="1988-01-01T00:00:00.0000" restrictedStatus="open">
+   <Description>Global Seismograph Network (GSN - IRIS/USGS) (GSN)</Description>
+   <Identifier type="DOI">10.7914/SN/IU
+   </Identifier>
+   <TotalNumberStations>117</TotalNumberStations>
+   <SelectedNumberStations>1</SelectedNumberStations>
+   <Station code="QSPA" startDate="2002-12-29T00:00:00.0000" restrictedStatus="open" iris:alternateNetworkCodes="_ANTARCTICA,_FDSN-ALL,_GSN,_GSN-BROADBAND,_REALTIME,_STS-1,.UNRESTRICTED">
+    <Description>(GSN) IRIS/USGS (IU) and NSF-OPP</Description>
+    <Latitude>-89.9289</Latitude>
+    <Longitude>144.4382</Longitude>
+    <Elevation>2850.0</Elevation>
+    <Site>
+     <Name>South Pole Remote Earth Science Observatory (Quiet Zone)</Name>
+    </Site>
+    <CreationDate>2002-12-29T00:00:00.0000</CreationDate>
+    <TotalNumberChannels>340</TotalNumberChannels>
+    <SelectedNumberChannels>1</SelectedNumberChannels>
+    <Channel code="VH1" locationCode="00" startDate="2024-12-06T00:00:00.0000" restrictedStatus="open">
+     <Comment>
+      <Value>[SENSOR::KS-54000::69], [SENSOR::MAG690::26], [LOGGER::Q330HR::3700]</Value>
+      <BeginEffectiveTime>2024-12-06T00:00:00.0000</BeginEffectiveTime>
+     </Comment>
+     <Latitude>-89.9289</Latitude>
+     <Longitude>144.4382</Longitude>
+     <Elevation>2580</Elevation>
+     <Depth>270</Depth>
+     <Azimuth>176</Azimuth>
+     <Dip>0</Dip>
+     <Type>CONTINUOUS</Type>
+     <Type>GEOPHYSICAL</Type>
+     <SampleRate>1E-01</SampleRate>
+     <Sensor>
+      <Type>GEOTECH</Type>
+      <Description>Velocity Sensor</Description>
+      <Manufacturer>GEOTECH</Manufacturer>
+      <Model>KS-54000</Model>
+      <SerialNumber>69</SerialNumber>
+     </Sensor>
+     <DataLogger>
+      <Type>QUANTERRA</Type>
+      <Manufacturer>QUANTERRA</Manufacturer>
+      <Model>Q330HR</Model>
+      <SerialNumber>3700</SerialNumber>
+     </DataLogger>
+     <Response>
+     <InstrumentSensitivity>
+       <Value>3.15837E9</Value>
+       <Frequency>0.02</Frequency>
+       <InputUnits>
+         <Name>m/s</Name>
+         <Description>Velocity in meters per second</Description>
+       </InputUnits>
+       <OutputUnits>
+         <Name>counts</Name>
+         <Description>Digital Count in Digital counts</Description>
+       </OutputUnits>
+     </InstrumentSensitivity>
+     </Response>
+    </Channel>
+   </Station>
+  </Network>
+ </FDSNStationXML>
