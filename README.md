@@ -183,7 +183,7 @@ usage: run_ispaq.py [-h] [-P PREFERENCES_FILE] [-M METRICS] [-S STATIONS]
                     [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-A] [-V]
                     [-I] [-U] [-L]
 
-ISPAQ version 3.4.1
+ISPAQ version 3.5.0
 
 single arguments:
   -h, --help                       show this help message and exit
