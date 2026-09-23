@@ -18,6 +18,7 @@ from . import irisseismic
 from . import irismustangmetrics
 
 from obspy import UTCDateTime
+from obspy.geodetics.base import gps2dist_azimuth
 from rpy2.robjects import pandas2ri
 import rpy2.robjects as ro
 from rpy2.robjects import numpy2ri
@@ -239,13 +240,13 @@ def orientationCheck_metrics(concierge):
             ZChannel = sn_lAvailability[Z_mask].iloc[0]
 
             # Calculate various distances and surface travel time
+            _, _, backAzimuth = gps2dist_azimuth(
+                event.latitude,
+                event.longitude,
+                ZChannel.latitude,
+                ZChannel.longitude,
+            )
             with localconverter(ro.default_converter + numpy2ri.converter):
-                distaz = irisseismic.getDistaz(
-                    event.latitude,
-                    event.longitude,
-                    ZChannel.latitude,
-                    ZChannel.longitude,
-                )
                 surfaceDistance = irisseismic.surfaceDistance(
                     event.latitude,
                     event.longitude,
@@ -462,7 +463,7 @@ def orientationCheck_metrics(concierge):
             # max_C_zr
             # magnitude
 
-            azimuth_Y_obs = (float(distaz.backAzimuth) - azimuth_R) % 360
+            azimuth_Y_obs = (float(backAzimuth) - azimuth_R) % 360
             azimuth_X_obs = (azimuth_Y_obs + 90.0) % 360
 
             elementNames = [
@@ -478,7 +479,7 @@ def orientationCheck_metrics(concierge):
             ]
             elementValues = [
                 azimuth_R,
-                float(distaz.backAzimuth),
+                float(backAzimuth),
                 azimuth_Y_obs,
                 azimuth_X_obs,
                 float(Channel_1.azimuth),

@@ -1,3 +1,12 @@
+3.5.0
+ * updates to use IRISSeismic version 1.10.0
+ * deprecates functions getAvailability, getTraveltime, getDistaz
+ * adds function taupTraveltime, replaces use of getTraveltime in 
+   polarity_check and sample_snr metrics
+ * replaces getDistaz with ObsPy's gps2dist_azimuth in
+   orientation_check metric
+ * removes forced update of obspy, logs warning instead
+
 3.4.0
  * move to use python3.12
  * bumps dependencies

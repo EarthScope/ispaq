@@ -331,7 +331,7 @@ def crossCorrelation_metrics(concierge):
 
                 # Get data in a window centered on the event's arrival at station #2
                 try:
-                    tt = irisseismic.getTraveltime(
+                    tt = irisseismic.taupTraveltime(
                         event.latitude,
                         event.longitude,
                         event.depth,

@@ -143,10 +143,10 @@ def SNR_metrics(concierge):
 
             # get the travel time between the event and the station
             try:
-                tt = irisseismic.getTraveltime(event.latitude, event.longitude, event.depth, 
-                                               av.latitude, av.longitude)
+                tt = irisseismic.taupTraveltime(event.latitude, event.longitude, event.depth,
+                                                av.latitude, av.longitude)
             except Exception as e:
-                logger.warning('Skipping because getTravelTime failed: %s' % (e))
+                logger.warning('Skipping because taupTravelTime failed: %s' % (e))
                 continue
         
             # get P arrival or first arrival

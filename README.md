@@ -1,4 +1,4 @@
-# ISPAQ - IRIS System for Portable Assessment of Quality
+# ISPAQ - EarthScope System for Portable Assessment of Quality
 
 ISPAQ is a Python client that allows seismic data scientists and instrumentation operators to run data 
 quality metrics on their own workstation, using much of same code as used in EarthScope's (formerly IRIS) 
@@ -26,11 +26,6 @@ MUSTANG.
 
 
 # Background
-
-In 2023, IRIS (Incorporated Research Institutions for Seismology) and UNAVCO merged
-to form EarthScope Consortium. IRIS (now EarthScope) webservices are unchanged but 
-can now be accessed at [https://service.earthscope.org](https://service.earthscope.org)
- as well as [https://service.iris.edu](https://service.iris.edu).
 
 [EarthScope](https://www.earthscope.org) has developed a 
 comprehensive quality assurance system called [MUSTANG](https://service.earthscope.org/mustang/).
@@ -125,7 +120,7 @@ conda activate ispaq
 conda install -c conda-forge --file ispaq-conda-install.txt
 ```
 
-Instructions for macOS (Apple M1 or M2 chip):
+Instructions for macOS (Apple M chips):
 ```
 cd ispaq   
 conda update conda
@@ -149,7 +144,7 @@ python run_ispaq.py -I    #downloads latest packages from CRAN (https://cran.r-p
 Or alternatively, install the EarthScope R packages from local files: 
 ```
 R CMD INSTALL seismicRoll_1.1.5.tar.gz
-R CMD INSTALL IRISSeismic_1.7.0.tar.gz
+R CMD INSTALL IRISSeismic_1.10.0.tar.gz
 R CMD INSTALL IRISMustangMetrics_2.4.8.tar.gz
 ```
 
@@ -188,7 +183,7 @@ usage: run_ispaq.py [-h] [-P PREFERENCES_FILE] [-M METRICS] [-S STATIONS]
                     [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-A] [-V]
                     [-I] [-U] [-L]
 
-ISPAQ version 3.4.0
+ISPAQ version 3.5.0
 
 single arguments:
   -h, --help                       show this help message and exit
@@ -314,14 +309,13 @@ as `Network.Station.Location.Channel[.Quality]`. This format pattern can be modi
 **Data_Access** has four entries describing where to find data, metadata, events, and optionally response files.
 
 * `dataselect_url:` should indicate a *miniSEED* data resource as one of the *FDSN web service aliases* used by ObsPy 
-(e.g. `IRIS`), EARTHSCOPE (an alias of 'IRIS'), the EarthScope PH5 web service alias 'IRISPH5', 
+(e.g. `IRIS`), EARTHSCOPE (an alias of 'IRIS'),  
 an explicit URL pointing to an FDSN web service domain (e.g. `https://service.earthscope.org` ), or a file 
 path to a directory containing miniSEED files (_See: "Using Local Data Files", below_).
 
-> _NOTE:_ When data is missing and it is marked as percent_availability=0, the quality code to assign to the target must be inferred. To do this, the current logic is to assign quality "M" for EarthScope (fdsnws) derived data, and quality "D" for all other data (IRISPH5, local data, or any other webservice). We are aware that this is too simplistic to truly capture the range of possible quality codes, and have it on our radar to improve with a later release. 
+> _NOTE:_ When data is missing and it is marked as percent_availability=0, the quality code to assign to the target must be inferred. To do this, the current logic is to assign quality "M" for EarthScope (fdsnws) derived data, and quality "D" for all other data (local data, or any other webservice). We are aware that this is too simplistic to truly capture the range of possible quality codes. 
 
 * `station_url:` should indicate a metadata location as an FDSN web service alias, EARTHSCOPE (an alias of 'IRIS'),
-the EarthScope PH5 web service alias 'IRISPH5',
 an explicit URL, or a path to a file containing metadata in [StationXML](https://www.fdsn.org/xml/station/) format 
 ([schema](https://www.fdsn.org/xml/station/fdsn-station-1.0.xsd)). If both `dataselect_url` and `station_url` point to web services, they should point to the same location (e.g. `https://service.earthscope.org`). For local metadata, StationXML is read at the channel level and any 
 response information is ignored. Local instrument response (if used) is expected to be in RESP file format and specified 
@@ -343,7 +337,7 @@ orientation_check*). The EarthScope event service is deprecated and event_urls d
 redirect to the USGS event service at https://earthquake.usgs.gov.
 
 * `resp_dir:` should be unspecified or absent if local response files are not used. The default behavior
- is to retrieve response information from the EarthScope web service [Evalresp](https://service.earthscope.org/irisws/evalresp/1/). If the Earthscope PH5 service (IRISPH5) is the source for the `station_url`, then it will default to the [ph5 Evalresp] (https://service.earthscope.org/ph5ws/evalresp/1/) instead. 
+ is to retrieve response information from the EarthScope web service [Evalresp](https://service.earthscope.org/irisws/evalresp/1/).  
 To use local instrument responses instead of [Evalresp](https://service.earthscope.org/irisws/evalresp/1/),
  this parameter should indicate a path to a directory containing response files 
 in [RESP](https://ds.iris.edu/ds/nodes/dmc/data/formats/resp/) format. Local response files are expected to be 
